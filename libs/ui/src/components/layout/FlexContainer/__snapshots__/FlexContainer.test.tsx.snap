@@ -1,0 +1,14 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`FlexContainer > SHOULD renders children correctly 1`] = `
+<div>
+  <div
+    class="css-1cfw1f3"
+    data-testid="FlexContainer"
+  >
+    <p>
+      Test Content
+    </p>
+  </div>
+</div>
+`;

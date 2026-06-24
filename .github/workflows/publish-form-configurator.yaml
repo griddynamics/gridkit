@@ -1,0 +1,62 @@
+name: Publish Form Configurator to NPM
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: Select the semantic version bump to publish for form-configurator packages
+        required: true
+        default: patch
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 'lts/*'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Run tests
+        run: yarn test:form-configurator
+
+      - name: Bump versions
+        run: yarn version:form-configurator:${{ inputs.release_type }}
+
+      - name: Build form-configurator packages
+        run: yarn build:form-configurator
+
+      - name: Publish packages
+        run: yarn publish:form-configurator
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Commit version bump
+        run: |
+          git config user.name "Github Actions"
+          git config user.email "gd-design-system-support@griddynamics.com"
+          git add libs/form-configurator/core/package.json libs/form-configurator/adapter-react/package.json
+          git commit -m "chore: bump form-configurator to $(node -p "require('./libs/form-configurator/core/package.json').version")"
+          git push
+
+      - name: Summarize published version
+        run: |
+          echo "Published packages: gd-form-configurator + gd-form-configurator-react" >> "$GITHUB_STEP_SUMMARY"
+          echo "Release type: ${{ inputs.release_type }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Core version: $(node -p "require('./libs/form-configurator/core/package.json').version")" >> "$GITHUB_STEP_SUMMARY"
+          echo "Adapter version: $(node -p "require('./libs/form-configurator/adapter-react/package.json').version")" >> "$GITHUB_STEP_SUMMARY"

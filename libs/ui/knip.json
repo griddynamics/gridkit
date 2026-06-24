@@ -1,0 +1,20 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": [
+    "src/index.ts",
+    "src/ai/index.ts",
+    "src/test-utils.tsx",
+    "src/utils/play/index.ts",
+    "src/**/*.stories.{ts,tsx}",
+    "src/**/*.stories.play.{ts,tsx}",
+    "src/**/*.spec.{ts,tsx}",
+    "src/**/*.test.{ts,tsx}",
+    "src/**/*.visual.{ts,tsx}",
+    "src/**/__tests__/**/*.{ts,tsx}",
+    "scripts/**/*.mjs"
+  ],
+  "project": ["src/**/*.{ts,tsx}"],
+  "ignore": ["src/stories/**", "src/**/__mocks__/**"],
+  "ignoreDependencies": ["@emotion/react", "@emotion/styled", "embla-carousel", "@testing-library/react", "storybook"],
+  "ignoreExportsUsedInFile": true
+}

@@ -1,0 +1,73 @@
+{
+  "name": "gd-form-configurator",
+  "version": "0.0.9",
+  "description": "Framework-agnostic schema-driven form configurator core library",
+  "author": "Grid Dynamics",
+  "license": "Private",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/griddynamics/rnd-composable-commerce"
+  },
+  "keywords": [
+    "forms",
+    "schema",
+    "validation",
+    "jsonforms",
+    "ajv",
+    "form-builder",
+    "dynamic-forms"
+  ],
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "sideEffects": [
+    "*.css",
+    "./index.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js",
+      "default": "./index.js"
+    },
+    "./orchestrator": {
+      "types": "./orchestrator/form-configurator.d.ts",
+      "import": "./orchestrator/form-configurator.js"
+    },
+    "./store": {
+      "types": "./store/index.d.ts",
+      "import": "./store/index.js"
+    },
+    "./core": {
+      "types": "./core/dispatch.service.d.ts",
+      "import": "./core/dispatch.service.js"
+    },
+    "./utils": {
+      "types": "./utils/methods.d.ts",
+      "import": "./utils/methods.js"
+    },
+    "./index.css": "./index.css",
+    "./styles": "./index.css"
+  },
+  "files": [
+    "**/*",
+    "!adapter-react"
+  ],
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "core-js": "^3.32.1",
+    "zustand": "^5.0.6"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "@nx/eslint": "19.5.1",
+    "eslint-plugin-import": "2.29.1",
+    "eslint-plugin-jsx-a11y": "6.9.0",
+    "eslint-plugin-react": "7.34.4",
+    "eslint-plugin-react-hooks": "4.6.2",
+    "@typescript-eslint/parser": "^7.16.0",
+    "@typescript-eslint/eslint-plugin": "^7.16.0",
+    "eslint-config-prettier": "^9.1.0"
+  }
+}

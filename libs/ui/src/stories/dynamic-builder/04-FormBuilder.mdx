@@ -1,0 +1,162 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+import { CollapsibleSections } from './CollapsibleSections';
+
+<Meta title="Domain Solutions/Dynamic Builder/Form Builder" />
+
+# Dynamic Form Builder
+
+<CollapsibleSections />
+
+**Contents**
+
+- [What it is](#what-it-is)
+- [Simple scheme](#simple-scheme)
+- [UI and headless boundaries](#ui-and-headless-boundaries)
+- [A real example](#a-real-example)
+- [The 5 builder steps](#the-5-builder-steps)
+- [Core model](#core-model)
+- [Outputs](#outputs)
+- [Mount the full UI](#mount-the-full-ui)
+- [Headless exports only](#headless-exports-only)
+- [Pick a template](#pick-a-template)
+- [How to extend](#how-to-extend)
+
+---
+
+## What it is
+
+Dynamic Form Builder is the part of the workspace that builds forms.
+
+A person can:
+
+- start from a template or a blank form
+- add fields and sections
+- define rules
+- preview the result
+- export to multiple formats
+
+Source: `apps/main/src/app/ui-builder/dynamic-form/`
+
+## Simple scheme
+
+```text
+form builder state
+  -> preview as A2UI
+  -> export as data schema
+  -> export as UI schema
+  -> export as React code
+```
+
+## UI and headless boundaries
+
+| Path                       | Use it when...                                                   |
+| -------------------------- | ---------------------------------------------------------------- |
+| `dynamic-form/index.ts`    | you want the UI-facing default barrel                            |
+| `dynamic-form/ui.ts`       | you want to mount the form UI explicitly                         |
+| `dynamic-form/headless.ts` | you want transforms, constants, templates, and shared types only |
+
+## A real example
+
+Request:
+
+`Generate an employee onboarding form with personal info, manager approval, equipment request, and start date`
+
+Outcome:
+
+- the builder creates one `FormBuilderState`
+- preview is shown inside the builder
+- the same state exports to: A2UI preview, data schema, UI schema, React code
+
+## The 5 builder steps
+
+| Step        | What people do               |
+| ----------- | ---------------------------- |
+| `Templates` | pick a starting point        |
+| `Fields`    | add and configure fields     |
+| `Layout`    | arrange sections and rows    |
+| `Rules`     | define conditions and logic  |
+| `Preview`   | render, validate, and export |
+
+## Core model
+
+One source of truth, many outputs:
+
+```ts
+interface FormBuilderState {
+  formTitle: string;
+  formDescription?: string;
+  fields: FieldDefinition[];
+  sections: SectionDefinition[];
+  rules: RuleDefinition[];
+  settings: FormSettings;
+  actions: FormAction[];
+  validationConfig: ValidationConfig;
+}
+```
+
+## Outputs
+
+| Output               | Why it matters                      |
+| -------------------- | ----------------------------------- |
+| `toA2UISpec()`       | preview the form inside the builder |
+| `toDataSchema()`     | define the data shape               |
+| `toUISchema()`       | define layout and field placement   |
+| `toReactCode()`      | get a starting React implementation |
+| `toInitialData()`    | get default field values            |
+| `toCompleteOutput()` | get the full export bundle          |
+
+## Mount the full UI
+
+```tsx
+import { DynamicFormBuilder } from 'apps/main/src/app/ui-builder/dynamic-form/ui';
+
+export function FormStudio() {
+  return <DynamicFormBuilder />;
+}
+```
+
+## Headless exports only
+
+Use this when you already have your own shell and only need the transforms:
+
+```ts
+import { toA2UISpec, toDataSchema, toUISchema, toReactCode } from 'apps/main/src/app/ui-builder/dynamic-form/headless';
+
+const a2ui = toA2UISpec(formState);
+const dataSchema = toDataSchema(formState);
+const uiSchema = toUISchema(formState);
+const reactCode = toReactCode(formState);
+```
+
+## Pick a template
+
+```ts
+import { FORM_TEMPLATES } from 'apps/main/src/app/ui-builder/dynamic-form/headless';
+
+const onboarding = FORM_TEMPLATES.find((t) => t.id === 'tpl_onboarding');
+const contactForm = FORM_TEMPLATES.find((t) => t.id === 'tpl_contact');
+```
+
+## How to extend
+
+### Add a new field type
+
+1. extend `FieldType` in `dynamic-form/types.ts`
+2. register the field in `dynamic-form/constants.ts`
+3. update the transforms that need to understand it
+4. update UI editors if the field needs special controls
+
+### Add a new template
+
+1. create a valid `FormBuilderState`
+2. add it to `FORM_TEMPLATES`
+
+## Important to know
+
+- `toPrompt()` is internal and not exported
+- if you only need transforms, use `dynamic-form/headless.ts` — not `index.ts`
+- `index.ts` is UI-only by design
+
+## Key point
+
+**Dynamic Form Builder is one form state with many outputs.**

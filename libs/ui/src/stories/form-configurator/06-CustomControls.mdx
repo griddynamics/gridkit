@@ -1,0 +1,693 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Form Configurator/Custom Controls" />
+
+# Custom Controls
+
+## Overview
+
+While the Form Configurator includes pre-built controls for common input types, you can easily create custom React components for specialized use cases. Custom controls integrate seamlessly with the form's validation, state management, and conditional logic.
+
+## When to Use Custom Controls
+
+Create custom controls when:
+
+- You need a specialized input type (e.g., rating stars, color swatches, rich text editor)
+- You want to integrate third-party components (e.g., date pickers, autocomplete)
+- You need custom validation UI
+- You want domain-specific controls (e.g., credit card input, phone number with country code)
+
+## ReactControlProps Interface
+
+All React controls receive these props:
+
+```typescript
+interface ReactControlProps<T = any> {
+  scope: string; // JSON pointer (e.g., '#/properties/rating')
+  path?: string; // Dot notation (e.g., 'user.rating')
+  label?: string; // Display label
+  value: T; // Current field value
+  errors: ErrorObject[]; // Validation errors
+  required: boolean; // Is field required
+  isEnabled: boolean; // Is control enabled
+  isVisible: boolean; // Is control visible
+  schema?: DataSchema; // Field schema
+  options?: Array<{
+    // Options for selectable controls
+    label?: string;
+    value: any;
+  }>;
+  onChange: (value: T) => void; // Value change callback
+}
+```
+
+### BaseControlProps
+
+The base interface that ReactControlProps extends:
+
+```typescript
+interface BaseControlProps<T = any> {
+  scope: string;
+  path?: string;
+  label?: string;
+  value: T;
+  errors: ErrorObject[];
+  required: boolean;
+  isEnabled: boolean;
+  isVisible: boolean;
+  schema?: DataSchema;
+  options?: Array<{ label?: string; value: any }>;
+  onChange: (value: T) => void;
+}
+```
+
+## Creating a Custom Control
+
+### Step 1: Define the Component
+
+```tsx
+import React from 'react';
+import { ReactControlProps } from 'gd-form-configurator-react';
+
+interface RatingControlProps extends ReactControlProps<number> {}
+
+export const RatingControl: React.FC<RatingControlProps> = ({
+  value,
+  onChange,
+  label,
+  errors,
+  isEnabled,
+  isVisible,
+  required,
+}) => {
+  // Don't render if hidden
+  if (!isVisible) {
+    return null;
+  }
+
+  const handleClick = (rating: number) => {
+    if (isEnabled) {
+      onChange(rating);
+    }
+  };
+
+  const hasErrors = errors.length > 0;
+  const errorMessage = hasErrors ? errors[0].message : null;
+
+  return (
+    <div style={{ marginBottom: '16px' }}>
+      {/* Label */}
+      <label
+        style={{
+          display: 'block',
+          marginBottom: '8px',
+          fontWeight: 'bold',
+          color: hasErrors ? '#d32f2f' : 'inherit',
+        }}
+      >
+        {label}
+        {required && <span style={{ color: '#d32f2f' }}> *</span>}
+      </label>
+
+      {/* Star Rating */}
+      <div style={{ display: 'flex', gap: '4px' }}>
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            key={star}
+            type="button"
+            onClick={() => handleClick(star)}
+            disabled={!isEnabled}
+            style={{
+              fontSize: '32px',
+              border: 'none',
+              background: 'none',
+              cursor: isEnabled ? 'pointer' : 'not-allowed',
+              color: value >= star ? '#FFB800' : '#E0E0E0',
+              opacity: isEnabled ? 1 : 0.5,
+              padding: '0 4px',
+            }}
+            aria-label={`Rate ${star} stars`}
+          >
+            ★
+          </button>
+        ))}
+      </div>
+
+      {/* Error Message */}
+      {hasErrors && (
+        <div
+          style={{
+            color: '#d32f2f',
+            fontSize: '12px',
+            marginTop: '4px',
+          }}
+        >
+          {errorMessage}
+        </div>
+      )}
+
+      {/* Current Value Display */}
+      {value > 0 && (
+        <div
+          style={{
+            fontSize: '14px',
+            marginTop: '4px',
+            color: '#666',
+          }}
+        >
+          {value} out of 5 stars
+        </div>
+      )}
+    </div>
+  );
+};
+```
+
+### Step 2: Create a Tester Function
+
+The tester determines when your custom control should be used:
+
+```typescript
+import { UISchema, DataSchema } from 'gd-form-configurator';
+
+// Tester type definition
+type Tester = (uischema: UISchema, schema: DataSchema) => number;
+
+// Custom tester for rating control
+export const ratingTester: Tester = (uischema, schema) => {
+  // Check if this is a Control element
+  if (uischema.type !== 'Control') {
+    return -1;
+  }
+
+  // Check for custom option
+  if ((uischema as any).options?.custom === 'rating') {
+    return 10; // High priority
+  }
+
+  // Check schema format
+  if (schema.format === 'rating') {
+    return 3;
+  }
+
+  return -1; // Cannot render
+};
+```
+
+### Tester Priority Levels
+
+- **10+**: Custom explicit match (highest priority)
+- **3**: Format-specific match
+- **2**: Enum or special type match
+- **1**: Generic type match
+- **-1**: Cannot render (don't use this control)
+
+### Step 3: Register the Custom Control
+
+```tsx
+import { FormBuilder } from 'gd-form-configurator-react';
+import { RatingControl, ratingTester } from './controls/RatingControl';
+
+const customControls = [
+  {
+    tester: ratingTester,
+    renderer: RatingControl,
+  },
+];
+
+function MyForm() {
+  const schema = {
+    type: 'object',
+    properties: {
+      productRating: {
+        type: 'number',
+        title: 'Rate this product',
+        minimum: 1,
+        maximum: 5,
+        format: 'rating', // Triggers rating control
+      },
+    },
+    required: ['productRating'],
+  };
+
+  const uischema = {
+    type: 'VerticalLayout',
+    elements: [
+      {
+        type: 'Control',
+        scope: '#/properties/productRating',
+      },
+    ],
+  };
+
+  return <FormBuilder schema={schema} uischema={uischema} initialData={{}} customControls={customControls} />;
+}
+```
+
+## CustomControl Interface
+
+```typescript
+interface CustomControl<T = any> {
+  name?: string; // Optional name for debugging
+  tester?: Tester; // Function to determine if control should be used
+  renderer: React.ComponentType<ReactControlProps<T>>; // The React component
+}
+```
+
+## Complete Examples
+
+### Example 1: Color Swatch Picker
+
+```tsx
+import React from 'react';
+import { ReactControlProps } from 'gd-form-configurator-react';
+
+const predefinedColors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2'];
+
+export const ColorSwatchControl: React.FC<ReactControlProps<string>> = ({
+  value,
+  onChange,
+  label,
+  errors,
+  isEnabled,
+  isVisible,
+  required,
+}) => {
+  if (!isVisible) return null;
+
+  const hasErrors = errors.length > 0;
+
+  return (
+    <div style={{ marginBottom: '16px' }}>
+      <label
+        style={{
+          display: 'block',
+          marginBottom: '8px',
+          fontWeight: 'bold',
+        }}
+      >
+        {label}
+        {required && <span style={{ color: '#d32f2f' }}> *</span>}
+      </label>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+        {predefinedColors.map((color) => (
+          <button
+            key={color}
+            type="button"
+            onClick={() => isEnabled && onChange(color)}
+            disabled={!isEnabled}
+            style={{
+              width: '60px',
+              height: '60px',
+              backgroundColor: color,
+              border: value === color ? '3px solid #000' : '1px solid #ddd',
+              borderRadius: '8px',
+              cursor: isEnabled ? 'pointer' : 'not-allowed',
+              opacity: isEnabled ? 1 : 0.5,
+              transition: 'all 0.2s',
+            }}
+            title={color}
+          />
+        ))}
+      </div>
+
+      {value && <div style={{ marginTop: '8px', fontSize: '14px', color: '#666' }}>Selected: {value}</div>}
+
+      {hasErrors && <div style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px' }}>{errors[0].message}</div>}
+    </div>
+  );
+};
+
+// Tester
+export const colorSwatchTester = (uischema: any, schema: any) => {
+  return uischema.type === 'Control' && uischema.options?.custom === 'colorSwatch' ? 10 : -1;
+};
+```
+
+### Example 2: Slider with Labels
+
+```tsx
+import React from 'react';
+import { ReactControlProps } from 'gd-form-configurator-react';
+
+export const LabeledSliderControl: React.FC<ReactControlProps<number>> = ({
+  value,
+  onChange,
+  label,
+  errors,
+  isEnabled,
+  isVisible,
+  required,
+  schema,
+}) => {
+  if (!isVisible) return null;
+
+  const min = schema?.minimum || 0;
+  const max = schema?.maximum || 100;
+  const step = (schema as any)?.multipleOf || 1;
+  const labels = (schema as any)?.labels || [];
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange(Number(e.target.value));
+  };
+
+  const getLabel = (val: number) => {
+    const index = Math.round((val - min) / ((max - min) / (labels.length - 1)));
+    return labels[index] || val;
+  };
+
+  return (
+    <div style={{ marginBottom: '16px' }}>
+      <label
+        style={{
+          display: 'block',
+          marginBottom: '8px',
+          fontWeight: 'bold',
+        }}
+      >
+        {label}
+        {required && <span style={{ color: '#d32f2f' }}> *</span>}
+      </label>
+
+      <input
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value || min}
+        onChange={handleChange}
+        disabled={!isEnabled}
+        style={{
+          width: '100%',
+          cursor: isEnabled ? 'pointer' : 'not-allowed',
+        }}
+      />
+
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          fontSize: '12px',
+          color: '#666',
+          marginTop: '4px',
+        }}
+      >
+        {labels.map((lbl: string, idx: number) => (
+          <span key={idx}>{lbl}</span>
+        ))}
+      </div>
+
+      <div
+        style={{
+          textAlign: 'center',
+          fontSize: '18px',
+          fontWeight: 'bold',
+          marginTop: '8px',
+        }}
+      >
+        {getLabel(value || min)}
+      </div>
+
+      {errors.length > 0 && (
+        <div style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px' }}>{errors[0].message}</div>
+      )}
+    </div>
+  );
+};
+
+// Usage with schema
+const schema = {
+  type: 'object',
+  properties: {
+    satisfaction: {
+      type: 'number',
+      title: 'How satisfied are you?',
+      minimum: 0,
+      maximum: 4,
+      labels: ['Very Unsatisfied', 'Unsatisfied', 'Neutral', 'Satisfied', 'Very Satisfied'],
+    },
+  },
+};
+```
+
+### Example 3: Tags Input
+
+```tsx
+import React, { useState } from 'react';
+import { ReactControlProps } from 'gd-form-configurator-react';
+
+export const TagsControl: React.FC<ReactControlProps<string[]>> = ({
+  value = [],
+  onChange,
+  label,
+  errors,
+  isEnabled,
+  isVisible,
+  required,
+}) => {
+  const [inputValue, setInputValue] = useState('');
+
+  if (!isVisible) return null;
+
+  const handleAdd = () => {
+    if (inputValue.trim() && !value.includes(inputValue.trim())) {
+      onChange([...value, inputValue.trim()]);
+      setInputValue('');
+    }
+  };
+
+  const handleRemove = (tag: string) => {
+    onChange(value.filter((t) => t !== tag));
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAdd();
+    }
+  };
+
+  return (
+    <div style={{ marginBottom: '16px' }}>
+      <label
+        style={{
+          display: 'block',
+          marginBottom: '8px',
+          fontWeight: 'bold',
+        }}
+      >
+        {label}
+        {required && <span style={{ color: '#d32f2f' }}> *</span>}
+      </label>
+
+      <div
+        style={{
+          display: 'flex',
+          gap: '8px',
+          marginBottom: '8px',
+        }}
+      >
+        <input
+          type="text"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyDown={handleKeyDown}
+          disabled={!isEnabled}
+          placeholder="Add a tag..."
+          style={{
+            flex: 1,
+            padding: '8px',
+            border: '1px solid #ddd',
+            borderRadius: '4px',
+          }}
+        />
+        <button
+          type="button"
+          onClick={handleAdd}
+          disabled={!isEnabled || !inputValue.trim()}
+          style={{
+            padding: '8px 16px',
+            backgroundColor: '#4CAF50',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: isEnabled ? 'pointer' : 'not-allowed',
+          }}
+        >
+          Add
+        </button>
+      </div>
+
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+        {value.map((tag) => (
+          <span
+            key={tag}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px',
+              padding: '4px 8px',
+              backgroundColor: '#e0e0e0',
+              borderRadius: '16px',
+              fontSize: '14px',
+            }}
+          >
+            {tag}
+            <button
+              type="button"
+              onClick={() => handleRemove(tag)}
+              disabled={!isEnabled}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: isEnabled ? 'pointer' : 'not-allowed',
+                fontSize: '16px',
+                lineHeight: '1',
+                padding: '0 2px',
+              }}
+            >
+              ×
+            </button>
+          </span>
+        ))}
+      </div>
+
+      {errors.length > 0 && (
+        <div style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px' }}>{errors[0].message}</div>
+      )}
+    </div>
+  );
+};
+```
+
+## Integrating Third-Party Components
+
+### Example: React Select
+
+```tsx
+import React from 'react';
+import Select from 'react-select';
+import { ReactControlProps } from 'gd-form-configurator-react';
+
+export const ReactSelectControl: React.FC<ReactControlProps<string>> = ({
+  value,
+  onChange,
+  label,
+  options = [],
+  errors,
+  isEnabled,
+  isVisible,
+  required,
+}) => {
+  if (!isVisible) return null;
+
+  const selectOptions = options.map((opt) => ({
+    value: opt.value,
+    label: opt.label || opt.value,
+  }));
+
+  const selectedOption = selectOptions.find((opt) => opt.value === value);
+
+  return (
+    <div style={{ marginBottom: '16px' }}>
+      <label
+        style={{
+          display: 'block',
+          marginBottom: '8px',
+          fontWeight: 'bold',
+        }}
+      >
+        {label}
+        {required && <span style={{ color: '#d32f2f' }}> *</span>}
+      </label>
+
+      <Select
+        options={selectOptions}
+        value={selectedOption}
+        onChange={(option) => onChange(option?.value || '')}
+        isDisabled={!isEnabled}
+        placeholder="Select..."
+      />
+
+      {errors.length > 0 && (
+        <div style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px' }}>{errors[0].message}</div>
+      )}
+    </div>
+  );
+};
+```
+
+## Best Practices
+
+1. **Always respect isVisible**: Return `null` when not visible
+2. **Handle disabled state**: Use `isEnabled` prop to disable interactions
+3. **Display validation errors**: Show error messages from `errors` prop
+4. **Mark required fields**: Show asterisk or indicator for required fields
+5. **Call onChange correctly**: Pass the new value, not the event
+6. **TypeScript types**: Use proper type parameters for `ReactControlProps<T>`
+7. **Accessibility**: Include ARIA labels and keyboard support
+8. **Styling**: Match form styles or accept custom className props
+
+## Testing Custom Controls
+
+```tsx
+import { render, fireEvent, screen } from '@testing-library/react';
+import { RatingControl } from './RatingControl';
+
+describe('RatingControl', () => {
+  it('should render 5 stars', () => {
+    const onChange = jest.fn();
+
+    render(
+      <RatingControl
+        scope="#/properties/rating"
+        value={0}
+        onChange={onChange}
+        errors={[]}
+        isEnabled={true}
+        isVisible={true}
+        required={false}
+        label="Rating"
+      />
+    );
+
+    const buttons = screen.getAllByRole('button');
+    expect(buttons).toHaveLength(5);
+  });
+
+  it('should call onChange when star is clicked', () => {
+    const onChange = jest.fn();
+
+    render(
+      <RatingControl
+        scope="#/properties/rating"
+        value={0}
+        onChange={onChange}
+        errors={[]}
+        isEnabled={true}
+        isVisible={true}
+        required={false}
+        label="Rating"
+      />
+    );
+
+    const thirdStar = screen.getAllByRole('button')[2];
+    fireEvent.click(thirdStar);
+
+    expect(onChange).toHaveBeenCalledWith(3);
+  });
+});
+```
+
+## Related Documentation
+
+- **[Controls](/docs/form-configurator-controls--docs)**: Built-in controls reference
+- **[Data Schema](/docs/form-configurator-data-schema--docs)**: Schema definitions
+- **[Getting Started](/docs/form-configurator-getting-started--docs)**: Basic usage
+
+## Resources
+
+- [React Component Patterns](https://reactpatterns.com/)
+- [React Testing Library](https://testing-library.com/react)
+- [Accessibility Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)

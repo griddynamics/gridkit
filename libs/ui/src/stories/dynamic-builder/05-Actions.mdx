@@ -1,0 +1,144 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+import { CollapsibleSections } from './CollapsibleSections';
+
+<Meta title="Domain Solutions/Dynamic Builder/Actions" />
+
+# Actions
+
+<CollapsibleSections />
+
+**Contents**
+
+- [What actions are](#what-actions-are)
+- [Simple scheme](#simple-scheme)
+- [The 2-layer split](#the-2-layer-split)
+- [Action types](#action-types)
+- [AI component output](#ai-component-output)
+- [Runtime wiring](#runtime-wiring)
+- [Product Catalog example](#product-catalog-example)
+- [Important to know](#important-to-know)
+
+---
+
+## What actions are
+
+Actions are the interaction words generated UI is allowed to use.
+
+They answer two questions:
+
+- what can the AI put into the JSON
+- what should happen when someone clicks it
+
+Source: `apps/main/src/app/ui-builder/actions/`
+
+## Simple scheme
+
+```text
+prompt context includes action ids
+  -> provider returns a button with actions: ["open_cart"]
+  -> runtime receives the click
+  -> action handler decides what to do
+```
+
+## The 2-layer split
+
+| Layer                                                 | Purpose                   |
+| ----------------------------------------------------- | ------------------------- |
+| `BUILDER_ACTION_DEFINITIONS`                          | pure AI-facing vocabulary |
+| `createBuilderActions()` / `createDashboardActions()` | runtime handlers          |
+| `handleDefaultBuilderAction()`                        | shared fallback behavior  |
+
+Keep `actions/definitions.ts` pure — no runtime side effects. Scenario-specific behavior belongs in the scenario code.
+
+## Action types
+
+| Type          | Meaning                          | Example payload             |
+| ------------- | -------------------------------- | --------------------------- |
+| `show_detail` | open a detail view               | `{ orderId: '12345' }`      |
+| `filter_data` | filter the current view          | `{ filter: 'active' }`      |
+| `navigate`    | move to another route or section | `{ target: '/orders' }`     |
+| `export_data` | export something                 | `{ format: 'csv' }`         |
+| `refresh`     | reload a section                 | `{}`                        |
+| `add_to_cart` | add a product to cart            | `{ product: 'Widget Pro' }` |
+
+## AI component output
+
+The AI writes only the action ID into the JSON. The runtime decides what it does.
+
+```json
+{
+  "id": "cart_button",
+  "type": "button",
+  "label": "Add to Cart",
+  "actions": ["add_p1"]
+}
+```
+
+The full action is resolved from `spec.ui.actions`:
+
+```json
+{
+  "id": "add_p1",
+  "type": "add_to_cart",
+  "payload": { "product": "Widget Pro", "quantity": 1 }
+}
+```
+
+## Runtime wiring
+
+```ts
+import {
+  BUILDER_ACTION_DEFINITIONS,
+  createBuilderActions,
+  handleDefaultBuilderAction,
+} from 'apps/main/src/app/ui-builder/actions';
+
+const actions = createBuilderActions({
+  onAction: (action) => {
+    if (action.type === 'navigate') {
+      router.push(action.payload.target);
+      return true;
+    }
+    return false;
+  },
+  onUnhandledAction: handleDefaultBuilderAction,
+});
+```
+
+Return `true` to mark the action as handled. Return `false` to fall through to `onUnhandledAction`.
+
+## Product Catalog example
+
+In Product Catalog, `open_cart` can:
+
+- open the cart modal
+- update the cart badge
+- keep the current page state in sync
+
+That behavior does not belong in `actions/definitions.ts`. It belongs in the scenario runtime code.
+
+```ts
+// catalog scenario wires its own behavior
+const catalogActions = createBuilderActions({
+  onAction: (action) => {
+    if (action.type === 'open_cart') {
+      openCartModal();
+      updateCartBadge();
+      return true;
+    }
+    return false;
+  },
+  onUnhandledAction: handleDefaultBuilderAction,
+});
+```
+
+## Important to know
+
+- `actions/definitions.ts` stays pure — no runtime side effects
+- `actions/dashboard-actions.ts` is the shared action adapter layer
+- `createDashboardActions` is an alias of `createBuilderActions`
+- Dynamic Form actions are a different model from generated A2UI actions
+
+## Key point
+
+**Actions are split into two parts: what the AI may say, and what the app does with it.**

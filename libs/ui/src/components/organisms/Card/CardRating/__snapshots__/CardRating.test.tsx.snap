@@ -1,0 +1,236 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CardRating > SHOULD match snapshot 1`] = `
+<div>
+  <div
+    class="css-1t9gsx"
+    data-testid="CardRating"
+  >
+    <div
+      class="css-1nrnhxo"
+      data-testid="Rating"
+    >
+      <div
+        class="css-1jf1brs"
+        data-testid="Rating-progress"
+      >
+        <svg
+          class="css-1u8qly9"
+          data-testid="Icon-star"
+          fill="none"
+          height="12"
+          viewBox="0 0 20 19"
+          width="12"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M10 15.27L16.18 19L14.54 11.97L20 7.24L12.81 6.63L10 0L7.19 6.63L0 7.24L5.46 11.97L3.82 19L10 15.27Z"
+            fill="#FFB800"
+          />
+        </svg>
+        <svg
+          class="css-1u8qly9"
+          data-testid="Icon-star"
+          fill="none"
+          height="12"
+          viewBox="0 0 20 19"
+          width="12"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M10 15.27L16.18 19L14.54 11.97L20 7.24L12.81 6.63L10 0L7.19 6.63L0 7.24L5.46 11.97L3.82 19L10 15.27Z"
+            fill="#FFB800"
+          />
+        </svg>
+        <svg
+          class="css-1u8qly9"
+          data-testid="Icon-star"
+          fill="none"
+          height="12"
+          viewBox="0 0 20 19"
+          width="12"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M10 15.27L16.18 19L14.54 11.97L20 7.24L12.81 6.63L10 0L7.19 6.63L0 7.24L5.46 11.97L3.82 19L10 15.27Z"
+            fill="#FFB800"
+          />
+        </svg>
+        <svg
+          class="css-1u8qly9"
+          data-testid="Icon-star"
+          fill="none"
+          height="12"
+          viewBox="0 0 20 19"
+          width="12"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M10 15.27L16.18 19L14.54 11.97L20 7.24L12.81 6.63L10 0L7.19 6.63L0 7.24L5.46 11.97L3.82 19L10 15.27Z"
+            fill="#FFB800"
+          />
+        </svg>
+        <svg
+          class="css-1u8qly9"
+          data-testid="Icon-star"
+          fill="none"
+          height="12"
+          viewBox="0 0 20 19"
+          width="12"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M10 15.27L16.18 19L14.54 11.97L20 7.24L12.81 6.63L10 0L7.19 6.63L0 7.24L5.46 11.97L3.82 19L10 15.27Z"
+            fill="#FFB800"
+          />
+        </svg>
+      </div>
+      <label
+        class="css-1j8r2w0"
+        data-testid="Rating-label"
+        tabindex="0"
+      >
+        <input
+          aria-checked="false"
+          class="css-1hyfx7x"
+          data-testid="Rating-input"
+          name="Rating"
+          readonly=""
+          type="radio"
+          value="1"
+        />
+        <svg
+          class="css-1u8qly9"
+          data-testid="Icon-starOutlined"
+          fill="none"
+          height="12"
+          viewBox="0 0 20 19"
+          width="12"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M20 7.24L12.81 6.62L10 0L7.19 6.63L0 7.24L5.46 11.97L3.82 19L10 15.27L16.18 19L14.55 11.97L20 7.24ZM10 13.4L6.24 15.67L7.24 11.39L3.92 8.51L8.3 8.13L10 4.1L11.71 8.14L16.09 8.52L12.77 11.4L13.77 15.68L10 13.4Z"
+            fill="#E5E5E5"
+          />
+        </svg>
+      </label>
+      <label
+        class="css-1j8r2w0"
+        data-testid="Rating-label"
+        tabindex="0"
+      >
+        <input
+          aria-checked="false"
+          class="css-1hyfx7x"
+          data-testid="Rating-input"
+          name="Rating"
+          readonly=""
+          type="radio"
+          value="2"
+        />
+        <svg
+          class="css-1u8qly9"
+          data-testid="Icon-starOutlined"
+          fill="none"
+          height="12"
+          viewBox="0 0 20 19"
+          width="12"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M20 7.24L12.81 6.62L10 0L7.19 6.63L0 7.24L5.46 11.97L3.82 19L10 15.27L16.18 19L14.55 11.97L20 7.24ZM10 13.4L6.24 15.67L7.24 11.39L3.92 8.51L8.3 8.13L10 4.1L11.71 8.14L16.09 8.52L12.77 11.4L13.77 15.68L10 13.4Z"
+            fill="#E5E5E5"
+          />
+        </svg>
+      </label>
+      <label
+        class="css-1j8r2w0"
+        data-testid="Rating-label"
+        tabindex="0"
+      >
+        <input
+          aria-checked="false"
+          class="css-1hyfx7x"
+          data-testid="Rating-input"
+          name="Rating"
+          readonly=""
+          type="radio"
+          value="3"
+        />
+        <svg
+          class="css-1u8qly9"
+          data-testid="Icon-starOutlined"
+          fill="none"
+          height="12"
+          viewBox="0 0 20 19"
+          width="12"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M20 7.24L12.81 6.62L10 0L7.19 6.63L0 7.24L5.46 11.97L3.82 19L10 15.27L16.18 19L14.55 11.97L20 7.24ZM10 13.4L6.24 15.67L7.24 11.39L3.92 8.51L8.3 8.13L10 4.1L11.71 8.14L16.09 8.52L12.77 11.4L13.77 15.68L10 13.4Z"
+            fill="#E5E5E5"
+          />
+        </svg>
+      </label>
+      <label
+        class="css-1j8r2w0"
+        data-testid="Rating-label"
+        tabindex="0"
+      >
+        <input
+          aria-checked="false"
+          class="css-1hyfx7x"
+          data-testid="Rating-input"
+          name="Rating"
+          readonly=""
+          type="radio"
+          value="4"
+        />
+        <svg
+          class="css-1u8qly9"
+          data-testid="Icon-starOutlined"
+          fill="none"
+          height="12"
+          viewBox="0 0 20 19"
+          width="12"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M20 7.24L12.81 6.62L10 0L7.19 6.63L0 7.24L5.46 11.97L3.82 19L10 15.27L16.18 19L14.55 11.97L20 7.24ZM10 13.4L6.24 15.67L7.24 11.39L3.92 8.51L8.3 8.13L10 4.1L11.71 8.14L16.09 8.52L12.77 11.4L13.77 15.68L10 13.4Z"
+            fill="#E5E5E5"
+          />
+        </svg>
+      </label>
+      <label
+        class="css-1j8r2w0"
+        data-testid="Rating-label"
+        tabindex="0"
+      >
+        <input
+          aria-checked="false"
+          class="css-1hyfx7x"
+          data-testid="Rating-input"
+          name="Rating"
+          readonly=""
+          type="radio"
+          value="5"
+        />
+        <svg
+          class="css-1u8qly9"
+          data-testid="Icon-starOutlined"
+          fill="none"
+          height="12"
+          viewBox="0 0 20 19"
+          width="12"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M20 7.24L12.81 6.62L10 0L7.19 6.63L0 7.24L5.46 11.97L3.82 19L10 15.27L16.18 19L14.55 11.97L20 7.24ZM10 13.4L6.24 15.67L7.24 11.39L3.92 8.51L8.3 8.13L10 4.1L11.71 8.14L16.09 8.52L12.77 11.4L13.77 15.68L10 13.4Z"
+            fill="#E5E5E5"
+          />
+        </svg>
+      </label>
+    </div>
+  </div>
+</div>
+`;

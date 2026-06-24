@@ -1,0 +1,25 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CardButton > SHOULD match snapshot 1`] = `
+<div>
+  <div
+    class="css-hwczhd"
+    data-testid="CardButton"
+  >
+    <button
+      class="css-13jactu"
+      data-testid="Button"
+      role="button"
+      tabindex="0"
+      type="button"
+    >
+      <span
+        class="gd-button__content css-4vlwk1"
+        data-testid="Button-content"
+      >
+        Line 1
+      </span>
+    </button>
+  </div>
+</div>
+`;

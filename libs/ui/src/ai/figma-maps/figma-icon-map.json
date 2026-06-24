@@ -1,0 +1,404 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "GridKit IconsList key → Figma icon name. Source: libs/ui/src/components/atoms/Icon/constants.ts + Figma file bCDJhVLlAFSIZtPFbEwDRO node 3:5. Figma icons are Material Design (snake_case). Keys with figmaName=null are GridKit-custom SVGs with no direct Figma material equivalent — skip in Figma-to-code resolution. Usage: <Icon name='arrowRight' /> uses the IconsList key, not the Figma name.",
+  "$usage": {
+    "keyQuestion": "What GridKit icon key corresponds to this Figma icon name, and vice versa?",
+    "lookupSteps": [
+      "1. Figma → GridKit (most common): query figmaNameIndex[figmaName] → GridKit key. E.g. figmaNameIndex['close'] → 'cross'.",
+      "2. GridKit → Figma: find icons[key].figmaName. E.g. icons['cross'].figmaName → 'close'.",
+      "3. If figmaName is null in icons[key]: this is a custom GridKit SVG with no Figma equivalent — use the key as-is.",
+      "4. In A2UI specs: use the GridKit key as the icon name value. Validate against A2UI_AVAILABLE_ICONS before using."
+    ],
+    "criticalRules": [
+      "Always use the GridKit key (e.g. 'cross') in generated code, never the Figma snake_case name ('close').",
+      "8 custom icons have no Figma equivalent: success, error, warning, info, dot, slash, ruler, processing.",
+      "54 total icons; 46 map to Figma Material icons. figmaNameIndex has 48 forward-lookup entries."
+    ]
+  },
+  "icons": {
+    "cross": {
+      "figmaName": "close",
+      "figmaCategory": "Action",
+      "figmaPath": "Action/close",
+      "componentImport": "CrossIcon",
+      "note": "Material 'close' — used as dismiss/cross"
+    },
+    "check": {
+      "figmaName": "check",
+      "figmaCategory": "Action",
+      "figmaPath": "Action/check",
+      "componentImport": "CheckIcon"
+    },
+    "arrowDown": {
+      "figmaName": "arrow_downward",
+      "figmaCategory": "Navigation",
+      "figmaPath": "Navigation/arrow_downward",
+      "componentImport": "ArrowDownIcon"
+    },
+    "arrowRight": {
+      "figmaName": "chevron_right",
+      "figmaCategory": "Navigation",
+      "figmaPath": "Navigation/chevron_right",
+      "componentImport": "ChevronRightIcon"
+    },
+    "arrowLeft": {
+      "figmaName": "chevron_left",
+      "figmaCategory": "Navigation",
+      "figmaPath": "Navigation/chevron_left",
+      "componentImport": "ChevronLeftIcon"
+    },
+    "arrowForward": {
+      "figmaName": "arrow_forward",
+      "figmaCategory": "Navigation",
+      "figmaPath": "Navigation/arrow_forward",
+      "componentImport": "ArrowForwardIcon"
+    },
+    "keyboardArrowDown": {
+      "figmaName": "keyboard_arrow_down",
+      "figmaCategory": "Hardware",
+      "figmaPath": "Hardware/keyboard_arrow_down",
+      "componentImport": "KeyboardArrowDown"
+    },
+    "keyboardArrowUp": {
+      "figmaName": "keyboard_arrow_up",
+      "figmaCategory": "Hardware",
+      "figmaPath": "Hardware/keyboard_arrow_up",
+      "componentImport": "KeyboardArrowUp"
+    },
+    "home": {
+      "figmaName": "home",
+      "figmaCategory": "Action",
+      "figmaPath": "Action/home",
+      "componentImport": "HomeIcon"
+    },
+    "mobileMenu": {
+      "figmaName": "menu",
+      "figmaCategory": "Navigation",
+      "figmaPath": "Navigation/menu",
+      "componentImport": "MobileMenuIcon"
+    },
+    "search": {
+      "figmaName": "search",
+      "figmaCategory": "Action",
+      "figmaPath": "Action/search",
+      "componentImport": "SearchIcon"
+    },
+    "edit": {
+      "figmaName": "edit",
+      "figmaCategory": "Image",
+      "figmaPath": "Image/edit",
+      "componentImport": "EditIcon"
+    },
+    "favorite": {
+      "figmaName": "favorite",
+      "figmaCategory": "Action",
+      "figmaPath": "Action/favorite",
+      "componentImport": "FavoriteIcon"
+    },
+    "favoriteOutlined": {
+      "figmaName": "favorite_border",
+      "figmaCategory": "Action",
+      "figmaPath": "Action/favorite_border",
+      "componentImport": "FavoriteOutlinedIcon"
+    },
+    "deleteOutlined": {
+      "figmaName": "delete_outline",
+      "figmaCategory": "Action",
+      "figmaPath": "Action/delete_outline",
+      "componentImport": "DeleteOutlinedIcon"
+    },
+    "accountCircle": {
+      "figmaName": "account_circle",
+      "figmaCategory": "Action",
+      "figmaPath": "Action/account_circle",
+      "componentImport": "AccountCircleIcon"
+    },
+    "shoppingBag": {
+      "figmaName": "shopping_bag",
+      "figmaCategory": "Action",
+      "figmaPath": "Action/shopping_bag",
+      "componentImport": "ShoppingBagIcon"
+    },
+    "localShipping": {
+      "figmaName": "local_shipping",
+      "figmaCategory": "Maps",
+      "figmaPath": "Maps/local_shipping",
+      "componentImport": "LocalShippingIcon"
+    },
+    "errorOutline": {
+      "figmaName": "error_outline",
+      "figmaCategory": "Alert",
+      "figmaPath": "Alert/error_outline",
+      "componentImport": "ErrorOutlineIcon"
+    },
+    "star": {
+      "figmaName": "star",
+      "figmaCategory": "Toggle",
+      "figmaPath": "Toggle/star",
+      "componentImport": "StarIcon"
+    },
+    "starOutlined": {
+      "figmaName": "star_border",
+      "figmaCategory": "Toggle",
+      "figmaPath": "Toggle/star_border",
+      "componentImport": "StarOutlinedIcon"
+    },
+    "starHalf": {
+      "figmaName": "star_half",
+      "figmaCategory": "Toggle",
+      "figmaPath": "Toggle/star_half",
+      "componentImport": "StarHalfIcon"
+    },
+    "minus": {
+      "figmaName": "remove",
+      "figmaCategory": "Content",
+      "figmaPath": "Content/remove",
+      "componentImport": "MinusIcon",
+      "note": "Material uses 'remove' for minus/subtract"
+    },
+    "plus": {
+      "figmaName": "add",
+      "figmaCategory": "Content",
+      "figmaPath": "Content/add",
+      "componentImport": "PlusIcon",
+      "note": "Material uses 'add' for plus"
+    },
+    "filter": {
+      "figmaName": "filter_list",
+      "figmaCategory": "Content",
+      "figmaPath": "Content/filter_list",
+      "componentImport": "FilterIcon"
+    },
+    "paymentCard": {
+      "figmaName": "credit_card",
+      "figmaCategory": "Action",
+      "figmaPath": "Action/credit_card",
+      "componentImport": "PaymentCardIcon"
+    },
+    "eye": {
+      "figmaName": "visibility",
+      "figmaCategory": "Action",
+      "figmaPath": "Action/visibility",
+      "componentImport": "EyeIcon",
+      "note": "Material uses 'visibility' for eye/show"
+    },
+    "attachment": {
+      "figmaName": "attachment",
+      "figmaCategory": "Action",
+      "figmaPath": "Action/attachment",
+      "componentImport": "AttachmentIcon"
+    },
+    "upload": {
+      "figmaName": "upload",
+      "figmaCategory": "Action",
+      "figmaPath": "Action/upload",
+      "componentImport": "UploadIcon"
+    },
+    "folder": {
+      "figmaName": "folder",
+      "figmaCategory": "File",
+      "figmaPath": "File/folder",
+      "componentImport": "FolderIcon"
+    },
+    "folderOpen": {
+      "figmaName": "folder_open",
+      "figmaCategory": "File",
+      "figmaPath": "File/folder_open",
+      "componentImport": "FolderOpenIcon"
+    },
+    "wifiTethering": {
+      "figmaName": "wifi_tethering",
+      "figmaCategory": "Device",
+      "figmaPath": "Device/wifi_tethering",
+      "componentImport": "WifiTetheringIcon"
+    },
+    "portrait": {
+      "figmaName": "portrait",
+      "figmaCategory": "Image",
+      "figmaPath": "Image/portrait",
+      "componentImport": "PortraitIcon"
+    },
+    "volumeUp": {
+      "figmaName": "volume_up",
+      "figmaCategory": "AV",
+      "figmaPath": "AV/volume_up",
+      "componentImport": "VolumeUpIcon"
+    },
+    "contentCopy": {
+      "figmaName": "content_copy",
+      "figmaCategory": "Content",
+      "figmaPath": "Content/content_copy",
+      "componentImport": "ContentCopyIcon"
+    },
+    "thumbUp": {
+      "figmaName": "thumb_up_off_alt",
+      "figmaCategory": "Action",
+      "figmaPath": "Action/thumb_up_off_alt",
+      "componentImport": "ThumbUpIcon",
+      "note": "Outlined/off variant — use thumb_up_off_alt for outlined, thumb_up for filled"
+    },
+    "thumbDown": {
+      "figmaName": "thumb_down_off_alt",
+      "figmaCategory": "Action",
+      "figmaPath": "Action/thumb_down_off_alt",
+      "componentImport": "ThumbDownIcon",
+      "note": "Outlined/off variant"
+    },
+    "thumbUpFilled": {
+      "figmaName": "thumb_up",
+      "figmaCategory": "Action",
+      "figmaPath": "Action/thumb_up",
+      "componentImport": "ThumbUpFilled"
+    },
+    "thumbDownFilled": {
+      "figmaName": "thumb_down",
+      "figmaCategory": "Action",
+      "figmaPath": "Action/thumb_down",
+      "componentImport": "ThumbDownFilled"
+    },
+    "fileCopy": {
+      "figmaName": "file_copy",
+      "figmaCategory": "Content",
+      "figmaPath": "Content/file_copy",
+      "componentImport": "FileCopyIcon"
+    },
+    "send": {
+      "figmaName": "send",
+      "figmaCategory": "Content",
+      "figmaPath": "Content/send",
+      "componentImport": "Send"
+    },
+    "chat": {
+      "figmaName": "chat",
+      "figmaCategory": "Communication",
+      "figmaPath": "Communication/chat",
+      "componentImport": "ChatIcon"
+    },
+    "chatBubble": {
+      "figmaName": "chat_bubble",
+      "figmaCategory": "Communication",
+      "figmaPath": "Communication/chat_bubble",
+      "componentImport": "ChatBubbleIcon"
+    },
+    "phone": {
+      "figmaName": "phone",
+      "figmaCategory": "Communication",
+      "figmaPath": "Communication/phone",
+      "componentImport": "PhoneIcon"
+    },
+    "mic": {
+      "figmaName": "mic",
+      "figmaCategory": "AV",
+      "figmaPath": "AV/mic",
+      "componentImport": "MicIcon"
+    },
+    "fullscreen": {
+      "figmaName": "fullscreen",
+      "figmaCategory": "Navigation",
+      "figmaPath": "Navigation/fullscreen",
+      "componentImport": "FullscreenIcon"
+    },
+    "fullscreenExit": {
+      "figmaName": "fullscreen_exit",
+      "figmaCategory": "Navigation",
+      "figmaPath": "Navigation/fullscreen_exit",
+      "componentImport": "FullscreenExitIcon"
+    },
+    "success": {
+      "figmaName": null,
+      "componentImport": "ToastSuccessIcon",
+      "note": "GridKit-custom toast icon — no Figma Material equivalent"
+    },
+    "error": {
+      "figmaName": null,
+      "componentImport": "ToastErrorIcon",
+      "note": "GridKit-custom toast icon — no Figma Material equivalent"
+    },
+    "warning": {
+      "figmaName": null,
+      "componentImport": "ToastWarningIcon",
+      "note": "GridKit-custom toast icon — no Figma Material equivalent"
+    },
+    "info": {
+      "figmaName": null,
+      "componentImport": "ToastInfoIcon",
+      "note": "GridKit-custom toast icon — no Figma Material equivalent"
+    },
+    "dot": {
+      "figmaName": null,
+      "componentImport": "DotIcon",
+      "note": "GridKit-custom dot/bullet icon"
+    },
+    "slash": {
+      "figmaName": null,
+      "componentImport": "SlashIcon",
+      "note": "GridKit-custom breadcrumb separator"
+    },
+    "ruler": {
+      "figmaName": null,
+      "componentImport": "RulerIcon",
+      "note": "GridKit-custom ruler/size guide icon"
+    },
+    "processing": {
+      "figmaName": null,
+      "componentImport": "ProcessingIcon",
+      "note": "GridKit-custom processing/spinner icon"
+    }
+  },
+  "figmaNameIndex": {
+    "$comment": "Reverse-lookup: Figma snake_case icon name → IconsList key. Use when Figma spec calls out an icon by its Material name and you need the GridKit prop value.",
+    "close": "cross",
+    "check": "check",
+    "arrow_downward": "arrowDown",
+    "chevron_right": "arrowRight",
+    "chevron_left": "arrowLeft",
+    "arrow_forward": "arrowForward",
+    "keyboard_arrow_down": "keyboardArrowDown",
+    "keyboard_arrow_up": "keyboardArrowUp",
+    "home": "home",
+    "menu": "mobileMenu",
+    "search": "search",
+    "edit": "edit",
+    "favorite": "favorite",
+    "favorite_border": "favoriteOutlined",
+    "delete_outline": "deleteOutlined",
+    "account_circle": "accountCircle",
+    "shopping_bag": "shoppingBag",
+    "local_shipping": "localShipping",
+    "error_outline": "errorOutline",
+    "star": "star",
+    "star_border": "starOutlined",
+    "star_half": "starHalf",
+    "remove": "minus",
+    "add": "plus",
+    "filter_list": "filter",
+    "credit_card": "paymentCard",
+    "visibility": "eye",
+    "attachment": "attachment",
+    "upload": "upload",
+    "folder": "folder",
+    "folder_open": "folderOpen",
+    "wifi_tethering": "wifiTethering",
+    "portrait": "portrait",
+    "volume_up": "volumeUp",
+    "content_copy": "contentCopy",
+    "thumb_up_off_alt": "thumbUp",
+    "thumb_down_off_alt": "thumbDown",
+    "thumb_up": "thumbUpFilled",
+    "thumb_down": "thumbDownFilled",
+    "file_copy": "fileCopy",
+    "send": "send",
+    "chat": "chat",
+    "chat_bubble": "chatBubble",
+    "phone": "phone",
+    "mic": "mic",
+    "fullscreen": "fullscreen",
+    "fullscreen_exit": "fullscreenExit"
+  },
+  "stats": {
+    "total": 54,
+    "mappedToFigma": 46,
+    "customNoFigmaEquivalent": 8,
+    "customIcons": ["success", "error", "warning", "info", "dot", "slash", "ruler", "processing"]
+  }
+}

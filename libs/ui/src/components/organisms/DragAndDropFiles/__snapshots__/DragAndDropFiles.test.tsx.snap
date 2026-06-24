@@ -1,0 +1,12 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`DragAndDropFiles > SHOULD match snapshot 1`] = `
+<div>
+  <div>
+    <div
+      class="css-1u8qly9"
+      data-testid="DragAndDropFiles"
+    />
+  </div>
+</div>
+`;

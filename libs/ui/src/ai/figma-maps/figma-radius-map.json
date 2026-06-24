@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Figma variable name → GridKit token. Source: libs/ui/src/tokens/radius.ts + Figma file bCDJhVLlAFSIZtPFbEwDRO node 142:70. Usage: tokenPath → useTheme() dot-path, cssVar → --gds-* reference only (never emit in TSX). CamelCase split: borderRadiusXl → [border,Radius,Xl] → drop 'border' → radius.xl",
+  "$usage": {
+    "keyQuestion": "What GridKit radius token corresponds to this Figma border-radius variable or px value?",
+    "lookupSteps": [
+      "1. Figma variable name (camelCase): split on camelCase boundaries, drop 'border' prefix, lowercase → radius.<scale>. E.g. borderRadiusXL → radius.xl. See camelCaseSplitExamples for all worked examples.",
+      "2. px value only: query pxIndex['4px'] → tokenPath string (e.g. 'radius.sm'). Covers 0px through 9999px.",
+      "3. No match: record 'unmatched:<value>' in tokenBindings."
+    ],
+    "criticalRules": [
+      "In TSX: always use theme.radius?.xl via useTheme(). Never var(--gds-radius-xl, 32px) or any CSS var string in JSX styling.",
+      "camelCaseSplitExamples contains all 8 radius variable name variants — check it before marking a variable as unmatched."
+    ]
+  },
+  "radius": {
+    "gds.border.radius": {
+      "tokenPath": "radius.none",
+      "cssVar": "--gds-radius-none",
+      "themeAccess": "theme.radius?.none",
+      "value": "0px",
+      "description": "No border radius — squared corners"
+    },
+    "gds.border.radius.xs": {
+      "tokenPath": "radius.xs",
+      "cssVar": "--gds-radius-xs",
+      "themeAccess": "theme.radius?.xs",
+      "value": "2px",
+      "description": "XS — used in small/tight components"
+    },
+    "gds.border.radius.sm": {
+      "tokenPath": "radius.sm",
+      "cssVar": "--gds-radius-sm",
+      "themeAccess": "theme.radius?.sm",
+      "value": "4px",
+      "description": "SM — used in small components"
+    },
+    "gds.border.radius.default": {
+      "tokenPath": "radius.default",
+      "cssVar": "--gds-radius-default",
+      "themeAccess": "theme.radius?.default",
+      "value": "6px",
+      "description": "Default — base radius for most components (buttons, inputs, cards)"
+    },
+    "gds.border.radius.md": {
+      "tokenPath": "radius.md",
+      "cssVar": "--gds-radius-md",
+      "themeAccess": "theme.radius?.md",
+      "value": "8px",
+      "description": "MD — medium size components"
+    },
+    "gds.border.radius.lg": {
+      "tokenPath": "radius.lg",
+      "cssVar": "--gds-radius-lg",
+      "themeAccess": "theme.radius?.lg",
+      "value": "16px",
+      "description": "LG — large components"
+    },
+    "gds.border.radius.xl": {
+      "tokenPath": "radius.xl",
+      "cssVar": "--gds-radius-xl",
+      "themeAccess": "theme.radius?.xl",
+      "value": "32px",
+      "description": "XL — extra large / prominent components"
+    },
+    "gds.border.radius.round": {
+      "tokenPath": "radius.round",
+      "cssVar": "--gds-radius-round",
+      "themeAccess": "theme.radius?.round",
+      "value": "9999px",
+      "description": "Pill / fully circular — clamped by CSS to half the smallest dimension, giving a perfect pill on wide text buttons and a perfect circle on square icon buttons"
+    }
+  },
+  "pxIndex": {
+    "$comment": "Reverse-lookup: raw value → tokenPath. Use when Figma emits a pixel value or CSS var with no variable name. '0' and '0px' both resolve to radius.none.",
+    "0": "radius.none",
+    "0px": "radius.none",
+    "2px": "radius.xs",
+    "4px": "radius.sm",
+    "6px": "radius.default",
+    "8px": "radius.md",
+    "16px": "radius.lg",
+    "32px": "radius.xl",
+    "9999px": "radius.round"
+  },
+  "camelCaseSplitExamples": {
+    "$comment": "Figma variable names returned as camelCase from the Variables API. Split on camelCase boundaries, drop the 'border' prefix, lowercase → token dot-path.",
+    "borderRadius": "radius.none",
+    "borderRadiusXs": "radius.xs",
+    "borderRadiusSm": "radius.sm",
+    "borderRadiusDefault": "radius.default",
+    "borderRadiusMd": "radius.md",
+    "borderRadiusLg": "radius.lg",
+    "borderRadiusXl": "radius.xl",
+    "borderRadiusRound": "radius.round"
+  }
+}

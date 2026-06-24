@@ -1,0 +1,48 @@
+name: Evergreen Storybook CI/CD
+
+on:
+  workflow_dispatch:
+  release:
+    types:
+      - published
+
+permissions:
+  contents: read
+  actions: read
+  checks: write
+  id-token: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 'lts/*'
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run tests
+        run: yarn test
+
+  build:
+    needs: test
+    uses: griddynamics/cto-rnd-evergreen-gha/.github/workflows/evergreen-build.yaml@v3.3
+    with:
+      image-name: gd-gcp-rnd-evergreen/evergreen-v2/gridkit-storybook
+      build-context: './'
+      dockerfile: './Dockerfile.storybook'
+  deploy:
+    uses: griddynamics/cto-rnd-evergreen-gha/.github/workflows/evergreen-deploy.yaml@v3.3
+    needs: build
+    with:
+      tenant: gridkit
+      app-name: storybook
+      env-name: dev
+      image-tag: ${{ needs.build.outputs.image-tag }}

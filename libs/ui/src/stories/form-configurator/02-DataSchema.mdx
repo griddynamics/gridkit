@@ -1,0 +1,585 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Form Configurator/Data Schema" />
+
+# Data Schema API
+
+## Overview
+
+The **Data Schema** defines the structure, types, and validation rules for your form data using the [JSON Schema](https://json-schema.org/) standard. The Form Configurator uses AJV (Another JSON Schema Validator) to validate data against your schema.
+
+## DataSchema Interface
+
+```typescript
+interface DataSchema {
+  type: string | string[];
+  properties?: { [property: string]: DataSchema };
+  required?: string[];
+  additionalProperties?: boolean;
+  title?: string;
+  description?: string;
+  enum?: any[];
+  format?: string;
+  minimum?: number;
+  maximum?: number;
+  maxLength?: number;
+  minLength?: number;
+  items?: DataSchema | DataSchema[];
+}
+```
+
+## Basic Types
+
+### String
+
+```typescript
+{
+  type: 'string',
+  title: 'User Name',
+  minLength: 3,
+  maxLength: 50
+}
+```
+
+### Number
+
+```typescript
+{
+  type: 'number',
+  title: 'Age',
+  minimum: 0,
+  maximum: 150
+}
+```
+
+### Boolean
+
+```typescript
+{
+  type: 'boolean',
+  title: 'Accept Terms'
+}
+```
+
+### Object
+
+```typescript
+{
+  type: 'object',
+  title: 'Address',
+  properties: {
+    street: { type: 'string' },
+    city: { type: 'string' },
+    zipCode: { type: 'string', pattern: '^[0-9]{5}$' }
+  },
+  required: ['street', 'city']
+}
+```
+
+### Array
+
+```typescript
+{
+  type: 'array',
+  title: 'Phone Numbers',
+  items: {
+    type: 'string',
+    format: 'tel'
+  },
+  minItems: 1,
+  maxItems: 5
+}
+```
+
+## Validation Properties
+
+### required
+
+Specifies which fields are mandatory:
+
+```typescript
+{
+  type: 'object',
+  properties: {
+    email: { type: 'string', format: 'email' },
+    password: { type: 'string', format: 'password' }
+  },
+  required: ['email', 'password']
+}
+```
+
+### minimum / maximum
+
+Numeric range validation:
+
+```typescript
+{
+  type: 'number',
+  title: 'Rating',
+  minimum: 1,
+  maximum: 5
+}
+```
+
+### minLength / maxLength
+
+String length validation:
+
+```typescript
+{
+  type: 'string',
+  title: 'Username',
+  minLength: 3,
+  maxLength: 20
+}
+```
+
+### pattern
+
+Regular expression validation:
+
+```typescript
+{
+  type: 'string',
+  title: 'Phone Number',
+  pattern: '^\\+?[1-9]\\d{1,14}$'
+}
+```
+
+### enum
+
+Restrict to specific values:
+
+```typescript
+{
+  type: 'string',
+  title: 'Country',
+  enum: ['USA', 'Canada', 'Mexico', 'UK']
+}
+```
+
+### multipleOf
+
+Numeric step validation:
+
+```typescript
+{
+  type: 'number',
+  title: 'Price',
+  multipleOf: 0.01,
+  minimum: 0
+}
+```
+
+## Format Specifications
+
+The `format` property determines which control is rendered:
+
+| Format         | Control         | Description                 |
+| -------------- | --------------- | --------------------------- |
+| `email`        | EmailControl    | Email input with validation |
+| `password`     | PasswordControl | Password input (masked)     |
+| `uri` or `url` | UrlControl      | URL input with validation   |
+| `date`         | DateControl     | Date picker                 |
+| `time`         | TimeControl     | Time picker                 |
+| `date-time`    | DateTimeControl | Date and time picker        |
+| `tel`          | TelControl      | Telephone number input      |
+| `search`       | SearchControl   | Search input                |
+| `color`        | ColorControl    | Color picker                |
+| `file`         | FileControl     | File upload                 |
+| `textarea`     | TextareaControl | Multi-line text area        |
+| `range`        | RangeControl    | Range slider                |
+
+### Email
+
+```typescript
+{
+  type: 'string',
+  format: 'email',
+  title: 'Email Address'
+}
+```
+
+### Password
+
+```typescript
+{
+  type: 'string',
+  format: 'password',
+  title: 'Password',
+  minLength: 8
+}
+```
+
+### URL
+
+```typescript
+{
+  type: 'string',
+  format: 'uri',
+  title: 'Website'
+}
+```
+
+### Date
+
+```typescript
+{
+  type: 'string',
+  format: 'date',
+  title: 'Birth Date'
+}
+```
+
+### Time
+
+```typescript
+{
+  type: 'string',
+  format: 'time',
+  title: 'Appointment Time'
+}
+```
+
+### Telephone
+
+```typescript
+{
+  type: 'string',
+  format: 'tel',
+  title: 'Phone Number'
+}
+```
+
+### Color
+
+```typescript
+{
+  type: 'string',
+  format: 'color',
+  title: 'Theme Color',
+  default: '#000000'
+}
+```
+
+### File
+
+```typescript
+{
+  type: 'string',
+  format: 'file',
+  title: 'Upload Document',
+  accept: 'image/*'
+}
+```
+
+### Textarea
+
+```typescript
+{
+  type: 'string',
+  format: 'textarea',
+  title: 'Comments',
+  maxLength: 500
+}
+```
+
+### Range
+
+```typescript
+{
+  type: 'number',
+  format: 'range',
+  title: 'Volume',
+  minimum: 0,
+  maximum: 100,
+  multipleOf: 1
+}
+```
+
+## Common Validation Patterns
+
+### Email Address
+
+```typescript
+{
+  type: 'string',
+  format: 'email',
+  title: 'Email',
+  pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'
+}
+```
+
+### Strong Password
+
+```typescript
+{
+  type: 'string',
+  format: 'password',
+  title: 'Password',
+  minLength: 8,
+  pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]'
+}
+```
+
+### US Phone Number
+
+```typescript
+{
+  type: 'string',
+  format: 'tel',
+  title: 'Phone',
+  pattern: '^\\(?([0-9]{3})\\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$'
+}
+```
+
+### US ZIP Code
+
+```typescript
+{
+  type: 'string',
+  title: 'ZIP Code',
+  pattern: '^[0-9]{5}(?:-[0-9]{4})?$'
+}
+```
+
+### Credit Card Number
+
+```typescript
+{
+  type: 'string',
+  title: 'Card Number',
+  pattern: '^[0-9]{13,19}$',
+  minLength: 13,
+  maxLength: 19
+}
+```
+
+## Complex Schema Examples
+
+### User Registration Form
+
+```typescript
+const schema = {
+  type: 'object',
+  properties: {
+    username: {
+      type: 'string',
+      title: 'Username',
+      minLength: 3,
+      maxLength: 20,
+      pattern: '^[a-zA-Z0-9_]+$',
+    },
+    email: {
+      type: 'string',
+      format: 'email',
+      title: 'Email Address',
+    },
+    password: {
+      type: 'string',
+      format: 'password',
+      title: 'Password',
+      minLength: 8,
+    },
+    confirmPassword: {
+      type: 'string',
+      format: 'password',
+      title: 'Confirm Password',
+    },
+    age: {
+      type: 'number',
+      title: 'Age',
+      minimum: 18,
+      maximum: 120,
+    },
+    country: {
+      type: 'string',
+      title: 'Country',
+      enum: ['USA', 'Canada', 'UK', 'Germany', 'France'],
+    },
+    acceptTerms: {
+      type: 'boolean',
+      title: 'I accept the terms and conditions',
+    },
+  },
+  required: ['username', 'email', 'password', 'confirmPassword', 'acceptTerms'],
+};
+```
+
+### Nested Object Schema
+
+```typescript
+const schema = {
+  type: 'object',
+  properties: {
+    personalInfo: {
+      type: 'object',
+      title: 'Personal Information',
+      properties: {
+        firstName: { type: 'string', title: 'First Name' },
+        lastName: { type: 'string', title: 'Last Name' },
+        dateOfBirth: { type: 'string', format: 'date', title: 'Date of Birth' },
+      },
+      required: ['firstName', 'lastName'],
+    },
+    address: {
+      type: 'object',
+      title: 'Address',
+      properties: {
+        street: { type: 'string', title: 'Street' },
+        city: { type: 'string', title: 'City' },
+        state: { type: 'string', title: 'State' },
+        zipCode: {
+          type: 'string',
+          title: 'ZIP Code',
+          pattern: '^[0-9]{5}$',
+        },
+      },
+      required: ['street', 'city', 'zipCode'],
+    },
+  },
+};
+```
+
+### Array of Objects Schema
+
+```typescript
+const schema = {
+  type: 'object',
+  properties: {
+    contacts: {
+      type: 'array',
+      title: 'Emergency Contacts',
+      items: {
+        type: 'object',
+        properties: {
+          name: { type: 'string', title: 'Name' },
+          phone: { type: 'string', format: 'tel', title: 'Phone' },
+          relationship: {
+            type: 'string',
+            title: 'Relationship',
+            enum: ['Family', 'Friend', 'Colleague', 'Other'],
+          },
+        },
+        required: ['name', 'phone'],
+      },
+      minItems: 1,
+      maxItems: 5,
+    },
+  },
+};
+```
+
+### Array of Primitives Schema
+
+```typescript
+const schema = {
+  type: 'object',
+  properties: {
+    tags: {
+      type: 'array',
+      title: 'Tags',
+      items: {
+        type: 'string',
+        minLength: 2,
+        maxLength: 20,
+      },
+      minItems: 1,
+      maxItems: 10,
+    },
+    ratings: {
+      type: 'array',
+      title: 'Ratings',
+      items: {
+        type: 'number',
+        minimum: 1,
+        maximum: 5,
+      },
+    },
+  },
+};
+```
+
+## Additional Properties
+
+### additionalProperties
+
+Control whether additional properties are allowed:
+
+```typescript
+{
+  type: 'object',
+  properties: {
+    name: { type: 'string' },
+    email: { type: 'string', format: 'email' }
+  },
+  additionalProperties: false  // Disallow extra properties
+}
+```
+
+### title and description
+
+Provide user-friendly labels and help text:
+
+```typescript
+{
+  type: 'string',
+  title: 'Full Name',
+  description: 'Please enter your legal name as it appears on your ID'
+}
+```
+
+### default
+
+Set default values:
+
+```typescript
+{
+  type: 'string',
+  title: 'Language',
+  enum: ['en', 'es', 'fr', 'de'],
+  default: 'en'
+}
+```
+
+## Validation Error Messages
+
+When validation fails, AJV generates error objects with:
+
+- `instancePath`: Path to the invalid field (e.g., `/email`)
+- `keyword`: The validation keyword that failed (e.g., `format`, `minLength`)
+- `message`: Human-readable error message
+- `params`: Additional error parameters
+
+Example error:
+
+```typescript
+{
+  instancePath: '/email',
+  keyword: 'format',
+  message: 'must match format "email"',
+  params: { format: 'email' }
+}
+```
+
+## Best Practices
+
+1. **Always provide titles**: Makes forms more user-friendly
+2. **Use appropriate formats**: Ensures correct control selection
+3. **Set reasonable constraints**: Balance validation with usability
+4. **Provide descriptions**: Help users understand what's expected
+5. **Use required fields wisely**: Only mark truly necessary fields as required
+6. **Test validation patterns**: Ensure regex patterns work as expected
+7. **Consider UX**: Overly strict validation can frustrate users
+
+## Related Documentation
+
+- **[Controls](/docs/form-configurator-controls--docs)**: See how schemas map to controls
+- **[UI Schema & Layouts](/docs/form-configurator-ui-schema-layouts--docs)**: Learn to structure your forms
+- **[Getting Started](/docs/form-configurator-getting-started--docs)**: Basic usage examples
+
+## Resources
+
+- [JSON Schema Documentation](https://json-schema.org/)
+- [AJV Documentation](https://ajv.js.org/)
+- [JSON Schema Validator](https://www.jsonschemavalidator.net/)

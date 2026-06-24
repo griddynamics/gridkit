@@ -1,0 +1,53 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Form > SHOULD match snapshot 1`] = `
+<div>
+  <form
+    class="css-13wylk3"
+    classnames="test-form-class"
+    data-testid="Form"
+  >
+    <label
+      class="css-qhydga"
+      data-testid="InputWrapper"
+    >
+      <span
+        class="css-1n9btb7"
+        data-testid="InputWrapper"
+      >
+        <input
+          aria-required="false"
+          class="css-1ojf3jn"
+          data-testid="Input"
+          name="username"
+          placeholder="Username"
+          required=""
+          tabindex="0"
+          type="text"
+          value="Alex"
+        />
+        <span
+          class="Input__border"
+        />
+        <span
+          class="Input__outline"
+        />
+      </span>
+    </label>
+    <button
+      class="css-1xtbs7r"
+      data-testid="Button"
+      role="button"
+      tabindex="0"
+      type="submit"
+    >
+      <span
+        class="gd-button__content css-4vlwk1"
+        data-testid="Button-content"
+      >
+        Submit
+      </span>
+    </button>
+  </form>
+</div>
+`;

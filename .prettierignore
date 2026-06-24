@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.storybook/
+.vite/
+.nx/
+**/storybook-static/
+**/coverage/
+libs/ui/src/stories
+libs/ui/scripts/
+libs/ui/stats.html
+package.json
+package-lock.json
+.github/
+plans/
+**/next-env.d.ts

@@ -1,0 +1,201 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+import { CollapsibleSections } from './CollapsibleSections';
+
+<Meta title="Introduction/AI Integration/How to Use" />
+
+# How to Use
+
+<CollapsibleSections />
+
+**Contents**
+
+- [Starting patterns](#starting-patterns)
+- [Pattern 1: Minimal A2UI setup](#pattern-1-minimal-a2ui-setup)
+- [Pattern 2: E-commerce agent with actions](#pattern-2-e-commerce-agent-with-actions)
+- [Pattern 3: Multi-language support](#pattern-3-multi-language-support)
+- [Pattern 4: Validate and retry with AJV](#pattern-4-validate-and-retry-with-ajv)
+- [Pattern 5: Custom components](#pattern-5-custom-components)
+- [What to avoid](#what-to-avoid)
+
+---
+
+## Starting patterns
+
+Choose the pattern that fits your use case and expand from there.
+
+| Goal                                    | Pattern                            |
+| --------------------------------------- | ---------------------------------- |
+| Generate UI from user messages          | Pattern 1 — minimal A2UI setup     |
+| Buttons that trigger app logic          | Pattern 2 — actions                |
+| Multi-language interface                | Pattern 3 — locale                 |
+| Safe production rendering               | Pattern 4 — AJV validation + retry |
+| Your own React components in LLM output | Pattern 5 — customComponents       |
+| Developer tooling or code scaffolding   | Code Mode page                     |
+
+## Pattern 1: Minimal A2UI setup
+
+The smallest working integration — good for prototypes and internal tools.
+
+```typescript
+import { buildA2UISystemPrompt, A2UI_SPEC_SCHEMA } from 'gd-design-library/ai';
+import { renderA2UISpec } from 'gd-design-library';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+const model = genAI.getGenerativeModel({
+  model: 'gemini-2.5-flash',
+  systemInstruction: buildA2UISystemPrompt({ agentId: 'my-agent' }),
+  generationConfig: {
+    responseMimeType: 'application/json',
+    responseSchema: A2UI_SPEC_SCHEMA,
+  },
+});
+
+async function generateUI(userMessage: string) {
+  const result = await model.generateContent(userMessage);
+  const spec = JSON.parse(result.response.text());
+  return renderA2UISpec(spec);
+}
+```
+
+## Pattern 2: E-commerce agent with actions
+
+Actions connect LLM-generated buttons to real app behavior.
+Pass the same `actions` array to both `buildA2UISystemPrompt` and `renderA2UISpec`.
+
+```typescript
+import type { A2UIActionDefinition } from 'gd-design-library/ai';
+import { buildA2UISystemPrompt, A2UI_SPEC_SCHEMA } from 'gd-design-library/ai';
+import { renderA2UISpec } from 'gd-design-library';
+
+const actions: A2UIActionDefinition[] = [
+  {
+    type: 'add-to-cart',
+    description: 'Add a product to the cart. payload: { productId: string, quantity: number }',
+    handler: (action) => cart.add(action.payload),
+  },
+  {
+    type: 'open-checkout',
+    description: 'Navigate to the checkout flow. No payload required.',
+    handler: () => router.push('/checkout'),
+  },
+  {
+    type: 'show-toast',
+    description: 'Show a notification. payload: { message: string, variant: "success" | "error" | "info" }',
+    handler: (action) => toast(action.payload?.message),
+  },
+];
+
+const model = genAI.getGenerativeModel({
+  model: 'gemini-2.5-flash',
+  systemInstruction: buildA2UISystemPrompt({
+    agentId: 'shop-agent',
+    agentName: 'Shop Assistant',
+    imageSources: ['cdn.myshop.com'],
+    context: `
+      E-commerce product catalog for MyShop.
+      Products always have: name, price (USD), SKU, stock level, primary image.
+      Never use placeholder product names like "Product 1".
+    `,
+    customGuardrails: ['Every product card must include price, rating, and an "Add to Cart" button.'],
+    customRules: ['Use grid layout with gridColumns: 2 for all product listings.'],
+    actions,
+  }),
+  generationConfig: { responseMimeType: 'application/json', responseSchema: A2UI_SPEC_SCHEMA },
+});
+
+function ShopUI({ spec }) {
+  return <>{renderA2UISpec(spec, actions)}</>;
+}
+```
+
+## Pattern 3: Multi-language support
+
+```typescript
+import { buildA2UISystemPrompt } from 'gd-design-library/ai';
+
+buildA2UISystemPrompt({
+  agentId: 'support-de',
+  agentName: 'Support-Assistent',
+  locale: 'de-DE',
+  context: 'German-language customer support portal for enterprise software.',
+});
+// LLM generates German labels, European date formats, and EU price convention automatically
+```
+
+## Pattern 4: Validate and retry with AJV
+
+For production use — validate every LLM response before rendering it.
+
+```typescript
+import { buildA2UISystemPrompt, A2UI_SPEC_SCHEMA } from 'gd-design-library/ai';
+import { renderA2UISpec } from 'gd-design-library';
+import Ajv from 'ajv';
+import addFormats from 'ajv-formats';
+
+const ajv = new Ajv({ allErrors: true, strict: false });
+addFormats(ajv);
+const validate = ajv.compile(A2UI_SPEC_SCHEMA);
+
+async function generateAndValidate(userMessage: string, retries = 3) {
+  for (let attempt = 0; attempt < retries; attempt++) {
+    const result = await model.generateContent(userMessage);
+    const spec = JSON.parse(result.response.text());
+    if (validate(spec)) return spec;
+    userMessage = `Fix these validation errors and regenerate:\n${JSON.stringify(validate.errors)}`;
+  }
+  throw new Error('Failed to generate a valid spec after retries');
+}
+
+async function renderValidated(userMessage: string) {
+  const spec = await generateAndValidate(userMessage);
+  return renderA2UISpec(spec, actions);
+}
+```
+
+## Pattern 5: Custom components
+
+Register your own React components so the LLM can use them and the renderer can display them.
+
+```typescript
+import type { A2UIActionDefinition, A2UICustomComponentDefinition } from 'gd-design-library/ai';
+import { buildA2UISystemPrompt, extendA2UISpecSchema } from 'gd-design-library/ai';
+import { renderA2UISpec } from 'gd-design-library';
+
+const customComponents: A2UICustomComponentDefinition[] = [
+  {
+    type: 'product-badge',
+    description: 'Colored status badge with a short label.',
+    props: {
+      label: 'string — badge text',
+      color: '"success" | "warning" | "error" | "info"',
+    },
+    renderer: (component) => <ProductBadge label={component.label} color={component.color} />,
+  },
+];
+
+// Extend schema so validation accepts "product-badge"
+const schema = extendA2UISpecSchema(customComponents.map((c) => c.type));
+
+const model = genAI.getGenerativeModel({
+  model: 'gemini-2.5-flash',
+  systemInstruction: buildA2UISystemPrompt({ customComponents }),
+  generationConfig: { responseMimeType: 'application/json', responseSchema: schema },
+});
+
+function UI({ spec }) {
+  return <>{renderA2UISpec(spec, actions, customComponents)}</>;
+}
+```
+
+## What to avoid
+
+- do not write a system prompt by hand for A2UI — always use `buildA2UISystemPrompt`
+- do not pass `customComponents` to `buildA2UISystemPrompt` without also passing them to `renderA2UISpec`
+- do not skip validation in production — always validate before rendering
+- do not reuse action type strings across unrelated agents without checking for collisions
+- do not use Code mode for conversational or runtime UI generation
+
+## Key point
+
+**Start from one of these patterns and expand — the library handles the boilerplate, you own the business logic.**

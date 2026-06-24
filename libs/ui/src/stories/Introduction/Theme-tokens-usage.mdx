@@ -1,0 +1,597 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Introduction/Theme Tokens Usage" />
+
+# 🎨 Theme Tokens Usage
+
+There are three approaches to using theme tokens in your components. We **strongly recommend** the first approach for most use cases.
+
+## ✅ **Approach 1: Component Tokens with `updateThemeTokens` (Recommended)**
+
+**Why this is preferred:**
+
+- ✅ **Theme-aware by default** - Changes propagate automatically when theme switches
+- ✅ **Centralized styling** - All component styles in one place
+- ✅ **Type-safe** - Full TypeScript support with autocomplete
+- ✅ **Performance optimized** - No runtime style calculations
+- ✅ **Maintains dynamic binding** - Token values update when theme changes
+
+**Usage:**
+
+```tsx
+import { updateThemeTokens, defaultTheme, useTheme } from 'gd-design-library';
+import { useEffect } from 'react';
+
+function useCustomComponentTokens() {
+  const { addTheme, setTheme } = useTheme();
+
+  const customTheme = {
+    ...defaultTheme,
+    name: 'CustomTheme',
+  };
+
+  useEffect(() => {
+    // Update component tokens - preferred approach
+    updateThemeTokens(customTheme, {
+      'button.primary': {
+        backgroundColor: '#007bff',
+        color: '#ffffff',
+        borderRadius: '8px',
+        '&:hover': {
+          backgroundColor: '#0056b3',
+        },
+      },
+      'card.default': {
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+        padding: '24px',
+      },
+      'typography.h1': {
+        fontSize: '2.5rem',
+        fontWeight: 700,
+        color: '#1a1a1a',
+      },
+    });
+
+    addTheme(customTheme.name, customTheme);
+    setTheme(customTheme.name);
+  }, [addTheme, setTheme]);
+}
+```
+
+### Preserving Dynamic Theme Binding
+
+When you need token values to update dynamically when the theme changes, use theme functions:
+
+```tsx
+import { get } from 'gd-design-library';
+
+updateThemeTokens(customTheme, {
+  'button.primary': {
+    // ✅ Dynamic binding - updates when theme.colors.neutral.white changes
+    backgroundColor: (theme: Record<symbol, unknown>) =>
+      get(theme, 'colors.neutral.white', 'theme.colors.neutral.white'),
+
+    // ✅ Can reference other theme tokens dynamically
+    borderColor: (theme: Record<symbol, unknown>) => get(theme, 'colors.border.primary', 'theme.colors.border.primary'),
+
+    // ✅ Supports nested selectors with dynamic values
+    '&:hover': {
+      backgroundColor: (theme: Record<symbol, unknown>) =>
+        get(theme, 'colors.bg.fill.hover', 'theme.colors.bg.fill.hover'),
+    },
+  },
+  'card.default': {
+    // Mix static and dynamic values
+    padding: '24px', // Static value
+    boxShadow: (theme: Record<symbol, unknown>) => get(theme, 'shadows.md', 'theme.shadows.md'), // Dynamic value
+  },
+});
+```
+
+**When to use dynamic binding:**
+
+- Theme-dependent colors/fonts/spacing/breakpoints/radius/animations/shadows/values/zIndex that should update on theme switch
+- Spacing/sizing that needs to scale with theme
+- Any value that references another theme token
+
+### Real-world example: Branding override
+
+Apply a brand color, corner radius, and button hover state on top of `defaultTheme` without touching individual components. Use this as a starting template when adapting a default-themed app to a client brand.
+
+**Token paths used:** `colors.primary.default`, `colors.primary['default.80']`, `button.default`, `button.primary`, `card.default`.
+
+```tsx
+import { useEffect } from 'react';
+import { updateThemeTokens, defaultTheme, useTheme, type Theme } from 'gd-design-library';
+
+const BRAND_BLUE = '#1A56DB';
+const BRAND_BLUE_HOVER = '#1E429F';
+const BRAND_RADIUS = '12px';
+
+export function useBrandTheme() {
+  const { addTheme, setTheme } = useTheme();
+
+  useEffect(() => {
+    const brandTheme: Theme = {
+      ...defaultTheme,
+      name: 'brand',
+      colors: {
+        ...defaultTheme.colors,
+        primary: {
+          ...defaultTheme.colors.primary,
+          default: BRAND_BLUE,
+          'default.80': BRAND_BLUE_HOVER,
+        },
+      },
+    };
+
+    updateThemeTokens(brandTheme, {
+      'button.default': {
+        borderRadius: BRAND_RADIUS,
+      },
+      'button.primary': {
+        backgroundColor: BRAND_BLUE,
+        color: '#ffffff',
+        '&:hover': {
+          backgroundColor: BRAND_BLUE_HOVER,
+        },
+      },
+      'card.default': {
+        borderRadius: BRAND_RADIUS,
+      },
+    });
+
+    addTheme(brandTheme.name, brandTheme);
+    setTheme(brandTheme.name);
+  }, [addTheme, setTheme]);
+}
+```
+
+**What changes:** primary `Button`s pick up the brand blue and its hover state; all `Button`s and `Card`s round to 12px corners. Components that read `colors.primary` (badges, links, focus rings) inherit the new brand color automatically — no per-component overrides needed.
+
+Call `useBrandTheme()` once near the app root — see the [Complete Example](#complete-example) section below for the full wiring with `ThemeProvider`.
+
+---
+
+## ⚠️ **Approach 2: Styled Components (Less Desired)**
+
+**Why this is less preferred:**
+
+- ⚠️ **Component-specific** - Styles scattered across components
+- ⚠️ **Runtime overhead** - Props passed and computed at render time
+- ⚠️ **Harder to maintain** - Difficult to track all styled instances
+- ⚠️ **No centralized theming** - Each component needs manual theme access
+
+**When to use:** Only for one-off, component-specific styling that will not be reused.
+
+```tsx
+import styled from '@emotion/styled';
+import { Typography } from 'gd-design-library';
+
+// Works but less preferred - theme accessed at runtime
+const CustomTypography = styled(Typography)((props) => {
+  return {
+    cursor: 'pointer',
+    color: props.theme.colors.primary['default.10'],
+    padding: props.theme.spacing.md,
+    borderRadius: props.theme.radius.sm,
+  };
+});
+```
+
+---
+
+## ⚠️ **Approach 3: Direct Theme Access with `useTheme` (Less Desired)**
+
+**Why this is least preferred:**
+
+- ⚠️ **Inline styles** - No proper CSS cascade or pseudo-selectors
+- ⚠️ **Performance issues** - Recalculates on every render
+- ⚠️ **Limited styling** - Can't use hover, focus, or media queries
+- ⚠️ **Verbose** - Requires manual theme access in every component
+- ⚠️ **No type safety** - Prone to runtime errors
+
+**When to use:** Only for quick prototypes or dynamic inline styles that change frequently.
+
+```tsx
+import { useTheme } from 'gd-design-library';
+
+function MyComponent() {
+  const { theme } = useTheme();
+
+  // Works but least preferred - inline styles with runtime calculation
+  return (
+    <div
+      style={{
+        backgroundColor: theme.colors.bg.surface,
+        color: theme.colors.text.default,
+        padding: theme.spacing.lg,
+      }}
+    >
+      Themed content
+    </div>
+  );
+}
+```
+
+---
+
+## 📖 Available Theme Properties
+
+All available theme tokens can be found in the [**Theme & Tokens**](/docs/theme-tokens-theme--docs) section of Storybook.
+
+## 🔗 Additional Resources
+
+- [Emotion Styled Components documentation](https://emotion.sh/docs/styled) - For advanced styled component patterns
+- [Theme Customization Guide](/docs/theme-tokens-dynamic-theme-switching--docs) - Deep dive into theming
+
+---
+
+# 🎨 Advanced Theming
+
+## Dynamic Theme Management
+
+Create and switch between themes dynamically using the `useTheme` hook:
+
+```tsx
+import { useEffect } from 'react';
+import { updateThemeTokens, defaultTheme, useTheme } from 'gd-design-library';
+
+export default function useCustomTheme() {
+  const { addTheme, setTheme } = useTheme();
+
+  const customTheme = {
+    ...defaultTheme,
+    name: 'CustomTheme',
+  };
+
+  useEffect(() => {
+    // Customize specific component tokens
+    updateThemeTokens(customTheme, {
+      'button.default': {
+        borderRadius: '32px',
+        backgroundColor: '#007bff',
+      },
+      'card.default': {
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+        borderRadius: '12px',
+      },
+      'typography.h1': {
+        fontSize: '2.5rem',
+        fontWeight: 700,
+      },
+    });
+
+    // Register and activate the custom theme
+    addTheme(customTheme.name, customTheme);
+    setTheme(customTheme.name);
+  }, [addTheme, setTheme]);
+}
+```
+
+## Theme Switching
+
+Implement theme switching functionality:
+
+```tsx
+import { useTheme } from 'gd-design-library';
+
+function ThemeSwitcher() {
+  const { theme, setTheme } = useTheme();
+
+  const themes = ['default', 'dark', 'custom'];
+
+  return (
+    <select value={theme.name} onChange={(e) => setTheme(e.target.value)}>
+      {themes.map((themeName) => (
+        <option key={themeName} value={themeName}>
+          {themeName.charAt(0).toUpperCase() + themeName.slice(1)} Theme
+        </option>
+      ))}
+    </select>
+  );
+}
+```
+
+## Complete Example
+
+Here's a complete example showing theme setup and usage:
+
+```tsx
+// main.tsx
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import { ThemeProvider } from 'gd-design-library';
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <ThemeProvider isDefault>
+      <App />
+    </ThemeProvider>
+  </React.StrictMode>
+);
+
+// App.tsx
+import React from 'react';
+import { FlexContainer, Typography, Row, Button, Card } from 'gd-design-library';
+import useCustomTheme from './useCustomTheme';
+
+export default function App() {
+  useCustomTheme();
+
+  return (
+    <FlexContainer padding="lg">
+      <Card>
+        <Typography variant="h2">Custom Themed App</Typography>
+        <Row gap="md">
+          <Button>Primary Button</Button>
+          <Button variant="outlined">Secondary Button</Button>
+        </Row>
+      </Card>
+    </FlexContainer>
+  );
+}
+```
+
+## Multi-Theme Setup
+
+Create multiple themes and switch between them:
+
+```tsx
+import { useEffect, useState } from 'react';
+import { updateThemeTokens, defaultTheme, useTheme } from 'gd-design-library';
+
+export default function useMultiTheme() {
+  const { addTheme, setTheme } = useTheme();
+
+  useEffect(() => {
+    // Create light theme
+    const lightTheme = {
+      ...defaultTheme,
+      name: 'light',
+    };
+
+    updateThemeTokens(lightTheme, {
+      'button.primary': {
+        backgroundColor: '#007bff',
+        color: '#ffffff',
+      },
+    });
+
+    // Create dark theme
+    const darkTheme = {
+      ...defaultTheme,
+      name: 'dark',
+    };
+
+    updateThemeTokens(darkTheme, {
+      'button.primary': {
+        backgroundColor: '#1a1a1a',
+        color: '#ffffff',
+      },
+      colors: {
+        ...defaultTheme.colors,
+        bg: {
+          ...defaultTheme.colors.bg,
+          surface: '#2d2d2d',
+        },
+        text: {
+          ...defaultTheme.colors.text,
+          default: '#ffffff',
+        },
+      },
+    });
+
+    // Register both themes
+    addTheme('light', lightTheme);
+    addTheme('dark', darkTheme);
+
+    // Set initial theme
+    setTheme('light');
+  }, [addTheme, setTheme]);
+}
+```
+
+## Theme-Aware Components
+
+Create components that respond to theme changes:
+
+```tsx
+import { useTheme } from 'gd-design-library';
+import styled from '@emotion/styled';
+
+const ThemedCard = styled.div((props) => ({
+  backgroundColor: props.theme.colors.bg.surface,
+  color: props.theme.colors.text.default,
+  padding: props.theme.spacing.lg,
+  borderRadius: props.theme.radius.md,
+  boxShadow: props.theme.shadows.sm,
+}));
+
+function MyCard() {
+  const { theme } = useTheme();
+
+  return (
+    <ThemedCard>
+      <h2>Current Theme: {theme.name}</h2>
+      <p>This card automatically adapts to the active theme.</p>
+    </ThemedCard>
+  );
+}
+```
+
+## Responsive Theming
+
+Combine theming with responsive design:
+
+```tsx
+import { useTheme, useMediaQuery } from 'gd-design-library';
+
+function ResponsiveThemedComponent() {
+  const { theme } = useTheme();
+  const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.md})`);
+
+  return (
+    <div
+      style={{
+        padding: isMobile ? theme.spacing.sm : theme.spacing.lg,
+        fontSize: isMobile ? theme.font.size.sm : theme.font.size.md,
+      }}
+    >
+      Responsive themed content
+    </div>
+  );
+}
+```
+
+## Theme Persistence
+
+Save and restore user's theme preference:
+
+```tsx
+import { useEffect } from 'react';
+import { useTheme } from 'gd-design-library';
+
+function useThemePersistence() {
+  const { theme, setTheme } = useTheme();
+
+  // Load saved theme on mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('app-theme');
+    if (savedTheme) {
+      setTheme(savedTheme);
+    }
+  }, [setTheme]);
+
+  // Save theme when it changes
+  useEffect(() => {
+    localStorage.setItem('app-theme', theme.name);
+  }, [theme.name]);
+}
+
+function App() {
+  useThemePersistence();
+
+  return <YourComponents />;
+}
+```
+
+## Best Practices
+
+### 1. **Use Component Tokens First**
+
+Always prefer `updateThemeTokens` for styling:
+
+```tsx
+// ✅ Good: Centralized, theme-aware
+updateThemeTokens(customTheme, {
+  'button.primary': {
+    backgroundColor: '#007bff',
+  },
+});
+
+// ❌ Avoid: Scattered, component-specific
+const MyButton = styled(Button)({
+  backgroundColor: '#007bff',
+});
+```
+
+### 2. **Keep Themes Consistent**
+
+Maintain consistent token structure across themes:
+
+```tsx
+// ✅ Good: Both themes have same structure
+const lightTheme = {
+  colors: { primary: '#007bff', secondary: '#6c757d' },
+  spacing: { sm: '8px', md: '16px' },
+};
+
+const darkTheme = {
+  colors: { primary: '#0d6efd', secondary: '#6c757d' },
+  spacing: { sm: '8px', md: '16px' },
+};
+
+// ❌ Avoid: Inconsistent structure
+const inconsistentDarkTheme = {
+  colors: { main: '#0d6efd' }, // Different key name
+  padding: { small: '8px' }, // Different key name
+};
+```
+
+### 3. **Use Dynamic Binding for Theme-Dependent Values**
+
+```tsx
+// ✅ Good: Updates when theme changes
+updateThemeTokens(customTheme, {
+  'card.default': {
+    backgroundColor: (theme: Record<symbol, unknown>) => get(theme, 'colors.bg.surface', '#ffffff'),
+  },
+});
+
+// ❌ Avoid: Static value doesn't update with theme
+updateThemeTokens(customTheme, {
+  'card.default': {
+    backgroundColor: '#ffffff', // Won't change with theme
+  },
+});
+```
+
+### 4. **Document Your Custom Tokens**
+
+```tsx
+/**
+ * Custom theme tokens for MyApp
+ *
+ * Extends defaultTheme with:
+ * - Custom button styles with rounded corners
+ * - Enhanced card shadows
+ * - Larger typography scale
+ */
+const myAppTheme = {
+  ...defaultTheme,
+  name: 'MyApp',
+};
+```
+
+### 5. **Test Theme Switching**
+
+Always test that your components work with all available themes:
+
+```tsx
+// Create a theme switcher for testing
+function ThemeTester() {
+  const { setTheme } = useTheme();
+
+  return (
+    <div>
+      <button onClick={() => setTheme('light')}>Light</button>
+      <button onClick={() => setTheme('dark')}>Dark</button>
+      <button onClick={() => setTheme('custom')}>Custom</button>
+    </div>
+  );
+}
+```
+
+---
+
+## Summary
+
+The GridKit theming system provides:
+
+- ✅ **Flexible** - Three approaches for different use cases
+- ✅ **Performant** - Component tokens with zero runtime overhead
+- ✅ **Type-safe** - Full TypeScript support
+- ✅ **Dynamic** - Theme functions for reactive updates
+- ✅ **Scalable** - Easy to add and switch between themes
+
+**Recommended workflow:**
+
+1. Start with `defaultTheme`
+2. Use `updateThemeTokens` to customize components
+3. Create multiple themes if needed
+4. Implement theme switching UI
+5. Persist user's theme preference
+
+For more details, see the [Theme & Tokens documentation](/docs/theme-tokens-theme--docs).

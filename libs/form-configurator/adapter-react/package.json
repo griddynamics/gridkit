@@ -1,0 +1,78 @@
+{
+  "name": "gd-form-configurator-react",
+  "version": "0.0.12",
+  "description": "React adapter for form-configurator - schema-driven form builder",
+  "author": "Grid Dynamics",
+  "license": "Private",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/griddynamics/rnd-composable-commerce"
+  },
+  "keywords": [
+    "forms",
+    "react",
+    "schema",
+    "validation",
+    "jsonforms",
+    "form-builder",
+    "dynamic-forms",
+    "react-forms"
+  ],
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js",
+      "default": "./index.js"
+    },
+    "./controls": {
+      "types": "./controls/index.d.ts",
+      "import": "./controls/index.js"
+    },
+    "./layouts": {
+      "types": "./layouts/index.d.ts",
+      "import": "./layouts/index.js"
+    },
+    "./context": {
+      "types": "./context.d.ts",
+      "import": "./context.js"
+    },
+    "./types": {
+      "types": "./types.d.ts",
+      "import": "./types.js"
+    },
+    "./styles": "gd-form-configurator/index.css"
+  },
+  "files": [
+    "**/*"
+  ],
+  "dependencies": {
+    "gd-form-configurator": "^0.0.9",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "core-js": "^3.32.1",
+    "use-sync-external-store": "^1.5.0",
+    "zustand": "^5.0.6"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.1.4",
+    "@testing-library/react": "^14.0.0",
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
+    "@vitejs/plugin-react": "^4.0.3",
+    "jsdom": "^22.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "typescript": "~5.4.2",
+    "vite": "^5.0.0",
+    "vite-plugin-dts": "^3.5.3",
+    "vitest": "^1.3.1"
+  }
+}

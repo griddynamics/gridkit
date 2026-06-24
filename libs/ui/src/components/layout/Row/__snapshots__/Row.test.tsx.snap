@@ -1,0 +1,34 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Row > SHOULD applies alignment correctly 1`] = `
+<div
+  class="css-1dxob4"
+  data-testid="Row"
+>
+  <div>
+    Test
+  </div>
+</div>
+`;
+
+exports[`Row > SHOULD applies gutter spacing correctly 1`] = `
+<div
+  class="css-3rqbig"
+  data-testid="Row"
+>
+  <div>
+    Test
+  </div>
+</div>
+`;
+
+exports[`Row > SHOULD renders children correctly 1`] = `
+<div
+  class="css-1xuinza"
+  data-testid="Row"
+>
+  <div>
+    Child 1
+  </div>
+</div>
+`;

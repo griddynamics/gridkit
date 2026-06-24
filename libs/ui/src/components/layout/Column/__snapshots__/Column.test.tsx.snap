@@ -1,0 +1,14 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Column > SHOULD renders children correctly 1`] = `
+<div>
+  <div
+    class="css-1ty3vc3"
+    data-testid="Column"
+  >
+    <div>
+      Child 1
+    </div>
+  </div>
+</div>
+`;

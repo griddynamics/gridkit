@@ -1,0 +1,26 @@
+import { Meta, Markdown } from '@storybook/addon-docs/blocks';
+import { ThemeJsonPreview, ThemeDownloadLink } from './ThemeJsonPreview.tsx';
+import { version } from '../../../package.json';
+
+<Meta title="Theme & Tokens/Theme" />
+
+# 🎨 GridKit Default Theme
+
+GridKit ships with a **default theme**, which provides the foundational design tokens and styles used across all our components. This is a comprehensive example of how our theming system is structured, allowing you to easily understand and override these values to create your own custom themes.
+
+<br />
+
+## 📥 Download Default Theme
+
+You can download the complete default theme JSON file here:
+
+<ThemeDownloadLink />
+
+<br />
+## 👁 Default Theme JSON Preview
+
+Below is a preview of the `defaultTheme.json` structure and its default values. This will give you an idea of library components theme styles and the various design tokens included, such as colors, typography etc.
+
+<ThemeJsonPreview />
+
+Made with ❤️ by Grid Dynamics · GridKit v{version}

@@ -1,0 +1,53 @@
+import { Meta, Markdown } from '@storybook/addon-docs/blocks';
+
+<Meta title="Patterns & Best Practices/State Handling Strategies" />
+
+# State Handling Strategies
+
+Consistent and predictable state management is key to building scalable, testable, and maintainable components. This guide outlines recommended state handling approaches in the GridKit component library.
+
+## 1. Stateless by Default
+
+- Prefer stateless (controlled) components that rely on props for value and callbacks for updates.
+- Keep the component reusable by avoiding internal state unless necessary (e.g., local UI toggles).
+- Document required props and event handlers clearly for consumers.
+
+## 2. Controlled vs Uncontrolled Inputs
+
+- Use **controlled inputs** for consistent validation, accessibility, and integration with forms.
+- If using uncontrolled components, provide refs and initial values, but document limitations.
+- Always expose a controlled version even if an uncontrolled fallback exists.
+
+## 3. Local UI State
+
+- Use `useState` or `useReducer` for local, ephemeral UI state (e.g., open/close modal, active tab).
+- Avoid deep nesting of local state inside reusable components.
+- Consider lifting state when multiple components need shared behavior.
+
+## 4. Shared Application State
+
+- Use context or external state libraries (e.g., Zustand, Redux, Jotai) for cross-component or cross-page state.
+- Keep components decoupled from specific global state shapes by passing only required props.
+- Provide mockable interfaces (e.g., context providers) to support testing and documentation.
+
+## 5. Side Effects
+
+- Handle async operations (e.g., API calls) outside of UI components whenever possible.
+- Use effect hooks (`useEffect`) for data fetching, subscriptions, or lifecycle events — with proper cleanup.
+- Avoid using side effects to drive rendering logic directly. Use state to hold outcomes instead.
+
+## 6. Prop Naming & Consistency
+
+- Use consistent prop names across components: `value`, `defaultValue`, `onChange`, `isOpen`, `onToggle`, etc.
+- Boolean props should follow the `isX` or `hasX` naming convention.
+- Optional state management props (e.g., `controlled vs uncontrolled`) should be well documented.
+
+## 7. Testing State Behavior
+
+- Write unit tests to assert state transitions and handler callbacks.
+- Use React Testing Library to simulate real user interaction with controlled inputs.
+- Ensure external state does not leak into reusable components without clear API boundaries.
+
+---
+
+_Last updated: July 1, 2025 · GridKit Design System_

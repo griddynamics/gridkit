@@ -1,0 +1,28 @@
+import { PropsWithChildren } from 'react';
+import { Meta, StoryFn } from '@storybook/react';
+import { action } from '@storybook/addon-actions'
+
+import { &PLACEHOLDER_COMPONENT_NAME& } from './&PLACEHOLDER_COMPONENT_NAME&';
+import { &PLACEHOLDER_COMPONENT_NAME&Props } from './&PLACEHOLDER_COMPONENT_NAME&.types';
+
+const meta: Meta<typeof &PLACEHOLDER_COMPONENT_NAME&> = {
+  title: '&PLACEHOLDER_COMPONENT_STORYBOOK_ROOT&/&PLACEHOLDER_COMPONENT_NAME&',
+  component: &PLACEHOLDER_COMPONENT_NAME&,
+  args: {},
+  argTypes: {},
+  tags: ['autodocs'],
+  parameters: {
+    layout: 'centered',
+    docs: {
+      description: {
+        component: `The \`&PLACEHOLDER_COMPONENT_NAME&\` component is a highly flexible UI element designed to be fully customizable in both design and functionality.`,
+      },
+    },
+  },
+};
+
+export default meta;
+const Template: StoryFn<PropsWithChildren<&PLACEHOLDER_COMPONENT_NAME&Props>> = (args) => <&PLACEHOLDER_COMPONENT_NAME& {...args} />;
+
+export const Default = Template.bind({});
+Default.args = {};

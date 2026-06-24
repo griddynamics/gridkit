@@ -1,0 +1,130 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+import { CollapsibleSections } from './CollapsibleSections';
+
+<Meta title="Introduction/AI Integration/Code Mode" />
+
+# Code Mode
+
+<CollapsibleSections />
+
+**Contents**
+
+- [What It Is](#what-it-is)
+- [Simple scheme](#simple-scheme)
+- [Entry points](#entry-points)
+- [Claude](#claude)
+- [OpenAI GPT-4](#openai-gpt-4)
+- [Gemini](#gemini)
+- [Contextual prompts](#contextual-prompts)
+- [Component discovery](#component-discovery)
+- [Full prompt vs. contextual prompt](#full-prompt-vs-contextual-prompt)
+- [Important to know](#important-to-know)
+
+---
+
+## What It Is
+
+Code mode prompts produce React/TSX source code that uses GridKit components directly.
+
+Use it for developer tools, design scaffolders, or Storybook story generators — anywhere you control the React execution environment and want full code output instead of a rendered spec.
+
+Source: `libs/ui/src/ai/`
+
+## Simple scheme
+
+```text
+buildClaudeSystemPrompt(userMessage)
+  -> string system prompt with full GridKit component docs
+  -> LLM returns React/TSX source code
+  -> code runs in your React tree
+```
+
+## Entry points
+
+```typescript
+import {
+  buildClaudeSystemPrompt, // string — for Claude and single-string APIs
+  buildGPT4Prompt, // Message[] — OpenAI Chat Completions format
+  buildGeminiPrompt, // GeminiRequest — Google Generative AI format
+  buildContextualPrompt, // targeted prompt with only selected components
+} from 'gd-design-library/ai';
+```
+
+## Claude
+
+```typescript
+import { buildClaudeSystemPrompt } from 'gd-design-library/ai';
+
+const prompt = buildClaudeSystemPrompt('Create a sign-in form with email and password');
+// → string ready to use as a system instruction
+```
+
+## OpenAI GPT-4
+
+```typescript
+import { buildGPT4Prompt } from 'gd-design-library/ai';
+import OpenAI from 'openai';
+
+const openai = new OpenAI();
+const result = await openai.chat.completions.create({
+  model: 'gpt-4o',
+  messages: buildGPT4Prompt('Create a sign-in form with email and password'),
+});
+```
+
+## Gemini
+
+```typescript
+import { buildGeminiPrompt } from 'gd-design-library/ai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+const genAI = new GoogleGenerativeAI(apiKey);
+const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+const result = await model.generateContent(buildGeminiPrompt('Create a sign-in form'));
+```
+
+## Contextual prompts
+
+Include documentation only for the components your task requires.
+Reduces token usage and improves accuracy when the component set is known in advance.
+
+```typescript
+import { buildContextualPrompt } from 'gd-design-library/ai';
+
+const prompt = buildContextualPrompt('Create a user registration form', {
+  components: ['Form', 'Input', 'Select', 'Button', 'InlineNotification'],
+});
+```
+
+## Component discovery
+
+Use the discovery API to find components by name, category, or feature — useful when building contextual prompts dynamically.
+
+```typescript
+import { discovery, getComponentsByCategory, componentIndex } from 'gd-design-library/ai';
+
+discovery.getComponent('Button'); // ComponentSchema | undefined
+discovery.searchComponents('form'); // ComponentSchema[]
+discovery.getRelatedComponents('Input'); // ComponentSchema[]
+getComponentsByCategory('Forms & Inputs'); // ComponentSchema[]
+componentIndex.byComplexity.Low; // ComponentSchema[]
+```
+
+## Full prompt vs. contextual prompt
+
+|             | Full prompt                        | Contextual prompt                   |
+| ----------- | ---------------------------------- | ----------------------------------- |
+| Coverage    | All GridKit components             | Only selected components            |
+| Token usage | Higher                             | Lower                               |
+| Best for    | Open-ended or exploratory requests | Known component set, production use |
+
+## Important to know
+
+- code mode returns source text — you must execute and render it yourself
+- use `validateGeneratedCode()` to check the output before running it in production
+- code mode is not suitable for conversational agents or runtime UI generation — use A2UI mode for that
+- the full prompt includes documentation for every GridKit component; use contextual prompts to keep requests focused
+
+## Key point
+
+**Code mode is for developer tooling — it returns React/TSX source, not a rendered component tree.**

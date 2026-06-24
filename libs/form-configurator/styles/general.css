@@ -1,0 +1,388 @@
+.fc-control {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+.fc-label {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+.fc-label-required::after {
+  content: ' *';
+  color: #dc3545;
+}
+.fc-control-input {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.fc-control-input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+.fc-control-input:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+.fc-control-error {
+  color: #dc3545;
+}
+.fc-control-error input {
+  border-color: #dc3545;
+}
+.fc-vertical-layout {
+  display: flex;
+  flex-direction: column;
+}
+.fc-horizontal-layout {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+.fc-form-group {
+  margin-bottom: 1rem;
+}
+.fc-form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+.fc-control-select {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: white;
+}
+.fc-control-select:focus {
+  border-color: #007bff;
+  outline: none;
+}
+.fc-control-select:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+.fc-error-message {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  text-transform: lowercase;
+}
+.fc-error-message::first-letter {
+  text-transform: uppercase;
+}
+
+.fc-group-layout {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.fc-group-layout-legend {
+  padding: 0 8px;
+  font-weight: bold;
+}
+
+.fc-categorization-layout-tabs {
+  display: flex;
+  border-bottom: 1px solid #ccc;
+}
+
+.fc-categorization-layout-tab {
+  padding: 10px 15px;
+  cursor: pointer;
+  border: none;
+  background-color: transparent;
+  border-bottom: 2px solid transparent;
+}
+
+.fc-categorization-layout-tab.active {
+  border-bottom: 2px solid blue;
+  font-weight: bold;
+}
+
+.fc-categorization-layout-tab-content .fc-categorization-layout-tab-pane {
+  display: none;
+  padding: 16px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+
+.fc-categorization-layout-tab-content .fc-categorization-layout-tab-pane.active {
+  display: block;
+}
+
+.nested-form-container {
+  margin-left: 20px;
+  padding-left: 20px;
+  border-left: 1px solid #ccc;
+}
+
+/* Control Container Styles */
+.fc-control-container {
+  margin-bottom: 16px;
+}
+
+.fc-control-label-wrapper {
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.fc-control-label-text {
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: inherit;
+}
+
+.fc-control-label-error {
+  color: #d32f2f;
+}
+
+.fc-control-required {
+  color: red;
+}
+
+/* Array Control Styles */
+.fc-array-control {
+  margin-bottom: 24px;
+}
+
+.fc-array-control-header {
+  margin-bottom: 12px;
+}
+
+.fc-array-control-header-title {
+  font-weight: bold;
+  font-size: 16px;
+  color: #333;
+}
+
+.fc-array-control-header-title.fc-control-error {
+  color: #dc3545;
+}
+
+.fc-array-control-header-count {
+  margin-left: 8px;
+  color: #666;
+  font-size: 14px;
+}
+
+.fc-array-control-empty {
+  padding: 20px;
+  text-align: center;
+  color: #999;
+  font-style: italic;
+}
+
+.fc-array-control-item {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+  background-color: #f9f9f9;
+}
+
+.fc-array-control-item-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.fc-array-control-item-content {
+  flex: 1;
+}
+
+.fc-array-control-item-label {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.fc-array-control-item-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 100px;
+}
+
+.fc-array-control-item-errors {
+  margin-top: 8px;
+  color: #dc3545;
+  font-size: 12px;
+}
+
+.fc-array-control-add-button {
+  margin-top: 8px;
+}
+
+.fc-array-control-remove-button {
+  font-size: 12px;
+  padding: 4px 8px;
+  color: #dc3545;
+}
+
+.fc-array-control-validation-hint {
+  margin-top: 8px;
+  color: #ff9800;
+  font-size: 12px;
+}
+
+.fc-array-control-validation-warning {
+  margin-top: 8px;
+  color: #ff9800;
+  font-size: 12px;
+}
+
+.fc-array-control-validation-info {
+  margin-top: 8px;
+  color: #2196f3;
+  font-size: 12px;
+}
+
+/* Color Control Styles */
+.fc-color-control {
+  margin-bottom: 16px;
+}
+
+.fc-color-control-label-wrapper {
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.fc-color-control-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.fc-color-control-color-input {
+  width: 60px;
+  height: 40px;
+  padding: 4px;
+}
+
+.fc-color-control-text-input {
+  width: 120px;
+  font-family: monospace;
+  font-size: 14px;
+}
+
+.fc-color-control-preview {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Range Control Styles */
+.fc-range-control {
+  margin-bottom: 16px;
+}
+
+.fc-range-control-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.fc-range-control-label-wrapper {
+  font-weight: bold;
+}
+
+.fc-range-control-value {
+  font-size: 14px;
+  font-weight: bold;
+  color: #1976d2;
+  background-color: #f5f5f5;
+  padding: 4px 8px;
+  border-radius: 4px;
+  min-width: 30px;
+  text-align: center;
+}
+
+.fc-range-control-hint {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+}
+
+/* File Control Styles */
+.fc-file-control {
+  margin-bottom: 16px;
+}
+
+.fc-file-control-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.fc-file-control-hint {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.fc-file-control-info {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+}
+
+/* Radio Control Styles */
+.fc-radio-control {
+  margin-bottom: 16px;
+}
+
+.fc-radio-control-label-wrapper {
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.fc-radio-control-item {
+  margin-bottom: 4px;
+}
+
+/* Checkbox Control Styles */
+.fc-checkbox-control {
+  margin-bottom: 16px;
+}
+
+/* Textarea Control Styles */
+.fc-textarea-control {
+  margin-bottom: 16px;
+}
+
+.fc-textarea-control-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.fc-textarea-control-hint {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+}
+
+/* Switch Control Styles */
+.fc-switch-control {
+  margin-bottom: 16px;
+}
+
+.fc-switch-control-label-wrapper {
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+/* Select Control Styles */
+.fc-select-control {
+  margin-bottom: 16px;
+}
+
+.fc-select-control-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+}

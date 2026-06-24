@@ -1,0 +1,628 @@
+import { Meta, Markdown } from '@storybook/addon-docs/blocks';
+import { version } from '../../../package.json';
+
+<Meta title="Theme & Tokens/Design Tokens Overview" />
+
+# 🎨 GridKit Theme & Design Tokens
+
+**A comprehensive guide to the GridKit Design System's token-based theming architecture**
+
+---
+
+## 🎯 Overview
+
+Design tokens are the **single source of truth** for all UI styling values in the GridKit Design System. They provide a centralized, scalable, and maintainable way to manage visual properties across your entire application.
+
+**Key Benefits:**
+
+- ✅ **Consistency** - Unified design language across all components
+- ✅ **Maintainability** - Update once, apply everywhere
+- ✅ **Type Safety** - Full TypeScript support with IntelliSense
+- ✅ **Theme Switching** - Easy runtime theme changes with automatic component updates
+- ✅ **Figma Sync** - Design tokens mapped consistently between Figma and code
+- ✅ **Logging Support** - Built-in debugging with logger integration
+
+---
+
+## 📦 What Are Design Tokens?
+
+A design token is a **named value for a style property** — think of it as a design variable. Instead of hardcoding values like `#FFB800` or `16px`, you reference semantic tokens that describe their purpose.
+
+### Token Examples
+
+<Markdown>
+  {`
+| Token Path | Value | Usage |
+| --- | --- | --- |
+| \`colors.primary.main\` | #FFB800 | Primary brand color |
+| \`colors.bg.surface\` | #FFFFFF | Surface background |
+| \`spacing.md\` | 16px | Medium spacing/margin |
+| \`typography.size.h1\` | 48px | Heading 1 text size |
+| \`radius.sm\` | 4px | Small corner radius |
+| \`shadows.card\` | 0 2px 8px rgba(0,0,0,0.1) | Card shadow |
+| \`zIndex.modal\` | 1300 | Modal layer z-index |
+`}
+</Markdown>
+
+### Token Philosophy
+
+```tsx
+// ❌ Bad: Hardcoded values
+const Button = styled.button({
+  backgroundColor: '#FFB800',
+  padding: '16px',
+  borderRadius: '4px',
+});
+
+// ✅ Good: Using design tokens
+const Button = styled.button(({ theme }) => ({
+  backgroundColor: theme.colors.primary.main,
+  padding: theme.spacing.md,
+  borderRadius: theme.radius.sm,
+}));
+```
+
+## 🧩 Token Categories
+
+GridKit provides tokens organized by visual function:
+
+<Markdown>
+  {`
+| Category | Description | Example Tokens | File |
+| --- | --- | --- | --- |
+| **Colors** | Brand, semantic, and UI colors | \`colors.primary.main\`, \`colors.bg.surface\`, \`colors.text.primary\` | tokens/colors.ts |
+| **Typography** | Font families, sizes, weights, line heights | \`typography.h1\`, \`typography.body\`, \`typography.caption\` | tokens/typography.ts |
+| **Spacing** | Margins, padding, gaps | \`spacing.xs\`, \`spacing.md\`, \`spacing.lg\` | tokens/spacing.ts |
+| **Radius** | Border radius values | \`radius.sm\`, \`radius.md\`, \`radius.full\` | tokens/radius.ts |
+| **Shadows** | Box shadows and elevations | \`shadows.card\`, \`shadows.modal\`, \`shadows.dropdown\` | tokens/shadow.ts |
+| **Z-Index** | Layer stacking order | \`zIndex.dropdown\`, \`zIndex.modal\`, \`zIndex.tooltip\` | tokens/zIndex.ts |
+| **Breakpoints** | Responsive design breakpoints | \`breakpoints.sm\`, \`breakpoints.md\`, \`breakpoints.xl\` | tokens/breakpoints.ts |
+| **Animations** | Transition durations and easings | \`animations.fast\`, \`animations.normal\`, \`animations.easing\` | tokens/animations.ts |
+`}
+</Markdown>
+
+### Explore Token References
+
+- [Color Tokens](/docs/theme-tokens-colors--docs) - Complete color palette
+- [Typography Tokens](/docs/theme-tokens-fonts--docs) - Font system
+- [Spacing Tokens](/docs/theme-tokens-spacing--docs) - Spacing scale
+- [Radius Tokens](/docs/theme-tokens-radius--docs) - Border radius values
+- [Shadow Tokens](/docs/theme-tokens-shadows--docs) - Elevation system
+- [Z-Index Tokens](/docs/theme-tokens-z-index--docs) - Stacking context
+- [Breakpoint Tokens](/docs/theme-tokens-breakpoints--docs) - Responsive grid
+- [Animation Tokens](/docs/theme-tokens-animations--docs) - Motion system
+
+---
+
+## 💻 Using Tokens in Your Code
+
+### Method 1: Component Tokens (Recommended)
+
+The **preferred approach** is to customize theme color tokens. Component tokens automatically reference these values:
+
+```tsx
+import { defaultTheme, useTheme } from 'gd-design-library';
+
+function useCustomTheme() {
+  const { addTheme, setTheme } = useTheme();
+
+  useEffect(() => {
+    // ✅ Create theme by replacing color tokens
+    const myTheme = {
+      ...defaultTheme,
+      name: 'my-brand',
+      colors: {
+        ...defaultTheme.colors,
+        primary: {
+          ...defaultTheme.colors.primary,
+          main: '#007bff',
+          hover: '#0056b3',
+          active: '#003d7a',
+        },
+        bg: {
+          ...defaultTheme.colors.bg,
+          default: '#ffffff',
+          surface: '#f8f9fa',
+        },
+      },
+    };
+
+    // Register theme - all components automatically use these colors
+    addTheme('my-brand', myTheme);
+    setTheme('my-brand');
+  }, [addTheme, setTheme]);
+}
+```
+
+### Method 2: Styled Components (When Needed)
+
+For custom components outside the library:
+
+```tsx
+import styled from '@emotion/styled';
+
+const CustomCard = styled.div(({ theme }) => ({
+  backgroundColor: theme.colors.bg.card,
+  padding: theme.spacing.lg,
+  borderRadius: theme.radius.md,
+  boxShadow: theme.shadows.card,
+
+  '&:hover': {
+    boxShadow: theme.shadows.cardHover,
+  },
+}));
+```
+
+### Method 3: Direct Theme Access
+
+For inline styles or conditional styling:
+
+```tsx
+import { useTheme, get } from 'gd-design-library';
+
+function MyComponent() {
+  const { theme } = useTheme();
+
+  const primaryColor = get(theme, 'colors.primary.main', '#007bff');
+  const spacing = get(theme, 'spacing.md', '16px');
+
+  return (
+    <div
+      style={{
+        color: primaryColor,
+        padding: spacing,
+      }}
+    >
+      Content
+    </div>
+  );
+}
+```
+
+---
+
+## 🎨 Dynamic Theming & Theme Switching
+
+GridKit provides powerful theming capabilities with runtime theme switching, logging support, and automatic component updates.
+
+### Basic Setup with Logging
+
+```tsx
+import { ThemeProvider, LoggerProvider } from 'gd-design-library';
+
+// Optional: Create a custom logger
+const logger = {
+  debug: (msg: string, ...meta: unknown[]) => console.debug(msg, ...meta),
+  info: (msg: string, ...meta: unknown[]) => console.info(msg, ...meta),
+  warn: (msg: string, ...meta: unknown[]) => console.warn(msg, ...meta),
+  error: (msg: string, ...meta: unknown[]) => console.error(msg, ...meta),
+};
+
+function App() {
+  return (
+    <LoggerProvider logger={logger} isEnabled={true}>
+      <ThemeProvider isDefault>
+        <YourComponents />
+      </ThemeProvider>
+    </LoggerProvider>
+  );
+}
+```
+
+### Creating Custom Themes
+
+**Approach 1: Replace Color Tokens (Recommended)**
+
+```tsx
+import { useEffect } from 'react';
+import { defaultTheme, useTheme, useLogger } from 'gd-design-library';
+
+function useCustomThemes() {
+  const { addTheme, setTheme } = useTheme();
+  const logger = useLogger();
+
+  useEffect(() => {
+    logger.info('Initializing custom themes');
+
+    // Light theme
+    const lightTheme = {
+      ...defaultTheme,
+      name: 'light',
+      colors: {
+        ...defaultTheme.colors,
+        primary: {
+          ...defaultTheme.colors.primary,
+          main: '#007bff',
+          hover: '#0056b3',
+          active: '#003d7a',
+        },
+        bg: {
+          ...defaultTheme.colors.bg,
+          default: '#ffffff',
+          surface: '#f8f9fa',
+        },
+        text: {
+          ...defaultTheme.colors.text,
+          primary: '#212121',
+          secondary: '#666666',
+        },
+      },
+    };
+
+    // Dark theme
+    const darkTheme = {
+      ...defaultTheme,
+      name: 'dark',
+      colors: {
+        ...defaultTheme.colors,
+        primary: {
+          ...defaultTheme.colors.primary,
+          main: '#0d6efd',
+          hover: '#0a53be',
+          active: '#084298',
+        },
+        bg: {
+          ...defaultTheme.colors.bg,
+          default: '#121212',
+          surface: '#1e1e1e',
+        },
+        text: {
+          ...defaultTheme.colors.text,
+          primary: '#ffffff',
+          secondary: '#b3b3b3',
+        },
+      },
+    };
+
+    // Register themes
+    addTheme('light', lightTheme);
+    addTheme('dark', darkTheme);
+
+    // Set default
+    const savedTheme = localStorage.getItem('app-theme') || 'light';
+    setTheme(savedTheme);
+
+    logger.info('Themes initialized', { active: savedTheme });
+  }, [addTheme, setTheme, logger]);
+}
+```
+
+**Approach 2: Load from JSON**
+
+```tsx
+import { useTheme, useLogger } from 'gd-design-library';
+import customTheme from './themes/customTheme.json';
+
+function useJsonTheme() {
+  const { addTheme, setTheme } = useTheme();
+  const logger = useLogger();
+
+  useEffect(() => {
+    logger.info('Loading JSON theme', { name: customTheme.name });
+
+    addTheme(customTheme.name, customTheme);
+    setTheme(customTheme.name);
+
+    logger.info('Theme loaded successfully');
+  }, [addTheme, setTheme, logger]);
+}
+```
+
+> **Important:** Each custom theme must have a unique `name` property.
+
+### Theme Switcher Component
+
+```tsx
+import { useTheme, useLogger, Select } from 'gd-design-library';
+
+function ThemeSwitcher() {
+  const { theme, setTheme } = useTheme();
+  const logger = useLogger();
+
+  const themes = [
+    { name: 'Light', value: 'light' },
+    { name: 'Dark', value: 'dark' },
+  ];
+
+  const handleChange = (option: { name: string; value: string }) => {
+    logger.info('Switching theme', { from: theme.name, to: option.value });
+    setTheme(option.value);
+    localStorage.setItem('app-theme', option.value);
+  };
+
+  const currentTheme = themes.find((t) => t.value === theme.name) || null;
+
+  return (
+    <Select items={themes} value={currentTheme} onChange={handleChange} placeholder="Select theme" width="200px" />
+  );
+}
+```
+
+**For comprehensive theming guides:**
+
+- [Dynamic Theme Switching](/docs/theme-tokens-dynamic-theme-switching--docs) - Complete implementation guide
+- [Theme Tokens Usage](/docs/introduction-theme-tokens-usage--docs) - Best practices and patterns
+- [Getting Started](/docs/introduction-getting-started--docs) - Quick start guide
+- [Default Theme](/docs/theme-tokens-theme--docs) - Full token reference
+
+---
+
+## 🏗️ Architecture & Token Flow
+
+### How Tokens Work
+
+```
+┌─────────────────────┐
+│   Theme Tokens      │  ← Define colors, spacing, typography
+│   (defaultTheme)    │
+└──────────┬──────────┘
+           │
+           ↓
+┌─────────────────────┐
+│ Component Tokens    │  ← Button, Card, etc. reference theme tokens
+│ (button.ts, etc.)   │
+└──────────┬──────────┘
+           │
+           ↓
+┌─────────────────────┐
+│   Components        │  ← Styled using component tokens
+│ (Button.tsx, etc.)  │
+└─────────────────────┘
+```
+
+**Key Concept:** Component tokens (like `button.primary`) automatically reference theme tokens (like `colors.primary.main`). When you change theme colors, all components update automatically without needing to modify component tokens.
+
+### Token Hierarchy
+
+1. **Theme Tokens** (Foundation)
+   - `colors`, `spacing`, `typography`, `radius`, `shadows`, `zIndex`, `breakpoints`, `animations`
+   - Defined in `tokens/` directory
+   - Combined in `defaultTheme`
+
+2. **Component Tokens** (Application)
+   - `button`, `card`, `input`, `modal`, etc.
+   - Reference theme tokens dynamically
+   - Allow structural customization
+
+3. **Component Styles** (Consumption)
+   - Styled components use component tokens
+   - Automatic theme updates
+   - Type-safe access
+
+---
+
+## 📁 File Structure
+
+```
+libs/ui/src/
+├── tokens/                    # Design token definitions
+│   ├── animations.ts         # Animation durations & easings
+│   ├── breakpoints.ts        # Responsive breakpoints
+│   ├── button.ts             # Button component tokens
+│   ├── card.ts               # Card component tokens
+│   ├── chat.ts               # Chat component tokens
+│   ├── colors.ts             # Color palette
+│   ├── input.ts              # Input component tokens
+│   ├── modal.ts              # Modal component tokens
+│   ├── radius.ts             # Border radius scale
+│   ├── scroll.ts             # Scroll component tokens
+│   ├── select.ts             # Select component tokens
+│   ├── shadow.ts             # Shadow/elevation system
+│   ├── spacing.ts            # Spacing scale
+│   ├── stepper.ts            # Stepper component tokens
+│   ├── tabs.ts               # Tabs component tokens
+│   ├── tooltip.ts            # Tooltip component tokens
+│   ├── typography.ts         # Typography system
+│   ├── values.ts             # Misc values
+│   ├── wrapper.ts            # Wrapper component tokens
+│   ├── zIndex.ts             # Z-index layers
+│   └── index.ts              # Combines all → defaultTheme
+│
+├── hooks/
+│   ├── useTheme/             # Theme management
+│   └── useLogger/            # Logger integration
+│
+└── components/
+    └── core/                 # Components using tokens
+        ├── Button/
+        ├── Card/
+        ├── Input/
+        └── ...
+```
+
+---
+
+## ✅ Best Practices
+
+### Do's ✅
+
+1. **Always Use Tokens**
+
+   ```tsx
+   // ✅ Good
+   color: theme.colors.primary.main;
+   padding: theme.spacing.md;
+
+   // ❌ Bad
+   color: '#007bff';
+   padding: '16px';
+   ```
+
+2. **Replace Colors in Theme Tokens**
+
+   ```tsx
+   // ✅ Good: Change theme.colors
+   const myTheme = {
+     ...defaultTheme,
+     colors: {
+       ...defaultTheme.colors,
+       primary: { main: '#007bff' },
+     },
+   };
+
+   // ❌ Bad: Use updateThemeTokens for colors
+   updateThemeTokens(theme, {
+     'button.primary': { backgroundColor: '#007bff' },
+   });
+   ```
+
+3. **Use Semantic Token Names**
+
+   ```tsx
+   // ✅ Good: Describes purpose
+   colors.text.primary;
+   colors.bg.surface;
+
+   // ❌ Bad: Generic names
+   colors.gray1;
+   colors.blue;
+   ```
+
+4. **Enable Logging for Debugging**
+
+   ```tsx
+   // ✅ Helps track theme operations
+   <LoggerProvider logger={myLogger} isEnabled={true}>
+     <ThemeProvider isDefault>{children}</ThemeProvider>
+   </LoggerProvider>
+   ```
+
+5. **Maintain Consistent Theme Structure**
+
+   ```tsx
+   // ✅ All themes have same structure
+   lightTheme.colors.primary.main;
+   darkTheme.colors.primary.main;
+
+   // ❌ Inconsistent structure breaks switching
+   lightTheme.colors.primary;
+   darkTheme.colors.mainColor;
+   ```
+
+### Don'ts ❌
+
+1. **Don't Hardcode Values**
+
+   ```tsx
+   // ❌ Never do this
+   const Button = styled.button({
+     backgroundColor: '#007bff',
+     padding: '16px',
+   });
+   ```
+
+2. **Don't Override Colors in Component Tokens**
+
+   ```tsx
+   // ❌ Don't use updateThemeTokens for colors
+   updateThemeTokens(theme, {
+     'button.primary': { backgroundColor: '#007bff' },
+   });
+   ```
+
+3. **Don't Mix Token Systems**
+
+   ```tsx
+   // ❌ Inconsistent approach
+   backgroundColor: theme.colors.primary.main; // Token
+   color: '#ffffff'; // Hardcoded
+   ```
+
+4. **Don't Create Duplicate Tokens**
+
+   ```tsx
+   // ❌ Token duplication
+   colors.brandBlue = '#007bff';
+   colors.primary.main = '#007bff'; // Same value, different names
+   ```
+
+5. **Don't Skip Theme Structure**
+
+   ```tsx
+   // ❌ Flat structure
+   colors.primaryMain = '#007bff';
+
+   // ✅ Nested structure
+   colors.primary.main = '#007bff';
+   ```
+
+---
+
+## ♿ Accessibility Guidelines
+
+### Color Contrast
+
+- **Normal text**: Minimum 4.5:1 (WCAG AA) or 7:1 (WCAG AAA)
+- **Large text**: Minimum 3:1 (WCAG AA) or 4.5:1 (WCAG AAA)
+- **UI components**: Minimum 3:1 against background
+
+**Tools:**
+
+- [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/)
+- [Accessible Colors](https://accessible-colors.com/)
+
+### Typography
+
+- Minimum font size: 16px for body text
+- Line height: 1.5 or greater for body text
+- Letter spacing: Adjustable for readability
+
+### Focus Indicators
+
+```tsx
+// ✅ Always provide visible focus indicators
+const theme = {
+  colors: {
+    border: {
+      focus: '#005fcc', // High contrast
+      focusInverse: '#ffff00', // For dark backgrounds
+    },
+  },
+};
+```
+
+### Motion & Animation
+
+- Respect `prefers-reduced-motion`
+- Provide token-based animation controls
+- Default to accessible animation speeds
+
+```tsx
+// ✅ Motion-safe animations
+const theme = {
+  animations: {
+    fast: '150ms',
+    normal: '300ms',
+    slow: '500ms',
+  },
+};
+```
+
+---
+
+## 📚 Additional Resources
+
+### Documentation
+
+- [Getting Started Guide](/docs/introduction-getting-started--docs)
+- [Theme Tokens Usage](/docs/introduction-theme-tokens-usage--docs)
+- [Dynamic Theme Switching](/docs/theme-tokens-dynamic-theme-switching--docs)
+- [Logging and Debugging](/docs/introduction-logging-and-debugging--docs)
+
+### Token References
+
+- [Color Tokens](/docs/theme-tokens-colors--docs)
+- [Typography Tokens](/docs/theme-tokens-fonts--docs)
+- [Spacing Tokens](/docs/theme-tokens-spacing--docs)
+- [Shadow Tokens](/docs/theme-tokens-shadows--docs)
+- [Z-Index Tokens](/docs/theme-tokens-z-index--docs)
+
+### Tools
+
+- [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/)
+- [Accessible Colors](https://accessible-colors.com/)
+- [Color Blind Simulator](https://www.color-blindness.com/coblis-color-blindness-simulator/)
+
+---
+
+Made with ❤️ by Grid Dynamics · GridKit v{version}

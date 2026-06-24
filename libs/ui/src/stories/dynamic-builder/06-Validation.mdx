@@ -1,0 +1,117 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+import { CollapsibleSections } from './CollapsibleSections';
+
+<Meta title="Domain Solutions/Dynamic Builder/Validation" />
+
+# Validation
+
+<CollapsibleSections />
+
+**Contents**
+
+- [What it does](#what-it-does)
+- [Simple scheme](#simple-scheme)
+- [What it repairs](#what-it-repairs)
+- [Main exports](#main-exports)
+- [Validate a full-page reply](#validate-a-full-page-reply)
+- [Validate one section](#validate-one-section)
+- [Important to know](#important-to-know)
+
+---
+
+## What it does
+
+Validation is the safety gate between LLM output and the real UI.
+
+Three jobs:
+
+- parse and validate the raw reply
+- repair common formatting problems
+- add missing metadata defaults
+
+Source: `apps/main/src/app/ui-builder/validation/`
+
+## Simple scheme
+
+Full-page path:
+
+```text
+raw provider reply
+  -> parseAndValidateA2UI()
+  -> sanitizeA2UISpec()
+  -> enrichA2UIMetadata()
+  -> safe spec for render
+```
+
+Section-only path:
+
+```text
+raw provider reply for one section
+  -> parseAndValidateA2UISection()
+  -> safe section result
+```
+
+## What it repairs
+
+Common problems from providers:
+
+| Problem                                    | What the layer does        |
+| ------------------------------------------ | -------------------------- |
+| extra prose before or after the JSON       | strips it                  |
+| fenced code blocks (\`\`\`json ... \`\`\`) | unwraps the block          |
+| reply starts mid-object                    | attempts structural repair |
+| section reply wrapped in the wrong shape   | normalizes the envelope    |
+| missing metadata fields                    | fills in defaults          |
+
+## Main exports
+
+| Export                          | Use it when...                         |
+| ------------------------------- | -------------------------------------- |
+| `createA2UIValidator()`         | you want a reusable validator instance |
+| `validateA2UISpec()`            | you already have a parsed object       |
+| `parseAndValidateA2UI()`        | you have raw text for a full page      |
+| `parseAndValidateA2UISection()` | you have raw text for one section      |
+| `sanitizeA2UISpec()`            | you want normalized structure          |
+| `enrichA2UIMetadata()`          | you want metadata defaults applied     |
+
+## Validate a full-page reply
+
+```ts
+import { parseAndValidateA2UI, sanitizeA2UISpec, enrichA2UIMetadata } from 'apps/main/src/app/ui-builder/validation';
+
+const result = parseAndValidateA2UI(rawTextFromProvider);
+
+if (!result.valid || !result.spec) {
+  throw new Error(result.errors.join('\n'));
+}
+
+const safeSpec = enrichA2UIMetadata(sanitizeA2UISpec(result.spec));
+// safeSpec is ready to pass to the renderer
+```
+
+## Validate one section
+
+```ts
+import { parseAndValidateA2UISection } from 'apps/main/src/app/ui-builder/validation';
+
+const result = parseAndValidateA2UISection(rawSectionReply);
+
+if (!result.valid || !result.spec) {
+  throw new Error(result.errors.join('\n'));
+}
+
+// result.spec is a valid section — safe to merge into the current page
+```
+
+This is how "change only the header" stays safe when the model returns only one part of the page.
+
+## Important to know
+
+- always validate before render
+- this layer is not tied to `UIBuilderPage` — use it anywhere
+- section validation is part of scoped editing
+- if the model returns almost-correct JSON, this layer is usually where it gets recovered
+
+## Key point
+
+**Validation is what turns AI output into something the UI can trust.**

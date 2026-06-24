@@ -1,0 +1,11 @@
+dist
+node_modules
+
+# Docs and Stories
+libs/ui/src/stories
+
+# Test results
+playwright-report
+test-results
+
+plans/

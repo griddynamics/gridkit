@@ -1,0 +1,12 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`InputWrapper > SHOULD match snapshot 1`] = `
+<div>
+  <span
+    class="css-h47zj8"
+    data-testid="InputWrapper"
+  >
+    text node
+  </span>
+</div>
+`;

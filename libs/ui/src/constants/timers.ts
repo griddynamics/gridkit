@@ -1,0 +1,2 @@
+export const BASE_ANIMATION_MS = 2000;
+export const BASE_ANIMATION_DELAY_MS = 500;

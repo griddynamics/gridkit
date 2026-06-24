@@ -1,0 +1,1037 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Figma variable name → GridKit token. Source: libs/ui/src/tokens/colors.ts + Figma file bCDJhVLlAFSIZtPFbEwDRO node 3:121. Usage: tokenPath → useTheme() dot-path, cssVar → --gds-* reference only (never emit in TSX), componentProp → Typography/component color prop string.",
+  "$usage": {
+    "keyQuestion": "What GridKit color token corresponds to this Figma color variable or hex value?",
+    "lookupSteps": [
+      "1. CSS var present (e.g. var(--gds-color-text-default, #171717)): strip '--gds-' prefix, kebab→dot → 'color.text.default'. Stop — do NOT run hex lookup.",
+      "2. Figma variable name known (e.g. gds.color.text.default): find entry in bg/border/text/icon/neutral/palette by key. Stop.",
+      "3. Raw hex only: normalize (#FFF→#FFFFFF), query hexIndex[hex] → tokenPath string. Then read full entry from the matching group for themeAccess. Stop.",
+      "4. No match: record 'unmatched:<hex>' in tokenBindings."
+    ],
+    "criticalRules": [
+      "Never emit cssVar strings in TSX — always use themeAccess (e.g. theme.colors?.bg?.surface).",
+      "Typography `color` prop: pass tokenPath string (e.g. 'text.default'). All other components: use themeAccess via useTheme().",
+      "#FFFFFF resolves to color.bg.surface — not an unmatched 'white'. #000000 → color.neutral.black.",
+      "hexIndex has 37 entries covering all commonly used Figma hex values."
+    ]
+  },
+  "bg": {
+    "gds.color.bg": {
+      "tokenPath": "color.bg.default",
+      "cssVar": "--gds-color-bg-default",
+      "themeAccess": "theme.colors?.bg?.default",
+      "hex": "#F8F7F5"
+    },
+    "gds.color.bg.surface": {
+      "tokenPath": "color.bg.surface",
+      "cssVar": "--gds-color-bg-surface",
+      "themeAccess": "theme.colors?.bg?.surface",
+      "hex": "#FFFFFF"
+    },
+    "gds.color.bg.input": {
+      "tokenPath": "color.bg.input.default",
+      "cssVar": "--gds-color-bg-input-default",
+      "themeAccess": "theme.colors?.bg?.input?.default",
+      "hex": "#FFFFFF"
+    },
+    "gds.color.bg.input.disabled": {
+      "tokenPath": "color.bg.input.disabled",
+      "cssVar": "--gds-color-bg-input-disabled",
+      "themeAccess": "theme.colors?.bg?.input?.disabled",
+      "hex": "#FAF9F9"
+    },
+    "gds.color.bg.fill.primary": {
+      "tokenPath": "color.bg.fill.primary",
+      "cssVar": "--gds-color-bg-fill-primary",
+      "themeAccess": "theme.colors?.bg?.fill?.primary",
+      "hex": "#FFB800"
+    },
+    "gds.color.bg.fill.secondary": {
+      "tokenPath": "color.bg.fill.secondary",
+      "cssVar": "--gds-color-bg-fill-secondary",
+      "themeAccess": "theme.colors?.bg?.fill?.secondary",
+      "hex": "#F29100"
+    },
+    "gds.color.bg.fill.hover": {
+      "tokenPath": "color.bg.fill.hover",
+      "cssVar": "--gds-color-bg-fill-hover",
+      "themeAccess": "theme.colors?.bg?.fill?.hover",
+      "hex": "#FFF7E5"
+    },
+    "gds.color.bg.fill.disabled": {
+      "tokenPath": "color.bg.fill.disabled",
+      "cssVar": "--gds-color-bg-fill-disabled",
+      "themeAccess": "theme.colors?.bg?.fill?.disabled",
+      "hex": "#E5E5E5"
+    },
+    "gds.color.bg.fill.tooltip": {
+      "tokenPath": "color.bg.fill.tooltip.default",
+      "cssVar": "--gds-color-bg-fill-tooltip-default",
+      "themeAccess": "theme.colors?.bg?.fill?.tooltip?.default",
+      "hex": "#CECECE"
+    },
+    "gds.color.bg.fill.error.primary": {
+      "tokenPath": "color.bg.fill.error.primary.default",
+      "cssVar": "--gds-color-bg-fill-error-primary-default",
+      "themeAccess": "theme.colors?.bg?.fill?.error?.primary?.default",
+      "hex": "#D21C1C"
+    },
+    "gds.color.bg.fill.error.primary.hover": {
+      "tokenPath": "color.bg.fill.error.primary.hover",
+      "cssVar": "--gds-color-bg-fill-error-primary-hover",
+      "themeAccess": "theme.colors?.bg?.fill?.error?.primary?.hover",
+      "hex": "#BD1919"
+    },
+    "gds.color.bg.fill.error.secondary": {
+      "tokenPath": "color.bg.fill.error.secondary.default",
+      "cssVar": "--gds-color-bg-fill-error-secondary-default",
+      "themeAccess": "theme.colors?.bg?.fill?.error?.secondary?.default",
+      "hex": "#FDEDED"
+    },
+    "gds.color.bg.fill.error.secondary.hover": {
+      "tokenPath": "color.bg.fill.error.secondary.hover",
+      "cssVar": "--gds-color-bg-fill-error-secondary-hover",
+      "themeAccess": "theme.colors?.bg?.fill?.error?.secondary?.hover",
+      "hex": "#F7C5C5"
+    },
+    "gds.color.bg.fill.success.primary": {
+      "tokenPath": "color.bg.fill.success.primary.default",
+      "cssVar": "--gds-color-bg-fill-success-primary-default",
+      "themeAccess": "theme.colors?.bg?.fill?.success?.primary?.default",
+      "hex": "#34A853"
+    },
+    "gds.color.bg.fill.success.primary.hover": {
+      "tokenPath": "color.bg.fill.success.primary.hover",
+      "cssVar": "--gds-color-bg-fill-success-primary-hover",
+      "themeAccess": "theme.colors?.bg?.fill?.success?.primary?.hover",
+      "hex": "#1F843A"
+    },
+    "gds.color.bg.fill.success.secondary": {
+      "tokenPath": "color.bg.fill.success.secondary.default",
+      "cssVar": "--gds-color-bg-fill-success-secondary-default",
+      "themeAccess": "theme.colors?.bg?.fill?.success?.secondary?.default",
+      "hex": "#EFFCF2"
+    },
+    "gds.color.bg.fill.success.secondary.hover": {
+      "tokenPath": "color.bg.fill.success.secondary.hover",
+      "cssVar": "--gds-color-bg-fill-success-secondary-hover",
+      "themeAccess": "theme.colors?.bg?.fill?.success?.secondary?.hover",
+      "hex": "#C9E6CA"
+    },
+    "gds.color.bg.fill.warning.primary": {
+      "tokenPath": "color.bg.fill.warning.primary.default",
+      "cssVar": "--gds-color-bg-fill-warning-primary-default",
+      "themeAccess": "theme.colors?.bg?.fill?.warning?.primary?.default",
+      "hex": "#FF8700"
+    },
+    "gds.color.bg.fill.warning.primary.hover": {
+      "tokenPath": "color.bg.fill.warning.primary.hover",
+      "cssVar": "--gds-color-bg-fill-warning-primary-hover",
+      "themeAccess": "theme.colors?.bg?.fill?.warning?.primary?.hover",
+      "hex": "#CD4800"
+    },
+    "gds.color.bg.fill.warning.secondary": {
+      "tokenPath": "color.bg.fill.warning.secondary.default",
+      "cssVar": "--gds-color-bg-fill-warning-secondary-default",
+      "themeAccess": "theme.colors?.bg?.fill?.warning?.secondary?.default",
+      "hex": "#FFF8EF"
+    },
+    "gds.color.bg.fill.warning.secondary.hover": {
+      "tokenPath": "color.bg.fill.warning.secondary.hover",
+      "cssVar": "--gds-color-bg-fill-warning-secondary-hover",
+      "themeAccess": "theme.colors?.bg?.fill?.warning?.secondary?.hover",
+      "hex": "#FFDBB2"
+    },
+    "gds.color.bg.fill.info.primary": {
+      "tokenPath": "color.bg.fill.info.primary.default",
+      "cssVar": "--gds-color-bg-fill-info-primary-default",
+      "themeAccess": "theme.colors?.bg?.fill?.info?.primary?.default",
+      "hex": "#0069B4"
+    },
+    "gds.color.bg.fill.info.primary.hover": {
+      "tokenPath": "color.bg.fill.info.primary.hover",
+      "cssVar": "--gds-color-bg-fill-info-primary-hover",
+      "themeAccess": "theme.colors?.bg?.fill?.info?.primary?.hover",
+      "hex": "#00476E"
+    },
+    "gds.color.bg.fill.info.secondary": {
+      "tokenPath": "color.bg.fill.info.secondary.default",
+      "cssVar": "--gds-color-bg-fill-info-secondary-default",
+      "themeAccess": "theme.colors?.bg?.fill?.info?.secondary?.default",
+      "hex": "#E3F6FF"
+    },
+    "gds.color.bg.fill.info.secondary.hover": {
+      "tokenPath": "color.bg.fill.info.secondary.hover",
+      "cssVar": "--gds-color-bg-fill-info-secondary-hover",
+      "themeAccess": "theme.colors?.bg?.fill?.info?.secondary?.hover",
+      "hex": "#D1EFFD"
+    },
+    "gds.color.bg.toast.success": {
+      "tokenPath": "color.bg.toast.success",
+      "cssVar": "--gds-color-bg-toast-success",
+      "themeAccess": "theme.colors?.bg?.toast?.success",
+      "hex": "#EFFCF2"
+    },
+    "gds.color.bg.toast.error": {
+      "tokenPath": "color.bg.toast.error",
+      "cssVar": "--gds-color-bg-toast-error",
+      "themeAccess": "theme.colors?.bg?.toast?.error",
+      "hex": "#FDEDED"
+    },
+    "gds.color.bg.toast.warning": {
+      "tokenPath": "color.bg.toast.warning",
+      "cssVar": "--gds-color-bg-toast-warning",
+      "themeAccess": "theme.colors?.bg?.toast?.warning",
+      "hex": "#FFF8EF"
+    },
+    "gds.color.bg.toast.info": {
+      "tokenPath": "color.bg.toast.info",
+      "cssVar": "--gds-color-bg-toast-info",
+      "themeAccess": "theme.colors?.bg?.toast?.info",
+      "hex": "#E3F6FF"
+    }
+  },
+  "border": {
+    "gds.color.border.default": {
+      "tokenPath": "color.border.default",
+      "cssVar": "--gds-color-border-default",
+      "themeAccess": "theme.colors?.border?.default",
+      "hex": "#E5E5E5"
+    },
+    "gds.color.border.disabled": {
+      "tokenPath": "color.border.disabled",
+      "cssVar": "--gds-color-border-disabled",
+      "themeAccess": "theme.colors?.border?.disabled",
+      "hex": "#E5E5E5"
+    },
+    "gds.color.border.primary": {
+      "tokenPath": "color.border.primary",
+      "cssVar": "--gds-color-border-primary",
+      "themeAccess": "theme.colors?.border?.primary",
+      "hex": "#FFB800"
+    },
+    "gds.color.border.secondary": {
+      "tokenPath": "color.border.secondary",
+      "cssVar": "--gds-color-border-secondary",
+      "themeAccess": "theme.colors?.border?.secondary",
+      "hex": "#202020"
+    },
+    "gds.color.border.error": {
+      "tokenPath": "color.border.error",
+      "cssVar": "--gds-color-border-error",
+      "themeAccess": "theme.colors?.border?.error",
+      "hex": "#D21C1C"
+    },
+    "gds.color.border.success": {
+      "tokenPath": "color.border.success",
+      "cssVar": "--gds-color-border-success",
+      "themeAccess": "theme.colors?.border?.success",
+      "hex": "#34A853"
+    },
+    "gds.color.border.info": {
+      "tokenPath": "color.border.info",
+      "cssVar": "--gds-color-border-info",
+      "themeAccess": "theme.colors?.border?.info",
+      "hex": "#0069B4"
+    },
+    "gds.color.border.warning": {
+      "tokenPath": "color.border.warning",
+      "cssVar": "--gds-color-border-warning",
+      "themeAccess": "theme.colors?.border?.warning",
+      "hex": "#FF8700"
+    },
+    "gds.color.border.focus": {
+      "tokenPath": "color.border.focus",
+      "cssVar": "--gds-color-border-focus",
+      "themeAccess": "theme.colors?.border?.focus",
+      "hex": "#0069B4"
+    },
+    "gds.color.border.white": {
+      "tokenPath": "color.border.white",
+      "cssVar": "--gds-color-border-white",
+      "themeAccess": "theme.colors?.border?.white",
+      "hex": "#FFFFFF"
+    },
+    "gds.color.border.black": {
+      "tokenPath": "color.border.black",
+      "cssVar": "--gds-color-border-black",
+      "themeAccess": "theme.colors?.border?.black",
+      "hex": "#000000"
+    }
+  },
+  "text": {
+    "gds.color.text.default": {
+      "tokenPath": "color.text.default",
+      "cssVar": "--gds-color-text-default",
+      "themeAccess": "theme.colors?.text?.default",
+      "componentProp": "text.default",
+      "hex": "#000000"
+    },
+    "gds.color.text.active": {
+      "tokenPath": "color.text.active",
+      "cssVar": "--gds-color-text-active",
+      "themeAccess": "theme.colors?.text?.active",
+      "componentProp": "text.active",
+      "hex": "#202020"
+    },
+    "gds.color.text.disabled": {
+      "tokenPath": "color.text.disabled",
+      "cssVar": "--gds-color-text-disabled",
+      "themeAccess": "theme.colors?.text?.disabled",
+      "componentProp": "text.disabled",
+      "hex": "#A3A3A3"
+    },
+    "gds.color.text.title": {
+      "tokenPath": "color.text.title",
+      "cssVar": "--gds-color-text-title",
+      "themeAccess": "theme.colors?.text?.title",
+      "componentProp": "text.title",
+      "hex": "#474747"
+    },
+    "gds.color.text.caption": {
+      "tokenPath": "color.text.caption",
+      "cssVar": "--gds-color-text-caption",
+      "themeAccess": "theme.colors?.text?.caption",
+      "componentProp": "text.caption",
+      "hex": "#838383"
+    },
+    "gds.color.text.error": {
+      "tokenPath": "color.text.error",
+      "cssVar": "--gds-color-text-error",
+      "themeAccess": "theme.colors?.text?.error",
+      "componentProp": "text.error",
+      "hex": "#BD1919"
+    },
+    "gds.color.text.success": {
+      "tokenPath": "color.text.success",
+      "cssVar": "--gds-color-text-success",
+      "themeAccess": "theme.colors?.text?.success",
+      "componentProp": "text.success",
+      "hex": "#1F843A"
+    },
+    "gds.color.text.info": {
+      "tokenPath": "color.text.info",
+      "cssVar": "--gds-color-text-info",
+      "themeAccess": "theme.colors?.text?.info",
+      "componentProp": "text.info",
+      "hex": "#00476E"
+    },
+    "gds.color.text.warning": {
+      "tokenPath": "color.text.warning",
+      "cssVar": "--gds-color-text-warning",
+      "themeAccess": "theme.colors?.text?.warning",
+      "componentProp": "text.warning",
+      "hex": "#CD4800"
+    },
+    "gds.color.text.primary": {
+      "tokenPath": "color.text.primary",
+      "cssVar": "--gds-color-text-primary",
+      "themeAccess": "theme.colors?.text?.primary",
+      "componentProp": "text.primary",
+      "hex": "#FFB800"
+    },
+    "gds.color.text.secondary": {
+      "tokenPath": "color.text.secondary",
+      "cssVar": "--gds-color-text-secondary",
+      "themeAccess": "theme.colors?.text?.secondary",
+      "componentProp": "text.secondary",
+      "hex": "#F29100"
+    },
+    "gds.color.text.link": {
+      "tokenPath": "color.text.link.default",
+      "cssVar": "--gds-color-text-link-default",
+      "themeAccess": "theme.colors?.text?.link?.default",
+      "componentProp": "text.link.default",
+      "hex": "#53B7E8"
+    },
+    "gds.color.text.link.hover": {
+      "tokenPath": "color.text.link.hover",
+      "cssVar": "--gds-color-text-link-hover",
+      "themeAccess": "theme.colors?.text?.link?.hover",
+      "hex": "#278CBF"
+    },
+    "gds.color.text.white": {
+      "tokenPath": "color.text.white",
+      "cssVar": "--gds-color-text-white",
+      "themeAccess": "theme.colors?.text?.white",
+      "componentProp": "text.white",
+      "hex": "#FFFFFF"
+    },
+    "gds.color.text.black": {
+      "tokenPath": "color.text.black",
+      "cssVar": "--gds-color-text-black",
+      "themeAccess": "theme.colors?.text?.black",
+      "componentProp": "text.black",
+      "hex": "#000000"
+    }
+  },
+  "icon": {
+    "gds.color.icon.default": {
+      "tokenPath": "color.icon.default",
+      "cssVar": "--gds-color-icon-default",
+      "themeAccess": "theme.colors?.icon?.default",
+      "hex": "#474747"
+    },
+    "gds.color.icon.disabled": {
+      "tokenPath": "color.icon.disabled",
+      "cssVar": "--gds-color-icon-disabled",
+      "themeAccess": "theme.colors?.icon?.disabled",
+      "hex": "#8F8F8F"
+    },
+    "gds.color.icon.primary": {
+      "tokenPath": "color.icon.primary",
+      "cssVar": "--gds-color-icon-primary",
+      "themeAccess": "theme.colors?.icon?.primary",
+      "hex": "#FFB800"
+    },
+    "gds.color.icon.secondary": {
+      "tokenPath": "color.icon.secondary",
+      "cssVar": "--gds-color-icon-secondary",
+      "themeAccess": "theme.colors?.icon?.secondary",
+      "hex": "#F29100"
+    },
+    "gds.color.icon.success": {
+      "tokenPath": "color.icon.success",
+      "cssVar": "--gds-color-icon-success",
+      "themeAccess": "theme.colors?.icon?.success",
+      "hex": "#34A853"
+    },
+    "gds.color.icon.info": {
+      "tokenPath": "color.icon.info",
+      "cssVar": "--gds-color-icon-info",
+      "themeAccess": "theme.colors?.icon?.info",
+      "hex": "#0069B4"
+    },
+    "gds.color.icon.warning": {
+      "tokenPath": "color.icon.warning",
+      "cssVar": "--gds-color-icon-warning",
+      "themeAccess": "theme.colors?.icon?.warning",
+      "hex": "#FF8700"
+    },
+    "gds.color.icon.error": {
+      "tokenPath": "color.icon.error",
+      "cssVar": "--gds-color-icon-error",
+      "themeAccess": "theme.colors?.icon?.error",
+      "hex": "#D21C1C"
+    },
+    "gds.color.icon.link": {
+      "tokenPath": "color.icon.link.default",
+      "cssVar": "--gds-color-icon-link-default",
+      "themeAccess": "theme.colors?.icon?.link?.default",
+      "hex": "#53B7E8"
+    },
+    "gds.color.icon.link.hover": {
+      "tokenPath": "color.icon.link.hover",
+      "cssVar": "--gds-color-icon-link-hover",
+      "themeAccess": "theme.colors?.icon?.link?.hover",
+      "hex": "#278CBF"
+    },
+    "gds.color.icon.white": {
+      "tokenPath": "color.icon.white",
+      "cssVar": "--gds-color-icon-white",
+      "themeAccess": "theme.colors?.icon?.white",
+      "hex": "#FFFFFF"
+    },
+    "gds.color.icon.black": {
+      "tokenPath": "color.icon.black",
+      "cssVar": "--gds-color-icon-black",
+      "themeAccess": "theme.colors?.icon?.black",
+      "hex": "#000000"
+    }
+  },
+  "neutral": {
+    "gds.color.neutral.white": {
+      "tokenPath": "color.neutral.white",
+      "cssVar": "--gds-color-neutral-white",
+      "themeAccess": "theme.colors?.neutral?.white",
+      "hex": "#FFFFFF"
+    },
+    "gds.color.neutral.black": {
+      "tokenPath": "color.neutral.black",
+      "cssVar": "--gds-color-neutral-black",
+      "themeAccess": "theme.colors?.neutral?.black",
+      "hex": "#000000"
+    },
+    "gds.color.neutral.10": {
+      "tokenPath": "color.neutral.10",
+      "cssVar": "--gds-color-neutral-10",
+      "themeAccess": "theme.colors?.neutral?.['10']",
+      "hex": "#FAF9F9"
+    },
+    "gds.color.neutral.20": {
+      "tokenPath": "color.neutral.20",
+      "cssVar": "--gds-color-neutral-20",
+      "themeAccess": "theme.colors?.neutral?.['20']",
+      "hex": "#F8F4EE"
+    },
+    "gds.color.neutral.30": {
+      "tokenPath": "color.neutral.30",
+      "cssVar": "--gds-color-neutral-30",
+      "themeAccess": "theme.colors?.neutral?.['30']",
+      "hex": "#E0E0E0"
+    },
+    "gds.color.neutral.40": {
+      "tokenPath": "color.neutral.40",
+      "cssVar": "--gds-color-neutral-40",
+      "themeAccess": "theme.colors?.neutral?.['40']",
+      "hex": "#C1C1C1"
+    },
+    "gds.color.neutral.50": {
+      "tokenPath": "color.neutral.50",
+      "cssVar": "--gds-color-neutral-50",
+      "themeAccess": "theme.colors?.neutral?.['50']",
+      "hex": "#8F8F8F"
+    },
+    "gds.color.neutral.60": {
+      "tokenPath": "color.neutral.60",
+      "cssVar": "--gds-color-neutral-60",
+      "themeAccess": "theme.colors?.neutral?.['60']",
+      "hex": "#6D6D6D"
+    },
+    "gds.color.neutral.70": {
+      "tokenPath": "color.neutral.70",
+      "cssVar": "--gds-color-neutral-70",
+      "themeAccess": "theme.colors?.neutral?.['70']",
+      "hex": "#474747"
+    },
+    "gds.color.neutral.80": {
+      "tokenPath": "color.neutral.80",
+      "cssVar": "--gds-color-neutral-80",
+      "themeAccess": "theme.colors?.neutral?.['80']",
+      "hex": "#242424"
+    },
+    "gds.color.neutral.90": {
+      "tokenPath": "color.neutral.90",
+      "cssVar": "--gds-color-neutral-90",
+      "themeAccess": "theme.colors?.neutral?.['90']",
+      "hex": "#171717"
+    },
+    "gds.color.neutral.100": {
+      "tokenPath": "color.neutral.100",
+      "cssVar": "--gds-color-neutral-100",
+      "themeAccess": "theme.colors?.neutral?.['100']",
+      "hex": "#000000"
+    },
+    "gds.color.neutral.grey.10": {
+      "tokenPath": "color.neutral.grey.10",
+      "cssVar": "--gds-color-neutral-grey-10",
+      "themeAccess": "theme.colors?.neutral?.['grey.10']",
+      "hex": "#F8F7F5"
+    },
+    "gds.color.neutral.grey.30": {
+      "tokenPath": "color.neutral.grey.30",
+      "cssVar": "--gds-color-neutral-grey-30",
+      "themeAccess": "theme.colors?.neutral?.['grey.30']",
+      "hex": "#E5E5E5"
+    },
+    "gds.color.neutral.grey.40": {
+      "tokenPath": "color.neutral.grey.40",
+      "cssVar": "--gds-color-neutral-grey-40",
+      "themeAccess": "theme.colors?.neutral?.['grey.40']",
+      "hex": "#CECECE"
+    },
+    "gds.color.neutral.grey.60": {
+      "tokenPath": "color.neutral.grey.60",
+      "cssVar": "--gds-color-neutral-grey-60",
+      "themeAccess": "theme.colors?.neutral?.['grey.60']",
+      "hex": "#A5A5A5"
+    },
+    "gds.color.neutral.grey.80": {
+      "tokenPath": "color.neutral.grey.80",
+      "cssVar": "--gds-color-neutral-grey-80",
+      "themeAccess": "theme.colors?.neutral?.['grey.80']",
+      "hex": "#838383"
+    },
+    "gds.color.neutral.grey.90": {
+      "tokenPath": "color.neutral.grey.90",
+      "cssVar": "--gds-color-neutral-grey-90",
+      "themeAccess": "theme.colors?.neutral?.['grey.90']",
+      "hex": "#646464"
+    },
+    "gds.color.neutral.grey.100": {
+      "tokenPath": "color.neutral.grey.100",
+      "cssVar": "--gds-color-neutral-grey-100",
+      "themeAccess": "theme.colors?.neutral?.['grey.100']",
+      "hex": "#202020"
+    }
+  },
+  "palette": {
+    "$comment": "Raw palette tokens. Prefer semantic tokens above for UI work. Use palette only when the design explicitly targets a specific palette step with no semantic alias.",
+    "gds.color.yellow.5": {
+      "tokenPath": "color.yellow.5",
+      "themeAccess": "theme.colors?.yellow?.['5']",
+      "hex": "#FFFDF6"
+    },
+    "gds.color.yellow.10": {
+      "tokenPath": "color.yellow.10",
+      "themeAccess": "theme.colors?.yellow?.['10']",
+      "hex": "#FFF7E5"
+    },
+    "gds.color.yellow.20": {
+      "tokenPath": "color.yellow.20",
+      "themeAccess": "theme.colors?.yellow?.['20']",
+      "hex": "#FFF1C1"
+    },
+    "gds.color.yellow.30": {
+      "tokenPath": "color.yellow.30",
+      "themeAccess": "theme.colors?.yellow?.['30']",
+      "hex": "#FFD56B"
+    },
+    "gds.color.yellow.40": {
+      "tokenPath": "color.yellow.40",
+      "themeAccess": "theme.colors?.yellow?.['40']",
+      "hex": "#FFC000"
+    },
+    "gds.color.yellow.50": {
+      "tokenPath": "color.yellow.50",
+      "themeAccess": "theme.colors?.yellow?.['50']",
+      "hex": "#FFB800"
+    },
+    "gds.color.yellow.60": {
+      "tokenPath": "color.yellow.60",
+      "themeAccess": "theme.colors?.yellow?.['60']",
+      "hex": "#F29100"
+    },
+    "gds.color.yellow.70": {
+      "tokenPath": "color.yellow.70",
+      "themeAccess": "theme.colors?.yellow?.['70']",
+      "hex": "#D88200"
+    },
+    "gds.color.yellow.80": {
+      "tokenPath": "color.yellow.80",
+      "themeAccess": "theme.colors?.yellow?.['80']",
+      "hex": "#BD7A14"
+    },
+    "gds.color.yellow.90": {
+      "tokenPath": "color.yellow.90",
+      "themeAccess": "theme.colors?.yellow?.['90']",
+      "hex": "#805900"
+    },
+    "gds.color.yellow.100": {
+      "tokenPath": "color.yellow.100",
+      "themeAccess": "theme.colors?.yellow?.['100']",
+      "hex": "#3D2B00"
+    },
+    "gds.color.orange.5": {
+      "tokenPath": "color.orange.5",
+      "themeAccess": "theme.colors?.orange?.['5']",
+      "hex": "#FFFBF7"
+    },
+    "gds.color.orange.10": {
+      "tokenPath": "color.orange.10",
+      "themeAccess": "theme.colors?.orange?.['10']",
+      "hex": "#FFF8EF"
+    },
+    "gds.color.orange.20": {
+      "tokenPath": "color.orange.20",
+      "themeAccess": "theme.colors?.orange?.['20']",
+      "hex": "#FFDBB2"
+    },
+    "gds.color.orange.30": {
+      "tokenPath": "color.orange.30",
+      "themeAccess": "theme.colors?.orange?.['30']",
+      "hex": "#FFCC99"
+    },
+    "gds.color.orange.40": {
+      "tokenPath": "color.orange.40",
+      "themeAccess": "theme.colors?.orange?.['40']",
+      "hex": "#FFB56B"
+    },
+    "gds.color.orange.50": {
+      "tokenPath": "color.orange.50",
+      "themeAccess": "theme.colors?.orange?.['50']",
+      "hex": "#F57C00"
+    },
+    "gds.color.orange.60": {
+      "tokenPath": "color.orange.60",
+      "themeAccess": "theme.colors?.orange?.['60']",
+      "hex": "#CD4800"
+    },
+    "gds.color.orange.70": {
+      "tokenPath": "color.orange.70",
+      "themeAccess": "theme.colors?.orange?.['70']",
+      "hex": "#B33E00"
+    },
+    "gds.color.orange.80": {
+      "tokenPath": "color.orange.80",
+      "themeAccess": "theme.colors?.orange?.['80']",
+      "hex": "#943400"
+    },
+    "gds.color.orange.90": {
+      "tokenPath": "color.orange.90",
+      "themeAccess": "theme.colors?.orange?.['90']",
+      "hex": "#662400"
+    },
+    "gds.color.orange.95": {
+      "tokenPath": "color.orange.95",
+      "themeAccess": "theme.colors?.orange?.['95']",
+      "hex": "#331200"
+    },
+    "gds.color.red.90": { "tokenPath": "color.red.90", "themeAccess": "theme.colors?.red?.['90']", "hex": "#320707" },
+    "gds.color.blue.10": {
+      "tokenPath": "color.blue.10",
+      "themeAccess": "theme.colors?.blue?.['10']",
+      "hex": "#E3F6FF"
+    },
+    "gds.color.blue.20": {
+      "tokenPath": "color.blue.20",
+      "themeAccess": "theme.colors?.blue?.['20']",
+      "hex": "#D1EFFD"
+    },
+    "gds.color.blue.30": {
+      "tokenPath": "color.blue.30",
+      "themeAccess": "theme.colors?.blue?.['30']",
+      "hex": "#B8E1FF"
+    },
+    "gds.color.blue.40": {
+      "tokenPath": "color.blue.40",
+      "themeAccess": "theme.colors?.blue?.['40']",
+      "hex": "#4DB5FF"
+    },
+    "gds.color.blue.50": {
+      "tokenPath": "color.blue.50",
+      "themeAccess": "theme.colors?.blue?.['50']",
+      "hex": "#0069B4"
+    },
+    "gds.color.blue.60": {
+      "tokenPath": "color.blue.60",
+      "themeAccess": "theme.colors?.blue?.['60']",
+      "hex": "#00476E"
+    },
+    "gds.color.blue.70": {
+      "tokenPath": "color.blue.70",
+      "themeAccess": "theme.colors?.blue?.['70']",
+      "hex": "#003C5C"
+    },
+    "gds.color.blue.80": {
+      "tokenPath": "color.blue.80",
+      "themeAccess": "theme.colors?.blue?.['80']",
+      "hex": "#003552"
+    },
+    "gds.color.blue.90": {
+      "tokenPath": "color.blue.90",
+      "themeAccess": "theme.colors?.blue?.['90']",
+      "hex": "#001B29"
+    },
+    "gds.color.blue.95": {
+      "tokenPath": "color.blue.95",
+      "themeAccess": "theme.colors?.blue?.['95']",
+      "hex": "#000A0F"
+    },
+    "gds.color.lightBlue.5": {
+      "tokenPath": "color.lightBlue.5",
+      "themeAccess": "theme.colors?.lightBlue?.['5']",
+      "hex": "#F2FEFF"
+    },
+    "gds.color.lightBlue.10": {
+      "tokenPath": "color.lightBlue.10",
+      "themeAccess": "theme.colors?.lightBlue?.['10']",
+      "hex": "#DDFBFD"
+    },
+    "gds.color.lightBlue.20": {
+      "tokenPath": "color.lightBlue.20",
+      "themeAccess": "theme.colors?.lightBlue?.['20']",
+      "hex": "#D2EFF9"
+    },
+    "gds.color.lightBlue.30": {
+      "tokenPath": "color.lightBlue.30",
+      "themeAccess": "theme.colors?.lightBlue?.['30']",
+      "hex": "#9CD5F2"
+    },
+    "gds.color.lightBlue.40": {
+      "tokenPath": "color.lightBlue.40",
+      "themeAccess": "theme.colors?.lightBlue?.['40']",
+      "hex": "#78C6ED"
+    },
+    "gds.color.lightBlue.50": {
+      "tokenPath": "color.lightBlue.50",
+      "themeAccess": "theme.colors?.lightBlue?.['50']",
+      "hex": "#53B7E8"
+    },
+    "gds.color.lightBlue.60": {
+      "tokenPath": "color.lightBlue.60",
+      "themeAccess": "theme.colors?.lightBlue?.['60']",
+      "hex": "#35A0D6"
+    },
+    "gds.color.lightBlue.70": {
+      "tokenPath": "color.lightBlue.70",
+      "themeAccess": "theme.colors?.lightBlue?.['70']",
+      "hex": "#278CBF"
+    },
+    "gds.color.lightBlue.80": {
+      "tokenPath": "color.lightBlue.80",
+      "themeAccess": "theme.colors?.lightBlue?.['80']",
+      "hex": "#20739D"
+    },
+    "gds.color.lightBlue.90": {
+      "tokenPath": "color.lightBlue.90",
+      "themeAccess": "theme.colors?.lightBlue?.['90']",
+      "hex": "#175472"
+    },
+    "gds.color.lightBlue.95": {
+      "tokenPath": "color.lightBlue.95",
+      "themeAccess": "theme.colors?.lightBlue?.['95']",
+      "hex": "#0B2837"
+    },
+    "gds.color.green.5": {
+      "tokenPath": "color.green.5",
+      "themeAccess": "theme.colors?.green?.['5']",
+      "hex": "#F7FFF9"
+    },
+    "gds.color.green.10": {
+      "tokenPath": "color.green.10",
+      "themeAccess": "theme.colors?.green?.['10']",
+      "hex": "#EFFCF2"
+    },
+    "gds.color.green.20": {
+      "tokenPath": "color.green.20",
+      "themeAccess": "theme.colors?.green?.['20']",
+      "hex": "#C9E6CA"
+    },
+    "gds.color.green.30": {
+      "tokenPath": "color.green.30",
+      "themeAccess": "theme.colors?.green?.['30']",
+      "hex": "#95EEAD"
+    },
+    "gds.color.green.40": {
+      "tokenPath": "color.green.40",
+      "themeAccess": "theme.colors?.green?.['40']",
+      "hex": "#46E26F"
+    },
+    "gds.color.green.50": {
+      "tokenPath": "color.green.50",
+      "themeAccess": "theme.colors?.green?.['50']",
+      "hex": "#34A853"
+    },
+    "gds.color.green.60": {
+      "tokenPath": "color.green.60",
+      "themeAccess": "theme.colors?.green?.['60']",
+      "hex": "#13792F"
+    },
+    "gds.color.green.70": {
+      "tokenPath": "color.green.70",
+      "themeAccess": "theme.colors?.green?.['70']",
+      "hex": "#116A28"
+    },
+    "gds.color.green.80": {
+      "tokenPath": "color.green.80",
+      "themeAccess": "theme.colors?.green?.['80']",
+      "hex": "#0E5822"
+    },
+    "gds.color.green.90": {
+      "tokenPath": "color.green.90",
+      "themeAccess": "theme.colors?.green?.['90']",
+      "hex": "#0A4219"
+    },
+    "gds.color.green.95": {
+      "tokenPath": "color.green.95",
+      "themeAccess": "theme.colors?.green?.['95']",
+      "hex": "#051F0C"
+    },
+    "gds.color.teal.5": {
+      "tokenPath": "color.teal.5",
+      "themeAccess": "theme.colors?.teal?.['5']",
+      "hex": "#E3FCF9"
+    },
+    "gds.color.teal.10": {
+      "tokenPath": "color.teal.10",
+      "themeAccess": "theme.colors?.teal?.['10']",
+      "hex": "#D0F1ED"
+    },
+    "gds.color.teal.20": {
+      "tokenPath": "color.teal.20",
+      "themeAccess": "theme.colors?.teal?.['20']",
+      "hex": "#91F3E8"
+    },
+    "gds.color.teal.30": {
+      "tokenPath": "color.teal.30",
+      "themeAccess": "theme.colors?.teal?.['30']",
+      "hex": "#59EDDC"
+    },
+    "gds.color.teal.40": {
+      "tokenPath": "color.teal.40",
+      "themeAccess": "theme.colors?.teal?.['40']",
+      "hex": "#22E7D0"
+    },
+    "gds.color.teal.50": {
+      "tokenPath": "color.teal.50",
+      "themeAccess": "theme.colors?.teal?.['50']",
+      "hex": "#14B8A6"
+    },
+    "gds.color.teal.60": {
+      "tokenPath": "color.teal.60",
+      "themeAccess": "theme.colors?.teal?.['60']",
+      "hex": "#109384"
+    },
+    "gds.color.teal.70": {
+      "tokenPath": "color.teal.70",
+      "themeAccess": "theme.colors?.teal?.['70']",
+      "hex": "#0C6E63"
+    },
+    "gds.color.teal.80": {
+      "tokenPath": "color.teal.80",
+      "themeAccess": "theme.colors?.teal?.['80']",
+      "hex": "#084A42"
+    },
+    "gds.color.teal.90": {
+      "tokenPath": "color.teal.90",
+      "themeAccess": "theme.colors?.teal?.['90']",
+      "hex": "#042521"
+    },
+    "gds.color.teal.95": {
+      "tokenPath": "color.teal.95",
+      "themeAccess": "theme.colors?.teal?.['95']",
+      "hex": "#021210"
+    },
+    "gds.color.pink.5": {
+      "tokenPath": "color.pink.5",
+      "themeAccess": "theme.colors?.pink?.['5']",
+      "hex": "#FDEDF5"
+    },
+    "gds.color.pink.10": {
+      "tokenPath": "color.pink.10",
+      "themeAccess": "theme.colors?.pink?.['10']",
+      "hex": "#FBDAEB"
+    },
+    "gds.color.pink.20": {
+      "tokenPath": "color.pink.20",
+      "themeAccess": "theme.colors?.pink?.['20']",
+      "hex": "#F7B5D6"
+    },
+    "gds.color.pink.30": {
+      "tokenPath": "color.pink.30",
+      "themeAccess": "theme.colors?.pink?.['30']",
+      "hex": "#F390C2"
+    },
+    "gds.color.pink.40": {
+      "tokenPath": "color.pink.40",
+      "themeAccess": "theme.colors?.pink?.['40']",
+      "hex": "#F06BAD"
+    },
+    "gds.color.pink.50": {
+      "tokenPath": "color.pink.50",
+      "themeAccess": "theme.colors?.pink?.['50']",
+      "hex": "#EC4899"
+    },
+    "gds.color.pink.60": {
+      "tokenPath": "color.pink.60",
+      "themeAccess": "theme.colors?.pink?.['60']",
+      "hex": "#DE177A"
+    },
+    "gds.color.pink.70": {
+      "tokenPath": "color.pink.70",
+      "themeAccess": "theme.colors?.pink?.['70']",
+      "hex": "#A6115C"
+    },
+    "gds.color.pink.80": {
+      "tokenPath": "color.pink.80",
+      "themeAccess": "theme.colors?.pink?.['80']",
+      "hex": "#6F0C3D"
+    },
+    "gds.color.pink.90": {
+      "tokenPath": "color.pink.90",
+      "themeAccess": "theme.colors?.pink?.['90']",
+      "hex": "#37061F"
+    },
+    "gds.color.pink.95": {
+      "tokenPath": "color.pink.95",
+      "themeAccess": "theme.colors?.pink?.['95']",
+      "hex": "#1C030F"
+    },
+    "gds.color.purple.5": {
+      "tokenPath": "color.purple.5",
+      "themeAccess": "theme.colors?.purple?.['5']",
+      "hex": "#F8F1FE"
+    },
+    "gds.color.purple.10": {
+      "tokenPath": "color.purple.10",
+      "themeAccess": "theme.colors?.purple?.['10']",
+      "hex": "#EFE0FC"
+    },
+    "gds.color.purple.20": {
+      "tokenPath": "color.purple.20",
+      "themeAccess": "theme.colors?.purple?.['20']",
+      "hex": "#E0C2FA"
+    },
+    "gds.color.purple.30": {
+      "tokenPath": "color.purple.30",
+      "themeAccess": "theme.colors?.purple?.['30']",
+      "hex": "#CFA1F7"
+    },
+    "gds.color.purple.40": {
+      "tokenPath": "color.purple.40",
+      "themeAccess": "theme.colors?.purple?.['40']",
+      "hex": "#BE81F4"
+    },
+    "gds.color.purple.50": {
+      "tokenPath": "color.purple.50",
+      "themeAccess": "theme.colors?.purple?.['50']",
+      "hex": "#AF63F1"
+    },
+    "gds.color.purple.60": {
+      "tokenPath": "color.purple.60",
+      "themeAccess": "theme.colors?.purple?.['60']",
+      "hex": "#8E23EB"
+    },
+    "gds.color.purple.70": {
+      "tokenPath": "color.purple.70",
+      "themeAccess": "theme.colors?.purple?.['70']",
+      "hex": "#6C11BB"
+    },
+    "gds.color.purple.80": {
+      "tokenPath": "color.purple.80",
+      "themeAccess": "theme.colors?.purple?.['80']",
+      "hex": "#490B7E"
+    },
+    "gds.color.purple.90": {
+      "tokenPath": "color.purple.90",
+      "themeAccess": "theme.colors?.purple?.['90']",
+      "hex": "#23053D"
+    },
+    "gds.color.purple.95": {
+      "tokenPath": "color.purple.95",
+      "themeAccess": "theme.colors?.purple?.['95']",
+      "hex": "#130321"
+    }
+  },
+  "hexIndex": {
+    "$comment": "Reverse-lookup: hex → preferred semantic tokenPath. When Figma emits a raw hex with no variable name, look up here to find the best semantic token. Prefer the first entry (most semantic). '#fff' and '#FFF' normalize to '#FFFFFF'.",
+    "#F8F7F5": "color.bg.default",
+    "#FFFFFF": "color.bg.surface",
+    "#FAF9F9": "color.neutral.10",
+    "#FFB800": "color.bg.fill.primary",
+    "#F29100": "color.bg.fill.secondary",
+    "#FFF7E5": "color.bg.fill.hover",
+    "#E5E5E5": "color.bg.fill.disabled",
+    "#CECECE": "color.bg.fill.tooltip.default",
+    "#D21C1C": "color.bg.fill.error.primary.default",
+    "#BD1919": "color.bg.fill.error.primary.hover",
+    "#FDEDED": "color.bg.fill.error.secondary.default",
+    "#F7C5C5": "color.bg.fill.error.secondary.hover",
+    "#34A853": "color.bg.fill.success.primary.default",
+    "#1F843A": "color.bg.fill.success.primary.hover",
+    "#EFFCF2": "color.bg.fill.success.secondary.default",
+    "#C9E6CA": "color.bg.fill.success.secondary.hover",
+    "#FF8700": "color.bg.fill.warning.primary.default",
+    "#CD4800": "color.bg.fill.warning.primary.hover",
+    "#FFF8EF": "color.bg.fill.warning.secondary.default",
+    "#FFDBB2": "color.bg.fill.warning.secondary.hover",
+    "#0069B4": "color.bg.fill.info.primary.default",
+    "#00476E": "color.bg.fill.info.primary.hover",
+    "#E3F6FF": "color.bg.fill.info.secondary.default",
+    "#D1EFFD": "color.bg.fill.info.secondary.hover",
+    "#202020": "color.border.secondary",
+    "#000000": "color.text.default",
+    "#A3A3A3": "color.text.disabled",
+    "#474747": "color.text.title",
+    "#838383": "color.text.caption",
+    "#278CBF": "color.text.link.hover",
+    "#53B7E8": "color.text.link.default",
+    "#8F8F8F": "color.icon.disabled",
+    "#171717": "color.neutral.90",
+    "#E0E0E0": "color.neutral.30",
+    "#C1C1C1": "color.neutral.40",
+    "#6D6D6D": "color.neutral.60"
+  }
+}

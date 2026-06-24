@@ -1,0 +1,107 @@
+name: PR Head CI
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  actions: read
+  checks: write
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 'lts/*'
+          cache: yarn
+
+      - name: Yarn Install
+        run: yarn install --frozen-lockfile
+
+      - name: Yarn Lint
+        run: yarn run lint
+
+      - name: Yarn Test
+        run: yarn test
+
+      - name: Yarn Code Formatting
+        run: yarn format:check
+
+      - name: Yarn Build Storybook
+        run: yarn build-storybook
+
+      - name: Yarn Build Form Configurator
+        run: yarn build:form-configurator
+
+  build-ui:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 'lts/*'
+          cache: yarn
+
+      - name: Yarn Install
+        run: yarn install --frozen-lockfile
+
+      - name: Build UI library
+        run: |
+          set -eu
+          yarn type-check
+          yarn nx build ui
+          cp libs/ui/package.json dist/libs/ui/package.json
+          node libs/ui/scripts/postbuild-types.mjs
+
+      - name: Upload dist/libs/ui artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: dist-libs-ui
+          path: dist/libs/ui
+          retention-days: 7
+          if-no-files-found: error
+
+  verify-ui:
+    needs: build-ui
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 'lts/*'
+          cache: yarn
+
+      - name: Yarn Install
+        run: yarn install --frozen-lockfile
+
+      - name: Download dist/libs/ui artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: dist-libs-ui
+          path: dist/libs/ui
+
+      - name: Verify UI (knip · agadoo · madge · attw · publint · all phases)
+        run: yarn verify:ui:ci
+
+      - name: Upload verify report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: ui-verify-report
+          path: |
+            libs/ui/scripts/output/report.html
+            libs/ui/scripts/output/*.json
+            libs/ui/scripts/output/history
+          retention-days: 30

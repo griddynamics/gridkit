@@ -1,0 +1,13 @@
+import { get } from '@utils';
+
+import type { &PLACEHOLDER_COMPONENT_NAME&StyledProps } from './&PLACEHOLDER_COMPONENT_NAME&.types';
+
+export const &PLACEHOLDER_COMPONENT_NAME&Styled = (props: &PLACEHOLDER_COMPONENT_NAME&StyledProps) => {
+  const { theme: { &PLACEHOLDER_COMPONENT_NAME_LOWERCASE& } = {}, styles = {}, ...restProps } = props;
+  const computedStyles = [
+    get(&PLACEHOLDER_COMPONENT_NAME_LOWERCASE&, 'default', {}),
+    styles,
+  ];
+
+  return <div css={computedStyles} {...restProps} />;
+};

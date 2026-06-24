@@ -1,0 +1,53 @@
+import { Meta, Markdown } from '@storybook/addon-docs/blocks';
+
+<Meta title="Patterns & Best Practices/Cross-Device UX Notes" />
+
+# Cross-Device UX Notes
+
+This page outlines UX considerations for building seamless user experiences across devices — desktop, mobile, and tablets — using components from the GridKit Design System.
+
+## 1. Continuity Across Devices
+
+- Design with the assumption that users may start an activity on one device and continue it on another.
+- Use persistent session storage (e.g., localStorage, cookies, or cloud sync) to maintain progress.
+- Show clear visual indicators of saved or unsaved changes to reduce user confusion.
+
+## 2. Input Context Awareness
+
+- Touch targets should be at least 44×44px and spaced to avoid accidental taps on mobile.
+- Use native inputs or mobile-optimized components (e.g., select dropdowns, date pickers).
+- Avoid hover-only interactions — always support focus and tap as alternatives.
+
+## 3. Layout & Component Adaptability
+
+- Design components to be fluid and responsive. Avoid fixed widths or pixel-based layouts.
+- Collapse dense interfaces (e.g., filters, nav menus) into drawers or accordions on small screens.
+- Use layout primitives like `FlexContainer` and token-based spacing for adaptive composition.
+
+## 4. Cross-Device Sync Patterns
+
+- For real-time sync, use WebSockets or polling with cloud storage to reflect UI updates across tabs/devices.
+- Show inline activity indicators (e.g., "edited by another user") if applicable in collaborative UIs.
+- Provide graceful fallback and conflict resolution when state mismatches occur between devices.
+
+## 5. Authentication & Security
+
+- Persist sessions securely using HTTP-only cookies or OAuth tokens with refresh workflows.
+- Support multi-device login scenarios while notifying users of active sessions if needed.
+- For sensitive actions, require re-authentication or biometric prompts on mobile devices.
+
+## 6. Testing Across Devices
+
+- Test components on real hardware (phones, tablets, touch laptops) in addition to emulators.
+- Validate layout breakpoints, touch behaviors, and performance across network speeds.
+- Ensure accessibility modes (zoom, keyboard navigation, screen readers) are supported on all device types.
+
+## 7. Common Pitfalls to Avoid
+
+- Assuming hover = intention — always provide alternatives for touch users.
+- Hiding important actions in icon-only interfaces on mobile without labels.
+- Not syncing UI state (e.g., tab changes, filters, selections) across tabs/devices where expected.
+
+---
+
+_Last updated: July 1, 2025 · GridKit Design System_
