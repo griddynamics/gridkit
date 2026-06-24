@@ -12,4 +12,5 @@ package.json
 package-lock.json
 .github/
 plans/
+.claude/
 **/next-env.d.ts

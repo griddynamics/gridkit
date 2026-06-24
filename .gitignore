@@ -80,3 +80,9 @@ __screenshots__
 .vitest-artifacts
 
 plans/
+
+# Claude Code local tooling
+.claude/settings.local.json
+.claude/config.json
+.claude/.env
+.claude/tools/node_modules
