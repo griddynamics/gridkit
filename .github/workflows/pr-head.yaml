@@ -19,25 +19,25 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 'lts/*'
-          cache: yarn
+          cache: npm
 
-      - name: Yarn Install
-        run: yarn install --frozen-lockfile
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Yarn Lint
-        run: yarn run lint
+      - name: Lint
+        run: npm run lint
 
-      - name: Yarn Test
-        run: yarn test
+      - name: Test
+        run: npm test
 
-      - name: Yarn Code Formatting
-        run: yarn format:check
+      - name: Code Formatting
+        run: npm run format:check
 
-      - name: Yarn Build Storybook
-        run: yarn build-storybook
+      - name: Build Storybook
+        run: npm run build-storybook
 
-      - name: Yarn Build Form Configurator
-        run: yarn build:form-configurator
+      - name: Build Form Configurator
+        run: npm run build:form-configurator
 
   build-ui:
     runs-on: ubuntu-latest
@@ -49,16 +49,16 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 'lts/*'
-          cache: yarn
+          cache: npm
 
-      - name: Yarn Install
-        run: yarn install --frozen-lockfile
+      - name: Install dependencies
+        run: npm ci
 
       - name: Build UI library
         run: |
           set -eu
-          yarn type-check
-          yarn nx build ui
+          npm run type-check
+          npx nx build ui
           cp libs/ui/package.json dist/libs/ui/package.json
           node libs/ui/scripts/postbuild-types.mjs
 
@@ -81,10 +81,10 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 'lts/*'
-          cache: yarn
+          cache: npm
 
-      - name: Yarn Install
-        run: yarn install --frozen-lockfile
+      - name: Install dependencies
+        run: npm ci
 
       - name: Download dist/libs/ui artifact
         uses: actions/download-artifact@v8
@@ -93,7 +93,7 @@ jobs:
           path: dist/libs/ui
 
       - name: Verify UI (knip · agadoo · madge · attw · publint · all phases)
-        run: yarn verify:ui:ci
+        run: npm run verify:ui:ci
 
       - name: Upload verify report
         if: ${{ always() }}

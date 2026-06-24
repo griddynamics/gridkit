@@ -1,2 +1,2 @@
-yarn format:check
-yarn lint-staged
+npm run format:check
+npx lint-staged

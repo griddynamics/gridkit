@@ -30,19 +30,19 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
-        run: yarn install
+        run: npm install
 
       - name: Run tests
-        run: yarn test:form-configurator
+        run: npm run test:form-configurator
 
       - name: Bump versions
-        run: yarn version:form-configurator:${{ inputs.release_type }}
+        run: npm run version:form-configurator:${{ inputs.release_type }}
 
       - name: Build form-configurator packages
-        run: yarn build:form-configurator
+        run: npm run build:form-configurator
 
       - name: Publish packages
-        run: yarn publish:form-configurator
+        run: npm run publish:form-configurator
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 

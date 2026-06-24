@@ -18,8 +18,6 @@ node_modules
 *.sublime-workspace
 .cursor
 
-.npmrc
-
 # IDE - VSCode
 .vscode/*
 !.vscode/settings.json
@@ -82,7 +80,9 @@ __screenshots__
 plans/
 
 # Claude Code local tooling
-.claude/settings.local.json
-.claude/config.json
-.claude/.env
-.claude/tools/node_modules
+.claude/
+CLAUDE.md
+AGENTS.md
+
+# Lockfiles from other package managers
+yarn.lock

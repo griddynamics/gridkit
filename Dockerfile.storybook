@@ -1,15 +1,15 @@
 FROM node:24-alpine AS build
 WORKDIR /app
 
-COPY package.json yarn.lock nx.json tsconfig.base.json ./
+COPY package.json package-lock.json nx.json tsconfig.base.json ./
 COPY libs/ui/ libs/ui/
 COPY bin/export-theme.js bin/export-theme.js
 
-RUN yarn install --frozen-lockfile --non-interactive
+RUN npm ci
 
-RUN yarn nx build ui \
+RUN npx nx build ui \
  && node ./bin/export-theme.js \
- && yarn nx run ui:build-storybook
+ && npx nx run ui:build-storybook
 
 FROM nginx:alpine AS runner
 WORKDIR /usr/share/nginx/html

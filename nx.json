@@ -76,7 +76,7 @@
     "projects": ["ui"],
     "version": {
       "manifestRootsToUpdate": ["{projectRoot}", "dist/{projectRoot}"],
-      "preVersionCommand": "yarn build:ui",
+      "preVersionCommand": "npm run build:ui",
       "fallbackCurrentVersionResolver": "disk"
     },
     "changelog": {
