@@ -83,3 +83,4 @@ plans/
 # Claude Code local tooling
 .claude/
 AGENTS.md
+/stats.html

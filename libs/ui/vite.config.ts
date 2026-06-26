@@ -77,6 +77,14 @@ export default defineConfig(() => {
         plugins: [['@emotion/babel-plugin', { sourceMap: false, autoLabel: 'never', cssPropOptimization: true }]],
       }),
       nxCopyAssetsPlugin(['*.md', 'llms.txt', 'gridKit_logo.png', 'package.json']),
+      {
+        name: 'copy-styles',
+        writeBundle() {
+          const src = path.join(__dirname, 'src/styles.css');
+          const dest = path.join(__dirname, '../../dist/libs/ui/styles.css');
+          if (existsSync(src)) copyFileSync(src, dest);
+        },
+      },
       copyAiMarkdownPlugin(),
       dts({ entryRoot: 'src', tsconfigPath: path.join(__dirname, 'tsconfig.lib.json') }),
       visualizer({ open: enableVisualizer, filename: 'stats.html', template: 'treemap' }),
@@ -95,6 +103,7 @@ export default defineConfig(() => {
         entry: {
           index: 'src/index.ts',
           'ai/index': 'src/ai/index.ts',
+          'utils/a2ui/index': 'src/utils/a2ui/index.tsx',
         },
       },
       rollupOptions: {
