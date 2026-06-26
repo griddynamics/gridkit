@@ -48,6 +48,7 @@ Thumbs.db
 # Unit tests
 coverage/*
 libs/ui/coverage/*
+/libs/coverage/*
 
 # storybook
 storybook-static/*
@@ -81,8 +82,4 @@ plans/
 
 # Claude Code local tooling
 .claude/
-CLAUDE.md
 AGENTS.md
-
-# Lockfiles from other package managers
-yarn.lock

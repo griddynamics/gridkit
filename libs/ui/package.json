@@ -51,6 +51,7 @@
     }
   },
   "dependencies": {
+    "@react-spring/web": "^10.1.2",
     "@visx/curve": "^3.12.0",
     "embla-carousel-react": "^8.6.0",
     "@visx/gradient": "^3.12.0",
