@@ -69,7 +69,7 @@ import {
 } from 'gd-design-library/ai';
 
 // A2UI mode — React renderer (pass same A2UIActionDefinition[] for wired handlers)
-import { renderA2UISpec } from 'gd-design-library';
+import { renderA2UISpec } from 'gd-design-library/renderer';
 ```
 
 ## Quick Start
@@ -230,7 +230,7 @@ type A2UIActionDefinition = {
 **`renderA2UISpec` signature with actions:**
 
 ```typescript
-import { renderA2UISpec } from 'gd-design-library';
+import { renderA2UISpec } from 'gd-design-library/renderer';
 import type { A2UIActionDefinition } from 'gd-design-library/ai';
 
 function renderA2UISpec(spec?: Pick<A2UISpec, 'ui'> | null, actions?: A2UIActionDefinition[]): ReactNode;
@@ -283,7 +283,7 @@ const instruction = buildA2UISystemPrompt();
 
 ```typescript
 import type { A2UIActionDefinition } from 'gd-design-library/ai';
-import { renderA2UISpec } from 'gd-design-library';
+import { renderA2UISpec } from 'gd-design-library/renderer';
 
 // Define once — used by both buildA2UISystemPrompt and renderA2UISpec
 const actions: A2UIActionDefinition[] = [
@@ -594,7 +594,7 @@ yarn test:ai:watch
 
 <!-- AUTO-GENERATED:COMPONENTS:START -->
 
-_66 components total — generated from `libs/ui/src/ai/schemas/` on 2026-06-24._
+_66 components total — generated from `libs/ui/src/ai/schemas/` on 2026-06-26._
 
 ### Other
 

@@ -27,15 +27,15 @@
       "require": "./ai/index.cjs"
     },
     "./ai/ui-specification-schema.json": "./ai/a2ui/ui-specification-schema.json",
-    "./ai/*": {
-      "types": "./ai/*.d.ts",
-      "import": "./ai/*.js",
-      "require": "./ai/*.cjs"
+    "./renderer": {
+      "types": "./utils/a2ui/index.d.ts",
+      "import": "./utils/a2ui/index.js",
+      "require": "./utils/a2ui/index.cjs"
     },
-    "./*": {
-      "types": "./*.d.ts",
-      "import": "./*.js",
-      "require": "./*.cjs"
+    "./tokens": {
+      "types": "./tokens/index.d.ts",
+      "import": "./tokens/index.js",
+      "require": "./tokens/index.cjs"
     }
   },
   "peerDependencies": {

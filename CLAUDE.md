@@ -69,6 +69,18 @@ Path aliases defined in `libs/ui/vitest.alias.ts` and `libs/ui/tsconfig.json`: `
 
 **Build output** — Vite produces both ESM (`.js`, `preserveModules`) and CJS (`.cjs`) to `dist/libs/ui`. Post-build step (`scripts/postbuild-types.mjs`) patches `.d.ts` exports. React and `@emotion/*` are externalized. `bin/export-theme.js` serializes `defaultTheme` to JSON from the built dist; it runs automatically as part of `npm run storybook` and `npm run build-storybook`.
 
+**Package subpaths** — the published package exposes four explicit subpaths (wildcards are intentionally removed to prevent internal path coupling):
+
+| Subpath                        | Contents                                                                           |
+| ------------------------------ | ---------------------------------------------------------------------------------- |
+| `gd-design-library`            | Components, hooks, tokens, assets                                                  |
+| `gd-design-library/renderer`   | `renderA2UISpec`, `A2UI_RENDERER_COMPONENT_TYPES`, `A2UICustomComponentDefinition` |
+| `gd-design-library/ai`         | Prompt builders, schemas, discovery, A2UI spec tools                               |
+| `gd-design-library/tokens`     | Raw token modules and `defaultTheme` without the component tree                    |
+| `gd-design-library/styles.css` | Global CSS reset + Google Fonts (Fira Sans/Code) — **must be imported explicitly** |
+
+`styles.css` is not auto-imported by the main entry. App entry points must add `import 'gd-design-library/styles.css'` explicitly.
+
 **AI integration — two modes:**
 
 - **Code mode** (`gd-design-library/ai`) — utilities for LLMs generating TSX source code: component discovery (`discovery.ts`), schema validation (`validation.ts`), and prompt builders (`prompts.ts`) for Claude/GPT-4/Gemini. Tests live in `src/ai/__tests__/`.
