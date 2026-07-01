@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "chrome-devtools-mcp": {
+      "command": "npx",
+      "args": ["-y", "chrome-devtools-mcp@latest"],
+      "env": {}
+    },
+    "figma": {
+      "command": "npx",
+      "args": ["-y", "figma-developer-mcp@latest", "--stdio"],
+      "env": {}
+    },
+    "atlassian": {
+      "command": "uvx",
+      "args": ["mcp-atlassian"],
+      "env": {}
+    }
+  }
+}
