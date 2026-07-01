@@ -81,5 +81,6 @@ __screenshots__
 plans/
 
 # Claude Code local tooling
+.mcp.json
 AGENTS.md
 /stats.html

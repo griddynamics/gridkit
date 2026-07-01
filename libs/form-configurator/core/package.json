@@ -3,7 +3,7 @@
   "version": "0.0.9",
   "description": "Framework-agnostic schema-driven form configurator core library",
   "author": "Grid Dynamics",
-  "license": "Private",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/griddynamics/rnd-composable-commerce"

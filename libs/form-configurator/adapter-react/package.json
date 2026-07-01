@@ -3,7 +3,7 @@
   "version": "0.0.12",
   "description": "React adapter for form-configurator - schema-driven form builder",
   "author": "Grid Dynamics",
-  "license": "Private",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/griddynamics/rnd-composable-commerce"

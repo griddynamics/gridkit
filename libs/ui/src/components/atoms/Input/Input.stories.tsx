@@ -408,7 +408,7 @@ WithAdornments.play = withAdornmentsActions;
 
 export const WithStartAdornment = createStory({
   variant: 'email',
-  defaultValue: 'oleksii.povolotskyi@griddynamics.com',
+  defaultValue: 'user@example.com',
   adornmentStart: <span style={{ padding: '0 0 0 10px', display: 'flex', color: '#838383' }}>@</span>,
 });
 WithStartAdornment.play = withStartAdornmentActions;
