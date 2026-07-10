@@ -58,6 +58,7 @@ function ButtonRenderer({
       tabIndex={component.tabIndex}
       iconStart={renderNamedIcon(getLeadingIconName(component))}
       iconEnd={renderNamedIcon(getTopLevelString(component, 'iconEnd'))}
+      className={component.className}
       styles={getMergedComponentStyles(component)}
       onClick={onClick}
     >

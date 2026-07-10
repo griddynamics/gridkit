@@ -34,6 +34,8 @@ export const listRenderers = {
       items={getListItems(component)}
       variant={component.variant as never}
       size={component.size === 'sm' || component.size === 'md' ? component.size : undefined}
+      aria-label={component.ariaLabel}
+      className={component.className}
       styles={getMergedComponentStyles(component)}
     />
   ),

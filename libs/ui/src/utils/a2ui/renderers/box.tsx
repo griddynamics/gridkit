@@ -22,6 +22,7 @@ export const boxRenderers = {
         className={component.className}
         styles={getMergedComponentStyles(component)}
         onClick={component.actions?.length ? () => component.actions!.forEach((id) => dispatchAction?.(id)) : undefined}
+        aria-label={component.ariaLabel}
       >
         {renderChildren(component.children)}
         {!component.children?.length && text ? <Typography>{text}</Typography> : null}

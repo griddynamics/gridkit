@@ -33,6 +33,7 @@ export const RadioGroup = forwardRef<HTMLFieldSetElement, PropsWithChildren<Radi
     align,
     justify,
     wrapItems,
+    'aria-label': ariaLabel,
   } = props;
   const { theme } = useTheme();
   const generatedId = useId();
@@ -63,6 +64,7 @@ export const RadioGroup = forwardRef<HTMLFieldSetElement, PropsWithChildren<Radi
       styles={styles}
       data-testid={COMPONENT_NAME}
       className={className}
+      aria-label={ariaLabel}
     >
       <Column gutter={get(theme, 'spacing.sm', 'theme.spacing.sm')}>
         <RadioLayoutStyled

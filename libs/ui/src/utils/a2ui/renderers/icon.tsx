@@ -19,6 +19,7 @@ export const iconRenderers = {
       fillSvg={component.fillSvg || getAttributeString(component, 'fillSvg')}
       className={component.className}
       tabIndex={component.tabIndex}
+      aria-label={component.ariaLabel}
       styles={getComponentStyles(component.styling)}
       onClick={
         dispatchAction && component.actions?.length

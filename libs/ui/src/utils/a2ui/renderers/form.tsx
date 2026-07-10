@@ -20,6 +20,7 @@ export const formRenderers = {
   ) => (
     <Form
       key={component.id}
+      className={component.className}
       styles={getComponentStyles(component.styling)}
       onFormSubmit={
         dispatchAction && component.actions?.length
@@ -65,6 +66,7 @@ export const formRenderers = {
         debounceCallbackTime={component.debounceCallbackTime}
         adornmentStart={renderNamedIcon(getLeadingIconName(component))}
         adornmentEnd={renderNamedIcon(getTopLevelString(component, 'iconEnd'))}
+        className={component.className}
         styles={getMergedComponentStyles(component)}
         {...(isCheckbox && checked !== undefined ? { checked } : {})}
         {...(isCheckbox && component.indeterminate !== undefined ? { indeterminate: component.indeterminate } : {})}
@@ -110,6 +112,7 @@ export const formRenderers = {
       }
       maxCharacters={component.maxCharacters}
       ariaDescribedBy={component.ariaDescribedBy}
+      className={component.className}
       styles={getMergedComponentStyles(component)}
       onChange={
         dispatchAction && component.actions?.length
@@ -133,9 +136,15 @@ export const formRenderers = {
       showCharacterCount={component.showCharacterCount}
       showAttachmentButton={component.showAttachmentButton}
       showSendButton={component.showSendButton}
+      showSendButtonTooltip={component.showSendButtonTooltip}
       sendButtonLabel={component.sendButtonLabel}
+      attachmentButtonLabel={component.attachmentButtonLabel}
+      recordingState={component.recordingState}
+      recordButtonLabel={component.recordButtonLabel}
       minRows={component.minRows}
       maxRows={component.maxRows}
+      maxHeight={typeof component.maxHeight === 'number' ? component.maxHeight : undefined}
+      className={component.className}
       styles={getComponentStyles(component.styling)}
       onSend={
         dispatchAction && component.actions?.length
@@ -173,6 +182,7 @@ export const formRenderers = {
         iconStart: component.isIcon ? undefined : renderNamedIcon(getLeadingIconName(component)),
         iconEnd: component.isIcon ? undefined : renderNamedIcon(getTopLevelString(component, 'iconEnd')),
       }}
+      className={component.className}
       styles={getMergedComponentStyles(component)}
       onChange={
         dispatchAction && component.actions?.length

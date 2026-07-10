@@ -15,6 +15,8 @@ export const counterRenderers = {
       min={component.min ?? getAttributeNumber(component, 'min')}
       max={component.max ?? getAttributeNumber(component, 'max')}
       isDisabled={component.disabled}
+      aria-label={component.ariaLabel}
+      className={component.className}
       styles={getMergedComponentStyles(component)}
       onCounterChange={
         dispatchAction && component.actions?.length

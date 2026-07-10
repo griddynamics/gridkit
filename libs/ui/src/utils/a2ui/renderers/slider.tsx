@@ -32,6 +32,8 @@ export const sliderRenderers = {
       step={component.step ?? getAttributeNumber(component, 'step')}
       value={typeof component.value === 'number' ? component.value : undefined}
       disabled={component.disabled}
+      aria-label={component.ariaLabel}
+      className={component.className}
       styles={getMergedComponentStyles(component)}
       onChange={
         dispatchAction && component.actions?.length
@@ -49,6 +51,8 @@ export const sliderRenderers = {
       key={component.id}
       count={getSliderDotsCount(component)}
       activeIndex={getSliderDotsActiveIndex(component)}
+      aria-label={component.ariaLabel}
+      className={component.className}
       styles={getComponentStyles(component.styling)}
       onDotClick={
         dispatchAction && component.actions?.length
