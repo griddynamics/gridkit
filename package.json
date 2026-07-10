@@ -19,7 +19,11 @@
     "test:ai": "nx test ui --run src/ai/__tests__",
     "test:ai:watch": "nx test ui src/ai/__tests__",
     "test:form-configurator": "nx run-many --target=test --projects=form-configurator-core,form-configurator-adapter-react --coverage --watch=false",
+    "test:design-core": "vitest --config=libs/design-core/vitest.config.ts --run",
     "type-check": "nx run-many --target=typecheck --projects=ui",
+    "type-check:design-core": "tsc -p libs/design-core/tsconfig.lib.json --noEmit",
+    "type-check:spike-web-components": "tsc -p libs/spike-web-components/tsconfig.lib.json --noEmit && tsc -p libs/spike-web-components/tsconfig.harness.json",
+    "build:spike-web-components": "npm run type-check:spike-web-components && nx lint spike-web-components && nx build spike-web-components",
     "update-readme-stats": "node libs/ui/scripts/update-readme-stats.mjs",
     "check:readme-stats": "node libs/ui/scripts/update-readme-stats.mjs --check",
     "verify:ui:run": "concurrently --group --kill-others-on-fail=false --names=api,knip,tree,agadoo,lint,ssr,cjs,attw,size,rsc -c=cyan,magenta,yellow,green,blue,red,gray,white,bgBlue,bgMagenta \"node libs/ui/scripts/audit-api.mjs --json\" \"node libs/ui/scripts/knip-check.mjs --json\" \"node libs/ui/scripts/treeshake-check.mjs --json\" \"node libs/ui/scripts/agadoo-check.mjs --json\" \"node libs/ui/scripts/build-lint.mjs --json\" \"node libs/ui/scripts/ssr-check.mjs --json\" \"node libs/ui/scripts/cjs-check.mjs --json\" \"node libs/ui/scripts/attw-check.mjs --json\" \"node libs/ui/scripts/size-check.mjs --json\" \"node libs/ui/scripts/rsc-render-check.mjs --json\"",
@@ -29,6 +33,7 @@
     "verify:ui:full": "npm run verify:ui:run && node libs/ui/scripts/install-check.mjs --json && node libs/ui/scripts/build-summary.mjs",
     "build:ui": "npm run check:readme-stats && npm run generate-ai-docs && npm run type-check && nx lint ui && nx build ui && cp libs/ui/package.json dist/libs/ui/package.json && node libs/ui/scripts/postbuild-types.mjs",
     "build:form-configurator": "npm run type-check && nx run-many --target=lint --projects=form-configurator-core,form-configurator-adapter-react && nx run-many --target=build --projects=form-configurator-core,form-configurator-adapter-react",
+    "build:design-core": "npm run type-check:design-core && nx lint design-core && nx build design-core",
     "lint": "nx run-many --target=lint --all",
     "lint:fix": "nx run-many --target=lint --all --fix",
     "format": "prettier --write . | grep -v '(unchanged)' | tee prettier-changes.log && echo \"Total files formatted: $(cat prettier-changes.log | wc -l)\"",
@@ -55,6 +60,8 @@
   "private": true,
   "workspaces": [
     "libs/ui",
+    "libs/design-core",
+    "libs/spike-web-components",
     "libs/form-configurator/core",
     "libs/form-configurator/adapter-react"
   ],

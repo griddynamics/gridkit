@@ -1,0 +1,17 @@
+{
+  "name": "spike-web-components",
+  "version": "0.0.0",
+  "private": true,
+  "description": "CTORNDSD-581 spike: disposable Lit/web-components PoC for gd-design-library's atoms. Not published. See plans/ctorndsd-581-lit-webcomponents-spike.md.",
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "dependencies": {
+    "lit": "^3.2.1",
+    "gd-design-core": "*"
+  },
+  "devDependencies": {
+    "@lit/react": "^1.0.7",
+    "react": "^18.3.1"
+  }
+}
