@@ -2,6 +2,15 @@
   "name": "@griddynamics/gd-design-system",
   "version": "1.0.0",
   "license": "MIT",
+  "homepage": "https://github.com/griddynamics/gd-design-system#readme",
+  "keywords": [
+    "design-system",
+    "react",
+    "components",
+    "design-tokens",
+    "ai-schemas",
+    "gridkit"
+  ],
   "bin": {
     "create-component": "./bin/create-component.js"
   },

@@ -10,6 +10,31 @@ Nx monorepo containing the GridKit design system packages.
 | `gd-form-configurator`       | ![npm](https://img.shields.io/npm/v/gd-form-configurator)       | JSON-Schema form engine (AJV + Zustand)         |
 | `gd-form-configurator-react` | ![npm](https://img.shields.io/npm/v/gd-form-configurator-react) | React bindings for gd-form-configurator         |
 
+## Quick start
+
+Install the primary package:
+
+```bash
+npm install gd-design-library
+```
+
+Import components and styles:
+
+```tsx
+import { Button, ThemeProvider } from 'gd-design-library';
+import 'gd-design-library/styles.css';
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <Button variant="primary">Click me</Button>
+    </ThemeProvider>
+  );
+}
+```
+
+See the [Storybook](https://github.com/griddynamics/gd-design-system#storybook) for interactive component examples and full API documentation.
+
 ## Setup
 
 ```bash
