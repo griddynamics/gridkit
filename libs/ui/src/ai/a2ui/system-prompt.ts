@@ -22,6 +22,7 @@
 
 import { A2UI_COMPONENT_MAP, A2UI_AVAILABLE_ICONS, A2UI_BUTTON_VARIANTS, A2UI_ICON_CATALOG } from './component-map';
 import { type A2UIImageSources, normalizeImageSources } from './image-policy';
+import { A2UI_SECURITY_LIMITS, A2UI_ALWAYS_BLOCKED_URL_SCHEMES } from './security';
 import { type A2UIActionDefinition, type A2UICustomComponentMeta } from './spec-schema';
 import {
   FIGMA_COLOR_MAP,
@@ -401,6 +402,17 @@ export function buildA2UISystemPrompt(options?: A2UISystemPromptOptions): string
             'FORBIDDEN: Any image URL from any other host, plus page URLs, search links, or hotlink-protected content.',
             'If you are not highly confident that a direct image URL will render publicly, do NOT guess. Omit the image component entirely.',
           ]),
+    '',
+    '## SECURITY RULES — STRICTLY ENFORCED',
+    '',
+    'These rules are enforced by the renderer at runtime. A spec that violates them will not render as intended.',
+    '',
+    `1. NEVER use these URL schemes for any href, src, or path value: ${A2UI_ALWAYS_BLOCKED_URL_SCHEMES.join(', ')}`,
+    '   This applies to link.href, image/avatar/card-image/chat-image-gallery src, sidebar/header nav items, and breadcrumb/option href.',
+    "2. NEVER include attributes.dangerouslySetInnerHTML, or any function-like value, in a component's attributes object.",
+    '   All text content is rendered as plain text — do not attempt to inject markup or scripts through label, value, or attributes.',
+    `3. Keep the component tree within ${A2UI_SECURITY_LIMITS.maxTreeDepth} nesting levels and ${A2UI_SECURITY_LIMITS.maxNodeCount} total component nodes.`,
+    `4. Keep the overall JSON spec under ${A2UI_SECURITY_LIMITS.maxPayloadBytes} bytes. Do not emit excessively large rows/columns/options arrays to work around this.`,
     '',
     '## ACCESSIBILITY RULES',
     '',

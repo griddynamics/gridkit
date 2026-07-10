@@ -1,7 +1,13 @@
 import type { ReactNode } from 'react';
 import { Link } from '@components';
 import type { A2UIComponent } from '../../../ai';
+import { isSafeA2UIUrl } from '../../../ai';
 import { getMergedComponentStyles, getComponentText, getAttributeString } from '../helpers';
+
+function getSafeLinkHref(component: A2UIComponent) {
+  const href = (component.href as string | undefined) || getAttributeString(component, 'href');
+  return isSafeA2UIUrl(href) ? href : undefined;
+}
 
 export const linkRenderers = {
   link: (
@@ -11,7 +17,7 @@ export const linkRenderers = {
   ) => (
     <Link
       key={component.id}
-      href={(component.href as string | undefined) || getAttributeString(component, 'href')}
+      href={getSafeLinkHref(component)}
       target={((component.target as string | undefined) || getAttributeString(component, 'target')) as never}
       rel={(component.rel as string | undefined) || getAttributeString(component, 'rel')}
       variant={component.variant as never}

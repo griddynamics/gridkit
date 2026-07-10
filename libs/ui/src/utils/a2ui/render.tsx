@@ -1,9 +1,15 @@
 import { cloneElement, Fragment, isValidElement, type ReactElement, type ReactNode } from 'react';
-import { Box, Typography } from '@components';
+import { Box, InlineNotification, Typography } from '@components';
 import type { A2UIActionDefinition, A2UIComponent } from '../../ai';
-import { A2UI_COMPONENT_MAP } from '../../ai';
-import type { DispatchAction, RenderableA2UISpec, Renderer, A2UICustomComponentDefinition } from './types';
-import { ROOT_TEST_ID } from './constants';
+import { A2UI_COMPONENT_MAP, checkA2UISpecLimits } from '../../ai';
+import type {
+  DispatchAction,
+  RenderableA2UISpec,
+  Renderer,
+  A2UICustomComponentDefinition,
+  A2UISecurityOptions,
+} from './types';
+import { ROOT_TEST_ID, SECURITY_FALLBACK_TEST_ID } from './constants';
 import { getMergedComponentStyles, getComponentText } from './helpers';
 import { renderers } from './renderers';
 
@@ -154,10 +160,23 @@ function createCustomRendererMap(
 export function renderA2UISpec(
   spec?: RenderableA2UISpec | null,
   actions?: A2UIActionDefinition[],
-  customComponents?: A2UICustomComponentDefinition[]
+  customComponents?: A2UICustomComponentDefinition[],
+  securityOptions?: A2UISecurityOptions
 ): ReactNode {
   if (!spec?.ui?.components?.length) {
     return null;
+  }
+
+  const limitCheck = checkA2UISpecLimits(spec, securityOptions?.limits);
+
+  if (!limitCheck.valid) {
+    securityOptions?.onSecurityViolation?.(limitCheck.violations);
+
+    return (
+      <InlineNotification data-testid={SECURITY_FALLBACK_TEST_ID} variant="error">
+        This content could not be displayed because it exceeded a configured size or complexity limit.
+      </InlineNotification>
+    );
   }
 
   const dispatchAction = actions?.length ? createDispatchAction(spec, actions) : undefined;

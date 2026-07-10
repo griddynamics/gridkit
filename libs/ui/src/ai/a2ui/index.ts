@@ -58,3 +58,15 @@ export {
 } from './system-prompt';
 
 export { type A2UIImageSources, normalizeImageSources } from './image-policy';
+
+export {
+  // Security
+  A2UI_SECURITY_LIMITS,
+  A2UI_ALWAYS_BLOCKED_URL_SCHEMES,
+  A2UI_DEFAULT_ALLOWED_URL_SCHEMES,
+  checkA2UISpecLimits,
+  isSafeA2UIUrl,
+  sanitizeA2UIAttributes,
+  type A2UISecurityLimits,
+  type A2UISpecLimitCheck,
+} from './security';

@@ -12,6 +12,7 @@ import {
   InlineNotification,
 } from '@components';
 import type { A2UIComponent } from '../../../ai';
+import { isSafeA2UIUrl } from '../../../ai';
 import {
   getMergedComponentStyles,
   getComponentStyles,
@@ -19,6 +20,11 @@ import {
   getAttributeString,
   getAttributeNumber,
 } from '../helpers';
+
+function getSafeCardImageSrc(component: A2UIComponent) {
+  const src = getAttributeString(component, 'src');
+  return isSafeA2UIUrl(src) ? src : undefined;
+}
 
 export const cardRenderers = {
   card: (component: A2UIComponent, renderChildren: (children?: A2UIComponent[]) => ReactNode[]) => (
@@ -89,7 +95,7 @@ export const cardRenderers = {
   'card-image': (component: A2UIComponent) => (
     <CardImage
       key={component.id}
-      src={getAttributeString(component, 'src')}
+      src={getSafeCardImageSrc(component)}
       alt={getAttributeString(component, 'alt') || component.label || component.id}
       width={getAttributeNumber(component, 'width')}
       height={getAttributeNumber(component, 'height')}
