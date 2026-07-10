@@ -42,7 +42,21 @@ function sanitizeAxisConfig(raw: unknown, axisName: string, logPrefix: string) {
   return axis;
 }
 
+const sanitizedChartAttributesCache = new WeakMap<A2UIComponent, ReturnType<typeof computeChartAttributes>>();
+
 function sanitizeChartAttributes(component: A2UIComponent) {
+  const cached = sanitizedChartAttributesCache.get(component);
+  if (cached) {
+    return cached;
+  }
+
+  const result = computeChartAttributes(component);
+  sanitizedChartAttributesCache.set(component, result);
+
+  return result;
+}
+
+function computeChartAttributes(component: A2UIComponent) {
   // Merge root-level props as fallback — LLMs often place data/xKey/series/xAxis/yAxis at root
   // rather than inside attributes. Root-level is the base; attributes takes precedence.
   const attrs = { ...(component as unknown as Record<string, unknown>), ...(component.attributes ?? {}) };
