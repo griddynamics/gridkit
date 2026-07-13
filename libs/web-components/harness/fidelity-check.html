@@ -3,8 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <title>Visual fidelity check — CTORNDSD-581</title>
+    <!-- The real gd-design-library/styles.css is imported inside fidelity-check.tsx (not as a
+         <link> here) — a raw <link href="../../ui/src/styles.css"> 404s because this dev
+         server's root is libs/web-components, and a browser resolves a <link>'s relative href
+         as a URL against that root (it cannot escape it via ../), whereas Vite's own JS module
+         resolution for a plain `import '...css'` in a .tsx entry follows real relative
+         filesystem paths from the importing file, reaching outside the dev-server root fine. -->
   </head>
-  <body style="margin: 0; font-family: sans-serif">
+  <body>
     <div id="root"></div>
     <script type="module" src="./fidelity-check.tsx"></script>
   </body>

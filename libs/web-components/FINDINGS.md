@@ -304,9 +304,164 @@ resolve to `colors.border.default`), and the old `primary` corresponded to the r
 only the enum member names were offset from the real component's vocabulary. Fixed by renaming
 `InputColorVariantName`'s members to exactly match `InputColorVariant` (`libs/design-core/src/tokenResolvers/{input,select}.ts`,
 consuming `gd-input.ts`/`gd-select.ts`, and the `fidelity-check.tsx` harness, which now passes
-`color="primary"` directly instead of a translated `color="default"`) — a cross-platform audit
-confirmed no other resolver (Button, Checkbox, Typography) had an equivalent naming or value
-drift from `libs/ui`'s real tokens/types.
+`color="primary"` directly instead of a translated `color="default"`). A follow-up
+cross-component audit (below) found further, different-shaped gaps in the other 4 atoms —
+not naming drift, but values that bypassed the shared theme entirely.
+
+## 10. Cross-component shared-token audit — hardcoded values that bypassed the theme
+
+Prompted by a direct question ("why checkbox not used shared tokens") and then generalized
+into a full pass over all 5 Lit components, checking every render-time style value against
+whether it flows through `gd-design-core`'s resolver + the live `theme` property, or is a
+local literal that silently ignores a consumer's theme override. Found 4 real instances, all
+fixed; Typography had none (every style value already flowed through `resolveTypographyStyle`).
+
+- **Checkbox — label typography "fix" below was itself wrong, and has been reverted.** Originally
+  recorded here: `resolveCheckboxStyle` didn't resolve `font.family`/`font.size.small`/
+  `font.line.height.small` for the label, so `labelFontFamily`/`labelFontSize`/`labelLineHeight`
+  were added, sourced from `libs/ui/src/tokens/checkbox.ts`'s `label` block. **That block is
+  never actually consumed by the real component** — `Checkbox.tsx`'s label is a bare
+  `{children && <span data-testid="...">{children}</span>}` with no `css`/`style` prop at all;
+  the token file defines a shape nothing reads. Caught by measuring the real Storybook
+  Checkbox's label directly: `fontSize: 16px, lineHeight: 24px` (the ambient body/`p`-scale
+  context it inherits from) — not `14px`/`20px` (the `small` scale the reverted fix assumed).
+  Reverted: removed `labelColor`/`labelFontFamily`/`labelFontSize`/`labelLineHeight` from
+  `ResolvedCheckboxStyle` entirely, and `gd-checkbox.ts`'s label span is now bare
+  (`<span><slot></slot></span>`, no style at all) — matching the real component's actual
+  reliance on pure ambient CSS inheritance, which crosses the Shadow DOM boundary the same way
+  as any other DOM inheritance for inherited properties like `color`/`font-family`/`font-size`.
+  **Lesson recorded directly in the resolver's doc comment:** verify a token is actually
+  consumed by the component's `.tsx`/`Styled.tsx` before mirroring it — a token FILE defining a
+  shape doesn't mean any component reads it.
+- **Button — `rounded` radius resolved from a local hardcoded map, never the theme.**
+  `gd-button.ts` had its own `RADIUS` lookup table, read only by `this.rounded` — `this.theme`
+  was never consulted, unlike the real `ButtonStyled.tsx`'s
+  `get(rest, ['radius', $rounded], '0px')`. A consumer's theme override of `radius.lg` (etc.)
+  would be silently ignored, and the map lived only in the Lit adapter (React Native's port
+  would have had to re-hardcode its own copy). Fixed: added a shared `resolveButtonRadius(theme,
+rounded)` to `libs/design-core/src/tokenResolvers/button.ts` that reads `theme.radius` first
+  and falls back to the real per-scale values (an improvement over the real component's
+  scale-unaware `'0px'`-only fallback); `gd-button.ts` now calls it instead of a local map.
+- **Input — label color hardcoded to `'#000000'`, helper-text color map never read the theme.**
+  `gd-input.ts`'s `labelStyle` was a literal `{ color: '#000000' }`, and its module-level
+  `HELPER_TEXT_COLOR` map (correct values, confirmed against `colors.text.*`) was a static
+  object, never a function of `this.theme`. Both happened to match the default theme's output
+  but would ignore any `colors.text.*` override. Fixed: added `labelColor` and
+  `helperTextColor` to `ResolvedInputStyle` (`libs/design-core/src/tokenResolvers/input.ts`,
+  reading `colors.text.default` / the real per-variant `colors.text.*` path respectively),
+  removed the local map and literal from `gd-input.ts`.
+- **Select — trigger/dropdown padding hardcoded (`'8px'`/`'0'`), ignoring `spacing.sm`/`spacing.none`.**
+  Unlike Select's border-radius (legitimately always `0px` — the real `select.ts` token file
+  has no radius reference at all, so there's nothing to bypass), padding IS theme-driven in the
+  real component (`button.default.padding`/`dropdown.padding` both call `get(theme, 'spacing.*', ...)`).
+  Fixed: added `triggerPadding`/`dropdownPadding` to `ResolvedSelectStyle`
+  (`libs/design-core/src/tokenResolvers/select.ts`), wired into `gd-select.ts`.
+- **Select — no `width`/`minWidth`/`maxWidth` props at all, so an empty trigger collapsed to
+  icon-only width and clipped dropdown option text.** Reported directly (a screenshot showed
+  "Alph"/"Gam" cut off mid-word). The real `Select.tsx` defaults `width: '100%'` and applies it
+  to its single outermost styled element; `gd-select.ts` had no equivalent, so with no selected
+  value and no `placeholder` slot content, `:host` (unset width, `inline-block`) shrank to its
+  intrinsic content (just the chevron), and `_positionDropdown()` copies the trigger's rendered
+  width onto the dropdown 1:1, clipping option text that didn't fit. Fixed: added `width`
+  (default `'100%'`) / `minWidth` / `maxWidth` properties, applied directly to the host's own
+  inline style in `willUpdate` (needed because a percentage width on a shadow-DOM child only
+  resolves against a _definite_ containing-block width, and `:host` itself was `auto`), and
+  threaded `maxWidth`/`minWidth` into `_positionDropdown()` too. Verified live via
+  `chrome-devtools-mcp`: dropdown width went from a collapsed ~90px to the full container width,
+  and `scrollWidth === clientWidth` for every option (no clipping).
+- **Button — a variant's hover/active/disabled color change, computed correctly by the shared
+  resolver, never reached the visible text.** The real `ButtonStyled.tsx` sets `color` once on
+  the `<button>` itself; its content span sets no `color` of its own, so it inherits — a single
+  cascade point. `gd-button.ts`'s content `<span>` sets its own explicit `color` from a separate,
+  base-variant-only `resolved.label` object instead of inheriting, so `resolved.container`'s
+  correctly-computed `containerHover`/`containerActive`/`containerDisabled` color overrides
+  (e.g. Secondary's hover text turning black) updated the invisible `<button>` element but never
+  the span actually rendering the text. Separately, `containerDisabled` had no `color` override
+  at all for any variant, missing `button.default`'s universal `'&:disabled, &:disabled *'` rule
+  that mutes text to `colors.text.disabled` on top of each variant's own background/border
+  change. Fixed: added `color: textDisabled` to every variant's `containerDisabled`
+  (`libs/design-core/src/tokenResolvers/button.ts`); `gd-button.ts`'s label span now reuses the
+  same merged `containerStyle.color` instead of the stale `resolved.label.color`. Verified live:
+  a disabled Primary button's text now measures `rgb(163, 163, 163)` (`#A3A3A3`, real
+  `colors.text.disabled`) instead of staying black.
+- **Select — dropdown rendered with a heavy black border, from the native `popover` UA
+  stylesheet, not a token.** Reported directly (a screenshot showed a thick black rectangle
+  around "Alpha/Beta/Gamma"). Not a `gd-design-core` value mismatch — Chromium's default
+  `[popover]` UA stylesheet applies its own `border: solid` (resolves to black via
+  `currentColor`) to any popover element, and `.dropdown`'s CSS never reset it, so the browser
+  default won over the real component's actual look (`boxShadow` only, no border at all, per
+  `select.ts`'s `dropdown` token block). Fixed: added `border: none;` to `.dropdown` in
+  `gd-select.ts`. Verified live: computed `border` is now `0px none`, leaving only the correct
+  `boxShadow`.
+- **Button — content font-weight/font-family/font-size didn't match the real component at all,
+  outside a context that happened to already provide Fira Sans.** Reported directly. Root
+  cause: `resolveButtonVariantStyle` never resolved `font.family`/`font.size.p` at all (only
+  `label.fontWeight`), and `gd-button.ts`'s `<button>` only had a static `font-family: inherit`
+  — no font-size reset. In the harness's plain-`sans-serif`-body context, a native `<button>`'s
+  own Chromium UA-default form-control font (`13.3333px`) leaked straight through, since
+  `font-family: inherit` resets family but not size. Measured directly against Storybook's real
+  Button: real span `{fontWeight:500, fontFamily:'"Fira Sans", sans-serif', fontSize:'16px'}` vs
+  the unfixed Lit span `{fontWeight:500 (already OK), fontFamily:'sans-serif', fontSize:'13.3333px'}`
+  — every OTHER component (Input/Select/Typography/Checkbox) already resolves `font.family`
+  explicitly from theme; Button was the only one relying on ambient CSS inheritance instead.
+  Also found while comparing DOM structure: the real `ContentStyled` span is
+  `display:flex; justify-content:center; align-items:center; width:100%` (`button.content.default`),
+  while the Lit span was a bare, unstyled `block` span. Fixed: added `fontFamily`/`fontSize` to
+  `ResolvedButtonStyle` (`libs/design-core/src/tokenResolvers/button.ts`, sourced from the SAME
+  `font.family`/`font.size.p` tokens Input/Select/Typography already share), applied them plus
+  `fontWeight` directly to the `<button>` (removing the now-redundant static
+  `font-family: inherit`), and gave the label span `button.content.default`'s layout. Verified
+  live: all 5 button instances now measure `fontWeight:500, fontFamily:'"Fira Sans", sans-serif',
+fontSize:'16px'`, matching Storybook's real Button exactly.
+- **Input — label/helperText spans had no explicit `fontFamily`, unlike the `<input>` element
+  right next to them.** Same root cause as Button's, found while re-checking for the same
+  pattern: `.label`/`.helper` relied on a static `font-family: inherit` CSS rule, while
+  `resolveInputStyle`'s `fontFamily` was already applied inline to the `<input>` itself — an
+  internal inconsistency where the label/helper text could silently render in a different font
+  than the input box beside it, in any context without an ambient Fira Sans reset. Fixed:
+  reused the SAME already-computed `resolved.fontFamily` for both `labelStyle`/`helperStyle` in
+  `gd-input.ts` (no `gd-design-core` change needed — the value already existed), removed the
+  now-redundant `.label, .helper { font-family: inherit }` rule. Verified live: label, helper,
+  and input all measure `"Fira Sans", sans-serif`.
+
+**Follow-up: the Button fix above was reported as "still not corresponding" after landing —
+root cause was the test harness, not the code.** `harness/fidelity-check.html` never loaded the
+actual Fira Sans font file (no `@font-face`/Google Fonts import at all), unlike Storybook (which
+imports `gd-design-library/styles.css`, confirmed via `document.fonts` showing `Fira Sans 500
+loaded` there vs. zero registered fonts in the harness). So `font-family: "Fira Sans", sans-serif`
+silently fell back to the OS's generic sans-serif substitute — CSS values were byte-for-byte
+identical to Storybook's (verified via `getComputedStyle` both before and after), but the
+_glyphs_ rendered differently since the actual font file was never fetched. Fixed: added the same
+Fira Sans/Fira Code Google Fonts `<link>` tags from `styles.css` to `fidelity-check.html`.
+Re-verified via `document.fonts` (now shows `Fira Sans 400`/`500 loaded`) and a fresh screenshot —
+Button text now visibly renders at true medium weight.
+
+**Prompted by the same report, re-audited Select and Typography against their real component
+`.tsx` source (not just their token files) — both confirmed already correct, no changes needed:**
+
+- **Select's trigger** measured directly against Storybook: `fontWeight: 400, fontSize: 16px,
+padding: 8px, border: 1px solid #E5E5E5` — matches `resolveSelectStyle`'s existing
+  `font.weight.normal`/`font.size.p`/`spacing.sm`/default-variant-border resolution exactly. (The
+  real `DropdownButtonStyled` renders through GridKit's own `<Button>` internally, which raised a
+  concern that Button's `font.weight.medium` might bleed through — it doesn't, because
+  `DropdownButtonStyled` never forwards a `theme` prop to that inner `<Button>`, so its own
+  variant/weight styling never activates; only `select.ts`'s own `button.default`/`button.<color>`
+  CSS — which has no fontWeight of its own — actually applies.)
+- **Typography**'s `TypographyStyled.tsx` confirmed to genuinely consume `typography.base`/
+  `typography.<variant>`/`typography.<variant>.<size>`/`typography.styleVariant.<name>` exactly as
+  `resolveTypographyStyle` mirrors, and to leave `color` unresolved when no `color` prop is
+  passed (same as `gd-typography.ts`) — no drift found.
+
+**Deliberately left as-is (structural, not a shared-token bug):** a few static, non-color
+layout values remain hardcoded inside each component's Lit `static styles` CSS block (e.g.
+Checkbox's `gap: 8px`, Input's `.border { border-radius: 0 }`, Select's per-option
+`padding: 8px`) rather than the render-time inline `styleMap` objects the fixes above target.
+`static styles` is a shared adopted stylesheet across all instances of a custom element, not
+naturally per-instance-reactive to a `theme` property the way an inline style is — making
+these theme-reactive would require moving them into per-render inline styles too, a larger,
+consistent-effort change not scoped to this pass. All match the real component's current
+default values today; flagged here so they aren't mistaken for already-covered by the fixes
+above.
 
 ## Extrapolated full-catalog migration cost
 

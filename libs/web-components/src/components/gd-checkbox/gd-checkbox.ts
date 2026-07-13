@@ -152,16 +152,10 @@ export class GdCheckbox extends LitElement {
                 </svg>`
               : nothing}
         </span>
-        <span
-          style=${styleMap({
-            color: resolved.labelColor,
-            fontFamily: `${resolved.labelFontFamily}`,
-            fontSize: `${resolved.labelFontSize}`,
-            lineHeight: `${resolved.labelLineHeight}`,
-          })}
-        >
-          <slot></slot>
-        </span>
+        <!-- Bare span, no style — matches Checkbox.tsx's real unstyled label span exactly:
+             no css/style prop at all, purely ambient-inherited color/font, which crosses
+             the shadow boundary the same way regular DOM inheritance does. -->
+        <span><slot></slot></span>
       </label>
     `;
   }

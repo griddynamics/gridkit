@@ -15,6 +15,14 @@ export interface ResolvedInputStyle {
   disabledColor: string;
   borderWidth: string | number;
   borderColor: string;
+  /** `libs/ui/src/components/atoms/Input/Input.tsx` renders its `label` prop through
+   *  `<InputHelper>` with no explicit `color`/`size`, i.e. `InputHelper`'s own defaults
+   *  (`color: 'primary'`, `size: 'md'`) — which always resolves to `colors.text.default`
+   *  regardless of Input's own `color` variant. */
+  labelColor: string;
+  /** `Input.tsx` renders `helperText` through `<InputHelper color={color} size="sm">` —
+   *  unlike the label, this IS color-variant-dependent (`helper.<variant>.sm.color`). */
+  helperTextColor: string;
 }
 
 export const COLOR_VARIANT_BORDER_PATH: Record<InputColorVariantName, string> = {
@@ -31,6 +39,22 @@ export const COLOR_VARIANT_BORDER_DEFAULT: Record<InputColorVariantName, string>
   success: '#34A853',
   warning: '#FFB800',
   error: '#D21C1C',
+};
+
+/** Real libs/ui/src/tokens/input.ts `helper.<variant>.sm.color` path per variant. */
+export const HELPER_TEXT_COLOR_PATH: Record<InputColorVariantName, string> = {
+  primary: 'colors.text.default',
+  success: 'colors.text.success',
+  warning: 'colors.text.primary',
+  error: 'colors.text.error',
+};
+
+/** Real libs/ui/src/tokens/colors.ts text values per variant — used as the `get()` fallback. */
+export const HELPER_TEXT_COLOR_DEFAULT: Record<InputColorVariantName, string> = {
+  primary: '#000000',
+  success: '#1F843A',
+  warning: '#FFB800',
+  error: '#BD1919',
 };
 
 /**
@@ -53,6 +77,12 @@ export function resolveInputStyle(
       theme,
       COLOR_VARIANT_BORDER_PATH[color] ?? COLOR_VARIANT_BORDER_PATH.primary,
       COLOR_VARIANT_BORDER_DEFAULT[color] ?? COLOR_VARIANT_BORDER_DEFAULT.primary
+    ),
+    labelColor: get(theme, 'colors.text.default', '#000000'),
+    helperTextColor: get(
+      theme,
+      HELPER_TEXT_COLOR_PATH[color] ?? HELPER_TEXT_COLOR_PATH.primary,
+      HELPER_TEXT_COLOR_DEFAULT[color] ?? HELPER_TEXT_COLOR_DEFAULT.primary
     ),
   };
 }

@@ -1,5 +1,5 @@
-export { resolveButtonVariantStyle } from './button';
-export type { ButtonVariantName, ResolvedButtonStyle, ButtonVariantStateStyle } from './button';
+export { resolveButtonVariantStyle, resolveButtonRadius } from './button';
+export type { ButtonVariantName, ButtonRoundedName, ResolvedButtonStyle, ButtonVariantStateStyle } from './button';
 
 export { resolveTypographyStyle } from './typography';
 export type { TypographyVariantName, TypographyStyleVariantName, ResolvedTypographyStyle } from './typography';

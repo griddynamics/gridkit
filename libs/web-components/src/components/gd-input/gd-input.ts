@@ -9,17 +9,6 @@ import {
   type DesignCoreTheme,
 } from 'gd-design-core';
 
-/** libs/ui/src/tokens/input.ts's `helper` section: the label (size=md) always renders
- *  `colors.text.default` regardless of `color` — only the helperText (size=sm) is
- *  color-variant-dependent. Not exposed by `resolveInputStyle` (Input-structural chrome,
- *  not shared across adapters), so hardcoded here matching the real token values exactly. */
-const HELPER_TEXT_COLOR: Record<InputColorVariantName, string> = {
-  primary: '#000000',
-  success: '#1F843A',
-  warning: '#FFB800',
-  error: '#BD1919',
-};
-
 /**
  * CTORNDSD-581 Input port (per the implementation plan's Migration Example) — the highest-risk
  * small atom: a controlled `value` over a custom-element boundary has no reconciliation
@@ -56,10 +45,6 @@ export class GdInput extends LitElement {
       flex-direction: column;
       align-items: flex-start;
       gap: 4px;
-    }
-    .label,
-    .helper {
-      font-family: inherit;
     }
     .label {
       font-size: 14px;
@@ -215,8 +200,13 @@ export class GdInput extends LitElement {
     };
     const borderStyle = { borderWidth: `${resolved.borderWidth}`, borderColor: resolved.borderColor };
     const outlineStyle = { outlineColor: focusColor };
-    const labelStyle = { color: '#000000' };
-    const helperStyle = { color: HELPER_TEXT_COLOR[this.color] ?? HELPER_TEXT_COLOR.primary };
+    // Reuses the SAME resolved.fontFamily as the `<input>` itself (rowStyle above) — the real
+    // InputHelper (label/helperText) has no explicit fontFamily of its own either, relying on
+    // ambient inheritance from the host app's global reset, which would leave these two spans
+    // free to silently diverge from the input's own (explicitly-resolved) font in a standalone
+    // render with no such reset present.
+    const labelStyle = { color: resolved.labelColor, fontFamily: `${resolved.fontFamily}` };
+    const helperStyle = { color: resolved.helperTextColor, fontFamily: `${resolved.fontFamily}` };
 
     return html`
       <div class="outer">

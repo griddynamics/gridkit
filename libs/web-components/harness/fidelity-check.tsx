@@ -1,3 +1,14 @@
+// The real gd-design-library/styles.css — imported from dist/libs/ui (build output), not
+// libs/ui/src (source). `libs/ui/styles.css` doesn't exist at the package root at all — only
+// the built dist/libs/ui/styles.css does (postbuild copies it there) — so the package's own
+// export map (`"./styles.css": "./styles.css"`) only resolves once built, even for local
+// monorepo consumption via the node_modules/gd-design-library symlink (which points at source).
+// Run `npm run build:ui` first if this import 404s. Deliberate test-harness-only asset import
+// (font/reset CSS for visual-fidelity comparison), not a source-code dependency on
+// gd-design-library internals — the boundary rule below exists to stop internal path coupling
+// in shipped code, which this isn't.
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import '../../../dist/libs/ui/styles.css';
 import * as React from 'react';
 import { useState } from 'react';
 import { createRoot } from 'react-dom/client';

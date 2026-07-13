@@ -1,22 +1,18 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
-import { resolveButtonVariantStyle, type ButtonVariantName, type DesignCoreTheme } from 'gd-design-core';
+import {
+  resolveButtonVariantStyle,
+  resolveButtonRadius,
+  type ButtonVariantName,
+  type ButtonRoundedName,
+  type DesignCoreTheme,
+} from 'gd-design-core';
 
-/** Mirrors libs/ui/src/tokens/radius.ts — Button's own default is `rounded="none"`
- *  (`button.ts` `attrs.rounded: 'none'`), i.e. square corners, not rounded. */
-export type ButtonRounded = 'none' | 'default' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'round';
-
-const RADIUS: Record<ButtonRounded, string> = {
-  none: '0px',
-  default: '6px',
-  xs: '2px',
-  sm: '4px',
-  md: '8px',
-  lg: '16px',
-  xl: '32px',
-  round: '9999px',
-};
+/** Button's own default is `rounded="none"` (`button.ts` `attrs.rounded: 'none'`), i.e.
+ *  square corners, not rounded. Radius scale itself is resolved from `theme` dynamically via
+ *  `resolveButtonRadius` (`gd-design-core`), not hardcoded here — same as the real component. */
+export type ButtonRounded = ButtonRoundedName;
 
 /**
  * CTORNDSD-581 Button port (per the implementation plan's Migration Example) — the platform's smoke test.
@@ -42,7 +38,6 @@ export class GdButton extends LitElement {
       display: inline-block;
     }
     button {
-      font-family: inherit;
       border-style: solid;
       border-width: 0;
       border-color: transparent;
@@ -88,15 +83,42 @@ export class GdButton extends LitElement {
     const resolved = resolveButtonVariantStyle(this.theme, this.variant);
     const isDisabled = this.disabled || this.isLoading;
     const focusColor = (this.theme.colors as { border?: { focus?: string } } | undefined)?.border?.focus ?? '#0069B4';
-    const radius = RADIUS[this.rounded] ?? RADIUS.none;
+    const radius = resolveButtonRadius(this.theme, this.rounded);
 
     const containerStyle = {
       borderRadius: radius,
+      // Real `button.ts` has no explicit fontFamily/fontSize of its own — the real `<button>`
+      // inherits both from the host app's global reset. Set explicitly here (not just
+      // `font-family: inherit` in static CSS) so a standalone `gd-button` renders correctly
+      // regardless of ambient page context, instead of silently falling through to a native
+      // `<button>`'s own UA-default form-control font.
+      fontFamily: `${resolved.fontFamily}`,
+      fontSize: `${resolved.fontSize}`,
+      fontWeight: `${resolved.label.fontWeight}`,
       ...resolved.container,
       ...(this._hovered && !isDisabled ? resolved.containerHover : {}),
       ...(this._pressed && !isDisabled ? resolved.containerActive : {}),
       ...(isDisabled ? resolved.containerDisabled : {}),
       outlineColor: focusColor,
+    };
+    // The real component's `color` is set once on the `<button>` itself and inherits down to
+    // its content span (which sets no `color` of its own) — so a hover/active/disabled color
+    // change is a single source of truth there. This span sets its own explicit `color`
+    // instead of inheriting, so it must reuse the SAME merged `containerStyle.color`
+    // (not `resolved.label.color`, which is base-variant-only and would otherwise silently
+    // ignore every hover/active/disabled color change computed above).
+    // `button.content.default` (libs/ui/src/tokens/button.ts) — static, non-token structural
+    // values (not resolved via theme in the real component either), matching `ContentStyled`'s
+    // layout so multi-line/icon+text content centers the same way as the real component
+    // instead of a bare inline span.
+    const labelStyle = {
+      color: containerStyle.color,
+      fontWeight: resolved.label.fontWeight,
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: '100%',
+      minWidth: '0',
     };
 
     return html`
@@ -113,7 +135,7 @@ export class GdButton extends LitElement {
         @mouseup=${() => (this._pressed = false)}
       >
         <slot name="icon-start"></slot>
-        <span style=${styleMap(resolved.label)}><slot></slot></span>
+        <span style=${styleMap(labelStyle)}><slot></slot></span>
         <slot name="icon-end"></slot>
         ${this.isLoading ? html`<span class="spinner" aria-hidden="true"></span>` : nothing}
       </button>

@@ -10,6 +10,7 @@ const theme: DesignCoreTheme = {
     border: { default: '#cccccc', primary: '#000000' },
   },
   values: { borderThin: '1px' },
+  spacing: { sm: '10px', none: 0 },
 };
 
 describe('resolveSelectStyle', () => {
@@ -37,5 +38,17 @@ describe('resolveSelectStyle', () => {
     expect(style.surfaceColor).toBe('#FFFFFF');
     expect(style.hoverBackgroundColor).toBe('#FFF7E5');
     expect(style.boxShadow).toBe('0px 8px 15px 1px rgba(0, 0, 0, 0.20)');
+  });
+
+  it("honors the theme's own spacing scale for trigger/dropdown padding, not a hardcoded literal", () => {
+    const style = resolveSelectStyle(theme);
+    expect(style.triggerPadding).toBe('10px');
+    expect(style.dropdownPadding).toBe(0);
+  });
+
+  it('falls back to the real spacing scale for padding when no theme is passed', () => {
+    const style = resolveSelectStyle({});
+    expect(style.triggerPadding).toBe('8px');
+    expect(style.dropdownPadding).toBe(0);
   });
 });

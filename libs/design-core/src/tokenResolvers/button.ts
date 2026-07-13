@@ -4,6 +4,9 @@ import type { DesignCoreTheme } from '../types';
 /** Mirrors gd-design-library's `ButtonVariant` enum values (libs/ui/src/components/atoms/types). */
 export type ButtonVariantName = 'primary' | 'secondary' | 'tertiary' | 'outlined' | 'text' | 'inherit';
 
+/** Mirrors gd-design-library's `ButtonStyledProps['$rounded']` (libs/ui/src/components/atoms/Button/Button.types.ts). */
+export type ButtonRoundedName = 'none' | 'default' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'round';
+
 export interface ButtonVariantStateStyle {
   backgroundColor?: string;
   color?: string;
@@ -17,6 +20,42 @@ export interface ResolvedButtonStyle {
   containerDisabled: ButtonVariantStateStyle;
   textColor: string;
   label: { color: string; fontWeight: string | number };
+  /** Real `button.ts` has no explicit `fontFamily`/`fontSize` of its own — the real
+   *  `<button>` inherits both from the host app's global reset (`gd-design-library/styles.css`
+   *  sets the base font on `body`/form elements). Resolved explicitly here from the SAME
+   *  `font.family`/`font.size.p` tokens Input/Select/Typography already share, so a themed
+   *  `gd-button` renders correctly on its own — standalone, Shadow-DOM-isolated — instead of
+   *  silently depending on whatever ambient font (or none) the host page happens to provide,
+   *  which a native `<button>`'s own UA-default form-control font (Chromium: 13.3333px) would
+   *  otherwise leak through as. */
+  fontFamily: string | number;
+  fontSize: string | number;
+}
+
+/** Real libs/ui/src/tokens/radius.ts values — used as the `get()` fallback so a themeless
+ *  render still shows the correct radius per `rounded` value, not one flat `0px`
+ *  (`ButtonStyled.tsx`'s own `get(rest, ['radius', $rounded], '0px')` fallback is scale-unaware;
+ *  this is intentionally more correct while still deferring to a real theme's `radius` object
+ *  first, exactly like the real component does). */
+const RADIUS_DEFAULT: Record<ButtonRoundedName, string> = {
+  none: '0px',
+  default: '6px',
+  xs: '2px',
+  sm: '4px',
+  md: '8px',
+  lg: '16px',
+  xl: '32px',
+  round: '9999px',
+};
+
+/**
+ * Resolves `ButtonStyled.tsx`'s `borderRadius = get(rest, ['radius', $rounded], '0px')` —
+ * kept separate from `resolveButtonVariantStyle` since `rounded` is an orthogonal axis to
+ * `variant`. Reads the theme's `radius` object dynamically (so a consumer's theme override
+ * is honored, not just this resolver's own hardcoded scale), the same as the real component.
+ */
+export function resolveButtonRadius(theme: DesignCoreTheme, rounded: ButtonRoundedName = 'none'): string {
+  return get(theme, ['radius', rounded], RADIUS_DEFAULT[rounded] ?? RADIUS_DEFAULT.none);
 }
 
 const TRANSPARENT = 'transparent';
@@ -47,13 +86,20 @@ export function resolveButtonVariantStyle(
   const borderDisabled = get(theme, 'colors.border.disabled', '#E5E5E5');
   const borderThin = get(theme, 'values.borderThin', '1px');
   const fontWeightMedium = get(theme, 'font.weight.medium', 500);
+  // `button.default`'s `'&:disabled, &:disabled *'` rule (libs/ui/src/tokens/button.ts) sets
+  // this color universally, on top of whatever each variant's own `'&:disabled, &.disabled'`
+  // background/border override is — Emotion merges both since they're different selector
+  // keys, so every variant's text mutes to this color when disabled, not just its background.
+  const textDisabled = get(theme, 'colors.text.disabled', '#A3A3A3');
+  const fontFamily = get(theme, 'font.family', '"Fira Sans", sans-serif');
+  const fontSize = get(theme, 'font.size.p', '16px');
 
-  const variants: Record<ButtonVariantName, ResolvedButtonStyle> = {
+  const variants: Record<ButtonVariantName, Omit<ResolvedButtonStyle, 'fontFamily' | 'fontSize'>> = {
     primary: {
       container: { backgroundColor: fillPrimary, color: textBlack },
       containerHover: { backgroundColor: fillSecondary },
       containerActive: { backgroundColor: fillWarningPrimary },
-      containerDisabled: { backgroundColor: fillDisabled },
+      containerDisabled: { backgroundColor: fillDisabled, color: textDisabled },
       textColor: textBlack,
       label: { color: textBlack, fontWeight: fontWeightMedium },
     },
@@ -61,7 +107,7 @@ export function resolveButtonVariantStyle(
       container: { backgroundColor: fillHover, color: textDefault },
       containerHover: { backgroundColor: fillPrimary, color: textBlack },
       containerActive: { backgroundColor: fillSecondary, color: textBlack },
-      containerDisabled: { backgroundColor: fillDisabled },
+      containerDisabled: { backgroundColor: fillDisabled, color: textDisabled },
       textColor: textDefault,
       label: { color: textDefault, fontWeight: fontWeightMedium },
     },
@@ -69,7 +115,7 @@ export function resolveButtonVariantStyle(
       container: { backgroundColor: TRANSPARENT, color: textDefault },
       containerHover: { backgroundColor: fillHover },
       containerActive: { backgroundColor: fillPrimary },
-      containerDisabled: { backgroundColor: TRANSPARENT },
+      containerDisabled: { backgroundColor: TRANSPARENT, color: textDisabled },
       textColor: textDefault,
       label: { color: textDefault, fontWeight: fontWeightMedium },
     },
@@ -82,7 +128,7 @@ export function resolveButtonVariantStyle(
       },
       containerHover: { backgroundColor: fillHover },
       containerActive: { backgroundColor: fillPrimary, color: textBlack },
-      containerDisabled: { backgroundColor: TRANSPARENT, borderColor: borderDisabled },
+      containerDisabled: { backgroundColor: TRANSPARENT, borderColor: borderDisabled, color: textDisabled },
       textColor: textDefault,
       label: { color: textDefault, fontWeight: fontWeightMedium },
     },
@@ -90,7 +136,7 @@ export function resolveButtonVariantStyle(
       container: { backgroundColor: TRANSPARENT, color: textDefault },
       containerHover: { color: textPrimary },
       containerActive: { color: textSecondary },
-      containerDisabled: {},
+      containerDisabled: { color: textDisabled },
       textColor: textDefault,
       label: { color: textDefault, fontWeight: fontWeightMedium },
     },
@@ -98,11 +144,14 @@ export function resolveButtonVariantStyle(
       container: { backgroundColor: TRANSPARENT, color: 'inherit' },
       containerHover: {},
       containerActive: {},
-      containerDisabled: {},
+      // `button.default`'s disabled color rule applies unconditionally in the real CSS
+      // cascade — `inherit`'s own block never overrides `&:disabled` — so even this variant
+      // mutes to the real disabled gray rather than keeping `color: 'inherit'` when disabled.
+      containerDisabled: { color: textDisabled },
       textColor: 'inherit',
       label: { color: 'inherit', fontWeight: 'inherit' },
     },
   };
 
-  return variants[variant] ?? variants.primary;
+  return { ...(variants[variant] ?? variants.primary), fontFamily, fontSize };
 }

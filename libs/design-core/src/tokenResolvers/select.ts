@@ -12,6 +12,10 @@ export interface ResolvedSelectStyle {
   borderColor: string;
   hoverBackgroundColor: string;
   boxShadow: string;
+  /** `select.ts`'s `button.default.padding` — `get(theme, 'spacing.sm', ...)`. */
+  triggerPadding: string | number;
+  /** `select.ts`'s `dropdown.padding`/`margin` — both `get(theme, 'spacing.none', ...)`. */
+  dropdownPadding: string | number;
 }
 
 /**
@@ -40,5 +44,7 @@ export function resolveSelectStyle(
     ),
     hoverBackgroundColor: get(theme, 'colors.bg.fill.hover', '#FFF7E5'),
     boxShadow: get(theme, 'shadows.box["3"]', '0px 8px 15px 1px rgba(0, 0, 0, 0.20)'),
+    triggerPadding: get(theme, 'spacing.sm', '8px'),
+    dropdownPadding: get(theme, 'spacing.none', 0),
   };
 }

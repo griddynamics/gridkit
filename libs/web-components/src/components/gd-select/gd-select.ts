@@ -56,6 +56,10 @@ export class GdSelect extends LitElement {
     }
     .dropdown {
       margin: 0;
+      /* The popover UA stylesheet applies a default solid border (black, via currentColor)
+         to any popover element — the real select.ts dropdown token has no border at all,
+         only boxShadow, so this must be explicitly reset. */
+      border: none;
       box-sizing: border-box;
       overflow-y: auto;
     }
@@ -86,6 +90,15 @@ export class GdSelect extends LitElement {
   @property({ attribute: false }) value: SelectOption | null = null;
   @property({ type: Boolean, reflect: true }) disabled = false;
   @property({ type: String }) color: InputColorVariantName = 'primary';
+  /** Mirrors `Select.tsx`'s `width`/`minWidth`/`maxWidth` props (real defaults:
+   *  `width: '100%'`, `maxWidth: 'initial'`, `minWidth` unset) — applied to the trigger
+   *  wrapper. Without an explicit width, an empty trigger (no selected value, no
+   *  `placeholder` slot content) shrinks to its intrinsic content width (just the chevron),
+   *  and since the dropdown's width tracks the trigger's rendered width 1:1, option text
+   *  gets visually clipped instead of wrapping to a comfortably wide box. */
+  @property({ type: String }) width = '100%';
+  @property({ type: String, attribute: 'min-width' }) minWidth?: string;
+  @property({ type: String, attribute: 'max-width' }) maxWidth = 'initial';
   @property({ attribute: false }) theme: DesignCoreTheme = {};
 
   @query('.trigger') private _trigger!: HTMLButtonElement;
@@ -110,6 +123,14 @@ export class GdSelect extends LitElement {
   willUpdate(changed: PropertyValues<this>) {
     if (changed.has('value')) this._store.getState().syncExternalValue(this.value);
     if (changed.has('disabled')) this._store.getState().setDisabled(this.disabled);
+    // Applied directly on the host (`:host`'s own inline style), not just the shadow-root
+    // `.wrapper` — a percentage width on a shadow-DOM child only resolves against a
+    // *definite* containing-block width, and `:host` itself defaults to `auto` (shrink-to-fit)
+    // with no width set here. Matches the real `Select.tsx`'s `width`/`minWidth`/`maxWidth`
+    // props being applied straight to its single outermost styled element.
+    if (changed.has('width')) this.style.width = this.width;
+    if (changed.has('maxWidth')) this.style.maxWidth = this.maxWidth;
+    if (changed.has('minWidth')) this.style.minWidth = this.minWidth ?? '';
   }
 
   private _syncPopover(isOpen: boolean) {
@@ -128,6 +149,8 @@ export class GdSelect extends LitElement {
     this._dropdown.style.top = `${rect.bottom + 2}px`;
     this._dropdown.style.left = `${rect.left}px`;
     this._dropdown.style.width = `${rect.width}px`;
+    this._dropdown.style.maxWidth = this.maxWidth;
+    this._dropdown.style.minWidth = this.minWidth ?? '';
   }
 
   /** Native light-dismiss (outside-click/Escape) fires this without going through `_toggle()`. */
@@ -151,6 +174,10 @@ export class GdSelect extends LitElement {
     const resolved = resolveSelectStyle(this.theme, this.color);
     const selected = Array.isArray(state.internalValue) ? null : state.internalValue;
 
+    // Sizing itself (`width`/`maxWidth`/`minWidth`) is applied directly to the host in
+    // `willUpdate` — this just fills the now-definite host content box.
+    const wrapperStyle = { width: '100%' };
+
     const triggerStyle = {
       fontFamily: `${resolved.fontFamily}`,
       fontSize: `${resolved.fontSize}`,
@@ -160,7 +187,7 @@ export class GdSelect extends LitElement {
       borderStyle: 'solid',
       borderColor: resolved.borderColor,
       borderRadius: '0px',
-      padding: '8px',
+      padding: `${resolved.triggerPadding}`,
       background: resolved.surfaceColor,
     };
 
@@ -171,12 +198,12 @@ export class GdSelect extends LitElement {
       background: resolved.surfaceColor,
       boxShadow: resolved.boxShadow,
       borderRadius: '0px',
-      padding: '0',
+      padding: `${resolved.dropdownPadding}`,
       '--gd-select-hover-bg': resolved.hoverBackgroundColor,
     };
 
     return html`
-      <div class="wrapper">
+      <div class="wrapper" style=${styleMap(wrapperStyle)}>
         <button
           type="button"
           class="trigger"

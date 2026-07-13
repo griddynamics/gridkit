@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { resolveButtonVariantStyle } from './button';
+import { resolveButtonVariantStyle, resolveButtonRadius } from './button';
 import type { DesignCoreTheme } from '../types';
 
 const theme: DesignCoreTheme = {
@@ -16,7 +16,7 @@ const theme: DesignCoreTheme = {
     },
     border: { black: '#000000', disabled: '#cccccc' },
   },
-  font: { weight: { medium: 500 } },
+  font: { weight: { medium: 500 }, family: 'Test Sans', size: { p: '18px' } },
 };
 
 describe('resolveButtonVariantStyle', () => {
@@ -25,7 +25,7 @@ describe('resolveButtonVariantStyle', () => {
     expect(style.container).toEqual({ backgroundColor: '#000000', color: '#000000' });
     expect(style.containerHover).toEqual({ backgroundColor: '#1a1a1a' });
     expect(style.containerActive).toEqual({ backgroundColor: '#ffb020' });
-    expect(style.containerDisabled).toEqual({ backgroundColor: '#e0e0e0' });
+    expect(style.containerDisabled).toEqual({ backgroundColor: '#e0e0e0', color: '#a3a3a3' });
     expect(style.label.fontWeight).toBe(500);
   });
 
@@ -63,5 +63,45 @@ describe('resolveButtonVariantStyle', () => {
     expect(style.containerHover.backgroundColor).toBe('#F29100');
     expect(style.containerActive.backgroundColor).toBe('#FF8700');
     expect(style.containerDisabled.backgroundColor).toBe('#E5E5E5');
+  });
+
+  it.each(['primary', 'secondary', 'tertiary', 'outlined', 'text', 'inherit'] as const)(
+    "mutes %s's disabled text to colors.text.disabled, matching button.default's universal '&:disabled, &:disabled *' rule",
+    (variant) => {
+      expect(resolveButtonVariantStyle(theme, variant).containerDisabled.color).toBe('#a3a3a3');
+    }
+  );
+
+  it('falls back to the real disabled text color when no theme is passed', () => {
+    expect(resolveButtonVariantStyle({}, 'primary').containerDisabled.color).toBe('#A3A3A3');
+  });
+
+  it("resolves fontFamily/fontSize from the theme's shared font tokens, same as Input/Select/Typography", () => {
+    const style = resolveButtonVariantStyle(theme, 'primary');
+    expect(style.fontFamily).toBe('Test Sans');
+    expect(style.fontSize).toBe('18px');
+  });
+
+  it('falls back to the real font family/size when no theme is passed', () => {
+    const style = resolveButtonVariantStyle({}, 'primary');
+    expect(style.fontFamily).toBe('"Fira Sans", sans-serif');
+    expect(style.fontSize).toBe('16px');
+  });
+});
+
+describe('resolveButtonRadius', () => {
+  it('defaults to none (square corners), not rounded', () => {
+    expect(resolveButtonRadius({})).toBe('0px');
+  });
+
+  it('falls back to the real radius scale per rounded value when no theme is passed', () => {
+    expect(resolveButtonRadius({}, 'xs')).toBe('2px');
+    expect(resolveButtonRadius({}, 'lg')).toBe('16px');
+    expect(resolveButtonRadius({}, 'round')).toBe('9999px');
+  });
+
+  it("honors a theme's own radius object instead of its own hardcoded scale", () => {
+    const theme: DesignCoreTheme = { radius: { lg: '99px' } };
+    expect(resolveButtonRadius(theme, 'lg')).toBe('99px');
   });
 });
