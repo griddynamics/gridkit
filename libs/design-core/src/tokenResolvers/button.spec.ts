@@ -17,6 +17,7 @@ const theme: DesignCoreTheme = {
     border: { black: '#000000', disabled: '#cccccc' },
   },
   font: { weight: { medium: 500 }, family: 'Test Sans', size: { p: '18px' } },
+  spacing: { sm: '10px', md: '20px' },
 };
 
 describe('resolveButtonVariantStyle', () => {
@@ -86,6 +87,18 @@ describe('resolveButtonVariantStyle', () => {
     const style = resolveButtonVariantStyle({}, 'primary');
     expect(style.fontFamily).toBe('"Fira Sans", sans-serif');
     expect(style.fontSize).toBe('16px');
+  });
+
+  it("resolves gap/padding from the theme's shared spacing tokens, matching button.default", () => {
+    const style = resolveButtonVariantStyle(theme, 'primary');
+    expect(style.gap).toBe('10px');
+    expect(style.padding).toBe('10px 20px');
+  });
+
+  it('falls back to the real spacing scale for gap/padding when no theme is passed', () => {
+    const style = resolveButtonVariantStyle({}, 'primary');
+    expect(style.gap).toBe('8px');
+    expect(style.padding).toBe('8px 16px');
   });
 });
 

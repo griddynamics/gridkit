@@ -30,6 +30,10 @@ export interface ResolvedButtonStyle {
    *  otherwise leak through as. */
   fontFamily: string | number;
   fontSize: string | number;
+  /** `button.default.gap` — `get(theme, 'spacing.sm', ...)`. */
+  gap: string | number;
+  /** `button.default.padding` — `` `${spacing.sm} ${spacing.md}` ``. */
+  padding: string;
 }
 
 /** Real libs/ui/src/tokens/radius.ts values — used as the `get()` fallback so a themeless
@@ -93,8 +97,13 @@ export function resolveButtonVariantStyle(
   const textDisabled = get(theme, 'colors.text.disabled', '#A3A3A3');
   const fontFamily = get(theme, 'font.family', '"Fira Sans", sans-serif');
   const fontSize = get(theme, 'font.size.p', '16px');
+  const spacingSm = get(theme, 'spacing.sm', '8px');
+  const spacingMd = get(theme, 'spacing.md', '16px');
 
-  const variants: Record<ButtonVariantName, Omit<ResolvedButtonStyle, 'fontFamily' | 'fontSize'>> = {
+  const variants: Record<
+    ButtonVariantName,
+    Omit<ResolvedButtonStyle, 'fontFamily' | 'fontSize' | 'gap' | 'padding'>
+  > = {
     primary: {
       container: { backgroundColor: fillPrimary, color: textBlack },
       containerHover: { backgroundColor: fillSecondary },
@@ -153,5 +162,11 @@ export function resolveButtonVariantStyle(
     },
   };
 
-  return { ...(variants[variant] ?? variants.primary), fontFamily, fontSize };
+  return {
+    ...(variants[variant] ?? variants.primary),
+    fontFamily,
+    fontSize,
+    gap: spacingSm,
+    padding: `${spacingSm} ${spacingMd}`,
+  };
 }

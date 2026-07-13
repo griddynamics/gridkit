@@ -44,8 +44,6 @@ export class GdButton extends LitElement {
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 8px 16px;
     }
     button[disabled] {
       cursor: default;
@@ -95,6 +93,8 @@ export class GdButton extends LitElement {
       fontFamily: `${resolved.fontFamily}`,
       fontSize: `${resolved.fontSize}`,
       fontWeight: `${resolved.label.fontWeight}`,
+      gap: `${resolved.gap}`,
+      padding: resolved.padding,
       ...resolved.container,
       ...(this._hovered && !isDisabled ? resolved.containerHover : {}),
       ...(this._pressed && !isDisabled ? resolved.containerActive : {}),

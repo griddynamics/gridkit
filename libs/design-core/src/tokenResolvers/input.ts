@@ -23,6 +23,23 @@ export interface ResolvedInputStyle {
   /** `Input.tsx` renders `helperText` through `<InputHelper color={color} size="sm">` —
    *  unlike the label, this IS color-variant-dependent (`helper.<variant>.sm.color`). */
   helperTextColor: string;
+  /** `input.wrapper.withGap.gap` — `get(theme, 'spacing.xs', ...)`. Applied only when label or
+   *  helperText is present (real `hasHelpers` condition), same as `InputWrapper`'s `$withGap`. */
+  wrapperGap: string | number;
+  /** `input.helper.default.md.{fontSize,lineHeight}` — the real `label`'s font metrics
+   *  (`InputHelper`'s own default `size: 'md'`). */
+  labelFontSize: string | number;
+  labelLineHeight: string | number;
+  /** `input.helper.default.sm.{fontSize,lineHeight}` — the real `helperText`'s font metrics
+   *  (`Input.tsx` passes `size="sm"` explicitly). */
+  helperFontSize: string | number;
+  helperLineHeight: string | number;
+  /** `input.input.default['&:not(...)'].zIndex` — `get(theme, 'zIndex.first', ...)`. */
+  zIndex: string | number;
+  /** `input.input.default.padding` — `get(theme, 'spacing.sm', ...)`. */
+  horizontalPadding: string | number;
+  /** `input.input.defaultInteraction['& + .Input__border'].borderRadius` — `radius.none`. */
+  borderRadius: string | number;
 }
 
 export const COLOR_VARIANT_BORDER_PATH: Record<InputColorVariantName, string> = {
@@ -84,5 +101,13 @@ export function resolveInputStyle(
       HELPER_TEXT_COLOR_PATH[color] ?? HELPER_TEXT_COLOR_PATH.primary,
       HELPER_TEXT_COLOR_DEFAULT[color] ?? HELPER_TEXT_COLOR_DEFAULT.primary
     ),
+    wrapperGap: get(theme, 'spacing.xs', '4px'),
+    labelFontSize: get(theme, 'font.size.small', '14px'),
+    labelLineHeight: get(theme, 'font.line.height.small', '20px'),
+    helperFontSize: get(theme, 'font.size.caption', '12px'),
+    helperLineHeight: get(theme, 'font.line.height.caption', '16px'),
+    zIndex: get(theme, 'zIndex.first', 1),
+    horizontalPadding: get(theme, 'spacing.sm', '8px'),
+    borderRadius: get(theme, 'radius.none', '0px'),
   };
 }

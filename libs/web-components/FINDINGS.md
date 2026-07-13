@@ -452,16 +452,60 @@ padding: 8px, border: 1px solid #E5E5E5` — matches `resolveSelectStyle`'s exis
   `resolveTypographyStyle` mirrors, and to leave `color` unresolved when no `color` prop is
   passed (same as `gd-typography.ts`) — no drift found.
 
-**Deliberately left as-is (structural, not a shared-token bug):** a few static, non-color
-layout values remain hardcoded inside each component's Lit `static styles` CSS block (e.g.
-Checkbox's `gap: 8px`, Input's `.border { border-radius: 0 }`, Select's per-option
-`padding: 8px`) rather than the render-time inline `styleMap` objects the fixes above target.
-`static styles` is a shared adopted stylesheet across all instances of a custom element, not
-naturally per-instance-reactive to a `theme` property the way an inline style is — making
-these theme-reactive would require moving them into per-render inline styles too, a larger,
-consistent-effort change not scoped to this pass. All match the real component's current
-default values today; flagged here so they aren't mistaken for already-covered by the fixes
-above.
+## 11. Full audit — every remaining static-CSS value that corresponds to a real shared token
+
+Prompted directly: "make sure for all components ... use only shared common tokens from
+`libs/ui/src/tokens` ... any static styles should be present only [if] shared + it should be
+able to support theme switching." Went through every `static styles = css\`...\``block in all
+5 components line by line, cross-referencing each hardcoded value against the real component's`.tsx`/`Styled.tsx`(not just its token file — see Section 10's Checkbox-label lesson) to
+classify it as either genuinely non-token structural CSS (`display`,`position`,`cursor`mechanics with no theme analog) or a real token value that was baked into the shared adopted
+stylesheet instead of resolved per-render from`theme`. Fixed every instance of the latter,
+verified live via`chrome-devtools-mcp` including a direct theme-swap test (see below).
+
+- **Button** — `gap: 8px` (`button.default.gap`, `spacing.sm`) and `padding: 8px 16px`
+  (`` `${spacing.sm} ${spacing.md}` ``) were static. Added `gap`/`padding` to
+  `ResolvedButtonStyle`, applied inline; removed both from `static styles`.
+- **Checkbox** — `label { gap: 8px }` (`wrapper.default.gap`, `spacing.sm`) was static. Added
+  `wrapperGap` to `ResolvedCheckboxStyle`, applied inline via a new `wrapperStyle`. Also found
+  and fixed a plain value bug while in the same block: `label[data-disabled]` used
+  `cursor: not-allowed`; the real `wrapper.disabled.cursor` is `'default'`.
+- **Input** — five static values corresponded to real tokens: `.outer { gap: 4px }`
+  (`wrapper.withGap.gap`, `spacing.xs`), `.label`/`.helper`'s `font-size`/`line-height` (real
+  `InputHelper` `md`/`sm` size blocks — `font.size.small`/`font.line.height.small` and
+  `font.size.caption`/`font.line.height.caption`), `input { z-index: 1 }`
+  (`input.default['&:not(...)'].zIndex`, `zIndex.first`), `input { padding: 0 8px }`'s
+  horizontal value (`input.default.padding`, `spacing.sm`), and `.border`/`.outline`'s
+  `border-radius: 0` (`defaultInteraction['& + .Input__border'].borderRadius`, `radius.none`).
+  Added `wrapperGap`/`labelFontSize`/`labelLineHeight`/`helperFontSize`/`helperLineHeight`/
+  `zIndex`/`horizontalPadding`/`borderRadius` to `ResolvedInputStyle`; all now applied inline.
+- **Select** — `.dropdown { margin: 0 }` (`dropdown.margin`, `spacing.none` — same token as the
+  already-shared `dropdownPadding`, so reused that field for both) was static. Also found two
+  plain value bugs in the same pass: `.trigger:disabled` used `cursor: not-allowed` (the real
+  trigger, built on the real `<Button>`, gets `cursor: 'default'` from `button.default`'s
+  universal disabled rule); `.option[aria-selected='true']` used an invented `font-weight: 600`
+  with **no real token backing it at all** — the real `item.default`'s `'&:hover, &.active'`
+  rule gives the selected option the _same background_ as hover (`bg.fill.hover`), not bold
+  text. Replaced the bold with a shared selector reusing the already-theme-reactive
+  `--gd-select-hover-bg` custom property.
+- **Typography** — no static token values found; already fully inline/theme-reactive.
+
+**Confirmed genuinely non-token (left as static CSS, correctly):** `display`/`position`/
+`cursor`/`box-sizing` mechanics throughout; Button's/Checkbox's/Input's `:focus-visible` ring
+`outline-width`/`outline-offset` literals (the real component's own `getFocusStyles` helper
+hardcodes these same literals — not resolved from a token in the real component either);
+Select's `.option { padding: 8px }` (the real `item.default.padding` is `getSpacing(2)`, a
+module-load-time computation from the static `spacing` import, not `theme.spacing` — the real
+component's own dropdown-item padding does **not** support theme switching, so a hardcoded
+static value here is faithful, not a gap); Select's `.trigger { gap: 8px }` (no real
+`select.button` token has a `gap` at all — the real spacing comes from `justify-content:
+space-between`, already present, which makes any `gap` value inert with exactly 2 flex
+children; harmless, not a bug).
+
+**Verified theme-switching works end-to-end, not just that the resolver takes a theme
+argument:** live in a running `gd-button`, set `el.theme = { spacing: { sm: '30px', md: '16px' } }`
+after initial render — computed `gap` changed from `8px` to `30px` on the next render with no
+other code path involved, confirming the full chain (property → `resolveButtonVariantStyle` →
+inline `styleMap`) is genuinely reactive, not just correctly defaulted once.
 
 ## Extrapolated full-catalog migration cost
 

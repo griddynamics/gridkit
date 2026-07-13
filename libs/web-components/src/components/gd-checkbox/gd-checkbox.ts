@@ -28,11 +28,10 @@ export class GdCheckbox extends LitElement {
     label {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
       cursor: pointer;
     }
     label[data-disabled] {
-      cursor: not-allowed;
+      cursor: default;
       opacity: 0.5;
     }
     input {
@@ -105,6 +104,8 @@ export class GdCheckbox extends LitElement {
     const resolved = resolveCheckboxStyle(this.theme, this.size);
     const currentChecked = state.checked;
 
+    const wrapperStyle = { gap: `${resolved.wrapperGap}` };
+
     const indicatorStyle = {
       width: `${resolved.indicatorSize}px`,
       height: `${resolved.indicatorSize}px`,
@@ -127,7 +128,7 @@ export class GdCheckbox extends LitElement {
     };
 
     return html`
-      <label ?data-disabled=${this.disabled}>
+      <label ?data-disabled=${this.disabled} style=${styleMap(wrapperStyle)}>
         <input
           type="checkbox"
           .checked=${currentChecked}

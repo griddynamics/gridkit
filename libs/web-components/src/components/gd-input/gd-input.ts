@@ -44,15 +44,6 @@ export class GdInput extends LitElement {
       display: inline-flex;
       flex-direction: column;
       align-items: flex-start;
-      gap: 4px;
-    }
-    .label {
-      font-size: 14px;
-      line-height: 20px;
-    }
-    .helper {
-      font-size: 12px;
-      line-height: 16px;
     }
     .row {
       position: relative;
@@ -63,7 +54,6 @@ export class GdInput extends LitElement {
     }
     input {
       position: relative;
-      z-index: 1;
       border: none;
       outline: none;
       background: transparent;
@@ -72,7 +62,6 @@ export class GdInput extends LitElement {
       width: 100%;
       height: 40px;
       box-sizing: border-box;
-      padding: 0 8px;
     }
     input:disabled {
       cursor: default;
@@ -86,7 +75,6 @@ export class GdInput extends LitElement {
       inset: 0;
       pointer-events: none;
       box-sizing: border-box;
-      border-radius: 0;
     }
     .border {
       border-style: solid;
@@ -192,24 +180,41 @@ export class GdInput extends LitElement {
     const focusColor = (this.theme.colors as { border?: { focus?: string } } | undefined)?.border?.focus ?? '#0069B4';
     const textColor = this.disabled ? resolved.disabledColor : resolved.color;
 
+    const outerStyle = { gap: `${resolved.wrapperGap}` };
     const rowStyle = {
       fontFamily: `${resolved.fontFamily}`,
       fontSize: `${resolved.fontSize}`,
       color: textColor,
+      zIndex: `${resolved.zIndex}`,
+      padding: `0 ${resolved.horizontalPadding}`,
       '--gd-input-placeholder-color': resolved.disabledColor,
     };
-    const borderStyle = { borderWidth: `${resolved.borderWidth}`, borderColor: resolved.borderColor };
-    const outlineStyle = { outlineColor: focusColor };
+    const borderStyle = {
+      borderWidth: `${resolved.borderWidth}`,
+      borderColor: resolved.borderColor,
+      borderRadius: `${resolved.borderRadius}`,
+    };
+    const outlineStyle = { outlineColor: focusColor, borderRadius: `${resolved.borderRadius}` };
     // Reuses the SAME resolved.fontFamily as the `<input>` itself (rowStyle above) — the real
     // InputHelper (label/helperText) has no explicit fontFamily of its own either, relying on
     // ambient inheritance from the host app's global reset, which would leave these two spans
     // free to silently diverge from the input's own (explicitly-resolved) font in a standalone
     // render with no such reset present.
-    const labelStyle = { color: resolved.labelColor, fontFamily: `${resolved.fontFamily}` };
-    const helperStyle = { color: resolved.helperTextColor, fontFamily: `${resolved.fontFamily}` };
+    const labelStyle = {
+      color: resolved.labelColor,
+      fontFamily: `${resolved.fontFamily}`,
+      fontSize: `${resolved.labelFontSize}`,
+      lineHeight: `${resolved.labelLineHeight}`,
+    };
+    const helperStyle = {
+      color: resolved.helperTextColor,
+      fontFamily: `${resolved.fontFamily}`,
+      fontSize: `${resolved.helperFontSize}`,
+      lineHeight: `${resolved.helperLineHeight}`,
+    };
 
     return html`
-      <div class="outer">
+      <div class="outer" style=${styleMap(outerStyle)}>
         ${this.label ? html`<span class="label" style=${styleMap(labelStyle)}>${this.label}</span>` : nothing}
         <div class="row" style=${styleMap(rowStyle)}>
           <slot name="adornment-start"></slot>

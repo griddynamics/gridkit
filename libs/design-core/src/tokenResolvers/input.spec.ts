@@ -3,12 +3,19 @@ import { resolveInputStyle } from './input';
 import type { DesignCoreTheme } from '../types';
 
 const theme: DesignCoreTheme = {
-  font: { family: 'Fira Sans', size: { p: '16px' } },
+  font: {
+    family: 'Fira Sans',
+    size: { p: '16px', small: '15px', caption: '13px' },
+    line: { height: { small: '21px', caption: '17px' } },
+  },
   colors: {
     text: { default: '#171717', disabled: '#a3a3a3', success: '#0b6', primary: '#111111', error: '#e44' },
     border: { default: '#cccccc', success: '#0a5', primary: '#000000', error: '#d33' },
   },
   values: { borderThin: '1px' },
+  spacing: { xs: '5px', sm: '9px' },
+  zIndex: { first: 2 },
+  radius: { none: '1px' },
 };
 
 describe('resolveInputStyle', () => {
@@ -71,5 +78,29 @@ describe('resolveInputStyle', () => {
 
   it('falls back to the real label color when no theme is passed', () => {
     expect(resolveInputStyle({}).labelColor).toBe('#000000');
+  });
+
+  it("resolves gap/typography/zIndex/padding/radius from the theme's shared tokens", () => {
+    const style = resolveInputStyle(theme);
+    expect(style.wrapperGap).toBe('5px');
+    expect(style.labelFontSize).toBe('15px');
+    expect(style.labelLineHeight).toBe('21px');
+    expect(style.helperFontSize).toBe('13px');
+    expect(style.helperLineHeight).toBe('17px');
+    expect(style.zIndex).toBe(2);
+    expect(style.horizontalPadding).toBe('9px');
+    expect(style.borderRadius).toBe('1px');
+  });
+
+  it('falls back to the real values for gap/typography/zIndex/padding/radius when no theme is passed', () => {
+    const style = resolveInputStyle({});
+    expect(style.wrapperGap).toBe('4px');
+    expect(style.labelFontSize).toBe('14px');
+    expect(style.labelLineHeight).toBe('20px');
+    expect(style.helperFontSize).toBe('12px');
+    expect(style.helperLineHeight).toBe('16px');
+    expect(style.zIndex).toBe(1);
+    expect(style.horizontalPadding).toBe('8px');
+    expect(style.borderRadius).toBe('0px');
   });
 });

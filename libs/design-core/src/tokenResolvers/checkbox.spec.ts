@@ -6,6 +6,7 @@ const theme: DesignCoreTheme = {
   colors: { bg: { fill: { primary: '#000000' } }, border: { default: '#cccccc' }, text: { default: '#171717' } },
   values: { borderMedium: '2px' },
   radius: { xs: '2px' },
+  spacing: { sm: '10px' },
 };
 
 describe('resolveCheckboxStyle', () => {
@@ -49,5 +50,13 @@ describe('resolveCheckboxStyle', () => {
     expect(style).not.toHaveProperty('labelFontFamily');
     expect(style).not.toHaveProperty('labelFontSize');
     expect(style).not.toHaveProperty('labelLineHeight');
+  });
+
+  it("resolves the wrapper gap from the theme's shared spacing token, matching wrapper.default", () => {
+    expect(resolveCheckboxStyle(theme, 'md').wrapperGap).toBe('10px');
+  });
+
+  it('falls back to the real spacing scale for wrapper gap when no theme is passed', () => {
+    expect(resolveCheckboxStyle({}, 'md').wrapperGap).toBe('8px');
   });
 });

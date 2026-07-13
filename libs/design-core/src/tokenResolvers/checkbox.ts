@@ -15,6 +15,9 @@ export interface ResolvedCheckboxStyle {
   };
   indicatorChecked: { backgroundColor: string; borderColor: string };
   indicatorIndeterminate: { backgroundColor: string; borderColor: string };
+  /** `checkbox.wrapper.default.gap` — `get(theme, 'spacing.sm', ...)`. Unlike `label`, `wrapper`
+   *  genuinely is consumed by `CheckboxWrapperStyled`. */
+  wrapperGap: string | number;
 }
 
 /** Matches libs/ui/src/tokens/checkbox.ts `size` scale (px box size + icon size). */
@@ -57,5 +60,6 @@ export function resolveCheckboxStyle(theme: DesignCoreTheme, size: CheckboxSizeN
       backgroundColor: fillPrimary,
       borderColor: fillPrimary,
     },
+    wrapperGap: get(theme, 'spacing.sm', '8px'),
   };
 }

@@ -52,10 +52,12 @@ export class GdSelect extends LitElement {
       cursor: pointer;
     }
     .trigger:disabled {
-      cursor: not-allowed;
+      /* Matches the real trigger's own Button internals: button.default's universal
+         disabled-selector rule sets cursor to 'default', not 'not-allowed' — Select's own
+         button tokens never override cursor, so 'default' is what actually renders. */
+      cursor: default;
     }
     .dropdown {
-      margin: 0;
       /* The popover UA stylesheet applies a default solid border (black, via currentColor)
          to any popover element — the real select.ts dropdown token has no border at all,
          only boxShadow, so this must be explicitly reset. */
@@ -70,10 +72,11 @@ export class GdSelect extends LitElement {
       cursor: pointer;
       padding: 8px;
     }
+    .option:hover,
     .option[aria-selected='true'] {
-      font-weight: 600;
-    }
-    .option:hover {
+      /* Matches the real item.default's hover-and-active rule — both hover AND the
+         currently-selected option share the same bg.fill.hover background; the real tokens
+         have no font-weight change for the selected state at all. */
       background-color: var(--gd-select-hover-bg, #fff7e5);
     }
     .arrow {
@@ -198,6 +201,9 @@ export class GdSelect extends LitElement {
       background: resolved.surfaceColor,
       boxShadow: resolved.boxShadow,
       borderRadius: '0px',
+      // `dropdown.margin` and `dropdown.padding` are both real `spacing.none` — same resolved
+      // field reused for both, since they're the same token value in the real component too.
+      margin: `${resolved.dropdownPadding}`,
       padding: `${resolved.dropdownPadding}`,
       '--gd-select-hover-bg': resolved.hoverBackgroundColor,
     };
