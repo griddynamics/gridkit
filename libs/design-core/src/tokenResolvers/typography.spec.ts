@@ -49,4 +49,27 @@ describe('resolveTypographyStyle', () => {
   it('defaults to span when no variant is passed', () => {
     expect(resolveTypographyStyle(theme)).toEqual(resolveTypographyStyle(theme, 'span'));
   });
+
+  it('resolves h1-h6 heading margins from the theme, and omits them for non-heading variants', () => {
+    expect(resolveTypographyStyle(theme, 'h1')).toMatchObject({ marginTop: '32px', marginBottom: '32px' });
+    expect(resolveTypographyStyle(theme, 'p').marginTop).toBeUndefined();
+    expect(resolveTypographyStyle(theme, 'span').marginTop).toBeUndefined();
+  });
+
+  it('resolves the monospace family for code/kbd via the flat "family.code" key, not a nested path', () => {
+    const codeTheme: DesignCoreTheme = { font: { ...theme.font, 'family.code': '"Fira Code", Monaco' } };
+    expect(resolveTypographyStyle(codeTheme, 'code').fontFamily).toBe('"Fira Code", Monaco');
+    expect(resolveTypographyStyle(codeTheme, 'kbd').fontFamily).toBe('"Fira Code", Monaco');
+  });
+
+  it('falls back to real hardcoded metrics/weights when no theme is passed at all', () => {
+    const style = resolveTypographyStyle({}, 'h1');
+    expect(style.fontSize).toBe('48px');
+    expect(style.lineHeight).toBe('56px');
+    expect(style.marginTop).toBe('32px');
+
+    expect(resolveTypographyStyle({}, 'p', 'semibold').fontWeight).toBe(500);
+    expect(resolveTypographyStyle({}, 'p', 'light').fontWeight).toBe(300);
+    expect(resolveTypographyStyle({}, 'p', 'bold').fontWeight).toBe(700);
+  });
 });

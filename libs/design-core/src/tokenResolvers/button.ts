@@ -11,7 +11,7 @@ export interface ButtonVariantStateStyle {
 }
 
 export interface ResolvedButtonStyle {
-  container: ButtonVariantStateStyle & { borderWidth?: number };
+  container: ButtonVariantStateStyle & { borderWidth?: string };
   containerHover: ButtonVariantStateStyle;
   containerActive: ButtonVariantStateStyle;
   containerDisabled: ButtonVariantStateStyle;
@@ -34,17 +34,18 @@ export function resolveButtonVariantStyle(
   theme: DesignCoreTheme,
   variant: ButtonVariantName = 'primary'
 ): ResolvedButtonStyle {
-  const textDefault = get(theme, 'colors.text.default', '#171717');
+  const textDefault = get(theme, 'colors.text.default', '#000000');
   const textBlack = get(theme, 'colors.text.black', '#000000');
-  const textPrimary = get(theme, 'colors.text.primary', textDefault);
-  const textSecondary = get(theme, 'colors.text.secondary', textDefault);
-  const fillPrimary = get(theme, 'colors.bg.fill.primary', '#000000');
-  const fillSecondary = get(theme, 'colors.bg.fill.secondary', '#171717');
-  const fillHover = get(theme, 'colors.bg.fill.hover', '#f5f5f5');
-  const fillDisabled = get(theme, 'colors.bg.fill.disabled', '#e0e0e0');
-  const fillWarningPrimary = get(theme, 'colors.bg.fill.warning.primary.default', fillSecondary);
+  const textPrimary = get(theme, 'colors.text.primary', '#FFB800');
+  const textSecondary = get(theme, 'colors.text.secondary', '#F29100');
+  const fillPrimary = get(theme, 'colors.bg.fill.primary', '#FFB800');
+  const fillSecondary = get(theme, 'colors.bg.fill.secondary', '#F29100');
+  const fillHover = get(theme, 'colors.bg.fill.hover', '#FFF7E5');
+  const fillDisabled = get(theme, 'colors.bg.fill.disabled', '#E5E5E5');
+  const fillWarningPrimary = get(theme, 'colors.bg.fill.warning.primary.default', '#FF8700');
   const borderBlack = get(theme, 'colors.border.black', '#000000');
-  const borderDisabled = get(theme, 'colors.border.disabled', '#cccccc');
+  const borderDisabled = get(theme, 'colors.border.disabled', '#E5E5E5');
+  const borderThin = get(theme, 'values.borderThin', '1px');
   const fontWeightMedium = get(theme, 'font.weight.medium', 500);
 
   const variants: Record<ButtonVariantName, ResolvedButtonStyle> = {
@@ -73,7 +74,12 @@ export function resolveButtonVariantStyle(
       label: { color: textDefault, fontWeight: fontWeightMedium },
     },
     outlined: {
-      container: { backgroundColor: TRANSPARENT, color: textDefault, borderColor: borderBlack, borderWidth: 1 },
+      container: {
+        backgroundColor: TRANSPARENT,
+        color: textDefault,
+        borderColor: borderBlack,
+        borderWidth: borderThin,
+      },
       containerHover: { backgroundColor: fillHover },
       containerActive: { backgroundColor: fillPrimary, color: textBlack },
       containerDisabled: { backgroundColor: TRANSPARENT, borderColor: borderDisabled },

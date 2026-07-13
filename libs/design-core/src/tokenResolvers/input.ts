@@ -1,8 +1,12 @@
 import { get } from '../utils/get';
 import type { DesignCoreTheme } from '../types';
 
-/** Mirrors gd-design-library's `InputColorVariant` (colors.border.{default,success,primary,error}). */
-export type InputColorVariantName = 'default' | 'success' | 'primary' | 'error';
+/** Matches gd-design-library's real `InputColorVariant` (libs/ui/src/types/input.ts) exactly —
+ *  member names and values both, not just the resolved colors. `warning` is the real
+ *  component's semantic role name for the `colors.border.primary` (brand-gold) token, and
+ *  `primary` is its role name for `colors.border.default` — that inversion is the real
+ *  vocabulary, not a naming choice made here. */
+export type InputColorVariantName = 'primary' | 'success' | 'warning' | 'error';
 
 export interface ResolvedInputStyle {
   fontFamily: string | number;
@@ -14,10 +18,19 @@ export interface ResolvedInputStyle {
 }
 
 export const COLOR_VARIANT_BORDER_PATH: Record<InputColorVariantName, string> = {
-  default: 'colors.border.default',
+  primary: 'colors.border.default',
   success: 'colors.border.success',
-  primary: 'colors.border.primary',
+  warning: 'colors.border.primary',
   error: 'colors.border.error',
+};
+
+/** Real libs/ui/src/tokens/colors.ts border values per variant — used as the `get()` fallback
+ *  so a themeless render still shows the correct color-variant border, not one flat gray. */
+export const COLOR_VARIANT_BORDER_DEFAULT: Record<InputColorVariantName, string> = {
+  primary: '#E5E5E5',
+  success: '#34A853',
+  warning: '#FFB800',
+  error: '#D21C1C',
 };
 
 /**
@@ -28,14 +41,18 @@ export const COLOR_VARIANT_BORDER_PATH: Record<InputColorVariantName, string> = 
  */
 export function resolveInputStyle(
   theme: DesignCoreTheme,
-  color: InputColorVariantName = 'default'
+  color: InputColorVariantName = 'primary'
 ): ResolvedInputStyle {
   return {
-    fontFamily: get(theme, 'font.family', 'inherit'),
-    fontSize: get(theme, 'font.size.p', 'inherit'),
-    color: get(theme, 'colors.text.default', '#171717'),
-    disabledColor: get(theme, 'colors.text.disabled', '#a3a3a3'),
-    borderWidth: get(theme, 'values.borderThin', 1),
-    borderColor: get(theme, COLOR_VARIANT_BORDER_PATH[color] ?? COLOR_VARIANT_BORDER_PATH.default, '#cccccc'),
+    fontFamily: get(theme, 'font.family', '"Fira Sans", sans-serif'),
+    fontSize: get(theme, 'font.size.p', '16px'),
+    color: get(theme, 'colors.text.default', '#000000'),
+    disabledColor: get(theme, 'colors.text.disabled', '#A3A3A3'),
+    borderWidth: get(theme, 'values.borderThin', '1px'),
+    borderColor: get(
+      theme,
+      COLOR_VARIANT_BORDER_PATH[color] ?? COLOR_VARIANT_BORDER_PATH.primary,
+      COLOR_VARIANT_BORDER_DEFAULT[color] ?? COLOR_VARIANT_BORDER_DEFAULT.primary
+    ),
   };
 }

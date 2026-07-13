@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>SSR/DSD static reproduction (CTORNDSD-581) — NO client JS on this page</title>
+  </head>
+  <body>
+    <p>
+      This page has <strong>zero</strong> client-side JavaScript. If the button below is visibly styled (dark pill, not
+      unstyled text), the browser attached the Declarative Shadow Root from the raw SSR HTML natively, with no hydration
+      required.
+    </p>
+    <!--lit-part uBEANW2yJC8=-->
+    <gd-button variant="primary"
+      ><template shadowroot="open" shadowrootmode="open"
+        ><style>
+          :host {
+            display: inline-block;
+          }
+          button {
+            font-family: inherit;
+            border-style: solid;
+            border-width: 0;
+            border-color: transparent;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+          }
+          button[disabled] {
+            cursor: default;
+          }
+          button:focus-visible {
+            outline: 2px solid;
+            outline-offset: 4px;
+          }
+          .spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid currentColor;
+            border-right-color: transparent;
+            border-radius: 9999px;
+            animation: gd-button-spin 0.6s linear infinite;
+          }
+          @keyframes gd-button-spin {
+            to {
+              transform: rotate(360deg);
+            }
+          }</style
+        ><!--lit-part v3oaq1WGNo0=-->
+        <!--lit-node 0--><button
+          style="border-radius: 0px; background-color: #ffb800; color: #000000; outline-color: #0069b4"
+        >
+          <slot name="icon-start"></slot>
+          <!--lit-node 2--><span style="color: #000000; font-weight: 500"><slot></slot></span>
+          <slot name="icon-end"></slot>
+          <!--lit-part--><!--/lit-part-->
+        </button>
+        <!--/lit-part--></template
+      >Submit</gd-button
+    >
+    <gd-typography variant="h1" as="h1"
+      ><template shadowroot="open" shadowrootmode="open"
+        ><style>
+          :host {
+            display: contents;
+          }</style
+        ><!--lit-part hu3HhGy8jE4=--><!--lit-node 0-->
+        <h1
+          style="
+            font-family: 'Fira Sans', sans-serif;
+            font-size: 48px;
+            font-weight: 400;
+            line-height: 56px;
+            margin-top: 32px;
+            margin-bottom: 32px;
+          "
+        >
+          <slot></slot>
+        </h1>
+        <!--/lit-part--></template
+      >Heading</gd-typography
+    >
+    <!--/lit-part-->
+  </body>
+</html>

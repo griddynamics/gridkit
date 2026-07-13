@@ -1,0 +1,21 @@
+{
+  "name": "web-components",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Lit web-components implementation of gd-design-library's atoms, built on gd-design-core's shared token resolvers and state stores. Not published.",
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "dependencies": {
+    "gd-design-core": "*",
+    "lit": "^3.2.1"
+  },
+  "devDependencies": {
+    "@emotion/cache": "^11.14.0",
+    "@emotion/react": "^11.14.0",
+    "@lit-labs/ssr": "^4.1.0",
+    "@lit/react": "^1.0.7",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}

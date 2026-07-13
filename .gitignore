@@ -74,6 +74,7 @@ __screenshots__
 .claude/tools/node_modules
 /libs/ui/scripts/output/*
 /libs/ui/.size-limit.json
+/libs/web-components/bundle-size-report.json
 
 # Vitest artifacts
 .vitest-artifacts

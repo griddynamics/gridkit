@@ -16,6 +16,9 @@ export interface ResolvedCheckboxStyle {
   indicatorChecked: { backgroundColor: string; borderColor: string };
   indicatorIndeterminate: { backgroundColor: string; borderColor: string };
   labelColor: string;
+  labelFontFamily: string | number;
+  labelFontSize: string | number;
+  labelLineHeight: string | number;
 }
 
 /** Matches libs/ui/src/tokens/checkbox.ts `size` scale (px box size + icon size). */
@@ -26,16 +29,16 @@ const SIZE_PX: Record<CheckboxSizeName, { box: number; icon: number }> = {
 
 export function resolveCheckboxStyle(theme: DesignCoreTheme, size: CheckboxSizeName = 'md'): ResolvedCheckboxStyle {
   const { box, icon } = SIZE_PX[size] ?? SIZE_PX.md;
-  const fillPrimary = get(theme, 'colors.bg.fill.primary', '#000000');
+  const fillPrimary = get(theme, 'colors.bg.fill.primary', '#FFB800');
 
   return {
     indicatorSize: box,
     iconSize: icon,
     indicatorDefault: {
-      borderWidth: get(theme, 'values.borderMedium', 2),
-      borderColor: get(theme, 'colors.border.default', '#cccccc'),
+      borderWidth: get(theme, 'values.borderMedium', '2px'),
+      borderColor: get(theme, 'colors.border.default', '#E5E5E5'),
       backgroundColor: 'transparent',
-      borderRadius: get(theme, 'radius.xs', 2),
+      borderRadius: get(theme, 'radius.xs', '2px'),
     },
     indicatorChecked: {
       backgroundColor: fillPrimary,
@@ -45,6 +48,9 @@ export function resolveCheckboxStyle(theme: DesignCoreTheme, size: CheckboxSizeN
       backgroundColor: fillPrimary,
       borderColor: fillPrimary,
     },
-    labelColor: get(theme, 'colors.text.default', '#171717'),
+    labelColor: get(theme, 'colors.text.default', '#000000'),
+    labelFontFamily: get(theme, 'font.family', '"Fira Sans", sans-serif'),
+    labelFontSize: get(theme, 'font.size.small', '14px'),
+    labelLineHeight: get(theme, 'font.line.height.small', '20px'),
   };
 }

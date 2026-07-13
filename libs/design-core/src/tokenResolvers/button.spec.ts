@@ -32,7 +32,7 @@ describe('resolveButtonVariantStyle', () => {
   it('resolves the outlined variant with a border', () => {
     const style = resolveButtonVariantStyle(theme, 'outlined');
     expect(style.container.borderColor).toBe('#000000');
-    expect(style.container.borderWidth).toBe(1);
+    expect(style.container.borderWidth).toBe('1px');
     expect(style.containerDisabled.borderColor).toBe('#cccccc');
   });
 
@@ -54,7 +54,14 @@ describe('resolveButtonVariantStyle', () => {
 
   it('falls back to hardcoded defaults when theme values are missing', () => {
     const style = resolveButtonVariantStyle({}, 'primary');
-    expect(style.container.backgroundColor).toBe('#000000');
+    expect(style.container.backgroundColor).toBe('#FFB800');
     expect(style.textColor).toBe('#000000');
+  });
+
+  it('falls back to the real hover/active/disabled brand colors, not black-based placeholders', () => {
+    const style = resolveButtonVariantStyle({}, 'primary');
+    expect(style.containerHover.backgroundColor).toBe('#F29100');
+    expect(style.containerActive.backgroundColor).toBe('#FF8700');
+    expect(style.containerDisabled.backgroundColor).toBe('#E5E5E5');
   });
 });

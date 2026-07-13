@@ -1,23 +1,23 @@
 {
-  "name": "spike-web-components",
+  "name": "web-components",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/spike-web-components/src",
+  "sourceRoot": "libs/web-components/src",
   "projectType": "library",
-  "tags": ["spike", "scope:ctorndsd-581"],
+  "tags": ["scope:ctorndsd-581"],
   "targets": {
     "build": {
       "executor": "@nx/vite:build",
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
-        "outputPath": "dist/libs/spike-web-components"
+        "outputPath": "dist/libs/web-components"
       }
     },
     "lint": {
       "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["libs/spike-web-components/**/*.ts"]
+        "lintFilePatterns": ["libs/web-components/**/*.ts"]
       }
     }
   }

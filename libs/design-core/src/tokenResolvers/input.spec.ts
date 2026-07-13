@@ -12,14 +12,14 @@ const theme: DesignCoreTheme = {
 };
 
 describe('resolveInputStyle', () => {
-  it('resolves the default color variant', () => {
+  it('resolves the primary color variant by default', () => {
     const style = resolveInputStyle(theme);
     expect(style.borderColor).toBe('#cccccc');
   });
 
   it.each([
     ['success', '#0a5'],
-    ['primary', '#000000'],
+    ['warning', '#000000'],
     ['error', '#d33'],
   ] as const)('resolves the %s color variant border', (color, expected) => {
     expect(resolveInputStyle(theme, color).borderColor).toBe(expected);
@@ -33,4 +33,16 @@ describe('resolveInputStyle', () => {
     expect(style.color).toBe('#171717');
     expect(style.disabledColor).toBe('#a3a3a3');
   });
+
+  it.each([
+    ['primary', '#E5E5E5'],
+    ['success', '#34A853'],
+    ['warning', '#FFB800'],
+    ['error', '#D21C1C'],
+  ] as const)(
+    'falls back to the real %s border color when no theme is passed, not one flat gray',
+    (color, expected) => {
+      expect(resolveInputStyle({}, color).borderColor).toBe(expected);
+    }
+  );
 });

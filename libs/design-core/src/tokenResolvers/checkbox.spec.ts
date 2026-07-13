@@ -6,6 +6,7 @@ const theme: DesignCoreTheme = {
   colors: { bg: { fill: { primary: '#000000' } }, border: { default: '#cccccc' }, text: { default: '#171717' } },
   values: { borderMedium: '2px' },
   radius: { xs: '2px' },
+  font: { family: 'Fira Sans', size: { small: '14px' }, line: { height: { small: '20px' } } },
 };
 
 describe('resolveCheckboxStyle', () => {
@@ -33,5 +34,24 @@ describe('resolveCheckboxStyle', () => {
     expect(style.indicatorDefault.borderWidth).toBe('2px');
     expect(style.indicatorDefault.borderRadius).toBe('2px');
     expect(style.indicatorDefault.backgroundColor).toBe('transparent');
+  });
+
+  it('resolves the label typography from theme', () => {
+    const style = resolveCheckboxStyle(theme, 'md');
+    expect(style.labelFontFamily).toBe('Fira Sans');
+    expect(style.labelFontSize).toBe('14px');
+    expect(style.labelLineHeight).toBe('20px');
+  });
+
+  it('falls back to real hardcoded defaults when no theme is passed', () => {
+    const style = resolveCheckboxStyle({}, 'md');
+    expect(style.indicatorChecked.backgroundColor).toBe('#FFB800');
+    expect(style.indicatorDefault.borderColor).toBe('#E5E5E5');
+    expect(style.indicatorDefault.borderWidth).toBe('2px');
+    expect(style.indicatorDefault.borderRadius).toBe('2px');
+    expect(style.labelColor).toBe('#000000');
+    expect(style.labelFontFamily).toBe('"Fira Sans", sans-serif');
+    expect(style.labelFontSize).toBe('14px');
+    expect(style.labelLineHeight).toBe('20px');
   });
 });
