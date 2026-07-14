@@ -1,0 +1,329 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+import { CollapsibleSections } from './CollapsibleSections';
+
+<Meta title="Introduction/AI Integration/Custom Components" />
+
+# Custom Components
+
+<CollapsibleSections />
+
+**Contents**
+
+- [What Custom Components Are](#what-custom-components-are)
+- [Two types: Meta vs. Definition](#two-types-meta-vs-definition)
+- [Simple scheme](#simple-scheme)
+- [The Renderer function](#the-renderer-function)
+  - [A2UIComponent fields available to renderers](#a2uicomponent-fields-available-to-renderers)
+  - [Using dispatchAction](#using-dispatchaction)
+  - [Rendering children](#rendering-children)
+- [Simple example: product badge](#simple-example-product-badge)
+- [Real-world example: stateful login form](#real-world-example-stateful-login-form)
+- [Splitting meta from renderer](#splitting-meta-from-renderer)
+- [How to register](#how-to-register)
+- [Important to know](#important-to-know)
+
+---
+
+## What Custom Components Are
+
+Custom components let you add your own React components to the A2UI pipeline.
+
+Once registered:
+
+- the LLM can include them in generated specs the same way it uses built-in types
+- the renderer calls your function when that type appears in a spec
+- schema validation accepts the type string
+
+Source: `libs/ui/src/utils/a2ui/types.tsx`
+
+## Two types: Meta vs. Definition
+
+| Type | Imported from | Has renderer | Use it for |
+|------|--------------|:---:|------------|
+| `A2UICustomComponentMeta` | `gd-design-library/ai` | — | Server side: prompt generation only |
+| `A2UICustomComponentDefinition` | `gd-design-library/ai` | ✓ | Client side: prompt + runtime rendering |
+
+`A2UICustomComponentDefinition` extends `A2UICustomComponentMeta` by adding a `renderer` field.
+
+Use `A2UICustomComponentMeta` on the server (e.g. in your agent service) where React is not available, and `A2UICustomComponentDefinition` in the browser where the renderer runs.
+
+## Simple scheme
+
+```text
+A2UICustomComponentDefinition[]
+  -> buildA2UISystemPrompt({ customComponents })  — LLM learns the type
+  -> LLM produces { type: "my-type", label: "..." }
+  -> renderA2UISpec(spec, actions, customComponents) — renderer is called
+```
+
+## The Renderer function
+
+A renderer is a function with this signature:
+
+```typescript
+type Renderer = (
+  component: A2UIComponent,
+  renderChildren: (children?: A2UIComponent[]) => ReactNode[],
+  dispatchAction?: DispatchAction
+) => ReactNode;
+```
+
+- `component` — the raw component object from the spec (type, label, value, attributes, actions, etc.)
+- `renderChildren` — call this to recursively render `component.children` using the full component registry
+- `dispatchAction` — call this to fire a spec action by its ID (optional — only needed for interactive components)
+
+### A2UIComponent fields available to renderers
+
+These are the fields most commonly read in custom renderers:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | `string` | Unique component ID from the spec |
+| `type` | `string` | The custom type string you registered |
+| `label` | `string?` | Primary display text |
+| `value` | `unknown` | Main data value (string, number, etc.) |
+| `caption` | `string?` | Secondary text below the label |
+| `placeholder` | `string?` | Placeholder text for inputs |
+| `variant` | `string?` | Style variant passed by the LLM |
+| `size` | `string?` | Size token (`sm` / `md` / `lg` / etc.) |
+| `disabled` | `boolean?` | Whether the component should be disabled |
+| `attributes` | `Record<string, unknown>?` | Extra freeform props from the spec |
+| `actions` | `string[]?` | Action IDs referenced by this component |
+| `children` | `A2UIComponent[]?` | Nested components |
+| `styling` | object? | Inline style object from the spec |
+
+Read `attributes` for any custom props you declared in `props` that don't map to a standard field.
+
+### Using dispatchAction
+
+`dispatchAction` fires a spec action by ID. The runtime resolves the action definition and calls its handler.
+
+```typescript
+type DispatchAction = (actionId: string, extraPayload?: Record<string, unknown>) => void;
+```
+
+```typescript
+renderer: (component, _renderChildren, dispatchAction) => {
+  const actionId = component.actions?.[0] ?? 'default-action';
+
+  return (
+    <button onClick={() => dispatchAction?.(actionId, { source: component.id })}>
+      {component.label}
+    </button>
+  );
+}
+```
+
+### Rendering children
+
+Call `renderChildren` to let nested components inside your custom component be rendered by the full registry.
+
+```typescript
+renderer: (component, renderChildren) => (
+  <div className="my-wrapper">
+    {renderChildren(component.children)}
+  </div>
+)
+```
+
+## Simple example: product badge
+
+A stateless custom component — reads props, returns JSX.
+
+```typescript
+import type { A2UICustomComponentDefinition } from 'gd-design-library/ai';
+import { buildA2UISystemPrompt, extendA2UISpecSchema } from 'gd-design-library/ai';
+import { renderA2UISpec } from 'gd-design-library';
+
+const customComponents: A2UICustomComponentDefinition[] = [
+  {
+    type: 'product-badge',
+    description: 'A colored status badge with a short label.',
+    props: {
+      label: 'string — badge text displayed inside the badge',
+      color: '"success" | "warning" | "error" | "info" — background color token',
+    },
+    notes: ['Always set label. Omit color to use the default neutral style.'],
+    category: 'Custom',
+    renderer: (component) => (
+      <ProductBadge
+        label={component.label ?? ''}
+        color={component.attributes?.['color'] as string}
+      />
+    ),
+  },
+];
+
+const schema = extendA2UISpecSchema(customComponents.map((c) => c.type));
+
+buildA2UISystemPrompt({ customComponents });
+renderA2UISpec(spec, actions, customComponents);
+```
+
+## Real-world example: stateful login form
+
+A stateful custom component that manages its own login/logout state and dispatches actions.
+
+This is the pattern used in `apps/main/src/app/demo/RJChatDemo/custom-components/`.
+
+**The renderer function:**
+
+```typescript
+import { useState } from 'react';
+import type { A2UIComponent } from 'gd-design-library/ai';
+import type { ReactNode } from 'react';
+import { Card, Form, Input, Button, Typography } from 'gd-design-library';
+
+type DispatchAction = (actionId: string, extra?: Record<string, unknown>) => void;
+
+function LoginFormView({ title, onLogin }: { title: string; onLogin: (u: string) => void }) {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+  return (
+    <Card padding="32px">
+      <Typography variant="h4">{title}</Typography>
+      <Form onFormSubmit={({ formData }) => {
+        const u = String(formData['username']?.value ?? username).trim();
+        if (u && password) onLogin(u);
+      }}>
+        <Input name="username" label="Username" value={username} onChange={(e) => setUsername(e.target.value)} required />
+        <Input name="password" label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        <Button variant="primary" type="submit" fullWidth>Sign In</Button>
+      </Form>
+    </Card>
+  );
+}
+
+function WelcomeView({ username, onLogout }: { username: string; onLogout: () => void }) {
+  return (
+    <Card padding="32px">
+      <Typography variant="h4">Welcome, {username}!</Typography>
+      <Button variant="outlined" fullWidth onClick={onLogout}>Sign Out</Button>
+    </Card>
+  );
+}
+
+export function renderLoginForm(
+  component: A2UIComponent,
+  _renderChildren: (children?: A2UIComponent[]) => ReactNode[],
+  dispatchAction?: DispatchAction
+): ReactNode {
+  // Read props from standard fields and attributes
+  const title = typeof component.value === 'string' ? component.value : (component.label ?? 'Sign In');
+  const welcomeMessage = component.attributes?.['welcomeMessage'] as string | undefined;
+
+  // Read action IDs from the component's actions array with fallbacks
+  const loginActionId = component.actions?.[0] ?? 'action_login';
+  const logoutActionId = component.actions?.[1] ?? 'action_logout';
+
+  const [loggedInUser, setLoggedInUser] = useState<string | null>(null);
+
+  const handleLogin = (username: string) => {
+    setLoggedInUser(username);
+    dispatchAction?.(loginActionId, { username });
+  };
+
+  const handleLogout = () => {
+    const prev = loggedInUser;
+    setLoggedInUser(null);
+    dispatchAction?.(logoutActionId, { username: prev ?? '' });
+  };
+
+  return loggedInUser
+    ? <WelcomeView username={loggedInUser} onLogout={handleLogout} />
+    : <LoginFormView title={title} onLogin={handleLogin} />;
+}
+```
+
+**The meta definition (LLM side):**
+
+```typescript
+import type { A2UICustomComponentMeta } from 'gd-design-library/ai';
+
+export const LOGIN_FORM_META: A2UICustomComponentMeta = {
+  type: 'login-form',
+  description:
+    'A self-contained login form card. Shows username + password fields with a Sign In button, then replaces itself with a welcome view that includes Sign Out.',
+  props: {
+    label: 'Card title shown above the form (e.g. "Sign In to your account").',
+    caption: 'Optional subtitle shown below the title.',
+    actions: 'Array of action IDs — actions[0] is sign-in, actions[1] is sign-out.',
+    'attributes.welcomeMessage': 'Message shown after successful login.',
+  },
+  notes: [
+    'Do NOT add input, button, or typography children — the form renders its own internals.',
+    'Always set actions to ["action_login", "action_logout"] unless different IDs are required.',
+    'Wire action_login (payload: { username }) and action_logout (payload: { username }) in ui.actions.',
+    'The component manages its own logged-in / logged-out state — no spec update needed.',
+  ],
+  category: 'Auth',
+};
+```
+
+**Wiring it together:**
+
+```typescript
+import type { A2UICustomComponentDefinition } from 'gd-design-library/ai';
+import { LOGIN_FORM_META } from './loginFormMeta';
+import { renderLoginForm } from './LoginForm';
+
+// Combine meta + renderer on the client side only
+export const MY_CUSTOM_COMPONENTS: A2UICustomComponentDefinition[] = [
+  { ...LOGIN_FORM_META, renderer: renderLoginForm },
+];
+```
+
+## Splitting meta from renderer
+
+When you have both a server (agent service) and a client (React app), split the definition:
+
+```text
+loginFormMeta.ts     — A2UICustomComponentMeta only, no React imports, safe for server
+LoginForm.tsx        — renderLoginForm function, React component, client only
+index.ts             — combines both: { ...LOGIN_FORM_META, renderer: renderLoginForm }
+```
+
+On the server, import only the meta:
+
+```typescript
+import type { A2UICustomComponentMeta } from 'gd-design-library/ai';
+import { buildA2UISystemPrompt } from 'gd-design-library/ai';
+import { LOGIN_FORM_META } from './loginFormMeta';
+
+// Server — no renderer needed here
+buildA2UISystemPrompt({ customComponents: [LOGIN_FORM_META] });
+```
+
+On the client, import the full definition:
+
+```typescript
+import { MY_CUSTOM_COMPONENTS } from './custom-components';
+import { renderA2UISpec } from 'gd-design-library';
+
+renderA2UISpec(spec, actions, MY_CUSTOM_COMPONENTS);
+```
+
+## How to register
+
+Four steps, every time:
+
+1. **Define** — write `A2UICustomComponentDefinition` with `type`, `description`, `props`, `notes`, and `renderer`
+2. **Prompt** — pass to `buildA2UISystemPrompt({ customComponents })` so the LLM sees the type
+3. **Render** — pass to `renderA2UISpec(spec, actions, customComponents)` so the renderer can display it
+4. **Validate** — pass type strings to `extendA2UISpecSchema(types)` so schema validation accepts them
+
+If you only need the LLM side (no browser rendering), use `A2UICustomComponentMeta` and skip step 3.
+
+## Important to know
+
+- built-in types always win — a custom `type` that matches a built-in uses the built-in renderer
+- `extendA2UISpecSchema` clones `A2UI_SPEC_SCHEMA` — the original is never mutated
+- `dispatchAction` is optional in the renderer signature — omit it for purely display components
+- `renderChildren` is always provided but safe to ignore for leaf components
+- `component.actions` is the array of action IDs from the spec, not the `A2UIActionDefinition` objects
+- use `component.attributes?.['myProp']` for any props you declared in the `props` map that don't map to a standard `A2UIComponent` field
+
+## Key point
+
+**Split meta from renderer: meta is server-safe, the renderer is client-only — combine them only where React runs.**

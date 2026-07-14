@@ -1,0 +1,46 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "types": ["@emotion/react/types/css-prop"],
+    "jsx": "react-jsx",
+    "jsxImportSource": "@emotion/react",
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"],
+      "@types": ["src/types/"],
+      "@types/*": ["src/types/*"],
+      "@constants/*": ["src/constants/*"],
+      "@constants": ["src/constants/"],
+      "@utils": ["src/utils/"],
+      "@utils/*": ["src/utils/*"],
+      "@hooks/*": ["src/hooks/*"],
+      "@stories/*": ["src/stories/*"],
+      "@hooks": ["src/hooks/"],
+      "@tokens/*": ["src/tokens/*"],
+      "@tokens": ["src/tokens/"],
+      "@components/*": ["src/components/*"],
+      "@components": ["src/components/"],
+      "@assets/*": ["src/assets/*"],
+      "@assets": ["src/assets/"],
+      "@testUtils": ["src/test-utils.tsx"],
+      "@playUtils": ["src/utils/play"]
+    }
+  },
+  "files": [],
+  "include": ["**/*.d.ts"],
+  "references": [
+    {
+      "path": "./tsconfig.lib.json"
+    },
+    {
+      "path": "./tsconfig.storybook.json"
+    }
+  ]
+}

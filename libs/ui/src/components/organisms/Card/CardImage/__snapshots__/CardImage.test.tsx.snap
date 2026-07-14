@@ -1,0 +1,43 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CardImage > SHOULD match snapshot 1`] = `
+<div>
+  <div
+    class="css-1avyp1d"
+    data-testid="CardImage"
+  >
+    <div
+      class="custom-class css-tmh0ws"
+      data-testid="Image-wrapper"
+      id="test-image"
+    >
+      <span
+        class="css-9kqirg"
+        data-testid="Image-placeholder"
+      >
+        <span
+          class="css-1csqw95"
+          data-testid="Skeleton"
+        >
+          Loading...
+        </span>
+      </span>
+      <img
+        alt="Test image"
+        class="css-lhsfyh"
+        data-testid="Image"
+        height="150"
+        src="https://picsum.photos/150/150"
+        width="150"
+      />
+      <figcaption
+        class="css-2rta11"
+        data-testid="Image-caption"
+      >
+        Test Caption
+      </figcaption>
+    </div>
+    Children
+  </div>
+</div>
+`;

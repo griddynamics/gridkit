@@ -1,0 +1,68 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Snackbar > SHOULD render the snackbar with correct message and title 1`] = `
+<div>
+  <div
+    aria-hidden="false"
+    aria-live="polite"
+    class="css-1m05mmu"
+    data-testid="Snackbar"
+    id="test"
+    role="alert"
+  >
+    <div
+      aria-label="Close notification"
+      class="css-1w2w6ve"
+    >
+      <svg
+        class="css-1u8qly9"
+        data-testid="Icon-cross"
+        fill="none"
+        height="10"
+        viewBox="0 0 14 14"
+        width="10"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M14 1.41L12.59 0L7 5.59L1.41 0L0 1.41L5.59 7L0 12.59L1.41 14L7 8.41L12.59 14L14 12.59L8.41 7L14 1.41Z"
+          fill="#0069B4"
+        />
+      </svg>
+    </div>
+    <div
+      class="css-1846zv8"
+    >
+      <svg
+        class="css-1u8qly9"
+        data-testid="Icon-info"
+        fill="none"
+        height="20"
+        viewBox="0 0 24 24"
+        width="20"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 17C11.45 17 11 16.55 11 16V12C11 11.45 11.45 11 12 11C12.55 11 13 11.45 13 12V16C13 16.55 12.55 17 12 17ZM13 9H11V7H13V9Z"
+          fill="#0069B4"
+        />
+      </svg>
+      <div
+        class="css-10h5rlo"
+      >
+        <div
+          class="css-1f48jys"
+          data-testid="typography"
+        >
+          Test Title
+        </div>
+        <div
+          class="css-1kbk1a7"
+          data-testid="typography"
+        >
+          This is a test message
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

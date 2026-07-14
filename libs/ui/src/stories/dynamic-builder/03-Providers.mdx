@@ -1,0 +1,133 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+import { CollapsibleSections } from './CollapsibleSections';
+
+<Meta title="Domain Solutions/Dynamic Builder/Providers" />
+
+# Providers
+
+<CollapsibleSections />
+
+**Contents**
+
+- [What it does](#what-it-does)
+- [Simple scheme](#simple-scheme)
+- [Built-in providers](#built-in-providers)
+- [Exports](#exports)
+- [Render provider options](#render-provider-options)
+- [Call a provider directly](#call-a-provider-directly)
+- [Add a new provider](#add-a-new-provider)
+- [Important to know](#important-to-know)
+
+---
+
+## What it does
+
+The providers layer hides SDK details behind one small interface.
+
+The rest of the builder only needs to know:
+
+- which provider is selected
+- which model label to show in the UI
+- how to call `generate()`
+
+Source: `apps/main/src/app/ui-builder/providers/`
+
+## Simple scheme
+
+```text
+provider id
+  -> createProvider(id, config)
+  -> provider.generate(request)
+  -> raw text reply
+```
+
+## Built-in providers
+
+| Provider  | ID          | UI label           | Model                      |
+| --------- | ----------- | ------------------ | -------------------------- |
+| Gemini    | `gemini`    | `Gemini 2.5 Flash` | `gemini-2.5-flash`         |
+| OpenAI    | `openai`    | `GPT-4o`           | `gpt-4o`                   |
+| Anthropic | `anthropic` | `Claude Sonnet 4`  | `claude-sonnet-4-20250514` |
+
+## Exports
+
+| Export                    | Use it when...                             |
+| ------------------------- | ------------------------------------------ |
+| `LLM_PROVIDERS`           | you need to render the provider selector   |
+| `LLMProviderId`           | you want type-safe provider IDs            |
+| `DEFAULT_LLM_PROVIDER_ID` | you need the app default                   |
+| `isLLMProviderId()`       | you need to validate user or storage input |
+| `createProvider()`        | you want a real provider instance          |
+| `registerProvider()`      | you want to add a new provider             |
+| `listProviders()`         | you want to inspect registered providers   |
+
+## Render provider options
+
+```ts
+import { LLM_PROVIDERS } from 'apps/main/src/app/ui-builder/providers';
+
+const options = LLM_PROVIDERS.map((p) => ({ value: p.id, label: p.label }));
+// [{ value: 'gemini', label: 'Gemini 2.5 Flash' }, ...]
+```
+
+## Call a provider directly
+
+```ts
+import { createProvider, type LLMProviderId } from 'apps/main/src/app/ui-builder/providers';
+
+const provider = createProvider('gemini', {
+  apiKey: process.env.VITE_GEMINI_API_KEY!,
+});
+
+const response = await provider.generate({
+  systemPrompt: 'Return valid A2UI JSON only.',
+  messages: [{ role: 'user', content: 'Create a compact login form.' }],
+});
+
+// response.text holds the raw model reply
+```
+
+Swap `'gemini'` for `'anthropic'` or `'openai'` — the interface is the same.
+
+```ts
+const provider = createProvider('anthropic', {
+  apiKey: process.env.VITE_ANTHROPIC_API_KEY!,
+});
+```
+
+Validate the ID before passing it if it comes from user input or storage:
+
+```ts
+import { isLLMProviderId } from 'apps/main/src/app/ui-builder/providers';
+
+const id = localStorage.getItem('provider') ?? 'gemini';
+const providerId = isLLMProviderId(id) ? id : 'gemini';
+```
+
+## Add a new provider
+
+Two steps:
+
+**1. Register the runtime factory in `providers/index.ts`:**
+
+```ts
+registerProvider('my-provider', (config) => new MyProvider(config));
+```
+
+**2. Add the metadata entry in `providers/metadata.ts`:**
+
+```ts
+{ id: 'my-provider', label: 'My Provider', model: 'my-model-v1' }
+```
+
+Both steps are required — the runtime registry and the UI provider list are separate.
+
+## Important to know
+
+- `providers/` is the source of truth for provider IDs and labels
+- `app/llm.ts` is a compatibility re-export only — new code imports from `ui-builder/providers`
+- both `providers/index.ts` and `providers/metadata.ts` must be updated when adding a provider
+
+## Key point
+
+**Providers are the boundary between the builder and any LLM SDK.**

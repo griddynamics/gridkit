@@ -1,0 +1,14 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Dropdown > SHOULD render correctly 1`] = `
+<div>
+  <div
+    class="css-1io98s4"
+    data-testid="Dropdown"
+  >
+    <div>
+      Item
+    </div>
+  </div>
+</div>
+`;

@@ -1,0 +1,29 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`List > SHOULD match snapshot 1`] = `
+<div>
+  <ul
+    class="css-1cx06q6"
+    data-testid="List"
+  >
+    <li
+      class="css-1cuyfre"
+      data-testid="List-item-0"
+    >
+      Item 1
+    </li>
+    <li
+      class="css-1cuyfre"
+      data-testid="List-item-1"
+    >
+      Item 2
+    </li>
+    <li
+      class="css-1cuyfre"
+      data-testid="List-item-2"
+    >
+      Item 3
+    </li>
+  </ul>
+</div>
+`;

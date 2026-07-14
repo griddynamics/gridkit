@@ -1,0 +1,158 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+import { CollapsibleSections } from './CollapsibleSections';
+
+<Meta title="Introduction/AI Integration/Renderer" />
+
+# Renderer
+
+<CollapsibleSections />
+
+**Contents**
+
+- [What It Does](#what-it-does)
+- [Simple scheme](#simple-scheme)
+- [Signature](#signature)
+- [How the renderer works](#how-the-renderer-works)
+- [Minimal usage](#minimal-usage)
+- [With type safety and null guard](#with-type-safety-and-null-guard)
+- [With action wiring](#with-action-wiring)
+- [Supported component types](#supported-component-types)
+- [Component rules the prompt enforces](#component-rules-the-prompt-enforces)
+- [Important to know](#important-to-know)
+
+---
+
+## What It Does
+
+`renderA2UISpec` is the client-side React renderer for A2UI specs.
+
+It takes a spec produced by an LLM and returns a fully-rendered `ReactNode` tree built from GridKit components.
+
+No code execution. No eval. No build step.
+
+Source: `libs/ui/src/utils/a2ui/`
+
+## Simple scheme
+
+```text
+A2UI JSON spec
+  -> renderA2UISpec(spec, actions?, customComponents?)
+  -> GridKit React component tree
+```
+
+## Signature
+
+```typescript
+import { renderA2UISpec } from 'gd-design-library';
+import type { A2UISpec, A2UIActionDefinition, A2UICustomComponentDefinition } from 'gd-design-library/ai';
+
+function renderA2UISpec(
+  spec?: Pick<A2UISpec, 'ui'> | null,
+  actions?: A2UIActionDefinition[],
+  customComponents?: A2UICustomComponentDefinition[]
+): ReactNode;
+```
+
+Only the `ui` field is required. You can pass a full `A2UISpec` directly.
+
+Returns `null` if `spec` is null, undefined, or contains no components.
+
+## How the renderer works
+
+1. **Layout** — reads `spec.ui.layout` and wraps components accordingly:
+   - `grid` → CSS Grid with `gridTemplateColumns: repeat(N, 1fr)`
+   - `horizontal` → Flexbox row
+   - anything else → Flexbox column (default)
+
+2. **Components** — maps each entry in `spec.ui.components` to the matching GridKit component via an internal registry. Unknown types fall back to a plain `Box` — no throws on unexpected LLM output.
+
+3. **Children** — components with a `children` array are rendered recursively using the same registry, enabling arbitrarily nested layouts.
+
+## Minimal usage
+
+```typescript
+import { renderA2UISpec } from 'gd-design-library';
+
+function AgentResponse({ spec }: { spec: unknown }) {
+  return <>{renderA2UISpec(spec as any)}</>;
+}
+```
+
+## With type safety and null guard
+
+```typescript
+import { renderA2UISpec } from 'gd-design-library';
+import type { A2UISpec } from 'gd-design-library/ai';
+
+function AgentMessage({ spec }: { spec: A2UISpec | null }) {
+  const rendered = renderA2UISpec(spec);
+  if (!rendered) return <FallbackMessage />;
+  return <>{rendered}</>;
+}
+```
+
+## With action wiring
+
+Pass the same `actions` array to both `buildA2UISystemPrompt` and `renderA2UISpec`.
+
+This is the single-source pattern — one definition drives both the prompt and the renderer.
+
+```typescript
+import { buildA2UISystemPrompt } from 'gd-design-library/ai';
+import { renderA2UISpec } from 'gd-design-library';
+import type { A2UIActionDefinition } from 'gd-design-library/ai';
+
+const actions: A2UIActionDefinition[] = [
+  {
+    type: 'add-to-cart',
+    description: 'Adds a product to the shopping cart.',
+    handler: (action) => cart.add(action.payload),
+  },
+  {
+    type: 'show-toast',
+    description: 'Displays a brief notification.',
+    handler: (action) => toast(action.payload?.message),
+  },
+];
+
+// LLM side — prompt lists only these action types
+buildA2UISystemPrompt({ actions });
+
+// Renderer side — buttons fire their handlers automatically
+renderA2UISpec(spec, actions);
+```
+
+## Supported component types
+
+```typescript
+import { A2UI_RENDERER_COMPONENT_TYPES } from 'gd-design-library';
+// readonly array of all supported A2UIComponent['type'] values
+```
+
+Any type not in this list renders as a plain `Box` fallback.
+
+## Component rules the prompt enforces
+
+These constraints are built into the system prompt automatically — no manual prompt engineering needed.
+
+| Rule           | Detail                                                                                          |
+| -------------- | ----------------------------------------------------------------------------------------------- |
+| Image sizing   | Always via `styling.width` / `styling.height`. Never `attributes.width` or `attributes.height`. |
+| Image src      | Must be a direct browser-loadable URL. Restricted to `imageSources` hosts if provided.          |
+| Button variant | One of: `primary` `secondary` `tertiary` `outlined` `text` `inherit`                            |
+| Badge variant  | One of: `primary` `secondary` `tertiary` `quaternary` `quinary`                                 |
+| Badge size     | One of: `sm` `md` `lg`                                                                          |
+| Icon name      | One of the 51 names in `A2UI_AVAILABLE_ICONS`                                                   |
+| CSS values     | Real CSS only — `"16px"`, `"1rem"`, `"100%"`. Never token strings like `"md"`.                  |
+| Component IDs  | Unique, `snake_case` — e.g. `"submit_button"`, `"user_card"`                                    |
+
+## Important to know
+
+- the `actions` parameter is the same array you pass to `buildA2UISystemPrompt`
+- `metadata` fields in the spec are ignored by the renderer — they exist for tracing only
+- custom components require a `renderer` field and must be passed as the third argument
+- see the **Actions** page for the full custom component registration pattern
+
+## Key point
+
+**`renderA2UISpec` turns any valid A2UI spec into live GridKit components — no code execution required.**

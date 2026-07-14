@@ -1,0 +1,554 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Form Configurator/Controls" />
+
+# Controls Reference
+
+## Overview
+
+Controls are the individual UI components that render form fields. The Form Configurator includes pre-built controls for all common input types. Controls are automatically selected based on your data schema's `type` and `format` properties.
+
+## Control Selection Logic
+
+The Form Configurator uses a **tester priority system** to select the appropriate control:
+
+1. Each control has a **tester function** that evaluates if it can render a given schema
+2. Testers return a priority number (higher = better match, -1 = cannot render)
+3. The control with the highest priority is selected
+
+```typescript
+type Tester = (uischema: UISchema, schema: DataSchema) => number;
+```
+
+### Priority Levels
+
+- **3**: Exact match (e.g., string with format:email → EmailControl)
+- **2**: Good match (e.g., string with enum → SelectControl)
+- **1**: Generic match (e.g., string → TextControl)
+- **-1**: Cannot render
+
+## Built-in Controls
+
+### TextControl
+
+**Default control for string type**
+
+- **Tester Priority**: 1
+- **Schema**: `{ type: 'string' }`
+
+```typescript
+{
+  type: 'string',
+  title: 'Full Name',
+  minLength: 2,
+  maxLength: 100
+}
+```
+
+### NumberControl
+
+**For numeric inputs**
+
+- **Tester Priority**: 1
+- **Schema**: `{ type: 'number' }`
+
+```typescript
+{
+  type: 'number',
+  title: 'Age',
+  minimum: 0,
+  maximum: 150
+}
+```
+
+### EmailControl
+
+**Email input with validation**
+
+- **Tester Priority**: 3
+- **Schema**: `{ type: 'string', format: 'email' }`
+
+```typescript
+{
+  type: 'string',
+  format: 'email',
+  title: 'Email Address'
+}
+```
+
+### PasswordControl
+
+**Masked password input**
+
+- **Tester Priority**: 3
+- **Schema**: `{ type: 'string', format: 'password' }`
+
+```typescript
+{
+  type: 'string',
+  format: 'password',
+  title: 'Password',
+  minLength: 8
+}
+```
+
+### UrlControl
+
+**URL input with validation**
+
+- **Tester Priority**: 3
+- **Schema**: `{ type: 'string', format: 'uri' }` or `format: 'url'`
+
+```typescript
+{
+  type: 'string',
+  format: 'uri',
+  title: 'Website URL'
+}
+```
+
+### DateControl
+
+**Date picker**
+
+- **Tester Priority**: 3
+- **Schema**: `{ type: 'string', format: 'date' }`
+
+```typescript
+{
+  type: 'string',
+  format: 'date',
+  title: 'Birth Date'
+}
+```
+
+### TimeControl
+
+**Time picker**
+
+- **Tester Priority**: 3
+- **Schema**: `{ type: 'string', format: 'time' }`
+
+```typescript
+{
+  type: 'string',
+  format: 'time',
+  title: 'Appointment Time'
+}
+```
+
+### TelControl
+
+**Telephone input**
+
+- **Tester Priority**: 3
+- **Schema**: `{ type: 'string', format: 'tel' }`
+
+```typescript
+{
+  type: 'string',
+  format: 'tel',
+  title: 'Phone Number'
+}
+```
+
+### SearchControl
+
+**Search input**
+
+- **Tester Priority**: 3
+- **Schema**: `{ type: 'string', format: 'search' }`
+
+```typescript
+{
+  type: 'string',
+  format: 'search',
+  title: 'Search Query'
+}
+```
+
+### ColorControl
+
+**Color picker with preview**
+
+- **Tester Priority**: 3
+- **Schema**: `{ type: 'string', format: 'color' }`
+
+```typescript
+{
+  type: 'string',
+  format: 'color',
+  title: 'Theme Color',
+  default: '#000000'
+}
+```
+
+### RangeControl
+
+**Slider for numeric ranges**
+
+- **Tester Priority**: 3
+- **Schema**: `{ type: 'number', format: 'range' }`
+
+```typescript
+{
+  type: 'number',
+  format: 'range',
+  title: 'Volume',
+  minimum: 0,
+  maximum: 100,
+  multipleOf: 1
+}
+```
+
+### FileControl
+
+**File upload**
+
+- **Tester Priority**: 3
+- **Schema**: `{ type: 'string', format: 'file' }`
+
+```typescript
+{
+  type: 'string',
+  format: 'file',
+  title: 'Upload Document',
+  accept: 'image/*,application/pdf'
+}
+```
+
+### TextareaControl
+
+**Multi-line text input**
+
+- **Tester Priority**: 3
+- **Schema**: `{ type: 'string', format: 'textarea' }`
+
+```typescript
+{
+  type: 'string',
+  format: 'textarea',
+  title: 'Comments',
+  maxLength: 500
+}
+```
+
+### SelectControl
+
+**Dropdown selection**
+
+- **Tester Priority**: 2
+- **Schema**: `{ type: 'string', enum: [...] }`
+
+```typescript
+{
+  type: 'string',
+  title: 'Country',
+  enum: ['USA', 'Canada', 'Mexico', 'UK', 'Germany']
+}
+```
+
+### SwitchControl
+
+**Boolean toggle switch**
+
+- **Tester Priority**: 1
+- **Schema**: `{ type: 'boolean' }`
+
+```typescript
+{
+  type: 'boolean',
+  title: 'Subscribe to Newsletter'
+}
+```
+
+### CheckboxControl
+
+**Checkbox input** (alternative to Switch)
+
+- **Tester Priority**: 1
+- **Schema**: `{ type: 'boolean' }`
+
+```typescript
+{
+  type: 'boolean',
+  title: 'I accept the terms and conditions'
+}
+```
+
+### RadioControl
+
+**Radio button group**
+
+- **Schema**: String with enum, using custom option
+
+```typescript
+{
+  type: 'string',
+  title: 'Preferred Contact Method',
+  enum: ['email', 'phone', 'sms']
+}
+// UISchema with custom option
+{
+  type: 'Control',
+  scope: '#/properties/contactMethod',
+  options: { custom: 'radio' }
+}
+```
+
+### ArrayControl
+
+**Dynamic array with add/remove/reorder**
+
+- **Tester Priority**: 3
+- **Schema**: `{ type: 'array' }`
+
+```typescript
+{
+  type: 'array',
+  title: 'Phone Numbers',
+  items: {
+    type: 'string',
+    format: 'tel'
+  },
+  minItems: 1,
+  maxItems: 5
+}
+```
+
+## Schema to Control Mapping
+
+| Schema Type | Format        | Enum | Control         |
+| ----------- | ------------- | ---- | --------------- |
+| `string`    | -             | -    | TextControl     |
+| `string`    | `email`       | -    | EmailControl    |
+| `string`    | `password`    | -    | PasswordControl |
+| `string`    | `uri` / `url` | -    | UrlControl      |
+| `string`    | `date`        | -    | DateControl     |
+| `string`    | `time`        | -    | TimeControl     |
+| `string`    | `tel`         | -    | TelControl      |
+| `string`    | `search`      | -    | SearchControl   |
+| `string`    | `color`       | -    | ColorControl    |
+| `string`    | `file`        | -    | FileControl     |
+| `string`    | `textarea`    | -    | TextareaControl |
+| `string`    | -             | ✓    | SelectControl   |
+| `number`    | -             | -    | NumberControl   |
+| `number`    | `range`       | -    | RangeControl    |
+| `boolean`   | -             | -    | SwitchControl   |
+| `array`     | -             | -    | ArrayControl    |
+
+## ReactControlProps Interface
+
+All React controls receive the following props:
+
+```typescript
+interface ReactControlProps<T = any> {
+  scope: string; // JSON pointer to field (e.g., '#/properties/email')
+  path?: string; // Dot-notation path (e.g., 'user.email')
+  label?: string; // Display label
+  value: T; // Current field value
+  errors: ErrorObject[]; // Validation errors
+  required: boolean; // Is field required
+  isEnabled: boolean; // Is control enabled
+  isVisible: boolean; // Is control visible
+  schema?: DataSchema; // Field schema
+  options?: Array<{
+    // Options for selectable controls
+    label?: string;
+    value: any;
+  }>;
+  onChange: (value: T) => void; // Value change callback
+}
+```
+
+### BaseControlProps
+
+The base interface extended by ReactControlProps:
+
+```typescript
+interface BaseControlProps<T = any> {
+  scope: string;
+  path?: string;
+  label?: string;
+  value: T;
+  errors: ErrorObject[];
+  required: boolean;
+  isEnabled: boolean;
+  isVisible: boolean;
+  schema?: DataSchema;
+  options?: Array<{ label?: string; value: any }>;
+  onChange: (value: T) => void;
+}
+```
+
+## Control Features
+
+### Validation Feedback
+
+All controls display validation errors automatically:
+
+```typescript
+// Schema with validation
+{
+  type: 'string',
+  format: 'email',
+  title: 'Email',
+  pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'
+}
+
+// Error displayed when validation fails
+{
+  instancePath: '/email',
+  message: 'must match format "email"'
+}
+```
+
+### Required Field Indicator
+
+Required fields show an asterisk (\*) automatically:
+
+```typescript
+{
+  type: 'object',
+  properties: {
+    email: { type: 'string', format: 'email', title: 'Email' }
+  },
+  required: ['email']  // Adds * to label
+}
+```
+
+### Disabled State
+
+Controls respect the `isEnabled` prop from conditional rules:
+
+```typescript
+// UISchema with rule
+{
+  type: 'Control',
+  scope: '#/properties/companyName',
+  rule: {
+    effect: 'DISABLE',
+    condition: {
+      scope: '#/properties/selfEmployed',
+      expectedValue: true
+    }
+  }
+}
+```
+
+### Hidden State
+
+Controls respect the `isVisible` prop:
+
+```typescript
+// UISchema with hide rule
+{
+  type: 'Control',
+  scope: '#/properties/taxId',
+  rule: {
+    effect: 'HIDE',
+    condition: {
+      scope: '#/properties/isBusiness',
+      expectedValue: false
+    }
+  }
+}
+```
+
+## Array Control Features
+
+The ArrayControl provides special functionality:
+
+### Add Items
+
+```typescript
+// Schema
+{
+  type: 'array',
+  items: { type: 'string' },
+  maxItems: 10
+}
+// UI shows "Add Item" button
+```
+
+### Remove Items
+
+Each array item has a "Remove" button to delete it.
+
+### Primitive Arrays
+
+```typescript
+{
+  type: 'array',
+  title: 'Tags',
+  items: { type: 'string' }
+}
+// Renders simple inputs for each tag
+```
+
+### Object Arrays
+
+```typescript
+{
+  type: 'array',
+  title: 'Contacts',
+  items: {
+    type: 'object',
+    properties: {
+      name: { type: 'string' },
+      phone: { type: 'string', format: 'tel' }
+    }
+  }
+}
+// Renders nested form for each contact
+```
+
+### Array Validation
+
+```typescript
+{
+  type: 'array',
+  minItems: 1,      // Minimum required items
+  maxItems: 5,      // Maximum allowed items
+  items: { ... }
+}
+```
+
+## Control Styling
+
+Controls use CSS classes from `styleClasses` constant:
+
+```typescript
+import { styleClasses } from 'gd-form-configurator';
+
+// Example classes
+styleClasses.controlContainer.root; // 'fc-control-container'
+styleClasses.controlContainer.labelText; // 'fc-control-label-text'
+styleClasses.control.errorMessage; // 'fc-error-message'
+```
+
+Import default styles:
+
+```typescript
+import 'gd-form-configurator/styles';
+```
+
+## Best Practices
+
+1. **Use appropriate formats**: Let the library select the right control
+2. **Provide meaningful labels**: Use `title` property in schema
+3. **Set validation rules**: Use min/max, minLength/maxLength appropriately
+4. **Test on mobile**: Ensure controls work well on touch devices
+5. **Consider accessibility**: Labels and error messages are automatically associated
+6. **Use enums for dropdowns**: Better than free-form text when options are limited
+7. **Array validation**: Always set minItems/maxItems for arrays
+
+## Control Customization
+
+For custom controls, see the **[Custom Controls](/docs/form-configurator-custom-controls--docs)** documentation.
+
+## Related Documentation
+
+- **[Data Schema](/docs/form-configurator-data-schema--docs)**: Define validation rules
+- **[UI Schema & Layouts](/docs/form-configurator-ui-schema-layouts--docs)**: Arrange controls
+- **[Custom Controls](/docs/form-configurator-custom-controls--docs)**: Create custom components

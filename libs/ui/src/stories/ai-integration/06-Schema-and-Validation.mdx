@@ -1,0 +1,161 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+import { CollapsibleSections } from './CollapsibleSections';
+
+<Meta title="Introduction/AI Integration/Schema and Validation" />
+
+# Schema and Validation
+
+<CollapsibleSections />
+
+**Contents**
+
+- [What This Covers](#what-this-covers)
+- [Simple scheme](#simple-scheme)
+- [Exports](#exports)
+- [Using as Gemini responseSchema](#using-as-gemini-responseschema)
+- [Using with AJV: validate and retry](#using-with-ajv-validate-and-retry)
+- [Extending for custom components](#extending-for-custom-components)
+- [Combining both in production](#combining-both-in-production)
+- [Important to know](#important-to-know)
+
+---
+
+## What This Covers
+
+A2UI specs from an LLM are JSON strings. Before rendering them you need to confirm their shape is valid.
+
+GridKit exports a full JSON Schema for this and tools to extend it for custom components.
+
+Source: `libs/ui/src/ai/a2ui/`
+
+## Simple scheme
+
+```text
+LLM returns JSON string
+  -> JSON.parse()
+  -> validate against A2UI_SPEC_SCHEMA
+  -> valid:   pass to renderA2UISpec
+  -> invalid: feed errors back to the model and retry
+```
+
+## Exports
+
+| Export                        | Use it when...                                              |
+| ----------------------------- | ----------------------------------------------------------- |
+| `A2UI_SPEC_SCHEMA`            | you want full schema validation or Gemini structured output |
+| `A2UI_SPEC_SCHEMA_SIMPLE`     | the full schema is too strict for your use case             |
+| `extendA2UISpecSchema(types)` | you have custom component types to add to the schema        |
+
+All imported from `gd-design-library/ai`.
+
+## Using as Gemini responseSchema
+
+Pass `A2UI_SPEC_SCHEMA` as `responseSchema` in `generationConfig`.
+Gemini will guarantee the response matches the spec shape before returning it.
+
+```typescript
+import { buildA2UISystemPrompt, A2UI_SPEC_SCHEMA } from 'gd-design-library/ai';
+
+const model = genAI.getGenerativeModel({
+  model: 'gemini-2.5-flash',
+  systemInstruction: buildA2UISystemPrompt({ agentId: 'my-agent' }),
+  generationConfig: {
+    responseMimeType: 'application/json',
+    responseSchema: A2UI_SPEC_SCHEMA,
+  },
+});
+```
+
+## Using with AJV: validate and retry
+
+For models without native structured output, validate the response yourself and feed errors back on retry.
+
+```typescript
+import { A2UI_SPEC_SCHEMA } from 'gd-design-library/ai';
+import Ajv from 'ajv';
+import addFormats from 'ajv-formats';
+
+const ajv = new Ajv({ allErrors: true, strict: false });
+addFormats(ajv);
+const validate = ajv.compile(A2UI_SPEC_SCHEMA);
+
+async function generateAndValidate(userMessage: string, retries = 3) {
+  for (let attempt = 0; attempt < retries; attempt++) {
+    const result = await model.generateContent(userMessage);
+    const spec = JSON.parse(result.response.text());
+
+    if (validate(spec)) return spec;
+
+    // Feed validation errors back so the model can correct itself
+    userMessage = `Fix these validation errors and regenerate:\n${JSON.stringify(validate.errors)}`;
+  }
+  throw new Error('Failed to generate a valid spec after retries');
+}
+```
+
+## Extending for custom components
+
+When you use `customComponents`, add your custom type strings to the schema so validation accepts them.
+
+```typescript
+import { extendA2UISpecSchema } from 'gd-design-library/ai';
+
+const schema = extendA2UISpecSchema(customComponents.map((c) => c.type));
+
+// Gemini — pass extended schema as responseSchema
+generationConfig: { responseMimeType: 'application/json', responseSchema: schema }
+
+// AJV — compile the extended schema
+const validate = ajv.compile(schema);
+```
+
+`extendA2UISpecSchema` returns a clone of `A2UI_SPEC_SCHEMA` — the original is never mutated.
+
+## Combining both in production
+
+Gemini `responseSchema` and AJV serve different purposes and work well together.
+Gemini enforces the outer JSON shape; AJV catches field-level constraint violations.
+
+```typescript
+import { buildA2UISystemPrompt, extendA2UISpecSchema } from 'gd-design-library/ai';
+import type { A2UICustomComponentDefinition } from 'gd-design-library/ai';
+import { renderA2UISpec } from 'gd-design-library';
+import Ajv from 'ajv';
+import addFormats from 'ajv-formats';
+
+const schema = extendA2UISpecSchema(customComponents.map((c) => c.type));
+
+const ajv = new Ajv({ allErrors: true, strict: false });
+addFormats(ajv);
+const validate = ajv.compile(schema);
+
+const model = genAI.getGenerativeModel({
+  model: 'gemini-2.5-flash',
+  systemInstruction: buildA2UISystemPrompt({ agentId: 'my-agent', customComponents }),
+  generationConfig: {
+    responseMimeType: 'application/json',
+    responseSchema: schema,
+  },
+});
+
+async function generateUI(userMessage: string) {
+  const result = await model.generateContent(userMessage);
+  const spec = JSON.parse(result.response.text());
+
+  if (!validate(spec)) {
+    throw new Error(`Invalid spec: ${JSON.stringify(validate.errors)}`);
+  }
+
+  return renderA2UISpec(spec, actions, customComponents);
+}
+```
+
+## Important to know
+
+- `A2UI_SPEC_SCHEMA` and `A2UI_SPEC_SCHEMA_SIMPLE` are immutable — always use `extendA2UISpecSchema` to add custom types
+- retry-with-errors is the most reliable pattern for models without native structured output
+- skip validation only in local prototypes — always validate in production
+
+## Key point
+
+**Validate every LLM response before rendering it, and feed validation errors back to the model on retry.**

@@ -1,0 +1,21 @@
+{
+  "ignore": ["react", "react-dom", "@emotion/react", "@emotion/styled"],
+  "defaults": {
+    "single": "40 kB",
+    "ai": "120 kB",
+    "wholeLibrary": "350 kB",
+    "wholeAI": "250 kB"
+  },
+  "overrides": {
+    "Chart": "150 kB",
+    "AreaChart": "120 kB",
+    "BarChart": "120 kB",
+    "LineChart": "120 kB",
+    "PieChart": "60 kB",
+    "Modal": "32 kB",
+    "Tooltip": "24 kB",
+    "ai/buildA2UISystemPrompt": "100 kB",
+    "ai/A2UI_SPEC_SCHEMA": "95 kB",
+    "ai/aiComponentsSchema": "180 kB"
+  }
+}

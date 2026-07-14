@@ -1,0 +1,39 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Icon Component > SHOULD render correctly when a valid icon name is provided 1`] = `
+<div>
+  <svg
+    class="css-1u8qly9"
+    data-testid="Icon-cross"
+    fill="none"
+    height="24"
+    viewBox="0 0 14 14"
+    width="24"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M14 1.41L12.59 0L7 5.59L1.41 0L0 1.41L5.59 7L0 12.59L1.41 14L7 8.41L12.59 14L14 12.59L8.41 7L14 1.41Z"
+      fill="#000"
+    />
+  </svg>
+</div>
+`;
+
+exports[`Icon Component > SHOULD render with specified color and fill 1`] = `
+<div>
+  <svg
+    class="css-1u8qly9"
+    data-testid="Icon-cross"
+    fill="#2ecc71"
+    height="32"
+    viewBox="0 0 14 14"
+    width="32"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M14 1.41L12.59 0L7 5.59L1.41 0L0 1.41L5.59 7L0 12.59L1.41 14L7 8.41L12.59 14L14 12.59L8.41 7L14 1.41Z"
+      fill="currentColor"
+    />
+  </svg>
+</div>
+`;

@@ -1,0 +1,833 @@
+import { Meta, Markdown } from '@storybook/addon-docs/blocks';
+import { version } from '../../../package.json';
+
+<Meta title="Theme & Tokens/Dynamic Theme Switching" />
+
+# 🌓 Dynamic Theme Switching in a Component Library
+
+**Comprehensive Guide for Implementation, Accessibility, Logging, and Best Practices**
+
+---
+
+## 🎯 Overview
+
+GridKit Design System provides a powerful, type-safe theming system with runtime theme switching, automatic logging, and accessibility support. This guide covers everything from basic setup to advanced patterns.
+
+## 🧱 Core Architecture
+
+### Key Components:
+
+- ✅ **Design Tokens** - Foundation for all styling (colors, spacing, typography, etc.)
+- ✅ **ThemeProvider** - Context provider that manages active theme
+- ✅ **Theme Registry** - Supports multiple named themes with dynamic registration
+- ✅ **useTheme Hook** - Access and control themes from any component
+- ✅ **updateThemeTokens** - Recommended method for customizing component styles
+- ✅ **Logger Integration** - Built-in logging for theme operations and debugging
+- ✅ **Persistence** - Optional localStorage or system preference support
+
+---
+
+## 🚀 Quick Start
+
+### Basic Setup
+
+```tsx
+import { ThemeProvider } from 'gd-design-library';
+
+function App() {
+  return (
+    <ThemeProvider isDefault>
+      <YourComponents />
+    </ThemeProvider>
+  );
+}
+```
+
+### With Logging (Recommended)
+
+```tsx
+import { ThemeProvider, LoggerProvider } from 'gd-design-library';
+
+// Simple console logger
+const logger = {
+  debug: (msg: string, ...meta: unknown[]) => console.debug(msg, ...meta),
+  info: (msg: string, ...meta: unknown[]) => console.info(msg, ...meta),
+  warn: (msg: string, ...meta: unknown[]) => console.warn(msg, ...meta),
+  error: (msg: string, ...meta: unknown[]) => console.error(msg, ...meta),
+};
+
+function App() {
+  return (
+    <LoggerProvider logger={logger} isEnabled={true}>
+      <ThemeProvider isDefault>
+        <YourComponents />
+      </ThemeProvider>
+    </LoggerProvider>
+  );
+}
+```
+
+---
+
+## ⚙️ Implementation Guide
+
+### Step 1: Create Themes by Replacing Color Tokens
+
+The **recommended approach** is to replace colors in the theme's color tokens. Component tokens already reference these colors, so you don't need to use `updateThemeTokens`:
+
+```tsx
+import { useEffect } from 'react';
+import { defaultTheme, useTheme, useLogger } from 'gd-design-library';
+
+function useCustomTheme() {
+  const { addTheme, setTheme } = useTheme();
+  const logger = useLogger();
+
+  useEffect(() => {
+    logger.info('Initializing custom themes');
+
+    // ✅ Create light theme by replacing color tokens
+    const lightTheme = {
+      ...defaultTheme,
+      name: 'light',
+      colors: {
+        ...defaultTheme.colors,
+        // Replace primary colors
+        primary: {
+          ...defaultTheme.colors.primary,
+          main: '#ff6600',
+          hover: '#e55a00',
+          active: '#cc4d00',
+          light: '#ff9947',
+        },
+        // Replace background colors
+        bg: {
+          ...defaultTheme.colors.bg,
+          default: '#ffffff',
+          surface: '#f8f9fa',
+          card: '#ffffff',
+        },
+        // Replace text colors
+        text: {
+          ...defaultTheme.colors.text,
+          primary: '#212121',
+          secondary: '#666666',
+          disabled: '#9e9e9e',
+        },
+        // Replace border colors
+        border: {
+          ...defaultTheme.colors.border,
+          default: '#e0e0e0',
+          light: '#f0f0f0',
+        },
+      },
+    };
+
+    // ✅ Create dark theme by replacing color tokens
+    const darkTheme = {
+      ...defaultTheme,
+      name: 'dark',
+      colors: {
+        ...defaultTheme.colors,
+        // Replace primary colors with dark theme palette
+        primary: {
+          ...defaultTheme.colors.primary,
+          main: '#0066cc',
+          hover: '#0052a3',
+          active: '#003d7a',
+          light: '#3399ff',
+        },
+        // Replace background colors for dark mode
+        bg: {
+          ...defaultTheme.colors.bg,
+          default: '#121212',
+          surface: '#1e1e1e',
+          card: '#1a1a1a',
+        },
+        // Replace text colors for dark mode
+        text: {
+          ...defaultTheme.colors.text,
+          primary: '#ffffff',
+          secondary: '#b3b3b3',
+          disabled: '#666666',
+        },
+        // Replace border colors for dark mode
+        border: {
+          ...defaultTheme.colors.border,
+          default: '#333333',
+          light: '#2a2a2a',
+        },
+      },
+    };
+
+    // Register themes - component tokens automatically use these colors
+    addTheme('light', lightTheme);
+    addTheme('dark', darkTheme);
+
+    // Load saved preference or default to light
+    const savedTheme = localStorage.getItem('app-theme') || 'light';
+    setTheme(savedTheme);
+
+    logger.info('Custom themes initialized', {
+      themes: ['light', 'dark'],
+      activeTheme: savedTheme,
+    });
+  }, [addTheme, setTheme, logger]);
+}
+
+// Use in your App
+function App() {
+  useCustomTheme();
+
+  return <YourComponents />;
+}
+```
+
+> **💡 Key Concept:** Component tokens (like `button.primary`) automatically reference theme color tokens (like `colors.primary.main`). When you change the theme colors, all components update automatically without needing to call `updateThemeTokens`.
+
+### Step 2: Create High-Contrast Theme (Accessibility)
+
+```tsx
+function useAccessibleThemes() {
+  const { addTheme } = useTheme();
+  const logger = useLogger();
+
+  useEffect(() => {
+    // ✅ High-contrast theme with WCAG AAA color tokens
+    const highContrastTheme = {
+      ...defaultTheme,
+      name: 'high-contrast',
+      colors: {
+        ...defaultTheme.colors,
+        // High-contrast primary colors
+        primary: {
+          ...defaultTheme.colors.primary,
+          main: '#000000',
+          hover: '#ffff00',
+          active: '#ffff00',
+        },
+        // High-contrast backgrounds
+        bg: {
+          ...defaultTheme.colors.bg,
+          default: '#000000',
+          surface: '#000000',
+          card: '#000000',
+        },
+        // High-contrast text (Yellow on black = 19.56:1 contrast ratio - AAA)
+        text: {
+          ...defaultTheme.colors.text,
+          primary: '#ffffff',
+          secondary: '#ffff00',
+          inverse: '#000000',
+        },
+        // High-contrast borders
+        border: {
+          ...defaultTheme.colors.border,
+          default: '#ffffff',
+          light: '#cccccc',
+          focus: '#ffff00',
+        },
+      },
+    };
+
+    // Component tokens automatically use these high-contrast colors
+    addTheme('high-contrast', highContrastTheme);
+    logger.info('High-contrast theme registered for accessibility');
+  }, [addTheme, logger]);
+}
+```
+
+### Step 3: Build Theme Switcher Component
+
+```tsx
+import { useTheme, useLogger, Select } from 'gd-design-library';
+
+function ThemeSwitcher() {
+  const { theme, setTheme } = useTheme();
+  const logger = useLogger();
+
+  const themes = [
+    { name: 'Light', value: 'light' },
+    { name: 'Dark', value: 'dark' },
+    { name: 'High Contrast', value: 'high-contrast' },
+  ];
+
+  const handleThemeChange = (selectedOption: { name: string; value: string }) => {
+    logger.info('User changing theme', {
+      from: theme.name,
+      to: selectedOption.value,
+    });
+
+    setTheme(selectedOption.value);
+    localStorage.setItem('app-theme', selectedOption.value);
+
+    logger.info('Theme changed successfully', {
+      activeTheme: selectedOption.value,
+    });
+  };
+
+  // Find current theme in items array
+  const currentTheme = themes.find((t) => t.value === theme.name) || null;
+
+  return (
+    <Select
+      items={themes}
+      value={currentTheme}
+      onChange={handleThemeChange}
+      placeholder="Select theme"
+      width="200px"
+      aria-label="Select theme"
+    />
+  );
+}
+```
+
+### Step 4: Theme Toggle Button (Alternative)
+
+```tsx
+function ThemeToggle() {
+  const { theme, setTheme } = useTheme();
+  const logger = useLogger();
+
+  const toggleTheme = () => {
+    const nextTheme = theme.name === 'light' ? 'dark' : 'light';
+
+    logger.debug('Toggling theme', {
+      currentTheme: theme.name,
+      nextTheme,
+    });
+
+    setTheme(nextTheme);
+    localStorage.setItem('app-theme', nextTheme);
+  };
+
+  return (
+    <button onClick={toggleTheme} aria-label={`Switch to ${theme.name === 'light' ? 'dark' : 'light'} theme`}>
+      {theme.name === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode'}
+    </button>
+  );
+}
+```
+
+---
+
+## 🎨 When to Use `updateThemeTokens`
+
+While **colors should be replaced in theme tokens**, you can use `updateThemeTokens` to customize component structure, behavior, or non-color properties:
+
+```tsx
+import { get, updateThemeTokens } from 'gd-design-library';
+
+// ✅ Use updateThemeTokens for structural customization
+updateThemeTokens(customTheme, {
+  'button.primary': {
+    // Customize padding, border radius, font size, etc.
+    padding: '12px 24px',
+    borderRadius: '8px',
+    fontSize: '16px',
+    fontWeight: 600,
+
+    // Add custom hover effects
+    '&:hover': {
+      transform: 'translateY(-2px)',
+      boxShadow: (theme: Record<symbol, unknown>) => get(theme, 'shadows.lg', '0 4px 12px rgba(0,0,0,0.15)'),
+    },
+
+    // Add custom states
+    '&:active': {
+      transform: 'translateY(0)',
+    },
+
+    // Conditional styling based on theme
+    transition: (theme: Record<symbol, unknown>) => {
+      const themeName = get(theme, 'name', 'light');
+      return themeName === 'dark' ? 'all 0.2s ease' : 'all 0.3s ease';
+    },
+  },
+});
+```
+
+**Use `updateThemeTokens` for:**
+
+- Structural changes (padding, border-radius, font-size)
+- Behavioral customization (transitions, transforms, animations)
+- Adding new pseudo-selectors or states
+- Complex conditional styling beyond colors
+- Referencing other theme tokens dynamically
+
+**DON'T use `updateThemeTokens` for:**
+
+- ❌ Changing colors (use `theme.colors` instead)
+- ❌ Changing spacing values (use `theme.spacing` instead)
+- ❌ Changing typography (use `theme.typography` instead)
+
+---
+
+## ♿ Accessibility Considerations
+
+### ✅ High-Contrast Theme Support
+
+- Use **light-on-dark** or **dark-on-light** color pairs with high luminance contrast
+- Follow **WCAG 2.1 AA** minimum or **AAA** enhanced contrast ratios:
+  - **Normal text**: 4.5:1 (AA) or 7:1 (AAA)
+  - **Large text** (18pt+ or 14pt+ bold): 3:1 (AA) or 4.5:1 (AAA)
+  - **UI components**: 3:1 minimum
+
+🛠 **Tools:**
+
+- [WebAIM Contrast Checker](https://webaim.org/resources/contrastchecker/)
+- [Accessible Colors](https://accessible-colors.com/)
+
+**Example:**
+
+```tsx
+// ✅ Define high-contrast color tokens
+const highContrastTheme = {
+  ...defaultTheme,
+  name: 'high-contrast',
+  colors: {
+    ...defaultTheme.colors,
+    primary: {
+      ...defaultTheme.colors.primary,
+      main: '#000000', // Black
+      hover: '#ffff00', // Yellow
+    },
+    bg: {
+      ...defaultTheme.colors.bg,
+      default: '#000000',
+      surface: '#000000',
+    },
+    text: {
+      ...defaultTheme.colors.text,
+      primary: '#ffffff',
+      accent: '#ffff00', // Yellow on black - 19.56:1 contrast ratio (AAA)
+    },
+    border: {
+      ...defaultTheme.colors.border,
+      default: '#ffffff',
+      focus: '#ffff00',
+    },
+  },
+};
+
+// Register theme - component tokens automatically use these colors
+addTheme('high-contrast', highContrastTheme);
+```
+
+### ✅ Focus Indicators
+
+Never rely solely on color for focus states. Ensure your theme has proper focus colors defined:
+
+```tsx
+const myTheme = {
+  ...defaultTheme,
+  colors: {
+    ...defaultTheme.colors,
+    border: {
+      ...defaultTheme.colors.border,
+      focus: '#005fcc', // Visible focus color
+      focusInverse: '#ffff00', // For dark backgrounds
+    },
+  },
+};
+
+// Component tokens (like button) automatically use theme.colors.border.focus
+addTheme('my-theme', myTheme);
+```
+
+### ✅ Respect Reduced Motion
+
+```tsx
+import { useEffect } from 'react';
+
+function useReducedMotion() {
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    if (mediaQuery.matches) {
+      // Set CSS variable for global reduced motion support
+      document.documentElement.style.setProperty('--animation-duration', '0.01ms');
+      document.documentElement.setAttribute('data-reduced-motion', 'true');
+    }
+  }, []);
+}
+```
+
+> **💡 Tip:** Component tokens can check `prefers-reduced-motion` automatically when they include transitions or animations. Define animation speeds in your theme tokens for consistent motion handling.
+
+### ✅ System Preference Detection
+
+Automatically apply theme based on user's system preferences:
+
+```tsx
+function useSystemTheme() {
+  const { setTheme } = useTheme();
+  const logger = useLogger();
+
+  useEffect(() => {
+    // Check for saved preference first
+    const savedTheme = localStorage.getItem('app-theme');
+    if (savedTheme) {
+      setTheme(savedTheme);
+      return;
+    }
+
+    // Use system preference
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const systemTheme = mediaQuery.matches ? 'dark' : 'light';
+
+    logger.info('Applying system theme preference', {
+      systemTheme,
+      prefersDark: mediaQuery.matches,
+    });
+
+    setTheme(systemTheme);
+
+    // Listen for system preference changes
+    const handleChange = (e: MediaQueryListEvent) => {
+      const newTheme = e.matches ? 'dark' : 'light';
+      logger.info('System theme preference changed', {
+        newTheme,
+      });
+      setTheme(newTheme);
+    };
+
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, [setTheme, logger]);
+}
+```
+
+### ✅ Keyboard Navigation
+
+Ensure theme switcher is keyboard accessible:
+
+```tsx
+function AccessibleThemeSwitcher() {
+  const { theme, setTheme } = useTheme();
+
+  return (
+    <button
+      onClick={() => setTheme(theme.name === 'light' ? 'dark' : 'light')}
+      aria-label={`Switch to ${theme.name === 'light' ? 'dark' : 'light'} theme`}
+      role="switch"
+      aria-checked={theme.name === 'dark'}
+    >
+      {theme.name === 'light' ? '🌙' : '☀️'}
+      <span className="sr-only">Current theme: {theme.name}. Click to switch.</span>
+    </button>
+  );
+}
+```
+
+---
+
+## 🚀 Best Practices
+
+### 1. Replace Colors in Theme Tokens (Not Component Tokens)
+
+```tsx
+// ✅ Good: Define colors in theme tokens
+const myTheme = {
+  ...defaultTheme,
+  name: 'my-theme',
+  colors: {
+    ...defaultTheme.colors,
+    primary: {
+      ...defaultTheme.colors.primary,
+      main: '#007bff',
+      hover: '#0056b3',
+      active: '#003d7a',
+    },
+    bg: {
+      ...defaultTheme.colors.bg,
+      default: '#ffffff',
+      surface: '#f8f9fa',
+    },
+  },
+};
+
+// Component tokens automatically use these colors
+addTheme('my-theme', myTheme);
+
+// ❌ Avoid: Using updateThemeTokens to override colors
+updateThemeTokens(theme, {
+  'button.primary': {
+    backgroundColor: '#007bff', // Don't do this - change theme.colors instead
+  },
+});
+
+// ❌ Avoid: Styled components with hardcoded values
+const MyButton = styled(Button)({
+  backgroundColor: '#007bff', // Not theme-aware
+});
+```
+
+### 2. Keep Themes Consistent
+
+Maintain the same structure across all themes:
+
+```tsx
+// ✅ Good: Consistent structure and token paths
+const lightTheme = {
+  ...defaultTheme,
+  name: 'light',
+  colors: {
+    ...defaultTheme.colors,
+    primary: {
+      main: '#007bff',
+      hover: '#0056b3',
+      active: '#003d7a',
+    },
+    bg: {
+      surface: '#ffffff',
+      card: '#f8f9fa',
+    },
+  },
+};
+
+const darkTheme = {
+  ...defaultTheme,
+  name: 'dark',
+  colors: {
+    ...defaultTheme.colors,
+    primary: {
+      main: '#0d6efd', // Same structure, different values
+      hover: '#0a53be',
+      active: '#084298',
+    },
+    bg: {
+      surface: '#121212',
+      card: '#1a1a1a',
+    },
+  },
+};
+
+// ❌ Avoid: Inconsistent structure
+const inconsistentDark = {
+  ...defaultTheme,
+  name: 'dark',
+  colors: {
+    ...defaultTheme.colors,
+    main: '#0d6efd', // Wrong! No nested structure
+    background: '#121212', // Wrong! Different key name
+  },
+};
+```
+
+### 3. Use TypeScript for Type Safety
+
+```tsx
+import type { Theme } from 'gd-design-library';
+
+const myTheme: Theme = {
+  ...defaultTheme,
+  name: 'custom',
+  // TypeScript will catch missing or incorrect tokens
+};
+```
+
+### 4. Document Your Themes
+
+```tsx
+/**
+ * Custom theme collection for MyApp
+ *
+ * Themes:
+ * - light: Default light theme with blue accents
+ * - dark: Dark theme with reduced contrast
+ * - high-contrast: WCAG AAA compliant high-contrast theme
+ */
+export const myAppThemes = {
+  light: lightTheme,
+  dark: darkTheme,
+  highContrast: highContrastTheme,
+};
+```
+
+### 5. Test Theme Switching
+
+```tsx
+function ThemeDebugger() {
+  const { theme } = useTheme();
+  const logger = useLogger();
+
+  useEffect(() => {
+    logger.debug('Current theme state', {
+      name: theme.name,
+      colorKeys: Object.keys(theme.colors || {}),
+      spacingKeys: Object.keys(theme.spacing || {}),
+    });
+  }, [theme, logger]);
+
+  return null;
+}
+```
+
+### 6. Performance Optimization
+
+```tsx
+import { useMemo } from 'react';
+
+function useOptimizedTheme() {
+  const { theme } = useTheme();
+
+  // Memoize expensive theme calculations
+  const processedTheme = useMemo(() => {
+    return {
+      ...theme,
+      computed: {
+        isDark: theme.name.includes('dark'),
+        isHighContrast: theme.name === 'high-contrast',
+      },
+    };
+  }, [theme.name]);
+
+  return processedTheme;
+}
+```
+
+---
+
+## 📊 Advanced Patterns
+
+### Theme Persistence with Sync Across Tabs
+
+```tsx
+function usePersistedTheme() {
+  const { theme, setTheme } = useTheme();
+  const logger = useLogger();
+
+  useEffect(() => {
+    // Load saved theme
+    const savedTheme = localStorage.getItem('app-theme');
+    if (savedTheme && savedTheme !== theme.name) {
+      setTheme(savedTheme);
+    }
+
+    // Listen for changes in other tabs
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'app-theme' && e.newValue && e.newValue !== theme.name) {
+        logger.info('Theme changed in another tab', {
+          newTheme: e.newValue,
+        });
+        setTheme(e.newValue);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [theme.name, setTheme, logger]);
+
+  // Save on change
+  useEffect(() => {
+    localStorage.setItem('app-theme', theme.name);
+  }, [theme.name]);
+}
+```
+
+### Conditional Theme Loading
+
+```tsx
+function useConditionalThemes() {
+  const { addTheme, setTheme } = useTheme();
+  const logger = useLogger();
+
+  useEffect(() => {
+    // Load only necessary themes
+    const userPreference = getUserSettings();
+
+    const themes = [
+      { name: 'light', theme: lightTheme },
+      userPreference.needsDark && { name: 'dark', theme: darkTheme },
+      userPreference.needsHighContrast && { name: 'high-contrast', theme: highContrastTheme },
+    ].filter(Boolean);
+
+    themes.forEach((t) => {
+      if (t) {
+        addTheme(t.name, t.theme);
+        logger.debug('Theme loaded', { name: t.name });
+      }
+    });
+
+    setTheme(userPreference.defaultTheme || 'light');
+  }, [addTheme, setTheme, logger]);
+}
+```
+
+### Theme-Aware Components
+
+```tsx
+import { useTheme, get } from 'gd-design-library';
+
+function ThemeAwareCard({ children }: { children: React.ReactNode }) {
+  const { theme } = useTheme();
+
+  // ✅ Reference theme tokens dynamically
+  const backgroundColor = get(theme, 'colors.bg.card', '#ffffff');
+  const textColor = get(theme, 'colors.text.primary', '#212121');
+  const padding = get(theme, 'spacing.lg', '24px');
+  const borderRadius = get(theme, 'radius.md', '8px');
+
+  return (
+    <div
+      style={{
+        backgroundColor,
+        color: textColor,
+        padding,
+        borderRadius,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+// ❌ Avoid: Conditional hardcoded values
+function BadThemeAwareCard({ children }: { children: React.ReactNode }) {
+  const { theme } = useTheme();
+  const isDark = theme.name.includes('dark');
+
+  return (
+    <div
+      style={{
+        backgroundColor: isDark ? '#1a1a1a' : '#ffffff', // Hardcoded
+        color: isDark ? '#ffffff' : '#212121', // Hardcoded
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+```
+
+---
+
+## 🧾 Implementation Checklist
+
+Before deploying your theming system:
+
+- ✅ **Tokens defined** - All colors, spacing, typography using design tokens
+- ✅ **ThemeProvider configured** - Wraps your app with logging enabled
+- ✅ **Multiple themes** - Light, dark, and high-contrast available
+- ✅ **updateThemeTokens used** - Component tokens customized (not styled components)
+- ✅ **Accessibility tested** - Contrast ratios verified, focus indicators visible
+- ✅ **System preferences** - Respects `prefers-color-scheme` and `prefers-reduced-motion`
+- ✅ **Persistence** - Theme saved to localStorage
+- ✅ **Cross-tab sync** - Theme updates across browser tabs
+- ✅ **Logger integration** - Theme operations logged for debugging
+- ✅ **TypeScript types** - Type safety for all theme operations
+- ✅ **Documentation** - Theme usage documented for team
+
+---
+
+## 📚 Related Documentation
+
+- [Theme Tokens Usage Guide](/docs/introduction-theme-tokens-usage--docs) - Comprehensive theming documentation
+- [Getting Started](/docs/introduction-getting-started--docs) - Basic setup guide
+- [Logging and Debugging](/docs/introduction-logging-and-debugging--docs) - Logger integration guide
+- [Default Theme Reference](/docs/theme-tokens-theme--docs) - Complete token reference
+
+---
+
+Made with ❤️ by Grid Dynamics · GridKit v{version}

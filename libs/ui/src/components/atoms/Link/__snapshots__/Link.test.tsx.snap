@@ -1,0 +1,32 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Link > SHOULD match snapshot 1`] = `
+<div>
+  <a
+    aria-label="test-label"
+    class="test-text-label-class css-txk7ga"
+    data-testid="Link"
+    href="//www.dummy.net"
+    role="link"
+    tabindex="0"
+    target="_blank"
+  >
+    Link
+  </a>
+</div>
+`;
+
+exports[`Link > SHOULD match variant Secondary snapshot 1`] = `
+<div>
+  <a
+    aria-label="test-label"
+    class="test-text-label-class css-171elqo"
+    data-testid="Link"
+    role="link"
+    tabindex="0"
+    target="_blank"
+  >
+    Button Link
+  </a>
+</div>
+`;

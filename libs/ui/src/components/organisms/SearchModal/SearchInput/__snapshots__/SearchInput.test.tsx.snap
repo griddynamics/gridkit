@@ -1,0 +1,53 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SearchInput > SHOULD match snapshot 1`] = `
+<div>
+  <label
+    class="css-196sv9g"
+    data-testid="InputWrapper"
+  >
+    <span
+      class="css-1n9btb7"
+      data-testid="InputWrapper"
+    >
+      <input
+        aria-required="false"
+        class="css-1ojf3jn"
+        data-testid="SearchInput"
+        placeholder="Search"
+        tabindex="0"
+        type="search"
+      />
+      <span
+        class="Input__border"
+      />
+      <span
+        class="Input__outline"
+      />
+      <span
+        class="css-luz7hd"
+        data-testid="InputAdornment"
+      >
+        <div
+          class="css-7onp66"
+        >
+          <svg
+            class="css-1u8qly9"
+            data-testid="Icon-cross"
+            fill="none"
+            height="12"
+            viewBox="0 0 14 14"
+            width="12"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M14 1.41L12.59 0L7 5.59L1.41 0L0 1.41L5.59 7L0 12.59L1.41 14L7 8.41L12.59 14L14 12.59L8.41 7L14 1.41Z"
+              fill="currentColor"
+            />
+          </svg>
+        </div>
+      </span>
+    </span>
+  </label>
+</div>
+`;

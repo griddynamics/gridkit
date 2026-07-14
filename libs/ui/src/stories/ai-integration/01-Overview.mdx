@@ -1,0 +1,98 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+import { CollapsibleSections } from './CollapsibleSections';
+
+<Meta title="Introduction/AI Integration/Overview" />
+
+# AI Integration
+
+<CollapsibleSections />
+
+**Contents**
+
+- [What It Is](#what-it-is)
+- [Simple end-to-end picture](#simple-end-to-end-picture)
+- [How to import](#how-to-import)
+- [When to use each mode](#when-to-use-each-mode)
+- [What makes this work](#what-makes-this-work)
+- [Good next pages](#good-next-pages)
+
+---
+
+## What It Is
+
+GridKit ships a complete AI integration system that lets LLMs produce real GridKit UI without writing React code.
+
+Two modes, one library:
+
+| Mode          | LLM output       | Entry point                                | Best for                            |
+| ------------- | ---------------- | ------------------------------------------ | ----------------------------------- |
+| **A2UI mode** | A2UI JSON spec   | `buildA2UISystemPrompt` + `renderA2UISpec` | Conversational agents, dynamic UI   |
+| **Code mode** | React/TSX source | `buildClaudeSystemPrompt`                  | Developer tools, design scaffolding |
+
+## Simple end-to-end picture
+
+**A2UI mode:**
+
+```text
+user message
+  -> LLM reads system prompt from buildA2UISystemPrompt
+  -> LLM returns A2UI JSON spec
+  -> renderA2UISpec turns it into live GridKit components
+```
+
+**Code mode:**
+
+```text
+user message
+  -> LLM reads system prompt from buildClaudeSystemPrompt
+  -> LLM returns React/TSX code
+  -> code runs in the React tree
+```
+
+## How to import
+
+```typescript
+// A2UI mode — LLM side
+import { buildA2UISystemPrompt, buildA2UIGeminiRequest, A2UI_SPEC_SCHEMA } from 'gd-design-library/ai';
+// A2UI mode — React renderer
+import { renderA2UISpec, A2UI_RENDERER_COMPONENT_TYPES } from 'gd-design-library';
+
+// Code mode
+import { buildClaudeSystemPrompt, buildGPT4Prompt, buildGeminiPrompt } from 'gd-design-library/ai';
+```
+
+## When to use each mode
+
+**Use A2UI mode when:**
+
+- the UI is generated at runtime in response to user messages
+- you cannot or do not want to execute generated code
+- you need instant rendering without a build step
+- you want the LLM to stay within approved GridKit components
+
+**Use Code mode when:**
+
+- you are building a developer tool, scaffolder, or Storybook helper
+- you need full React flexibility and are running the code yourself
+
+## What makes this work
+
+The system prompt is derived directly from the live GridKit component map.
+
+When you call `buildA2UISystemPrompt()` it generates a prompt that lists every available component, its props, and the rules for using it.
+
+You never maintain a hand-written catalogue — the prompt stays in sync automatically.
+
+## Good next pages
+
+- read **A2UI Mode** to understand the protocol and all prompt options
+- read **Renderer** to understand how JSON becomes live components
+- read **Custom Components** to add your own React components to the pipeline
+- read **Actions** to connect buttons to your app logic
+- read **Schema and Validation** to make LLM output safe to render
+- read **Code Mode** if developer tools are your use case
+- read **How to Use** to start from a real integration pattern
+
+## Key point
+
+**The system prompt is auto-generated from the live component library, so it always stays in sync.**

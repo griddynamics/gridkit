@@ -1,0 +1,116 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+import { CollapsibleSections } from './CollapsibleSections';
+import a2uiActionFlowImg from '../Introduction/a2ui-action-flow.png';
+
+<Meta title="Introduction/AI Integration/Actions" />
+
+# Actions
+
+<CollapsibleSections />
+
+**Contents**
+
+- [What Actions Are](#what-actions-are)
+- [Simple scheme](#simple-scheme)
+- [A2UIActionDefinition fields](#a2uiactiondefinition-fields)
+- [Define and wire actions](#define-and-wire-actions)
+- [How dispatch works](#how-dispatch-works)
+- [Custom components](#custom-components)
+- [Important to know](#important-to-know)
+
+---
+
+## What Actions Are
+
+Actions are the interactions the LLM is allowed to generate.
+
+They answer two questions:
+
+- what can the AI write into the JSON spec
+- what should happen in the app when a user triggers it
+
+There are no built-in action types. Every action type you want must be declared explicitly.
+
+## Simple scheme
+
+```text
+A2UIActionDefinition[] (same array used in both places)
+  -> buildA2UISystemPrompt({ actions })   — prompt lists the allowed types
+  -> LLM produces buttons with actions: ["my_action_id"]
+  -> renderA2UISpec(spec, actions)        — button click calls the handler
+```
+
+<img
+  src={a2uiActionFlowImg}
+  alt="A2UI Action Flow: one array drives both the prompt and the renderer"
+  style={{ width: '100%', maxWidth: '860px', display: 'block', margin: '24px 0' }}
+/>
+
+## A2UIActionDefinition fields
+
+| Field         | Type                           | Required | Description                                                           |
+| ------------- | ------------------------------ | -------- | --------------------------------------------------------------------- |
+| `type`        | `string`                       | ✓        | Action type string used in A2UI JSON. Must be unique.                 |
+| `description` | `string`                       | ✓        | Injected into the LLM prompt so the model knows what the action does. |
+| `handler`     | `(action: A2UIAction) => void` | —        | Called by `renderA2UISpec` when the action fires at runtime.          |
+
+## Define and wire actions
+
+```typescript
+import type { A2UIActionDefinition } from 'gd-design-library/ai';
+import { buildA2UISystemPrompt } from 'gd-design-library/ai';
+import { renderA2UISpec } from 'gd-design-library';
+
+const actions: A2UIActionDefinition[] = [
+  {
+    type: 'add-to-cart',
+    description: 'Add a product to the cart. payload: { productId: string, quantity: number }',
+    handler: (action) => cart.add(action.payload),
+  },
+  {
+    type: 'open-checkout',
+    description: 'Navigate to the checkout flow. No payload required.',
+    handler: () => router.push('/checkout'),
+  },
+  {
+    type: 'show-toast',
+    description: 'Show a notification. payload: { message: string, variant: "success" | "error" | "info" }',
+    handler: (action) => toast(action.payload?.message),
+  },
+];
+
+// Pass the same array to both
+buildA2UISystemPrompt({ actions });
+renderA2UISpec(spec, actions);
+```
+
+## How dispatch works
+
+1. A button in the spec has `actions: ["add_p1"]`
+2. On click, the renderer looks up `"add_p1"` in `spec.ui.actions` → finds `{ id: "add_p1", type: "add-to-cart", payload: { productId: "p1", quantity: 1 } }`
+3. Finds the matching definition where `type === "add-to-cart"`
+4. Calls `definition.handler(action)` with the full `A2UIAction` object
+
+## Custom components
+
+Custom components extend the LLM vocabulary and the renderer at the same time.
+Pass `customComponents` alongside `actions` using the same single-source pattern.
+
+```typescript
+buildA2UISystemPrompt({ actions, customComponents });
+renderA2UISpec(spec, actions, customComponents);
+```
+
+For the full guide — types, renderer function signature, reading component props, `dispatchAction`, stateful components, and the meta/renderer split — see the **Custom Components** page.
+
+## Important to know
+
+- if `actions` is omitted or empty, the LLM is explicitly told to omit `ui.actions` entirely
+- action `type` strings are case-sensitive and must match exactly between the definition and the spec
+- the `handler` field is optional — omit it if you handle actions elsewhere in your app
+- built-in component types always win — a custom `type` that matches a built-in uses the built-in renderer
+- `extendA2UISpecSchema` clones the base schema — it never mutates `A2UI_SPEC_SCHEMA`
+
+## Key point
+
+**One array drives both the prompt constraints and the runtime handlers — no duplication.**

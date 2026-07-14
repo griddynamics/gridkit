@@ -1,0 +1,238 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Form Configurator/Getting Started" />
+
+# Getting Started with Form Configurator
+
+## Overview
+
+**Form Configurator** is a powerful schema-driven form builder library that provides automatic form generation, validation, and state management based on JSON Schema definitions. It consists of two main packages:
+
+- **`gd-form-configurator`** - Core library (framework-agnostic)
+- **`gd-form-configurator-react`** - React adapter with pre-built UI components
+
+## Architecture
+
+The library follows a clean separation of concerns:
+
+```
+┌─────────────────────────────────────┐
+│  React Adapter (View Layer)         │
+│  - FormBuilder Component            │
+│  - Pre-built Controls               │
+│  - Layouts                          │
+└─────────────────────────────────────┘
+                  ↓
+┌─────────────────────────────────────┐
+│  Core Engine (Business Logic)       │
+│  - FormEngine (Orchestrator)        │
+│  - State Management (Zustand)       │
+│  - Validation (AJV)                 │
+│  - Renderer Registry                │
+└─────────────────────────────────────┘
+```
+
+## Installation
+
+Install the React adapter (includes core library as dependency):
+
+```bash
+npm install gd-form-configurator-react
+```
+
+Or install packages separately:
+
+```bash
+npm install gd-form-configurator
+npm install gd-form-configurator-react
+```
+
+## Basic Usage
+
+### Step 1: Import the FormBuilder Component
+
+```jsx
+import { FormBuilder } from 'gd-form-configurator-react';
+import 'gd-form-configurator/styles'; // Import default styles
+```
+
+### Step 2: Define Your Data Schema
+
+The data schema defines the structure and validation rules using JSON Schema:
+
+```jsx
+const schema = {
+  type: 'object',
+  properties: {
+    firstName: {
+      type: 'string',
+      title: 'First Name',
+      minLength: 2,
+    },
+    lastName: {
+      type: 'string',
+      title: 'Last Name',
+      minLength: 2,
+    },
+    email: {
+      type: 'string',
+      format: 'email',
+      title: 'Email Address',
+    },
+    age: {
+      type: 'number',
+      title: 'Age',
+      minimum: 18,
+      maximum: 120,
+    },
+  },
+  required: ['firstName', 'lastName', 'email'],
+};
+```
+
+### Step 3: Define Your UI Schema
+
+The UI schema controls the layout and rendering:
+
+```jsx
+const uischema = {
+  type: 'VerticalLayout',
+  elements: [
+    {
+      type: 'Control',
+      scope: '#/properties/firstName',
+    },
+    {
+      type: 'Control',
+      scope: '#/properties/lastName',
+    },
+    {
+      type: 'Control',
+      scope: '#/properties/email',
+    },
+    {
+      type: 'Control',
+      scope: '#/properties/age',
+    },
+  ],
+};
+```
+
+### Step 4: Render the Form
+
+```jsx
+function ContactForm() {
+  const initialData = {
+    firstName: '',
+    lastName: '',
+    email: '',
+    age: null,
+  };
+
+  const handleSubmit = (data) => {
+    console.log('Form submitted:', data);
+    // Handle form submission
+  };
+
+  const handleChange = (data) => {
+    console.log('Form data changed:', data);
+    // Handle form data changes
+  };
+
+  return (
+    <FormBuilder
+      schema={schema}
+      uischema={uischema}
+      initialData={initialData}
+      onSubmit={handleSubmit}
+      onChange={handleChange}
+    />
+  );
+}
+```
+
+## Complete Example
+
+Here's a full working example:
+
+```jsx
+import React from 'react';
+import { FormBuilder } from 'gd-form-configurator-react';
+import 'gd-form-configurator/styles';
+
+function App() {
+  const schema = {
+    type: 'object',
+    properties: {
+      name: {
+        type: 'string',
+        title: 'Full Name',
+        minLength: 3,
+      },
+      email: {
+        type: 'string',
+        format: 'email',
+        title: 'Email',
+      },
+      subscribe: {
+        type: 'boolean',
+        title: 'Subscribe to newsletter',
+      },
+    },
+    required: ['name', 'email'],
+  };
+
+  const uischema = {
+    type: 'VerticalLayout',
+    elements: [
+      { type: 'Control', scope: '#/properties/name' },
+      { type: 'Control', scope: '#/properties/email' },
+      { type: 'Control', scope: '#/properties/subscribe' },
+    ],
+  };
+
+  return (
+    <FormBuilder
+      schema={schema}
+      uischema={uischema}
+      initialData={{}}
+      onSubmit={(data) => console.log('Submitted:', data)}
+      onChange={(data) => console.log('Changed:', data)}
+    />
+  );
+}
+
+export default App;
+```
+
+## Key Features
+
+- **Schema-Driven**: Define forms using JSON Schema
+- **Automatic Validation**: Built-in validation using AJV
+- **Automatic Control Selection**: Smart control selection based on schema type and format
+- **Flexible Layouts**: Multiple layout options (Vertical, Horizontal, Group, Categorization)
+- **Custom Controls**: Easy to add custom React components
+- **Conditional Logic**: Show/hide and enable/disable fields based on rules
+- **Type Safe**: Full TypeScript support
+- **State Management**: Built-in state management with Zustand
+- **Logging**: Optional logging for debugging
+
+## Next Steps
+
+- **[Data Schema](/docs/form-configurator-data-schema--docs)**: Learn about schema definitions and validation
+- **[Controls](/docs/form-configurator-controls--docs)**: Explore available form controls
+- **[UI Schema & Layouts](/docs/form-configurator-ui-schema-layouts--docs)**: Master layout configuration
+- **[Logger](/docs/form-configurator-logger--docs)**: Set up debugging with logger
+- **[Custom Controls](/docs/form-configurator-custom-controls--docs)**: Create your own custom controls
+
+## Resources
+
+- **NPM Packages**:
+  - [gd-form-configurator](https://www.npmjs.com/package/gd-form-configurator)
+  - [gd-form-configurator-react](https://www.npmjs.com/package/gd-form-configurator-react)
+- **GitHub**: [Repository](https://github.com/griddynamics/rnd-composable-commerce)
+- **Grid Dynamics**: [https://www.griddynamics.com/](https://www.griddynamics.com/)
+
+## License
+
+MIT License - see LICENSE file for details

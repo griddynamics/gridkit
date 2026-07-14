@@ -1,0 +1,2400 @@
+# GridKit Design System (gd-design-library) - AI Integration Documentation
+
+> 📖 **Quick Start**: For detailed usage instructions, see the [AI README](./ai/README.md) and [Prompt Usage Manual](./ai/PROMPT_USAGE_MANUAL.md)
+
+## Overview
+This document provides comprehensive information about the AI integration system for the GridKit Design System (gd-design-library).
+The AI system enables reliable generation of React/TSX components using only the design system's components, ensuring consistency, accessibility, and maintainability.
+
+## Core Philosophy
+- **Single Source of Truth**: Use ONLY components exported by `gd-design-library`
+- **Consistency**: Single design system source makes UI consistent and themable
+- **Accessibility**: Components provide sensible defaults and ARIA support
+- **Maintainability**: No ad-hoc CSS/HTML or third-party UI imports
+- **Transparency**: All APIs explicitly documented and discoverable
+- **Reliability**: Validated schemas and guardrails prevent common mistakes
+
+## AI System Architecture
+
+### Main Files
+- [View AI README, Comprehensive usage documentation](./ai/README.md) - **Start here for overview and examples**
+- [View Prompt Usage Manual](./ai/PROMPT_USAGE_MANUAL.md) - **Complete guide for prompt generation**
+- [View AI Component schemas and composition tips](./ai/schemas/)
+- [View AI Main export file](./ai/index.ts)
+- [View AI Prompt building and system instructions](./ai/prompts.ts)
+- [View Discovery utilities](./ai/discovery.ts)
+- [View Validation utilities](./ai/validation.ts)
+- [View Schema index](./ai/schemas/index.ts)
+
+### Key Components
+
+#### 1. System Prompt (`CLAUDE_GRIDKIT_SYSTEM_PROMPT`)
+The core system instruction for LLMs that includes:
+- Hard requirements for TSX output
+- Single-source import enforcement
+- API constraints and guardrails (automatically extracted from schemas)
+- Complete component catalog (50+ components)
+- Composition tips and guidelines
+
+#### 2. Component Schema System
+Each component has:
+- **Component Definition**: Name, import, description, props, examples
+- **Metadata**: Category, complexity, accessibility, performance, dependencies
+- **Quick Start**: Multiple quick start examples
+- **Common Patterns**: Usage patterns with use cases
+- **Best Practices**: Guidelines including CRITICAL/IMPORTANT guardrails
+- **Troubleshooting**: Common issues and solutions
+- **Composition Tips**: Best practices for using with other components
+- **Type Safety**: TypeScript definitions for all props
+
+#### 3. Discovery Mechanisms
+The AI system provides multiple ways to discover components:
+- **By Name**: `discovery.getComponent(name)`
+- **By Search**: `discovery.searchComponents(query)` - searches name, description, category
+- **By Category**: `getComponentsByCategory(category)`
+- **By Feature**: `getComponentsByFeature(feature)` - searches description and best practices
+- **By Use Case**: `getComponentsByUseCase(useCase)` - searches common patterns
+- **By Complexity**: `discovery.getComponentsByComplexity(level)`
+- **Related Components**: `discovery.getRelatedComponents(name)` - finds components mentioned in composition tips
+- **Pattern Discovery**: `findPatterns(components, useCase?)` - finds relevant patterns
+
+#### 4. Validation System
+Automated validation for schemas and generated code:
+- **Schema Validation**: `validateSchema(schema)` - validates component schemas
+- **Bulk Validation**: `validateAllSchemas()` - validates all schemas with summary
+- **Code Validation**: `validateGeneratedCode(code)` - validates AI-generated code
+- Checks imports, component usage, and warns about raw HTML elements
+
+#### 5. Enhanced Prompt Generation
+- **Basic Prompt**: `buildClaudeSystemPrompt(request)` - standard prompt builder
+- **Contextual Prompt**: `buildContextualPrompt(request, context)` - includes specific component details
+- **GPT-4 Format**: `buildGPT4Prompt(request)` - OpenAI message format
+- **Gemini Format**: `buildGeminiPrompt(request)` - Google Gemini API format
+- **Guardrail Extraction**: Automatically extracts CRITICAL/IMPORTANT notes from schemas
+
+#### 6. Schema Index
+Pre-built indexes for quick discovery:
+- **By Category**: Actions & Controls, Layout & Structure, Forms & Inputs, Feedback & Overlays, Navigation, Display & Content
+- **By Complexity**: Low, Medium, High
+- **By Feature**: Form Controls, Layout, Navigation, Feedback, Display, Media, Data Display, Chat
+
+## Available Components
+
+> Auto-generated from `libs/ui/src/ai/schemas/` by `bin/generate-ai-docs.mjs`.
+> Run `yarn build:ui` to regenerate. Do not edit the block between the markers manually.
+
+<!-- AUTO-GENERATED:COMPONENTS:START -->
+66 components total — generated from libs/ui/src/ai/schemas/ on 2026-07-14.
+
+## Other
+
+### ThemeProvider
+
+Import: `import { ThemeProvider } from 'gd-design-library'`
+
+Context provider component that enables theme support throughout the application, allowing child components to access theme values via useTheme hook.
+
+**Props:** `children`: React.ReactNode, `initialTheme`: Theme, `isDefault`: boolean
+
+**Examples:**
+  `<ThemeProvider isDefault>{children}</ThemeProvider>`
+  `<ThemeProvider initialTheme={customTheme}>{children}</ThemeProvider>`
+
+### useTheme
+
+Import: `import { useTheme } from 'gd-design-library'`
+
+Hook for accessing and managing application themes dynamically with support for switching between themes and adding new themes at runtime.
+
+**Props:** `theme`: Theme, `setTheme`: (name: string) => void, `addTheme`: (name: string, config: Theme) => void
+
+**Examples:**
+  `const { theme, setTheme, addTheme } = useTheme();`
+  `const { theme } = useTheme(); // Access current theme values`
+  `const { setTheme } = useTheme(); setTheme("dark"); // Switch to dark theme`
+  `const { addTheme } = useTheme(); addTheme("custom", customThemeConfig); // Add custom theme`
+
+## Layout & Structure
+
+### FlexContainer
+
+Import: `import { FlexContainer } from 'gd-design-library'`
+
+General-purpose flexbox container with direct support for gap, flexDirection, alignItems, justifyContent, and additional box-style layout overrides.
+
+**Props:** `gap`: string, `flexDirection`: "row"|"column"|"row-reverse"|"column-reverse", `alignItems`: string, `justifyContent`: string, `children`: A2UIComponent[], `styling`: object
+
+**Examples:**
+  `<FlexContainer gap="12px" flexDirection="column" alignItems="center">...</FlexContainer>`
+
+### Column
+
+Import: `import { Column } from 'gd-design-library'`
+
+Vertical flex layout container. Arranges children top to bottom with configurable spacing, alignment, wrapping, reversal, and flex sizing.
+
+**Props:** `gutter`: string | number, `align`: "start"|"center"|"end"|"stretch", `justify`: "start"|"center"|"end"|"space-between"|"space-around", `isWrap`: boolean, `isReversed`: boolean, `flex`: string *(+3 more)*
+
+**Examples:**
+  `<Column gutter={16} align="center" justify="start">...</Column>`
+  `<Column as="main" gutter="1rem">...</Column>`
+  `<Column isReversed flex="1 1 auto">...</Column>`
+
+### Row
+
+Import: `import { Row } from 'gd-design-library'`
+
+Horizontal flex layout container. Arranges children side by side with configurable spacing, alignment, wrapping, reversal, and flex sizing.
+
+**Props:** `gutter`: string | number, `align`: "start"|"center"|"end"|"stretch", `justify`: "start"|"center"|"end"|"space-between"|"space-around", `isWrap`: boolean, `isReversed`: boolean, `flex`: string *(+3 more)*
+
+**Examples:**
+  `<Row justify="space-between" align="center" isWrap gutter={16}>...</Row>`
+  `<Row width="100%" padding="16px" position="relative">...</Row>`
+  `<Row as="nav" justify="space-between" align="center">...</Row>`
+  `<Row isReversed flex="1 1 auto">...</Row>`
+
+### Box
+
+Import: `import { Box } from 'gd-design-library'`
+
+Foundational layout primitive providing a flexible container with built-in flexbox support, focus management, and interaction states. Serves as the base for Card and other complex components.
+
+**Props:** `variant`: "horizontal"|"vertical", `isBordered`: boolean, `isHighlighted`: boolean, `withShadowHover`: boolean, `children`: Component[], `tabIndex`: number *(+1 more)*
+
+**Quick Start:**
+  - basic: `<Box variant="vertical" padding="20px">Content</Box>`
+  - horizontal: `<Box variant="horizontal" gap="10px"><div>Item 1</div><div>Item 2</div></Box>`
+  - bordered: `<Box variant="vertical" isBordered padding="20px">Bordered content</Box>`
+  - interactive: `<Box variant="vertical" withShadowHover padding="20px" styles={{ cursor: "pointer" }}>Hover me</Box>`
+  - centered: `<Box variant="vertical" justifyContent="center" alignItems="center" height="200px">Centered</Box>`
+
+**Common Patterns:**
+  - **Card Container** (Card-like container with hover elevation effect): `<Box variant="vertical" isBordered withShadowHover padding="20px" gap="10px"><Typography variant="h6">Title</Typography><Typography variant="small">Content</Typography></Box>`
+  - **Horizontal Layout** (Horizontal arrangement of items with alignment): `<Box variant="horizontal" gap="10px" alignItems="center"><Icon name="info" /><Typography>Information</Typography></Box>`
+  - **Vertical Stack** (Vertically stacked items with consistent spacing): `<Box variant="vertical" gap="10px"><Box isBordered padding="15px">Item 1</Box><Box isBordered padding="15px">Item 2</Box></Box>`
+  - **Centered Content** (Full viewport centered content layout): `<Box variant="vertical" justifyContent="center" alignItems="center" height="100vh">Centered content</Box>`
+  - **Dashboard Section** (Dashboard section with nested horizontal metrics): `<Box variant="vertical" isBordered padding="20px" gap="15px"><Typography variant="h5">Section Title</Typography><Box variant="horizontal" gap="10px"><Box isBordered padding="10px" styles={{ flex: 1 }}>Metric 1</Box><Box isBordered padding="10px" styles={{ flex: 1 }}>Metric 2</Box></Box></Box>`
+
+**Best Practices:**
+  - Use variant="vertical" (default) for stacking content, variant="horizontal" for side-by-side layouts
+  - Apply isBordered for visual boundaries and separation
+  - Use withShadowHover for interactive card-like elements that users can click
+  - Combine isHighlighted with isBordered for subtle outline hover effects
+  - Use gap property instead of margins between children for cleaner spacing
+  - Set tabIndex={0} when Box needs to be focusable for keyboard navigation
+  - Apply consistent padding values across similar Box components for visual harmony
+  - Use Box as a base for building domain-specific components like Cards
+  - Leverage flexbox props (justifyContent, alignItems, gap) for responsive layouts
+  - Combine Box with Typography for structured content sections
+  - Use nested Box components to create complex layouts without custom CSS
+  - Apply withShadowHover with backgroundColor for better shadow visibility
+  - Use Box instead of div for all layout needs to maintain design system consistency
+  - Set explicit width/maxWidth for controlling container sizes
+  - Combine Box variants to create dashboard-style layouts with metrics and sections
+
+**Troubleshooting:**
+  - **Children not aligning correctly:** Check variant prop and ensure flexDirection matches your layout needs
+  - **Hover effects not working:** Verify withShadowHover or isHighlighted is set and cursor style is pointer
+  - **Border not showing:** Ensure isBordered={true} and theme has border tokens defined
+  - **Gap not working:** Gap requires display flex (default) and works between direct children
+  - **Focus ring not visible:** Box has built-in focus-visible styles, ensure tabIndex is set for focusable boxes
+
+**Examples:**
+  `<Box variant="vertical" padding="20px">Simple container</Box>`
+  `<Box variant="horizontal" gap="10px"><Button>Action 1</Button><Button>Action 2</Button></Box>`
+  `<Box variant="vertical" isBordered padding="20px" gap="10px"><Typography variant="h6">Card Title</Typography><Typography variant="small">Card content</Typography></Box>`
+  `<Box variant="vertical" withShadowHover padding="20px" styles={{ cursor: "pointer", backgroundColor: "#fff" }}>Hover for shadow</Box>`
+  `<Box variant="horizontal" justifyContent="space-between" alignItems="center" padding="15px"><Typography>Title</Typography><Button>Action</Button></Box>`
+  `<Box variant="vertical" gap="20px" padding="30px" maxWidth="600px"><Box isBordered padding="20px">Section 1</Box><Box isBordered padding="20px">Section 2</Box></Box>`
+
+### Card
+
+Import: `import { Card } from 'gd-design-library'`
+
+Content container. Groups related UI. Supports border, highlight, and shadow-hover states. ALWAYS set both padding and gutter on the card root.
+
+**Props:** `variant`: "vertical"|"horizontal", `isBordered`: boolean, `isHighlighted`: boolean, `withShadowHover`: boolean, `padding`: string, `gutter`: string *(+2 more)*
+
+**Quick Start:**
+  - basic: `<Card padding="16px">Content here</Card>`
+  - bordered: `<Card isBordered padding="20px">Bordered content</Card>`
+  - horizontal: `<Card variant="horizontal" padding="16px"><Image /><Content /></Card>`
+  - highlighted: `<Card isHighlighted padding="16px">Important content</Card>`
+  - interactive: `<Card withShadowHover padding="20px" styles={{ cursor: "pointer", backgroundColor: "#fff" }}>Hover me</Card>`
+  - combined: `<Card isBordered withShadowHover padding="20px" styles={{ cursor: "pointer", backgroundColor: "#fff" }}>Interactive card</Card>`
+  - scrollable: `<Card overflow="auto" maxHeight="300px">Scrollable content</Card>`
+
+**Common Patterns:**
+  - **E-commerce Product Card (Vertical)** (Full-featured vertical product cards with image, price, rating, quantity selector, and action button): `<Card width="330px" gutter="16px" isBordered><Card.Image src={productImage} /><Card.Column padding="0 16px 16px" gutter="16px"><Card.Title>Product Name</Card.Title><Card.Description>Product description</Card.Description><Card.Rating value={4} label="4.5/5 (120)" /><Card.Row justify="between"><Card.Price currentValue="29.99" oldValue="39.99" currencySymbol="$" /><Card.Counter onCounterChange={handleQuantity} /></Card.Row><Card.Button onClick={handleAddToCart}>Add to Cart</Card.Button></Card.Column></Card>`
+  - **Horizontal Media Card** (Horizontal layout for media content with image and detailed information side-by-side): `<Card width="684px" variant="horizontal" isBordered><Card.Image src={mediaImage} width={212} /><Card.Column padding="16px" gutter="16px" justify="between"><Card.Row><Card.Title>Media Title</Card.Title><Card.Description>Detailed description of the media content</Card.Description></Card.Row><Card.Rating value={5} label="5/5 (89)" /><Card.Row justify="between"><Card.Price currentValue="49.99" currencySymbol="$" /><Card.Button onClick={handleAction}>More Info</Card.Button></Card.Row></Card.Column></Card>`
+  - **Compact Interactive Card** (Small interactive cards with hover effects, ideal for list views or dashboards): `<Card width="360px" variant="horizontal" isHighlighted withShadowHover><Card.Image src={thumbnail} width={94} /><Card.Column padding="8px 16px" gutter="8px"><Card.Title sizeVariant="sm">Compact Title</Card.Title><Card.Description sizeVariant="sm">Brief description</Card.Description><Card.Row justify="between"><Card.Price sizeVariant="sm" currentValue="15" currencySymbol="$" /><Card.Rating value={4} sizeVariant="sm" /></Card.Row></Card.Column></Card>`
+  - **Simple Content Card** (Basic content cards for forms, info sections, or general content grouping): `<Card isBordered padding="20px" gutter="16px"><Typography variant="h5">Section Title</Typography><Typography>Content text for information display</Typography></Card>`
+  - **Clickable Card with Shadow** (Interactive dashboard cards with shadow elevation on hover for metrics or KPIs): `<Card width="300px" withShadowHover padding="20px" styles={{ cursor: "pointer", backgroundColor: "#fff" }}><Typography variant="h6">Dashboard Metric</Typography><Typography variant="h4">1,234</Typography><Typography color="text.caption">+12% this month</Typography></Card>`
+  - **Combined Effects Card** (Cards with both border and shadow hover for maximum interactive feedback): `<Card isBordered withShadowHover padding="20px" width="280px" styles={{ cursor: "pointer", backgroundColor: "#fff" }}><Typography variant="h6">Action Card</Typography><Typography>Click to perform action with rich visual feedback</Typography></Card>`
+  - **EU Product Card (European pricing)** (Product card with European price format — symbol after value with space (e.g. "29,99 €"). Use currencySymbolPosition="after" for EU locales.): `<Card width="330px" gutter="16px" isBordered><Card.Image src={productImage} /><Card.Column padding="0 16px 16px" gutter="16px"><Card.Title>Produktname</Card.Title><Card.Description>Produktbeschreibung</Card.Description><Card.Rating value={4} label="4.5/5 (120)" /><Card.Row justify="between"><Card.Price currentValue="29,99" oldValue="39,99" currencySymbol="€" currencySymbolPosition="after" /><Card.Counter onCounterChange={handleQuantity} /></Card.Row><Card.Button onClick={handleAddToCart}>In den Warenkorb</Card.Button></Card.Column></Card>`
+
+**Best Practices:**
+  - ALWAYS set both padding and gutter on the Card root — never omit either prop.
+  - Content-only cards: padding="16px" or "20px", gutter="12px" or "16px".
+  - Cards with Card.Image first: padding="0" (image edge-to-edge), gutter="0"; set padding on Card.Column below.
+  - Use consistent padding values (16px, 20px, 24px) across your application
+  - Set maxWidth for cards to maintain readable content width on large screens
+  - Use isBordered for visual separation between different content sections
+  - Apply isHighlighted for selected or important content states (outline on hover)
+  - Use withShadowHover for clickable/interactive cards to provide elevation feedback
+  - Combine withShadowHover with backgroundColor="#fff" for better shadow visibility
+  - Apply cursor: "pointer" in styles when using withShadowHover for interactive cards
+  - Use variant="horizontal" for media cards with images and text
+  - Set overflow="auto" with maxHeight for scrollable content areas
+  - Apply tabIndex={0} for interactive cards that can be focused
+  - Combine isBordered and withShadowHover for rich interactive feedback on clickable cards
+
+**Troubleshooting:**
+  - **Content overflowing:** Use overflow="auto" with maxHeight to create scrollable areas
+  - **Card too wide on large screens:** Set maxWidth to limit card width on large displays
+  - **Inconsistent spacing:** Use consistent padding and gutter values across similar cards
+  - **Horizontal layout not working:** Ensure Card has enough width and children are properly structured
+  - **Border not showing:** Check if isBordered prop is set to true
+  - **Shadow hover not visible:** Ensure backgroundColor is set (e.g., "#fff") for better shadow visibility
+  - **Hover effects not working:** Check that cursor: "pointer" is set in styles for interactive cards
+
+**Examples:**
+  `<Card width="330px" gutter="16px" isBordered><Card.Image src={imgUrl} /><Card.Column padding="0 16px 16px" gutter="16px"><Card.Title>Product Name</Card.Title><Card.Description>Product description text</Card.Description><Card.Price currentValue="20" currencySymbol="$" /><Card.Button onClick={handleClick}>Add to Cart</Card.Button></Card.Column></Card>`
+  `<Card width="330px" gutter="16px" isBordered><Card.Image src={imgUrl} /><Card.Column padding="0 16px 16px" gutter="16px"><Card.Title>Nom du produit</Card.Title><Card.Description>Description du produit</Card.Description><Card.Price currentValue="29,99" oldValue="39,99" currencySymbol="€" currencySymbolPosition="after" /><Card.Button onClick={handleClick}>Ajouter au panier</Card.Button></Card.Column></Card>`
+  `<Card width="684px" variant="horizontal" isBordered><Card.Image src={imgUrl} width={212} /><Card.Column padding="16px" gutter="16px"><Card.Title>Title</Card.Title><Card.Description>Description</Card.Description><Card.Rating value={4} label="4/5 stars" /></Card.Column></Card>`
+  `<Card width="360px" variant="horizontal" isHighlighted withShadowHover><Card.Image src={imgUrl} width={94} /><Card.Column padding="8px 16px" gutter="8px"><Card.Title sizeVariant="sm">Interactive Card</Card.Title><Card.Description sizeVariant="sm">Hover for shadow effect</Card.Description><Card.Price sizeVariant="sm" currentValue="15" currencySymbol="$" /></Card.Column></Card>`
+  `<Card isBordered padding="20px" gutter="16px"><div>Simple content card</div><div>With multiple lines</div></Card>`
+  `<Card width="300px" withShadowHover padding="20px" styles={{ cursor: "pointer", backgroundColor: "#fff" }}><Typography variant="h6">Clickable Card</Typography><Typography>This card lifts on hover</Typography></Card>`
+
+### Scroll
+
+Import: `import { Scroll } from 'gd-design-library'`
+
+Scrollable container with configurable vertical and horizontal scrollbar visibility plus optional auto-hide behavior.
+
+**Props:** `children`: A2UIComponent[], `vertical`: "hidden"|"visible"|"auto", `horizontal`: "hidden"|"visible"|"auto", `autoHide`: boolean, `styling`: object
+
+**Examples:**
+  `<Scroll vertical="auto" horizontal="hidden"><LongContent /></Scroll>`
+  `<Scroll vertical="visible" styling={{maxHeight: "400px"}}>{tableData}</Scroll>`
+  `<Scroll horizontal="auto" vertical="hidden"><WideTable /></Scroll>`
+  `<Scroll styling={{height: "300px", border: "1px solid #ccc"}}>{messages}</Scroll>`
+  `<Scroll vertical="auto" autoHide><ArticleContent /></Scroll>`
+  `<Scroll vertical="auto" autoHide styling={{height: "500px"}}><ChatMessages /></Scroll>`
+
+### Separator
+
+Import: `import { Separator } from 'gd-design-library'`
+
+Visual divider between sections. Horizontal by default; supports optional inline text label (e.g. "OR").
+
+**Props:** `orientation`: "horizontal"|"vertical", `variant`: "solid"|"dashed"|"dotted", `label`: string, `labelPosition`: "start"|"center"|"end", `color`: string, `labelColor`: string *(+4 more)*
+
+**Examples:**
+  `<Separator />`
+  `<Separator variant="dashed" color="border.default" />`
+  `<Separator orientation="vertical" length="40px" color="brand.500" />`
+  `<Separator label="OR" labelPosition="center" />`
+  `<Separator variant="dotted" size="sm" color="border.primary" />`
+  `<Separator as="hr" styling={{margin: "20px 0"}} />`
+
+### Wrapper
+
+Import: `import { Wrapper } from 'gd-design-library'`
+
+Flexible container component that provides semantic HTML element wrapping with customizable layout variants and styling. Useful for creating layout contexts, semantic sections, and responsive containers.
+
+**Props:** `as`: string, `variant`: "inline"|"section"|"fullPage", `children`: A2UIComponent[], `className`: string, `styling`: object
+
+**Examples:**
+  `<Wrapper variant="section" as="section">Main content section</Wrapper>`
+  `<Wrapper variant="inline" styling={{display: "flex", gap: "16px"}}>{children}</Wrapper>`
+  `<Wrapper variant="fullPage" position="fixed">{overlayContent}</Wrapper>`
+  `<Wrapper as="article" className="content-wrapper">{articleContent}</Wrapper>`
+
+### Accordion
+
+Import: `import { Accordion, AccordionItem, AccordionHeader, AccordionContent } from 'gd-design-library'`
+
+Collapsible content panels. Supports single or multiple expanded items. Built with AccordionItem / AccordionHeader / AccordionContent subcomponents.
+
+**Props:** `children`: A2UIComponent[], `allowMultipleExpand`: boolean, `withoutSeparator`: boolean, `isInline`: boolean, `value`: string[], `defaultValue`: string[] *(+1 more)*
+
+**Quick Start:**
+  - basic: `<Accordion>
+  <AccordionItem id="item1">
+    <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" />}>
+      <h3>Section 1</h3>
+    </AccordionHeader>
+    <AccordionContent>
+      <p>Content 1</p>
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>`
+  - controlled: `<Accordion value={expandedItems} onChange={setExpandedItems}>
+  <AccordionItem id="item1">
+    <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" />}>
+      <h3>Section 1</h3>
+    </AccordionHeader>
+    <AccordionContent>
+      <p>Content 1</p>
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>`
+  - multiple: `<Accordion allowMultipleExpand={true}>
+  <AccordionItem id="item1">
+    <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" />}>
+      <h3>Section 1</h3>
+    </AccordionHeader>
+    <AccordionContent>
+      <p>Content 1</p>
+    </AccordionContent>
+  </AccordionItem>
+  <AccordionItem id="item2">
+    <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" />}>
+      <h3>Section 2</h3>
+    </AccordionHeader>
+    <AccordionContent>
+      <p>Content 2</p>
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>`
+  - faq: `<Accordion defaultValue={["faq1"]}>
+  <AccordionItem id="faq1">
+    <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" />}>
+      <h3>Question 1</h3>
+    </AccordionHeader>
+    <AccordionContent>
+      <p>Answer 1</p>
+    </AccordionContent>
+  </AccordionItem>
+  <AccordionItem id="faq2">
+    <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" />}>
+      <h3>Question 2</h3>
+    </AccordionHeader>
+    <AccordionContent>
+      <p>Answer 2</p>
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>`
+
+**Common Patterns:**
+  - **FAQ Section** (Frequently asked questions with expandable answers): `<Accordion defaultValue={["faq1"]}>
+  <AccordionItem id="faq1">
+    <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" />}>
+      <h3>How do I get started?</h3>
+    </AccordionHeader>
+    <AccordionContent>
+      <p>Follow these steps...</p>
+    </AccordionContent>
+  </AccordionItem>
+  <AccordionItem id="faq2">
+    <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" />}>
+      <h3>What are the pricing options?</h3>
+    </AccordionHeader>
+    <AccordionContent>
+      <p>We offer three plans...</p>
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>`
+  - **Settings Panel** (Settings panels where multiple sections can be open simultaneously): `<Accordion allowMultipleExpand={true}>
+  <AccordionItem id="general">
+    <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" />}>
+      <h3>General Settings</h3>
+    </AccordionHeader>
+    <AccordionContent>
+      <p>Basic configuration options</p>
+    </AccordionContent>
+  </AccordionItem>
+  <AccordionItem id="privacy">
+    <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" />}>
+      <h3>Privacy Settings</h3>
+    </AccordionHeader>
+    <AccordionContent>
+      <p>Privacy and security options</p>
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>`
+  - **Step-by-Step Guide** (Progressive disclosure for tutorials and guides): `<Accordion allowMultipleExpand={false}>
+  <AccordionItem id="step1">
+    <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" />}>
+      <h3>Step 1: Setup</h3>
+    </AccordionHeader>
+    <AccordionContent>
+      <p>Initial setup instructions</p>
+    </AccordionContent>
+  </AccordionItem>
+  <AccordionItem id="step2">
+    <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" />}>
+      <h3>Step 2: Configuration</h3>
+    </AccordionHeader>
+    <AccordionContent>
+      <p>Configuration details</p>
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>`
+  - **Rich Header Content** (Headers with icons, titles, and subtitles for rich visual hierarchy): `<Accordion>
+  <AccordionItem id="rich-header">
+    <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" />}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <Icon name="info" />
+        <div>
+          <h3>Title with Icon and Subtitle</h3>
+          <p style={{ fontSize: '12px', color: '#666' }}>Additional context</p>
+        </div>
+      </div>
+    </AccordionHeader>
+    <AccordionContent>
+      <p>Complex header example</p>
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>`
+  - **Nested Accordions** (Hierarchical content organization with multiple levels): `<Accordion>
+  <AccordionItem id="parent">
+    <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" />}>
+      <h3>Parent Section</h3>
+    </AccordionHeader>
+    <AccordionContent>
+      <Accordion>
+        <AccordionItem id="child1">
+          <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" />}>
+            <h4>Nested Item 1</h4>
+          </AccordionHeader>
+          <AccordionContent>
+            <p>Nested content</p>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>`
+  - **Custom Styled Items** (Custom styling for headers and content sections): `<Accordion>
+  <AccordionItem id="styled" styles={{ border: '2px solid #0066cc', borderRadius: '8px' }}>
+    <AccordionHeader 
+      expandIcon={<Icon name="keyboardArrowDown" />}
+      styles={{ backgroundColor: '#4CAF50', color: 'white', padding: '16px' }}
+    >
+      <h3>Styled Header</h3>
+    </AccordionHeader>
+    <AccordionContent styles={{ backgroundColor: '#f9f9f9', padding: '24px' }}>
+      <p>Custom styled content</p>
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>`
+  - **AccordionItem with Box Layout Props** (Flexible layout control using Box layout props (spacing, dimensions, positioning)): `<Accordion>
+  <AccordionItem 
+    id="boxstyles-item"
+    margin="16px 0"
+    padding="20px"
+    width="100%"
+    maxWidth="600px"
+    styles={{ border: '2px solid #4CAF50', borderRadius: '12px' }}
+  >
+    <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" />}>
+      <h3>Item with Box Props</h3>
+    </AccordionHeader>
+    <AccordionContent>
+      <p>Using margin, padding, width, and maxWidth props</p>
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>`
+  - **Flex Layout Accordion Items** (Side-by-side accordions with flexible width distribution): `<div style={{ display: 'flex', gap: '16px' }}>
+  <Accordion>
+    <AccordionItem 
+      id="flex-item-1" 
+      flex="1" 
+      minWidth="200px"
+      styles={{ border: '1px solid #ddd' }}
+    >
+      <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" />}>
+        <h3>Flex Item 1</h3>
+      </AccordionHeader>
+      <AccordionContent>
+        <p>Using flex="1"</p>
+      </AccordionContent>
+    </AccordionItem>
+  </Accordion>
+  <Accordion>
+    <AccordionItem 
+      id="flex-item-2" 
+      flex="2" 
+      minWidth="300px"
+    >
+      <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" />}>
+        <h3>Flex Item 2</h3>
+      </AccordionHeader>
+      <AccordionContent>
+        <p>Using flex="2" - takes more space</p>
+      </AccordionContent>
+    </AccordionItem>
+  </Accordion>
+</div>`
+
+**Best Practices:**
+  - ALWAYS import all three subcomponents: Accordion, AccordionItem, AccordionHeader, AccordionContent
+  - ALWAYS provide unique id prop to each AccordionItem for proper state management
+  - Structure: Accordion > AccordionItem > [AccordionHeader, AccordionContent]
+  - Use expandIcon prop on AccordionHeader with Icon component (e.g., <Icon name="keyboardArrowDown" />)
+  - CRITICAL: Use ONLY real icon names from IconsList - keyboardArrowDown, plus, arrowRight, arrowDown, etc.
+  - NEVER use: "add" (use plus), "chevronRight" (use arrowRight), "expandMore" (use arrowDown), "settings", "close"
+  - Use controlled mode (value + onChange) for syncing with URL or external state
+  - Enable allowMultipleExpand for settings panels where multiple sections can be open
+  - Keep AccordionHeader content concise and descriptive for better UX
+  - Defer heavy content rendering in AccordionContent until expanded for performance
+  - Use defaultValue to show the most important items expanded initially
+  - Set withoutSeparator={true} to remove dividers between items when needed
+  - Set isInline={true} to display accordion items header as inline layout
+  - Apply custom styles prop to AccordionItem, AccordionHeader, or AccordionContent for styling
+  - AccordionItem supports Box layout props: margin, padding, width, height, flex, position, etc.
+  - Use different expandIcon options from IconsList: keyboardArrowDown (default), plus (plus/minus), arrowRight (side arrow)
+  - Combine with Icon components in AccordionHeader for visual category indicators
+  - AccordionContent automatically handles smooth height animations
+  - AccordionHeader provides proper ARIA attributes (aria-expanded, aria-controls) automatically
+  - For rich headers, wrap complex content in divs inside AccordionHeader children
+  - Nest Accordions by placing a new Accordion inside AccordionContent for hierarchical data
+  - Accordion includes integrated logging support via useLogger hook - logs render, toggle, and onChange events for debugging
+
+**Troubleshooting:**
+  - **Items not expanding:** Check if value prop is set correctly and onChange handler is provided. Ensure each AccordionItem has a unique id prop.
+  - **Multiple items not expanding:** Set allowMultipleExpand={true} to enable multiple open items
+  - **State not updating:** Use controlled mode with value and onChange props for external state management
+  - **Accessibility issues:** Ensure proper ARIA attributes and keyboard navigation support. AccordionHeader automatically provides aria-expanded and aria-controls.
+  - **Performance issues:** Use lazy loading for heavy content inside AccordionContent sections
+  - **Icon not rotating:** Ensure expandIcon is passed to AccordionHeader component
+  - **Missing id error:** Each AccordionItem must have a unique id prop for proper state management
+
+**Examples:**
+  `<Accordion defaultValue={["item1"]}>
+  <AccordionItem id="item1">
+    <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" />}>
+      <h3>Section 1</h3>
+    </AccordionHeader>
+    <AccordionContent>
+      <p>Content 1</p>
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>`
+  `<Accordion value={expandedItems} onChange={setExpandedItems} allowMultipleExpand={true}>
+  {accordionItems.map(item => (
+    <AccordionItem key={item.id} id={item.id}>
+      <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" />}>
+        <h3>{item.title}</h3>
+      </AccordionHeader>
+      <AccordionContent>
+        <p>{item.content}</p>
+      </AccordionContent>
+    </AccordionItem>
+  ))}
+</Accordion>`
+  `<Accordion withoutSeparator>
+  <AccordionItem id="faq1">
+    <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" />}>
+      <h3>Question 1</h3>
+    </AccordionHeader>
+    <AccordionContent>
+      <p>Answer 1</p>
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>`
+  `<Accordion isInline>
+  <AccordionItem id="inline1">
+    <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" size="xs" />}>
+      <h3>Inline Accordion</h3>
+    </AccordionHeader>
+    <AccordionContent>
+      <p>Content with inline header layout</p>
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>`
+
+## Forms & Input
+
+### Search
+
+Import: `import { Search } from 'gd-design-library'`
+
+Search input component with dropdown results list for real-time filtering and selection of items with customizable rendering and keyboard navigation support.
+
+**Props:** `value`: string, `placeholder`: string, `options`: Array<{ value: unknown; label: string; disabled?: boolean; icon?: string; href?: string }>, `emptyItemsResult`: string, `actions`: string[], `width`: string *(+1 more)*
+
+**Examples:**
+  `<Search items={products} value={query} onType={handleSearch} onSelect={handleSelect} placeholder="Search products..." />`
+  `<Search items={users} renderOption={(user) => <FlexContainer><Avatar src={user.avatar} />{user.name}</FlexContainer>} />`
+  `<Search items={filteredItems} emptyItemsResult="No matching items found" onType={handleRealTimeSearch} />`
+
+### Select
+
+Import: `import { Select } from 'gd-design-library'`
+
+Dropdown selection component with customizable options and behavior. Supports both single and multiple selection modes.
+
+**Props:** `options`: Array<{ label: string; value: unknown; disabled?: boolean; icon?: string }>, `value`: unknown | unknown[] | null, `placeholder`: string, `disabled`: boolean, `multiple`: boolean, `searchable`: boolean *(+8 more)*
+
+**Examples:**
+  `<Select items={[{name: "Option 1", value: "1"}]} value={selectedValue} onChange={handleChange} placeholder="Choose an option" />`
+  `<Select multiple items={options} value={selectedValues} onChange={(data) => Array.isArray(data) && setSelectedValues(data)} placeholder="Select multiple" itemStringifier={(opt) => `${opt.name} (${opt.value})`} />`
+  `<Select items={options} color="error" placeholder="Select with error state" />`
+  `<Select items={options} color="success" placeholder="Select with success state" />`
+
+### Input
+
+Import: `import { Input } from 'gd-design-library'`
+
+Versatile form input component supporting multiple field types including text, email, password, checkbox, radio, and more. Includes built-in label, helper text, and adornment support.
+
+**Props:** `label`: string, `placeholder`: string, `value`: string, `variant`: "text"|"email"|"password"|"number"|"tel"|"url"|"search"|"radio"|"checkbox"|"date"|"time"|"month"|"week"|"color"|"range", `required`: boolean, `disabled`: boolean *(+12 more)*
+
+**Examples:**
+  `<Input variant={InputVariantType.Email} label="Email Address" placeholder="user@example.com" required />`
+  `<Input variant={InputVariantType.Password} label="Password" helperText="Must be at least 8 characters" />`
+  `<Input variant={InputVariantType.Text} adornmentStart={<Icon name="search" />} placeholder="Search..." />`
+  `<Input variant={InputVariantType.Checkbox} label="Remember me" checked={isChecked} onChange={handleChange} />`
+  `<Input variant={InputVariantType.Checkbox} label="Select all" indeterminate={hasPartial} checked={allSelected} onChange={handleSelectAll} />`
+
+### InputFile
+
+Import: `import { InputFile } from 'gd-design-library'`
+
+File picker button wrapping a native file input with design system styling. Use DragAndDrop instead when a full drop zone with inline validation is needed.
+
+**Props:** `label`: string, `accept`: string, `multiple`: boolean, `disabled`: boolean, `capture`: boolean | 'user' | 'environment', `variant`: string *(+6 more)*
+
+**Examples:**
+  `// Basic file upload with change handler
+const handleFileChange = (e) => {
+  const files = e.target.files;
+  console.log("Selected files:", files);
+};
+<InputFile onChange={handleFileChange}>Browse Files</InputFile>`
+  `// Image upload with file type restriction
+<InputFile 
+  accept="image/*" 
+  onChange={(e) => {
+    const file = e.target.files[0];
+    if (file) uploadImage(file);
+  }}
+>
+  Upload Photo
+</InputFile>`
+  `// Multiple file selection for batch uploads
+<InputFile 
+  multiple 
+  accept=".pdf,.doc,.docx"
+  onChange={(e) => {
+    const fileArray = Array.from(e.target.files);
+    fileArray.forEach(file => console.log(file.name));
+  }}
+>
+  Select Documents
+</InputFile>`
+  `// Custom button styling with icons
+<InputFile 
+  accept="image/*,video/*"
+  buttonProps={{
+    variant: "contained",
+    color: "primary",
+    iconStart: <Icon name="upload" />
+  }}
+  onChange={handleMediaUpload}
+>
+  Upload Media
+</InputFile>`
+  `// Mobile camera capture (selfie mode)
+<InputFile 
+  accept="image/*" 
+  capture="user"
+  onChange={(e) => {
+    const photo = e.target.files[0];
+    if (photo) processSelfie(photo);
+  }}
+>
+  Take Selfie
+</InputFile>`
+  `// Mobile rear camera capture
+<InputFile 
+  accept="image/*" 
+  capture="environment"
+  onChange={handlePhotoCapture}
+>
+  Take Photo
+</InputFile>`
+  `// Disabled during upload with full width
+<InputFile 
+  disabled={isUploading}
+  accept="video/*"
+  buttonProps={{ fullWidth: true }}
+  onChange={handleVideoUpload}
+>
+  {isUploading ? "Uploading..." : "Choose Video"}
+</InputFile>`
+  `// Icon-only button for compact layouts
+<InputFile 
+  isIcon
+  accept="*/*"
+  onChange={handleFileUpload}
+  buttonProps={{ 
+    ariaLabel: "Upload file",
+    variant: "text"
+  }}
+>
+  <Icon name="attachment" />
+</InputFile>`
+  `// With file size validation
+<InputFile 
+  accept="image/*"
+  onChange={(e) => {
+    const file = e.target.files[0];
+    if (file.size > 5 * 1024 * 1024) {
+      alert("File too large (max 5MB)");
+      return;
+    }
+    uploadFile(file);
+  }}
+>
+  Upload Image (Max 5MB)
+</InputFile>`
+  `// CSV/Excel file import
+<InputFile 
+  accept=".csv,.xlsx,.xls"
+  onChange={(e) => {
+    const file = e.target.files[0];
+    if (file) parseSpreadsheet(file);
+  }}
+  buttonProps={{ iconStart: <Icon name="table" /> }}
+>
+  Import Data
+</InputFile>`
+  `// With box model props for spacing
+<InputFile 
+  accept="application/pdf"
+  onChange={handlePdfUpload}
+  marginTop="16px"
+  marginBottom="8px"
+>
+  Upload PDF
+</InputFile>`
+  `// Audio file upload
+<InputFile 
+  accept="audio/*"
+  onChange={(e) => {
+    const audioFile = e.target.files[0];
+    if (audioFile) processAudio(audioFile);
+  }}
+>
+  Upload Audio
+</InputFile>`
+
+### Form
+
+Import: `import { Form } from 'gd-design-library'`
+
+Semantic form wrapper component that handles form submission, field changes, and provides a structured container for form elements with built-in event handling.
+
+**Props:** `children`: A2UIComponent[], `styling`: object, `actions`: string[]
+
+**Examples:**
+  `<Form onSubmit={handleSubmit}><Input name="email" type="email" required /><Button type="submit">Submit</Button></Form>`
+  `<Form onChange={handleFieldChange} className="login-form"><Column gutter={16}>{formFields}</Column></Form>`
+  `<Form onSubmit={handleFormSubmit} styles={{maxWidth: "400px"}}><Card padding="20px">{inputs}</Card></Form>`
+
+### Label
+
+Import: `import { Label } from 'gd-design-library'`
+
+Semantic label component for form controls providing accessible text labels with customizable spacing and interaction support.
+
+**Props:** `label`: string, `htmlFor`: string, `ariaLabel`: string, `styling`: object
+
+**Examples:**
+  `<Label htmlFor="email-input">Email Address</Label>`
+  `<Label gap="8px"><Input type="checkbox" /> Remember me</Label>`
+  `<Label htmlFor="password" className="required-field">Password *</Label>`
+  `<Label styles={{fontWeight: "bold"}} htmlFor="username">Username</Label>`
+
+### Slider
+
+Import: `import { Slider } from 'gd-design-library'`
+
+Range input component for selecting numeric values within a defined range with visual feedback and accessibility support.
+
+**Props:** `value`: number, `min`: number, `max`: number, `step`: number, `disabled`: boolean, `actions`: string[] *(+1 more)*
+
+**Examples:**
+  `<Slider min={0} max={100} value={50} onChange={handleChange} />`
+  `<Slider min={1} max={10} value={5} disabled={isLoading} />`
+  `<Slider min={0} max={255} value={brightness} onChange={setBrightness} styles={{width: "300px"}} />`
+  `<Slider min={18} max={65} value={age} onChange={handleAgeChange} />`
+
+### Switch
+
+Import: `import { Switch } from 'gd-design-library'`
+
+Toggle switch for binary on/off states. Ideal for settings, preferences, and feature toggles.
+
+**Props:** `checked`: boolean, `disabled`: boolean, `isLoading`: boolean, `value`: string, `label`: "left"|"right", `name`: string *(+2 more)*
+
+**Examples:**
+  `{ "type": "switch", "id": "notifications_switch", "value": "Enable notifications" }`
+  `{ "type": "switch", "id": "dark_mode_switch", "value": "Dark mode", "label": "left", "checked": false }`
+  `{ "type": "switch", "id": "autosave_switch", "value": "Auto-save", "disabled": true }`
+  `{ "type": "switch", "id": "loading_switch", "value": "Feature toggle", "isLoading": true }`
+
+### Toggle
+
+Import: `import { Toggle } from 'gd-design-library'`
+
+Multi-option toggle component for selecting between multiple values with customizable rendering and keyboard support. Ideal for view switchers, filters, and mode selectors.
+
+**Props:** `options`: Array<{ label: string; value: unknown; disabled?: boolean; icon?: string }>, `value`: unknown, `disabled`: boolean, `styling`: object, `actions`: string[]
+
+**Examples:**
+  `<Toggle items={["List", "Grid", "Gallery"]} value={viewMode} onValueChange={setViewMode} />`
+  `<Toggle items={[{label: "Day", value: "day"}, {label: "Week", value: "week"}, {label: "Month", value: "month"}]} value={period} onValueChange={setPeriod} />`
+  `<Toggle items={options} renderItemContent={(item) => <FlexContainer gap="4px"><Icon name={item.icon} />{item.label}</FlexContainer>} value={selected} onValueChange={handleChange} />`
+  `<Toggle items={["Light", "Dark", "Auto"]} value={theme} onValueChange={setTheme} disabled={isLoading} />`
+
+### Textarea
+
+Import: `import { Textarea } from 'gd-design-library'`
+
+Multi-line text input with dynamic height adjustment, resize control, and helper text support.
+
+**Props:** `placeholder`: string, `value`: string, `disabled`: boolean, `readOnly`: boolean, `variant`: "default"|"inline", `color`: "primary"|"error"|"success"|"warning" *(+8 more)*
+
+**Examples:**
+  `<Textarea name="description" placeholder="Enter description..." rows={4} maxLength={500} />`
+  `<Textarea value={comment} onChange={handleCommentChange} dynamicHeightAdjustment />`
+  `<Textarea resize="vertical" minHeight="100px" maxHeight="400px" placeholder="Your message" />`
+  `<Textarea readOnly defaultValue={logContent} rows={10} styles={{fontFamily: "monospace"}} />`
+  `<Textarea name="feedback" placeholder="Share your thoughts..." dynamicHeightAdjustment maxLength={1000} />`
+  `<Textarea name="code" placeholder="Paste your code here..." rows={8} styles={{fontFamily: "monospace"}} />`
+  `<Textarea name="message" placeholder="Type your message..." resize="both" minHeight="80px" />`
+  `<Textarea name="comment" placeholder="Add a comment..." variant="inline" />`
+  `<Textarea name="email" placeholder="Enter email..." color="error" ariaDescribedBy="email-error" />`
+  `<Textarea name="feedback" placeholder="Share feedback..." color="success" />`
+  `<Textarea name="warning" placeholder="Enter warning..." color="warning" />`
+
+### Counter
+
+Import: `import { Counter } from 'gd-design-library'`
+
+Numeric input component with increment/decrement controls for selecting values within a defined range. Provides accessible controls for quantity selection, settings adjustment, or any numeric value input.
+
+**Props:** `initial`: number, `min`: number, `max`: number, `disabled`: boolean, `actions`: string[], `styling`: object
+
+**Examples:**
+  `<Counter initial={1} min={1} max={10} onCounterChange={handleQuantityChange} />`
+  `<Counter initial={5} min={0} max={100} style={{width: "150px"}} />`
+  `<Counter min={0} max={999} onCounterChange={(value) => updateCartQuantity(itemId, value)} />`
+  `<Counter initial={25} min={10} max={50} style={{fontSize: "18px"}} />`
+  `<Counter initial={3} isDisabled={true} />`
+
+### Rating
+
+Import: `import { Rating } from 'gd-design-library'`
+
+Interactive star rating component for collecting user feedback, displaying ratings, or showing quality indicators with customizable maximum value, read-only mode, and various size options.
+
+**Props:** `value`: number, `defaultValue`: number, `max`: number, `readOnly`: boolean, `size`: "sm"|"md"|"lg", `name`: string *(+2 more)*
+
+**Examples:**
+  `<Rating value={4} max={5} onChange={handleRatingChange} />`
+  `<Rating value={3.5} readOnly size="lg" />`
+  `<Rating max={10} value={7} color="#FFD700" />`
+  `<Rating value={5} max={5} readOnly className="product-rating" />`
+  `<Rating value={0} max={5} onChange={setUserRating} size="sm" />`
+
+### DragAndDropFiles
+
+Import: `import { DragAndDropFiles } from 'gd-design-library'`
+
+File upload component with drag-and-drop functionality, providing visual feedback during drag operations and customizable drop zones for intuitive file uploading experiences.
+
+**Props:** `children`: A2UIComponent[], `dragOverChildren`: A2UIComponent[], `actions`: string[], `styling`: object
+
+**Examples:**
+  `<DragAndDropFiles onDrop={handleFileUpload} dragOverContent={<Typography>Drop files here</Typography>}>{uploadButton}</DragAndDropFiles>`
+  `<DragAndDropFiles targetRef={dropZoneRef} onDrop={(files) => processFiles(files)} styles={{border: "2px dashed #ccc"}}><Icon name="upload" /><Typography>Drag files here or click to browse</Typography></DragAndDropFiles>`
+  `<DragAndDropFiles onDragEnter={() => setIsDragging(true)} onDragLeave={() => setIsDragging(false)} onDrop={handleDrop}>{isDragging ? <Loader /> : <InputFile />}</DragAndDropFiles>`
+  `<DragAndDropFiles triggerRef={buttonRef} targetRef={containerRef} dragOverContent={<Card isHighlighted><Typography>Release to upload</Typography></Card>}>{children}</DragAndDropFiles>`
+
+### RadioGroup
+
+Import: `import { RadioGroup } from 'gd-design-library'`
+
+Radio button group component for single selection from multiple options with flexible layout variants (row, column, grid) and customization options including images, colors, tooltips, and custom rendering.
+
+**Props:** `options`: Array<{ value: string; label: string; disabled?: boolean; hex?: string; image?: string; tooltip?: string }>, `value`: string, `defaultValue`: string, `variant`: "row"|"column"|"grid", `size`: "sm"|"md", `gutter`: string | number *(+12 more)*
+
+**Examples:**
+  `<RadioGroup options={[{label: "Option 1", value: "1"}, {label: "Option 2", value: "2"}]} value={selected} onChange={setSelected} />`
+  `<RadioGroup variant="column" options={sizeOptions} defaultValue="medium" name="size-selection" />`
+  `<RadioGroup variant="grid" gridColumns={3} gridColumnGutter="12px" gridRowGutter="12px" options={colorOptions.map(c => ({...c, hex: c.token}))} onChange={handleColorChange} />`
+  `<RadioGroup options={plans} renderOption={({option, isSelected}) => <Card isHighlighted={isSelected}>{option.label}</Card>} />`
+  `<RadioGroup options={themes.map(t => ({label: t.name, value: t.id, image: t.preview, tooltip: t.description}))} itemWidth="150px" itemHeight="100px" />`
+
+### Checkbox
+
+Import: `import { Checkbox } from 'gd-design-library'`
+
+Standalone checkbox atom with indeterminate state, size variants, and accessible labeling. Use for boolean toggles in forms and settings. In A2UI specs, represent checkboxes as { type: "input", variant: "checkbox" } — do NOT emit { type: "checkbox" }.
+
+**Props:** `checked`: boolean, `indeterminate`: boolean, `disabled`: boolean, `name`: string, `value`: string, `size`: 'sm' | 'md' *(+3 more)*
+
+**Examples:**
+  `<Checkbox checked={agreed} onValueChange={setAgreed}>I agree to the terms</Checkbox>`
+  `<Checkbox size="sm" disabled>Unavailable option</Checkbox>`
+  `<Checkbox indeterminate={hasPartialSelection} onValueChange={handleSelectAll}>Select all</Checkbox>`
+
+### InputArea
+
+Import: `import { InputArea } from 'gd-design-library'`
+
+Multi-line text input organism with auto-growing rows, character count, attachment button, and send action. Use for chat inputs, comment boxes, and message composers.
+
+**Props:** `value`: string, `placeholder`: string, `disabled`: boolean, `maxLength`: number, `showCharacterCount`: boolean, `showAttachmentButton`: boolean *(+12 more)*
+
+**Examples:**
+  `<InputArea value={message} showSendButton placeholder="Type a message..." actions={["send"]} />`
+  `<InputArea maxLength={500} showCharacterCount showAttachmentButton attachmentButtonLabel="Attach files" actions={["attach"]} />`
+  `<InputArea minRows={3} maxRows={8} disabled={isSubmitting} />`
+  `<InputArea showSendButton showSendButtonTooltip sendButtonLabel="Submit" />`
+  `<InputArea recordingState="recording" recordButtonLabel="Record voice" />`
+  `<InputArea recordingState="processing" showAttachmentButton attachmentButtonLabel="Add attachment" />`
+
+### AttachmentFile
+
+Import: `import { AttachmentFile } from 'gd-design-library'`
+
+File attachment chip: file-copy icon on the left, bold file name (truncates with tooltip on hover), optional small metadata row (fileType · fileSize, both truncate), and a close/remove (×) button on the right. Horizontal inline chip, typically 40–48 px tall with rounded corners. Renders above the InputArea textarea or standalone. Use actions[] to wire the remove button in A2UI; in TSX use onRemove. Figma component set names: "AttachmentFile", "Attachment File", "File Chip", "File Tag", "attachment-chip". Also matches any chip/pill node that contains a file name + a remove/close affordance.
+
+**Props:** `fileName`: string, `fileType`: string, `fileSize`: string, `separator`: string, `actions`: string[], `removeButtonLabel`: string *(+3 more)*
+
+**Examples:**
+  `<AttachmentFile fileName="report.pdf" fileType="PDF" fileSize="1.2 MB" onRemove={() => removeFile(id)} />`
+  `<AttachmentFile fileName="image.png" />`
+  `<AttachmentFile fileName="data.xlsx" fileType="xlsx" fileSize="3.8 MB" onRemove={handleRemove} disabled={isUploading} />`
+  `<AttachmentFile fileName="photo.jpg" fileIcon={<Icon name="image" size="xl" />} onRemove={handleRemove} />`
+  `<AttachmentFile fileName="report.pdf" isLoading onRemove={handleRemove} />`
+
+## Communication & Chat
+
+### ChatContainer
+
+Import: `import { ChatContainer } from 'gd-design-library'`
+
+Specialized layout component for building chat interfaces with collapsible sidebar. Provides organized structure for chat applications with sidebar navigation, headers, and content areas. Supports both expanded and minified sidebar states.
+
+**Props:** `children`: A2UIComponent[], `isOpen`: boolean, `sidebarContent`: A2UIComponent[], `sidebarMinifiedContent`: A2UIComponent[], `sidebarHeaderContent`: A2UIComponent[], `headerContent`: A2UIComponent[] *(+3 more)*
+
+**Examples:**
+  `<ChatContainer isOpen={true} onToggleSidebar={handleToggle} headerContent={<Header />} sidebarContent={<ConversationList />} sidebarMinifiedContent={<IconNav />}>{chatMessages}</ChatContainer>`
+  `<ChatContainer ref={chatRef} sidebarHeaderContent={<SearchBar />} sidebarContent={<History />} sidebarMinifiedContent={<QuickActions />} headerContent={<Title />}><ChatBubble>Message</ChatBubble></ChatContainer>`
+  `<ChatContainer isOpen={sidebarOpen} showSidebarHeaderControl={false} sidebarContent={<Nav />} sidebarMinifiedContent={<Icons />}>{children}</ChatContainer>`
+
+### ChatBubble
+
+Import: `import { ChatBubble } from 'gd-design-library'`
+
+Chat message bubble component for displaying conversation messages with distinct styling for questions and answers, optional action buttons, and status indicators for message states.
+
+**Props:** `variant`: "question"|"answer", `children`: A2UIComponent[], `status`: "pending"|"fulfilled"|"rejected", `actionChildren`: A2UIComponent[], `size`: "sm"|"md"|"lg", `styling`: object
+
+**Quick Start:**
+  - question: `<ChatBubble variant="question">How can I help you today?</ChatBubble>`
+  - answer: `<ChatBubble variant="answer">Here is the answer to your question.</ChatBubble>`
+  - pending: `<ChatBubble variant="answer" status="pending">Typing response...</ChatBubble>`
+  - withActions: `<ChatBubble variant="answer" status="fulfilled" actions={[<Button variant="text">Copy</Button>, <Button variant="text">Share</Button>]}>Here is the answer.</ChatBubble>`
+
+**Common Patterns:**
+  - **User Question** (User messages in chat interfaces): `<ChatBubble variant="question">What is the weather like today?</ChatBubble>`
+  - **AI Response** (AI or bot responses with action buttons): `<ChatBubble variant="answer" status="fulfilled" actions={[<Button variant="text">Copy</Button>]}>The weather is sunny with 75°F temperature.</ChatBubble>`
+  - **Typing Indicator** (Loading states while generating responses): `<ChatBubble variant="answer" status="pending">Typing response...</ChatBubble>`
+  - **System Message** (System notifications and alerts in chat): `<ChatBubble variant="answer" actions={[<Button variant="text">Dismiss</Button>]}>System maintenance scheduled for tonight.</ChatBubble>`
+
+**Best Practices:**
+  - Use variant="question" for user messages and variant="answer" for AI/agent responses
+  - Apply status="pending" with loading indicator or typing animation while generating responses
+  - Set status="fulfilled" when message is fully loaded and ready for interaction
+  - Use actions prop with copy, share, or feedback buttons for message interactions
+  - Apply within ChatContainer children wrapped in Column for proper message spacing
+  - Combine with Avatar component to show sender identity in multi-user chats
+  - Use with timestamp using Typography variant="caption" as="div" for message metadata
+  - Apply variant styling consistently to distinguish between sender and receiver messages
+  - Set actions with icon-only Button components for compact action bars
+  - Use conditional rendering of actions based on message type or user permissions
+
+**Troubleshooting:**
+  - **Actions not showing:** Check actions prop array and ensure Button components are properly imported
+  - **Status not updating:** Verify status prop is set correctly (pending, fulfilled, undefined)
+  - **Styling issues:** Check variant prop (question vs answer) for proper styling
+  - **Accessibility issues:** Ensure proper ARIA labels and keyboard navigation support
+  - **Content not displaying:** Check children prop and ensure content is provided
+
+**Examples:**
+  `<ChatBubble variant="question">How can I help you today?</ChatBubble>`
+  `<ChatBubble variant="answer" status="pending">Typing response...</ChatBubble>`
+  `<ChatBubble variant="answer" status="fulfilled" actions={[<Button variant="text">Copy</Button>, <Button variant="text">Share</Button>]}>Here is the answer to your question.</ChatBubble>`
+  `<ChatBubble variant="question" actions={[<Button variant="text" size="sm">Edit</Button>]}>What is the weather like?</ChatBubble>`
+
+## Content & Text
+
+### Typography
+
+Import: `import { Typography } from 'gd-design-library'`
+
+All text: headings (h1–h6), body paragraphs, caption-styled metadata, code snippets. Accepts box model props (margin, padding, width) directly — no wrapper needed. IMPORTANT: variant="caption" renders a real <caption> element by default, so outside table captions pair it with as="div" or as="span".
+
+**Props:** `label`: string, `variant`: "h1"|"h2"|"h3"|"h4"|"h5"|"h6"|"p"|"span"|"small"|"strong"|"i"|"code"|"kbd"|"caption"|"header"|"sup"|"sub"|"div", `color`: string, `align`: "start"|"end"|"left"|"center"|"right"|"justify", `styleVariant`: "bold"|"semibold"|"normal"|"light"|"italic"|"small"|"underline"|"uppercase"|"lowercase"|"strike", `size`: "xs"|"sm"|"md"|"lg"|"xl" *(+2 more)*
+
+**Examples:**
+  `// Basic heading with alignment
+<Typography variant="h1" align="center">Welcome to Our Platform</Typography>`
+  `// Body text with color and style variants
+<Typography variant="p" color="text.secondary" styleVariant={["italic"]}>Last updated: 2 hours ago</Typography>`
+  `// Hero display text with large size
+<Typography variant="div" size="xl" align="center" styleVariant={["bold"]}>
+  Start Building Amazing Products
+</Typography>`
+  `// Nested typography for rich formatting
+<Typography variant="p">
+  By clicking Sign Up, you agree to our <Typography variant="span" styleVariant={["bold", "underline"]}>Terms of Service</Typography>
+</Typography>`
+  `// Polymorphic rendering (h2 styles on h1 element)
+<Typography variant="h2" as="h1">Page Title</Typography>`
+  `// Caption-styled metadata in normal layouts
+<Typography variant="caption" as="div" styleVariant={["uppercase", "semibold"]} color="text.caption">
+  Featured
+</Typography>`
+  `// Code block with monospace font
+<Typography variant="code">npm install gd-design-library</Typography>`
+  `// Custom styled paragraph
+<Typography 
+  variant="p" 
+  styles={{ 
+    maxWidth: "600px", 
+    marginBottom: "24px",
+    lineHeight: 1.6 
+  }}
+>
+  This is a custom styled paragraph with additional CSS properties.
+</Typography>`
+  `// Combined style variants for emphasis
+<Typography variant="small" styleVariant={["italic", "strike"]} color="text.caption">
+  $99.00
+</Typography>
+<Typography variant="p" styleVariant={["bold"]} color="text.secondary">
+  $79.00
+</Typography>`
+  `// Display text as custom component
+<Typography variant="h3" as={Link} href="/about">
+  Learn More →
+</Typography>`
+  `// Box model props - Apply spacing directly without wrapper elements
+<Typography variant="h2" marginTop="32px" marginBottom="16px">
+  Section Heading
+</Typography>`
+  `// Multiple box model props for layout control
+<Typography 
+  variant="p" 
+  marginLeft="8px" 
+  padding="12px 16px"
+  maxWidth="600px"
+  width="100%"
+>
+  Text with direct spacing and sizing props
+</Typography>`
+  `// Box model props replace wrapper divs
+// Instead of: <div style={{ marginTop: "24px" }}><Typography>Text</Typography></div>
+// Do this:
+<Typography variant="p" marginTop="24px">Text with margin</Typography>`
+
+## Display & Content
+
+### Badge
+
+Import: `import { Badge } from 'gd-design-library'`
+
+Badge component for displaying small pieces of information, status indicators, counts, or labels. Supports multiple variants and visual options with icon support. A2UI SPEC: use top-level "label" for badge text, top-level "iconStart" for the leading badge icon, and top-level "iconEnd" for the trailing badge icon. Legacy top-level "icon" is still accepted as a fallback alias for "iconStart". The renderer maps those icon names to the underlying Badge `iconStart?: ReactNode` and `iconEnd?: ReactNode` props internally, so do not pass raw React nodes in the A2UI payload.
+
+**Props:** `label`: string, `variant`: "primary"|"secondary"|"tertiary"|"quaternary"|"quinary", `size`: "sm"|"md"|"lg", `appearance`: "filled"|"filledLight"|"outline"|"outlineFilledLight", `disabled`: boolean, `iconStart`: string *(+2 more)*
+
+**Examples:**
+  `<Badge>New</Badge>`
+  `<Badge variant="primary" appearance="filled">Primary Badge</Badge>`
+  `<Badge variant="secondary" appearance="outline">Secondary Outline</Badge>`
+  `<Badge variant="tertiary" appearance="filled">Tertiary Badge</Badge>`
+  `<Badge variant="quaternary" appearance="filled">Quaternary Badge</Badge>`
+  `<Badge variant="quinary" appearance="filled">Quinary Badge</Badge>`
+  `<Badge variant="primary" appearance="filled" size="sm">Small Badge</Badge>`
+  `<Badge variant="primary" appearance="filled" size="md">Medium Badge</Badge>`
+  `<Badge variant="primary" appearance="filled" iconStart={<Icon name="check" size="xs" />}>With Icon</Badge>`
+  `<Badge variant="primary" appearance="filled" disabled>Disabled Badge</Badge>`
+  `<Badge variant="primary" appearance="filled" margin="8px" padding="4px 8px">Custom Spacing</Badge>`
+
+### AvatarUser
+
+Import: `import { AvatarUser } from 'gd-design-library'`
+
+Composite avatar component that displays a user with avatar image, name, optional subtitle, and optional badge. Supports card and profile layout variants.
+
+**Props:** `name`: string, `variant`: "card"|"profile", `subtitle`: string, `description`: string, `src`: string, `alt`: string *(+11 more)*
+
+**Examples:**
+  `<AvatarUser name="John Doe" />`
+  `<AvatarUser name="Jane Smith" subtitle="Product Manager" src="/avatar.jpg" alt="Jane Smith" variant="card" />`
+  `<AvatarUser name="Alice" subtitle="Online" withBadge badgeColor="bg.fill.success.primary.default" sizeVariant="lg" variant="profile" />`
+
+### Table
+
+Import: `import { Table, TableColumn, TableRowData, TableHead, TableBody, TableFooter, TableRow, TableCell, TableHeaderCell, TablePagination } from 'gd-design-library'`
+
+Comprehensive table component with virtualization, pagination, sorting, expandable rows, custom header rendering, and imperative scroll methods. Built with subcomponents for flexible composition.
+
+**Props:** `columns`: Array<{ key: string; label: string; sortable?: boolean; width?: string }>, `rows`: Array<Record<string, unknown>>, `data`: Array<Record<string, unknown>>, `pagination`: boolean, `pageSize`: number, `pageSizes`: number[] *(+8 more)*
+
+**Best Practices:**
+  - Use virtualization for datasets with 1000+ rows to improve performance
+  - Always provide an `id` property for each row data object (string or number)
+  - Use `stickyHeader` when the table is inside a scrollable container
+  - Use `stickyFooter` to keep footer visible when scrolling through long tables
+  - Use `stickyPagination` to keep pagination controls visible when scrolling through long tables
+  - The Table component does not have a built-in `onSort` prop; implement sorting by managing data order in parent state
+  - Use `renderHeader` for complex header layouts (multi-row headers, custom styling)
+  - Provide `emptyState` for better UX when no data is available
+  - Use `loadingState` to show loading indicators during data fetching
+  - Set `rowHeight` accurately for virtualization to work correctly
+  - When using pagination, manage page state in parent component
+  - Use `expandableRows` with `renderExpandedContent` for drill-down functionality
+  - Use `ref` with `scrollToRow`, `scrollToTop`, and `scrollToBottom` for programmatic navigation
+  - Wrap table in a container with fixed height and overflow for scroll methods to work
+  - Note: `scrollToRow(index)` scrolls to row at (index - 1), e.g., scrollToRow(50) scrolls to row 49
+
+**Examples:**
+  `// Basic Table - Simple table with columns and data
+import { Table, TableColumn } from 'gd-design-library';
+
+const columns: TableColumn<any>[] = [
+  { id: 'name', label: 'Name', accessor: 'name' },
+  { id: 'email', label: 'Email', accessor: 'email' },
+  { id: 'role', label: 'Role', accessor: 'role' },
+];
+
+const data = [
+  { id: 1, name: 'Alice', email: 'alice@example.com', role: 'Admin' },
+  { id: 2, name: 'Bob', email: 'bob@example.com', role: 'User' },
+];
+
+<Table columns={columns} data={data} />`
+  `// Table with Column Widths - Table with fixed column widths
+import { Table, TableColumn } from 'gd-design-library';
+
+const columns: TableColumn<any>[] = [
+  { id: 'name', label: 'Name', accessor: 'name', width: '200px' }, // String with pixels
+  { id: 'email', label: 'Email', accessor: 'email', width: '300px' }, // String with pixels
+  { id: 'role', label: 'Role', accessor: 'role', width: 150 }, // Number = pixels (converted to "150px")
+  { id: 'status', label: 'Status', accessor: 'status', width: '15%' }, // Percentage
+];
+
+const data = [
+  { id: 1, name: 'Alice', email: 'alice@example.com', role: 'Admin', status: 'Active' },
+  { id: 2, name: 'Bob', email: 'bob@example.com', role: 'User', status: 'Inactive' },
+];
+
+<Table columns={columns} data={data} />`
+  `// Table with Pagination - Table with pagination controls and page size selector
+import { useState } from 'react';
+import { Table, TableColumn } from 'gd-design-library';
+
+const [page, setPage] = useState(0);
+const [pageSize, setPageSize] = useState(10);
+
+<Table
+  columns={columns}
+  data={data}
+  pagination
+  pageSize={pageSize}
+  onPageChange={setPage}
+  onPageSizeChange={setPageSize}
+/>`
+  `// Table with Sticky Pagination - Table with sticky pagination that remains visible when scrolling
+import { Table, TableColumn, Box } from 'gd-design-library';
+
+<Box height="400px" overflow="auto">
+  <Table
+    columns={columns}
+    data={data}
+    pagination
+    pageSize={10}
+    stickyPagination
+  />
+</Box>`
+  `// Table with Expandable Rows - Table with expandable rows showing additional content
+import { Table, TableColumn, TableRowData, Icon, Row, Box, Typography } from 'gd-design-library';
+
+const columns: TableColumn<UserData>[] = [
+  {
+    id: 'expand',
+    label: 'User',
+    render: (row) => (
+      <Row alignItems="center" gap="8px">
+        <Box className="expand-icon-wrapper">
+          <Icon name="arrowRight" size="xs" />
+        </Box>
+        {row.name}
+      </Row>
+    ),
+  },
+  { id: 'email', label: 'Email', accessor: 'email' },
+  { id: 'role', label: 'Role', accessor: 'role' },
+];
+
+<Table
+  columns={columns}
+  data={data}
+  expandableRows
+  renderExpandedContent={(row) => (
+    <Box padding="16px">
+      <Typography>Details for {row.name}</Typography>
+      <Typography>Email: {row.email}</Typography>
+    </Box>
+  )}
+  styles={{
+    '.expand-icon-wrapper svg': {
+      transition: 'transform 0.2s ease-in-out',
+    },
+    'tr[data-expanded="true"] .expand-icon-wrapper svg': {
+      transform: 'rotate(90deg)',
+    },
+  }}
+/>`
+  `// Table with Virtualization - Table with virtualization for large datasets
+import { Table, TableColumn, Box } from 'gd-design-library';
+
+const largeDataset = Array.from({ length: 10000 }, (_, i) => ({
+  id: i + 1,
+  name: `User ${i + 1}`,
+  email: `user${i + 1}@example.com`,
+  role: ['Admin', 'User', 'Guest'][i % 3],
+  status: ['Active', 'Inactive'][i % 2],
+}));
+
+<Box height="700px" overflow="auto">
+  <Table
+    columns={columns}
+    data={largeDataset}
+    virtualized
+    rowHeight={48}
+    stickyHeader
+  />
+</Box>`
+  `// Table with Loading State - Table with loading state using Skeleton loaders
+import { useState } from 'react';
+import { Table, TableColumn, Skeleton, Row, Box, Column, Button } from 'gd-design-library';
+
+const columns: TableColumn<any>[] = [
+  { id: 'name', label: 'Name', accessor: 'name' },
+  { id: 'email', label: 'Email', accessor: 'email' },
+  { id: 'role', label: 'Role', accessor: 'role' },
+  { id: 'status', label: 'Status', accessor: 'status' },
+];
+
+const data = [
+  { id: 1, name: 'User 1', email: 'user1@example.com', role: 'Admin', status: 'Active' },
+  { id: 2, name: 'User 2', email: 'user2@example.com', role: 'User', status: 'Inactive' },
+  // ... more data
+];
+
+const Example = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const loadingState = (
+    <Box padding="16px">
+      <Column gap="12px">
+        {Array.from({ length: 5 }).map((_, index) => (
+          <Row key={index} gap="16px" alignItems="center">
+            <Skeleton variant="rounded" width="120px" height="20px" />
+            <Skeleton variant="rounded" width="180px" height="20px" />
+            <Skeleton variant="rounded" width="100px" height="20px" />
+            <Skeleton variant="rounded" width="80px" height="20px" />
+          </Row>
+        ))}
+      </Column>
+    </Box>
+  );
+
+  return (
+    <Box>
+      <Row gap="10px" marginBottom="16px">
+        <Button variant="secondary" onClick={() => setIsLoading(!isLoading)}>
+          {isLoading ? 'Stop Loading' : 'Start Loading'}
+        </Button>
+      </Row>
+      <Table
+        columns={columns}
+        data={data}
+        loading={isLoading}
+        loadingState={loadingState}
+      />
+    </Box>
+  );
+};`
+  `// Table with Custom Header - Table with custom header rendering
+import { Table, TableColumn, TableRow, TableHeaderCell } from 'gd-design-library';
+
+const renderCustomHeader = (columns: TableColumn<any>[]) => (
+  <>
+    <TableRow>
+      <TableHeaderCell colSpan={columns.length} styles={{ textAlign: 'center', fontWeight: 'bold' }}>
+        Custom Header Row
+      </TableHeaderCell>
+    </TableRow>
+    <TableRow>
+      {columns.map(column => (
+        <TableHeaderCell key={column.id}>
+          {column.label}
+        </TableHeaderCell>
+      ))}
+    </TableRow>
+  </>
+);
+
+<Table
+  columns={columns}
+  data={data}
+  renderHeader={renderCustomHeader}
+  stickyHeader
+/>`
+  `// Table with Scroll Methods - Table with imperative scroll methods using ref
+import { useRef, useState } from 'react';
+import { Table, TableColumn, TableRowData, TableRef, Button, Input, Row, Box } from 'gd-design-library';
+
+const tableRef = useRef<TableRef>(null);
+const [targetRow, setTargetRow] = useState(50);
+
+<Box>
+  <Row gap="10px" marginBottom="16px">
+    <Button variant="secondary" onClick={() => tableRef.current?.scrollToTop?.()}>
+      Scroll to Top
+    </Button>
+    <Button variant="secondary" onClick={() => tableRef.current?.scrollToBottom?.()}>
+      Scroll to Bottom
+    </Button>
+    <Input
+      variant="number"
+      min="0"
+      max="300"
+      value={targetRow.toString()}
+      onChange={(e) => setTargetRow(+e.target.value)}
+    />
+    <Button variant="outlined" onClick={() => tableRef.current?.scrollToRow?.(targetRow)}>
+      Scroll to Row {targetRow}
+    </Button>
+  </Row>
+  <Box height="430px" overflow="auto">
+    <Table
+      ref={tableRef}
+      columns={columns}
+      data={data}
+      stickyHeader={false}
+    />
+  </Box>
+</Box>`
+
+### Truncate
+
+Import: `import { Truncate, type TruncateRef } from 'gd-design-library'`
+
+Text truncation component that limits content to a specified number of lines using CSS line-clamp. Provides uniform truncation with visual alignment support and exposes truncation state via ref API for programmatic access.
+
+**Props:** `label`: string, `lines`: number, `styling`: object
+
+**Examples:**
+  `<Truncate>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</Truncate>`
+  `<Truncate lines={2}>This is a very long text that will wrap to multiple lines and be truncated after 2 lines.</Truncate>`
+  `<Truncate lines={3} styles={{ width: "300px" }}>Long content that needs truncation with custom width styling.</Truncate>`
+  `<Box width="50%"><Truncate ref={truncateRef}>Content that may be truncated. Check ref.isTruncated to conditionally show tooltip.</Truncate></Box>`
+  `<Tooltip content={isTruncated ? fullText : null}><Truncate ref={truncateRef}>{fullText}</Truncate></Tooltip>`
+  `<Table columns={columns} data={data} renderCell={(row, column) => <Truncate lines={1}>{row[column.accessor]}</Truncate>} />`
+
+## Actions & Controls
+
+### Button
+
+Import: `import { Button } from 'gd-design-library'`
+
+Clickable button with multiple style variants (primary, secondary, tertiary, outlined, text). Use actions[] to wire up A2UI interactions.
+
+**Props:** `label`: string, `variant`: "primary"|"secondary"|"tertiary"|"outlined"|"text"|"inherit", `disabled`: boolean, `isLoading`: boolean, `fullWidth`: boolean, `isIcon`: boolean *(+9 more)*
+
+**Quick Start:**
+  - basic: `<Button onClick={handleClick}>Click me</Button>`
+  - primary: `<Button variant="primary" onClick={handleSubmit}>Submit</Button>`
+  - secondary: `<Button variant="secondary" onClick={handleCancel}>Cancel</Button>`
+  - rounded: `<Button variant="primary" rounded="md" onClick={handleClick}>Rounded Button</Button>`
+  - icon: `<Button isIcon rounded="round" aria-label="Settings" iconStart={<Icon name="settings" />} />`
+  - withIcon: `<Button iconStart={<Icon name="plus" />}>Add Item</Button>`
+
+**Common Patterns:**
+  - **Primary Action** (Main call-to-action buttons for forms and important actions): `<Button variant="primary" onClick={handleSubmit}>Submit</Button>`
+  - **Secondary Action** (Secondary actions like cancel, back, or alternative options): `<Button variant="secondary" onClick={handleCancel}>Cancel</Button>`
+  - **Icon Button** (Compact icon-only buttons for toolbars and navigation): `<Button isIcon aria-label="Settings" iconStart={<Icon name="settings" />} />`
+  - **Form Submit** (Form submission buttons with loading states): `<Button type="submit" fullWidth disabled={isSubmitting}>Save Changes</Button>`
+  - **State Control via className** (Control button states using className prop with values like "active", "hover", or combine with disabled prop): `<Button variant="primary" justifyContent="start" className="active">Press Me</Button>`
+  - **Custom Styled with Box Props** (Buttons with Box layout props (padding, width, justifyContent) and iconStart for flexible layouts): `<Button padding="8px" width="300px" justifyContent="start" iconStart={<Icon name="folder" />}>Custom Styled</Button>`
+  - **Disabled with Box Props** (Disabled buttons with Box layout props for consistent alignment): `<Button variant="primary" disabled justifyContent="start">Disabled</Button>`
+
+**Composition Tips:**
+  - Use variant="primary" for main actions, "secondary" for important alternatives, and "tertiary" for less prominent actions
+  - Always provide aria-label for icon-only buttons
+  - When using isIcon, provide the icon via iconStart and do not pass children
+  - Use rounded="round" for icon buttons to create circular shapes
+  - Apply rounded="md" or "lg" for modern, friendly button designs
+  - Use fullWidth for mobile forms and important actions
+  - Set disabled state during async operations to prevent double-clicks
+  - Use type="submit" for form submission and type="button" for other actions
+  - Include loading states for buttons that trigger async operations
+  - Use consistent button variants and rounded styles across your application
+  - Provide clear, actionable button text
+  - Use iconStart and iconEnd for better visual hierarchy — pass <Icon size="sm" name="..." /> to iconStart/iconEnd rather than embedding a raw Icon as a child alongside text
+  - Test keyboard navigation with Tab and Enter keys
+  - Active/pressed states are built-in with scale animation for better tactile feedback
+  - Button has NO size prop — never use size="sm"/"md"/"lg". To create a compact button use padding="4px 8px" and/or height="28px". For standard size use height="36px".
+  - Use Box props like justifyContent="start" to align button content, and combine with alignItems, gap, margin, padding, width, height for flexible layouts
+  - Use className for custom CSS classes to control states: "active", "hover", or combine with disabled prop for disabled state
+  - Use styles prop for inline styles when needed. Example: `<Button padding="8px" width="300px" justifyContent="start" iconStart={<Icon name="folder" />}>Custom Styled</Button>`
+  - Buttons have built-in hover, active (press), and disabled states with smooth transitions. Control states via className prop with values like "active", "hover"
+
+**Troubleshooting:**
+  - **Button not clickable:** Check if disabled prop is set to true or if onClick handler is missing
+  - **Accessibility issues:** Add aria-label for icon buttons and ensure proper focus management
+  - **Styling not applied:** Verify variant prop is set correctly
+  - **Form submission not working:** Use type="submit" for form buttons and ensure form has onSubmit handler
+  - **Icon not displaying:** Check if Icon component is imported and name prop is correct
+  - **size prop has no effect:** Button does NOT have a size prop — it is silently ignored. Use padding="4px 8px" and height="28px" (Box props) to create compact buttons, or height="36px" for standard size.
+
+**Examples:**
+  `<Button variant="primary" onClick={handleSubmit}>Submit</Button>`
+  `<Button variant="secondary" onClick={handleCancel}>Cancel</Button>`
+  `<Button variant="tertiary" onClick={handleBack}>Back</Button>`
+  `<Button variant="outlined" rounded="md" iconStart={<Icon name="plus" />}>Add Item</Button>`
+  `<Button variant="text" onClick={handleSkip}>Skip</Button>`
+  `<Button isIcon rounded="round" aria-label="Settings" iconStart={<Icon name="settings" />} />`
+  `<Button type="submit" fullWidth disabled={isSubmitting}>Save Changes</Button>`
+  `<Button variant="primary" justifyContent="start" className="active">Press Me</Button>`
+  `<Button variant="primary" disabled justifyContent="start">Disabled</Button>`
+  `<Button padding="8px" width="300px" justifyContent="start" iconStart={<Icon name="folder" />}>Custom Styled</Button>`
+
+## Navigation & Structure
+
+### Link
+
+Import: `import { Link } from 'gd-design-library'`
+
+Accessible anchor component for navigation with support for internal and absolute URL destinations, multiple visual variants, and proper security attributes. A2UI SPEC: use top-level "label" for text, plus top-level "href", "variant", "underline", "target", and "rel". Do NOT use "children" or put href inside "attributes". For custom hover colors, use the top-level "styling" object with standard CSS values. Figma color tokens: gds.color.text.link → color.text.link.default (#53B7E8) for default link state; gds.color.text.link.hover → color.text.link.hover (#278CBF) — pass default via the top-level "color" prop and hover via styling["&:hover"].color.
+
+**Props:** `label`: string, `href`: string, `target`: "_blank"|"_self"|"_parent"|"_top", `rel`: string, `variant`: "primary"|"secondary"|"inverted"|"inherit", `size`: "sm"|"md"|"lg" *(+9 more)*
+
+**Examples:**
+  `<Link href="/about" variant="primary">About Us</Link>`
+  `<Link href="https://example.com" target="_blank" rel="noopener noreferrer">Outbound Site</Link>`
+  `<Link href="/dashboard" variant="primary" underline="highlight">Go to Dashboard</Link>`
+  `<Link href="/dashboard" variant="primary" underline="highlight" color="color.text.error" styling={{ "&:hover": { color: "color.text.error", "&::after": { borderBottomColor: "color.text.error" } } }}>Go to Dashboard</Link>`
+
+### Breadcrumbs
+
+Import: `import { Breadcrumbs } from 'gd-design-library'`
+
+Navigation component that displays the current page location within a hierarchical structure, providing users with a trail of links to navigate back to parent pages.
+
+**Props:** `options`: Array<{ label: string; value?: string | number; href?: string; disabled?: boolean }>, `separator`: string, `separatorIcon`: string, `icon`: string, `iconEnd`: string, `separatorAfterLastItem`: boolean *(+3 more)*
+
+**Quick Start:**
+  - basic: `<Breadcrumbs items={[<Link href="/">Home</Link>, <Link href="/products">Products</Link>, <Typography>Detail</Typography>]} />`
+  - withIcon: `<Breadcrumbs items={breadcrumbItems} separator={<Icon name="chevronRight" />} />`
+  - bordered: `<Breadcrumbs items={paths} bordered itemStart={<Icon name="home" />} />`
+  - custom: `<Breadcrumbs items={paths} separator=">" ariaLabel="Page navigation" />`
+
+**Common Patterns:**
+  - **E-commerce** (Product pages with category hierarchy): `<Breadcrumbs items={[<Link href="/">Home</Link>, <Link href="/electronics">Electronics</Link>, <Link href="/electronics/smartphones">Smartphones</Link>, <Typography>iPhone 15</Typography>]} />`
+  - **Documentation** (Documentation sites with nested sections): `<Breadcrumbs items={[<Link href="/docs">Docs</Link>, <Link href="/docs/api">API</Link>, <Typography>Authentication</Typography>]} />`
+  - **Admin Panel** (Administrative interfaces with deep navigation): `<Breadcrumbs items={[<Link href="/admin">Dashboard</Link>, <Link href="/admin/users">Users</Link>, <Typography>Edit User</Typography>]} />`
+
+**Best Practices:**
+  - Use at the top of content pages to show hierarchical navigation path
+  - Pass Link components with href for parent pages and Typography (no href) for current page
+  - Apply separator with Icon component for visual separators like chevronRight
+  - Use itemStart with home icon for clear navigation starting point
+  - Set bordered={true} to visually separate from page content
+  - Apply consistent positioning across all pages for user orientation
+  - Use Link components with onClick for client-side routing in SPAs
+  - Combine with Typography variant="caption" as="span" for items in compact layouts
+  - Apply ariaLabel with descriptive text for screen reader context
+  - Keep items concise with truncation for long labels in deep hierarchies
+
+**Troubleshooting:**
+  - **Links not working:** Pass pre-built Link components with href in the items array for navigation
+  - **Separator not showing:** Verify separator prop is set correctly
+  - **Accessibility issues:** Provide proper ariaLabel and ensure keyboard navigation works
+  - **Items not displaying:** Check items array contains valid ReactNode elements (Link, Typography, etc.)
+  - **Styling issues:** Use bordered prop for visual separation and consistent className
+
+**Examples:**
+  `<Breadcrumbs items={[<Link href="/">Home</Link>, <Link href="/products">Products</Link>, <Typography>Detail</Typography>]} />`
+  `<Breadcrumbs items={breadcrumbItems} separator={<Icon name="chevronRight" />} bordered />`
+  `<Breadcrumbs items={paths} itemStart={<Icon name="home" />} ariaLabel="Page navigation" />`
+
+### Tabs
+
+Import: `import { Tabs } from 'gd-design-library'`
+
+Navigation component that organizes content into separate views accessed through tabbed interfaces. Supports disabled states, notice counters, and keyboard navigation for accessible multi-section content organization.
+
+**Props:** `options`: Array<{ label: string; value?: string | number; disabled?: boolean; noticeCounter?: number | string; icon?: string }>, `children`: A2UIComponent[], `value`: number, `actions`: string[], `ariaLabel`: string, `styling`: object
+
+**Examples:**
+  `<Tabs tabs={[{label: "Overview", content: <Overview />}, {label: "Details", content: <Details />}]} />`
+  `<Tabs tabs={tabData} activeTab={1} onTabChange={handleTabChange} />`
+  `<Tabs tabs={[{label: "Messages", content: <Messages />, noticeCounter: 5}, {label: "Settings", content: <Settings />}]} />`
+  `<Tabs tabs={productTabs} ariaLabel="Product information tabs" styles={{borderBottom: "2px solid #ccc"}} />`
+  `<Tabs tabs={[{label: "Active", content: <ActiveItems />}, {label: "Archived", content: <ArchivedItems />, isDisabled: true}]} />`
+
+### Stepper
+
+Import: `import { Stepper } from 'gd-design-library'`
+
+Progress indicator component that displays multi-step processes or workflows with visual feedback for completed, current, and upcoming steps. Supports custom step content, validation states, and interactive navigation between steps.
+
+**Props:** `options`: Array<{ label: string; value?: string | number; validationStatus?: "success" | "error"; icon?: string }>, `value`: number, `isIconsView`: boolean, `actions`: string[], `styling`: object
+
+**Examples:**
+  `<Stepper steps={[{label: "Details"}, {label: "Payment"}, {label: "Review"}]} activeStep={1} />`
+  `<Stepper steps={wizardSteps} activeStep={currentStep} onStepClick={handleStepClick} />`
+  `<Stepper steps={[{label: "Step 1", validationStatus: "success"}, {label: "Step 2", validationStatus: "error"}]} activeStep={1} />`
+  `<Stepper steps={stepsWithIcons} isIconsView={true} activeStep={2} />`
+  `<Stepper steps={[{label: "Upload", customView: <Icon name="upload" />}, {label: "Process"}, {label: "Complete"}]} activeStep={0} />`
+
+### Dropdown
+
+Import: `import { Dropdown } from 'gd-design-library'`
+
+Keyboard-navigable dropdown container used to group focusable option content, typically inside Menu or Select-style experiences.
+
+**Props:** `width`: string, `maxHeight`: string, `children`: A2UIComponent[], `styling`: object
+
+**Examples:**
+  `<Dropdown><DropdownItem name="Profile" value="profile" /></Dropdown>`
+  `<Dropdown styles={{ minWidth: "240px" }}>{menuItems}</Dropdown>`
+
+### DropdownItem
+
+Import: `import { DropdownItem } from 'gd-design-library'`
+
+Selectable menu option used inside Dropdown or Menu content. Supports keyboard selection, disabled state, and Select context integration.
+
+**Props:** `label`: string, `value`: string | number, `disabled`: boolean, `actions`: string[], `styling`: object
+
+**Examples:**
+  `<DropdownItem name="Delete" value="delete" />`
+  `<DropdownItem name="Export" value="export"><Icon name="contentCopy" /> Export</DropdownItem>`
+
+### Menu
+
+Import: `import { Menu, MenuRef } from 'gd-design-library'`
+
+Flexible dropdown menu component with smart positioning, customizable behavior, public API via ref, and full Box layout support.
+
+**Props:** `label`: string, `icon`: string, `iconEnd`: string, `variant`: string, `options`: Array<{ value: string | number; label: string; disabled?: boolean; href?: string }>, `placement`: "top-left"|"top-right"|"bottom-left"|"bottom-right" *(+8 more)*
+
+**Examples:**
+  `<Menu content={<DropdownItem name="Profile" value="profile" />} onSelect={(props) => console.log(props.data)}>Menu</Menu>`
+  `<Menu closeOnSelect={false} content={menuItems} onSelect={handleSelect}>Open Menu</Menu>`
+  `<Menu ref={menuRef} content={items}><Button>Menu</Button></Menu>`
+  `<Menu placement="top-left" content={menuItems}>Menu (Top Left)</Menu>`
+  `<Menu placement="bottom-right" content={menuItems}>Menu (Bottom Right - Default)</Menu>`
+  `<Menu offsetX={8} offsetY={8} minHeight={100} maxHeight={500} content={menuItems}>Menu with positioning options</Menu>`
+  `<Menu padding="16px" marginTop="8px" content={menuItems}>Menu with spacing</Menu>`
+  `<Menu width="200px" maxHeight={300} overflow="auto" content={menuItems}>Menu with dimensions</Menu>`
+
+### Header
+
+Import: `import { Header } from 'gd-design-library'`
+
+Responsive site header organism with logo, actions, optional search, top banner, and a mobile navigation drawer pattern.
+
+**Props:** `logoChildren`: A2UIComponent[], `menuChildren`: A2UIComponent[], `actionChildren`: A2UIComponent[], `showSearch`: boolean, `showTopBanner`: boolean, `bannerChildren`: A2UIComponent[] *(+6 more)*
+
+**Examples:**
+  `<Header logo={<Logo />} menu={<MainNav />} actions={<AccountActions />} />`
+  `<Header bgColor="bg.surface" logo={<Logo />} menu={<MainNav />} />`
+  `<Header showTopBanner bannerContent={<Typography>Free shipping today</Typography>} />`
+
+### SliderDots
+
+Import: `import { SliderDots } from 'gd-design-library'`
+
+Dot-based pagination indicator for carousels, image galleries, and step-based flows. Highlights the active dot and supports click navigation.
+
+**Props:** `count`: number, `activeIndex`: number, `actions`: string[], `styling`: object
+
+**Examples:**
+  `<SliderDots count={5} activeIndex={currentSlide} onDotClick={goToSlide} />`
+  `<SliderDots count={images.length} activeIndex={activeImage} />`
+
+### Sidebar
+
+Import: `import { Sidebar } from 'gd-design-library'`
+
+Collapsible navigation sidebar organism with nested menu items, active state tracking, and customizable header/footer. Use for app-level or section-level navigation.
+
+**Props:** `items`: Array<{ id: string; label: string; icon?: string; href?: string; disabled?: boolean; children?: Array<{ id: string; label: string; icon?: string; href?: string; disabled?: boolean; children?: unknown[] }> }>, `activeItemId`: string, `collapsed`: boolean, `width`: string, `collapsedWidth`: string, `actions`: string[] *(+4 more)*
+
+**Examples:**
+  `<Sidebar items={navItems} activeItemId={currentPage} onItemClick={navigate} header={<Logo />} />`
+  `<Sidebar items={menuItems} collapsed={isCollapsed} onCollapsedChange={setIsCollapsed} collapsedWidth="64px" />`
+  `<Sidebar items={routes} activeItemId={activeRoute} footer={<UserProfile />} />`
+
+## Content & Media
+
+### Icon
+
+Import: `import { Icon } from 'gd-design-library'`
+
+SVG icon component that renders icons from a registered list with customizable size and color options. CRITICAL: Only use icon names from the availableIcons list. A2UI SPEC: set icon name in top-level "icon" field, "fill"/"fillSvg" as top-level fields (NOT inside "attributes", NOT inside "styling"). Example: {"type":"icon","icon":"star","size":"md","fill":"icon.primary"}.
+
+**Props:** `icon`: string, `size`: "xs"|"sm"|"md"|"lg"|"xl"|"xxl", `width`: number, `height`: number, `fill`: string, `fillSvg`: string *(+3 more)*
+
+**Examples:**
+  `<Icon name="search" size="md" />`
+  `<Icon name="cross" width={24} height={24} fill="icon.error" />`
+  `<Icon name="arrowRight" fillSvg="currentColor" />`
+  `<Icon name="edit" size="lg" fill="icon.primary" />`
+  `<Icon name="check" size="md" fill="icon.success" />`
+  `<Icon name="info" size="md" fill="icon.info" />`
+  `<Icon name="warning" size="md" fill="icon.warning" />`
+  `<Icon name="chat" size="md" fill="icon.default" />`
+  `<Icon name="chatBubble" size="sm" fillSvg="currentColor" />`
+  `<Icon name="phone" size="lg" fill="icon.info" />`
+  `<Icon name="thumbUp" size="md" />`
+  `<Icon name="star" size="sm" fill="icon.primary" />`
+  `<Icon name="check" size="md" margin="8px" padding="4px" />`
+  `<Icon name="search" size="lg" position="absolute" top="10px" right="10px" />`
+  `<Icon name="edit" size="sm" marginRight="12px" />`
+
+### Image
+
+Import: `import { Image } from 'gd-design-library'`
+
+Responsive image component with loading states, fallback support, and optional caption for displaying visual content.
+
+**Props:** `src`: string, `alt`: string, `width`: number, `height`: number, `caption`: string, `objectFit`: "cover"|"contain"|"fill"|"none"|"scale-down" *(+4 more)*
+
+**Examples:**
+  `<Image src="/photo.jpg" alt="Product photo" width={400} height={300} />`
+  `<Image src={imageUrl} alt="User avatar" caption="Profile picture" onClick={handleImageClick} />`
+  `<Image src="/hero.jpg" alt="Hero image" placeholder="Loading..." fallbackComponent={<Icon name="image" />} />`
+  `<Image src="/photo.jpg" alt="Product photo" as="figure" caption="Semantic image with figure wrapper" />`
+  `<Image src="/photo.jpg" alt="Product photo" caption="Custom caption" captionAs="p" />`
+
+### Avatar
+
+Import: `import { Avatar } from 'gd-design-library'`
+
+User avatar component for displaying profile pictures, initials, or icons with support for badges, fallback content, and various size options. A2UI SPEC: all props are top-level fields — do NOT use "attributes" or "fallbackComponent". Use "label" or "value" for initials text. Use "size" or "sizeVariant" for size. For an icon inside the avatar, set top-level "icon" plus optional "fill" or "fillSvg"; the renderer maps that to Avatar fallback content internally. For a status badge ON the avatar use withBadge + badgeColor directly on this component — do NOT place a separate "badge" or sibling "icon" next to the avatar. Prefer theme color tokens before raw CSS/hex. Example: {"type":"avatar","icon":"star","size":"xl","backgroundColor":"#cfaaa7","fill":"#646464"}.
+
+**Props:** `label`: string, `value`: string, `src`: string, `alt`: string, `size`: "xs"|"sm"|"md"|"lg"|"xl", `sizeVariant`: "xs"|"sm"|"md"|"lg"|"xl" *(+8 more)*
+
+**Quick Start:**
+  - basic: `<Avatar src="/user-photo.jpg" alt="John Doe" />`
+  - initials: `<Avatar label="JD" backgroundColor="bg.fill.info.primary.default" />`
+  - withBadge: `<Avatar src={userImage} alt={userName} withBadge badgeColor="bg.fill.success.primary.default" />`
+  - icon: `<Avatar icon="star" fill="#646464" backgroundColor="#E0E0E0" />`
+  - online: `<Avatar src="/avatar.png" alt="User" withBadge={isOnline} badgeColor={isOnline ? "bg.fill.success.primary.default" : "bg.fill.error.primary.default"} />`
+
+**Common Patterns:**
+  - **User Profile** (User profile pages and account settings): `<Avatar src={user.photo} alt={user.name} sizeVariant="lg" onClick={handleProfileClick} />`
+  - **Comment Author** (Comment sections and discussion threads): `<Avatar src={comment.author.photo} alt={comment.author.name} sizeVariant="sm" />`
+  - **Online Status** (Chat interfaces and user lists with online status): `<Avatar src={user.photo} alt={user.name} withBadge badgeColor={user.isOnline ? "bg.fill.success.primary.default" : "bg.fill.error.primary.default"} />`
+  - **Icon Fallback** (Profile placeholders or branded avatars that use an icon inside the avatar itself): `<Avatar icon="star" fill="#646464" backgroundColor="#E0E0E0" size="xl" />`
+  - **Team Member** (Team directories and member listings): `<Avatar label={user.initials} backgroundColor={user.color} size="md" />`
+
+**Best Practices:**
+  - Always provide meaningful alt text for accessibility
+  - Use sizeVariant for consistent sizing across your application
+  - Provide fallbackComponent with initials or icon when image fails to load
+  - Use withBadge to indicate online status or notifications
+  - Set backgroundColor for fallback content visibility
+  - Use onClick handler for interactive avatars that navigate to profiles
+  - Combine with Typography for user name display in consistent layouts
+  - Use consistent sizeVariant across similar UI contexts
+  - Apply proper ARIA labels for screen reader accessibility
+  - Use high-contrast backgroundColor for better visibility of fallback content
+
+**Troubleshooting:**
+  - **Image not loading:** Check src URL and provide fallbackComponent for graceful degradation
+  - **Badge not showing:** Ensure withBadge prop is set to true and badgeColor is provided
+  - **Icon fallback not showing:** Set icon to a valid name in A2UI, or provide fallbackComponent directly when using Avatar in React code
+  - **Size not applying:** Use sizeVariant prop instead of width/height for consistent sizing
+  - **Accessibility issues:** Always provide meaningful alt text for screen readers
+  - **Fallback not working:** Check fallbackComponent prop and backgroundColor for visibility
+
+**Examples:**
+  `<Avatar src="/user-photo.jpg" alt="John Doe" sizeVariant="lg" />`
+  `<Avatar label="JD" backgroundColor="bg.fill.info.primary.default" size="md" />`
+  `<Avatar src={userImage} alt={userName} withBadge badgeColor="bg.fill.success.primary.default" sizeVariant="sm" />`
+  `<Avatar icon="star" fill="#646464" backgroundColor="#E0E0E0" size="xl" />`
+  `<Avatar icon="user" backgroundColor="primary.default" size="xl" />`
+  `<Avatar src="/avatar.png" alt="User" withBadge={isOnline} badgeColor={isOnline ? "bg.fill.success.primary.default" : "bg.fill.error.primary.default"} />`
+
+### Price
+
+Import: `import { Price } from 'gd-design-library'`
+
+Price display component for showing product prices with support for current and discounted pricing, currency formatting, and customizable styling for e-commerce applications.
+
+**Props:** `currentValue`: string, `oldValue`: string, `currencySymbol`: string, `currencySymbolPosition`: "before"|"after", `size`: 'sm' | 'md' | 'lg', `styling`: object
+
+**Examples:**
+  `// US convention (symbol before, period decimal)
+<Price currentValue="29.99" currencySymbol="$" />`
+  `<Price currentValue="1,299" oldValue="1,499" currencySymbol="$" />`
+  `// European convention (symbol after, comma decimal, space thousands)
+<Price currentValue="29,99" currencySymbol="€" currencySymbolPosition="after" />`
+  `<Price currentValue="1 299,99" oldValue="1 499,99" currencySymbol="€" currencySymbolPosition="after" />`
+  `// Whole numbers — no trailing zeros
+<Price currentValue="99" currencySymbol="$" />`
+  `<Price currentValue="99" currencySymbol="€" currencySymbolPosition="after" />`
+
+## Feedback & Status
+
+### InlineNotification
+
+Import: `import { InlineNotification } from 'gd-design-library'`
+
+Inline notification component for displaying contextual messages, alerts, and feedback with different severity levels.
+
+**Props:** `variant`: "info"|"warning"|"error"|"success"|"basic", `label`: string, `value`: string, `children`: A2UIComponent[], `styling`: object
+
+**Examples:**
+  `<InlineNotification variant="success">Your changes have been saved successfully.</InlineNotification>`
+  `<InlineNotification variant="error">Failed to process request. Please try again.</InlineNotification>`
+  `<InlineNotification variant="warning">This action cannot be undone.</InlineNotification>`
+  `<InlineNotification variant="info">New features are available in settings.</InlineNotification>`
+
+### Loader
+
+Import: `import { Loader } from 'gd-design-library'`
+
+Loading indicator component that displays animated spinners or dots to communicate loading states, with flexible wrapper options and size variants. A2UI SPEC: use top-level "name" for animation type ("circle" or "dots"), plus top-level "size", optional "rounded" for dots, "variant", and "withWrapper".
+
+**Props:** `name`: "circle"|"dots", `variant`: "inline"|"block"|"flex"|"absolute"|"fixed"|"fullPage", `size`: "xs"|"sm"|"md"|"lg"|"xl", `rounded`: "none"|"default"|"round"|"xs"|"sm"|"md"|"lg"|"xl", `withWrapper`: boolean, `animationProps`: string *(+1 more)*
+
+**Examples:**
+  `<Loader name="circle" size="md" />`
+  `<Loader name="dots" variant="block" size="lg" />`
+  `<Loader name="circle" size="sm" withWrapper={false} />`
+  `<Loader name="dots" size="md" rounded="md" />`
+  `<Loader name="dots" variant="flex" size="xl"><Typography>Loading content...</Typography></Loader>`
+  `<Loader name="circle" variant="absolute" styles={{top: "50%", left: "50%", transform: "translate(-50%, -50%)"}} />`
+  `<Loader name="dots" size="lg" rounded="lg" className="custom-loader" WrapperView="div" />`
+
+### Skeleton
+
+Import: `import { Skeleton } from 'gd-design-library'`
+
+Loading placeholder component that displays animated shapes to indicate content is being loaded, improving perceived performance by showing the structure of upcoming content.
+
+**Props:** `variant`: "rounded"|"circular"|"rectangular", `width`: string, `height`: string, `backgroundColor`: string, `animationName`: string, `animationProps`: string *(+2 more)*
+
+**Examples:**
+  `<Skeleton variant="rectangular" width="100%" height="200px" />`
+  `<Skeleton variant="circular" width="40px" height="40px" backgroundColor="theme.palette.success.main" />`
+  `<Skeleton variant="rounded" width="250px" height="20px" animationName="blinkKeyframes" />`
+  `<Skeleton styles={{backgroundColor: "#f0f0f0", borderRadius: "8px"}}><Column gap="8px"><Skeleton height="20px" /><Skeleton height="20px" width="80%" /></Column></Skeleton>`
+
+### Snackbar
+
+Import: `import { showSnackbar, SnackbarVariant, SnackbarPosition } from 'gd-design-library'`
+
+Toast notification system for displaying temporary messages, alerts, and feedback with configurable positioning, duration, and styling. Use showSnackbar() function to trigger notifications.
+
+**Props:** `label`: string, `value`: string, `variant`: "info"|"warning"|"error"|"success", `placement`: "top-left"|"top-center"|"top-right"|"bottom-left"|"bottom-center"|"bottom-right", `duration`: number | null, `dismissOnClick`: boolean *(+4 more)*
+
+**Examples:**
+  `const SnackbarExample = () => { const onClick = () => { showSnackbar({ title: "Info", message: "This is an example of snackbar message.", variant: SnackbarVariant.Info, position: SnackbarPosition.TopRight, duration: 3000, dismissOnClick: true }); }; return ( <div> <SnackbarManager /> <Button onClick={onClick}>Show Snackbar</Button> </div> ); };`
+  `showSnackbar({ title: "Success", message: "Your changes have been saved.", variant: SnackbarVariant.Success, position: SnackbarPosition.TopCenter });`
+  `showSnackbar({ title: "Error", message: "Failed to save changes.", variant: SnackbarVariant.Error, action: <Button variant="text" onClick={handleRetry}>Retry</Button> });`
+  `showSnackbar({ title: "Warning", message: "You have unsaved changes.", variant: SnackbarVariant.Warning, duration: 0, dismissOnClick: false });`
+
+### SnackbarManager
+
+Import: `import { SnackbarManager } from 'gd-design-library'`
+
+Global snackbar container component that manages and displays all snackbar notifications. Must be included once at the app root level to enable showSnackbar() functionality.
+
+**Examples:**
+  `<SnackbarManager />`
+
+### ProgressBar
+
+Import: `import { ProgressBar } from 'gd-design-library'`
+
+Visual progress indicator component that displays task completion status with determinate or indeterminate states, customizable colors, and optional percentage display for tracking operations, uploads, or multi-step processes.
+
+**Props:** `label`: string, `value`: number, `indeterminate`: boolean, `showPercentage`: boolean, `fillColor`: string, `backgroundColor`: string *(+2 more)*
+
+**Examples:**
+  `<ProgressBar value={75} showPercentage />`
+  `<ProgressBar indeterminate aria-label="Loading content" />`
+  `<ProgressBar value={50} fillColor="bg.fill.success.primary.default" backgroundColor="bg.fill.info.secondary.default" />`
+  `<ProgressBar value={100} showPercentage fillColor="bg.fill.primary" aria-label="Upload complete" />`
+  `<ProgressBar value={25} styles={{width: "100%"}} className="upload-progress" />`
+
+## Content & Structure
+
+### List
+
+Import: `import { List } from 'gd-design-library'`
+
+Flexible list component for displaying collections of items with various style variants including unordered, ordered, and inline layouts.
+
+**Props:** `options`: Array<{ label: string; value?: string | number; icon?: string }>, `value`: Array<string | number | { label?: string; name?: string; title?: string; description?: string }>, `variant`: "ordered-circle"|"ordered-square"|"unordered-dot"|"unordered-check", `size`: "sm"|"md", `styling`: object
+
+**Examples:**
+  `<List variant="unordered-dot" items={["First item", "Second item", "Third item"]} />`
+  `<List variant="unordered-check" items={features} />`
+  `<List variant="ordered-circle" items={steps.map(step => <Typography>{step}</Typography>)} />`
+  `<List variant="ordered-square" items={steps} size="sm" />`
+  `<List items={features.map(f => <FlexContainer gap="8px"><Icon name={f.icon} /><Typography>{f.text}</Typography></FlexContainer>)} />`
+
+## Overlay & Dialog
+
+### Modal
+
+Import: `import { Modal } from 'gd-design-library'`
+
+Overlay dialog component for displaying content in a layer above the main application, with built-in backdrop, close controls, and accessibility features for focused user interactions.
+
+**Props:** `label`: string, `title`: string, `footer`: A2UIComponent[], `children`: A2UIComponent[], `showCloseButton`: boolean, `closeOnEscape`: boolean *(+3 more)*
+
+**Examples:**
+  `<Modal isOpen={isOpen} onClose={handleClose} title="Confirm Action" footer={<Button onClick={handleConfirm}>Confirm</Button>}>Are you sure you want to proceed?</Modal>`
+  `<Modal isOpen={showModal} onClose={() => setShowModal(false)} showCloseButton={false} closeOnEscape={false}><Form onSubmit={handleSubmit}>{formFields}</Form></Modal>`
+  `<Modal isOpen={dialogOpen} onClose={closeDialog} title={<Typography variant="h3">Settings</Typography>} styles={{maxWidth: "600px"}}>{settingsContent}</Modal>`
+  `<Modal isOpen={alertOpen} onClose={handleAlertClose} footer={<FlexContainer gap="8px" justifyContent="flex-end"><Button variant="text" onClick={handleCancel}>Cancel</Button><Button variant="contained" onClick={handleOk}>OK</Button></FlexContainer>}>{alertMessage}</Modal>`
+  `<Modal isOpen={criticalModal} onClose={handleClose} closeOnClickOutside={false} title="Critical Action">This modal requires explicit confirmation and cannot be closed by clicking outside.</Modal>`
+
+### Portal
+
+Import: `import { Portal } from 'gd-design-library'`
+
+Utility component that renders its children into a different part of the DOM tree, useful for modals, tooltips, and overlays that need to escape parent container constraints while maintaining React component hierarchy.
+
+**Props:** `blocksScroll`: boolean, `container`: string, `withWrapper`: boolean, `wrapperVariant`: "inline"|"section"|"fullPage", `WrapperView`: string, `children`: A2UIComponent[] *(+1 more)*
+
+**Examples:**
+  `<Portal blocksScroll={true}><Modal isOpen={true} onClose={handleClose}>{modalContent}</Modal></Portal>`
+  `<Portal container="#tooltip-root" withWrapper={true} wrapperVariant="section"><Tooltip>{tooltipText}</Tooltip></Portal>`
+  `<Portal withWrapper={true} wrapperVariant="fullPage" styling={{zIndex: 9999}}><NotificationToast /></Portal>`
+  `<Portal blocksScroll={false} container="#sidebar-root"><NavigationMenu /></Portal>`
+
+### Tooltip
+
+Import: `import { Tooltip } from 'gd-design-library'`
+
+Contextual information overlay component that displays helpful text on hover or focus, with smart positioning, configurable delays, and full accessibility support through portal rendering.
+
+**Props:** `content`: string, `children`: A2UIComponent[], `placement`: "top"|"bottom"|"left"|"right", `delay`: number, `gap`: number, `as`: string *(+3 more)*
+
+**Examples:**
+  `<Tooltip content="Save your changes" position="top"><Button>Save</Button></Tooltip>`
+  `<Tooltip content="This field is required" position="right" delay={500}><Icon name="info" /></Tooltip>`
+  `<Tooltip content={<Typography variant="caption" as="div">Click to copy</Typography>} position="bottom"><Typography>Copy text</Typography></Tooltip>`
+  `<Tooltip content="Delete this item permanently" position="left" gap={15}><Button color="error" isIcon><Icon name="delete" /></Button></Tooltip>`
+
+### SearchModal
+
+Import: `import { SearchModal } from 'gd-design-library'`
+
+Modal-style search surface with built-in search field, loading state, history/results sections, and result click handling.
+
+**Props:** `placeholder`: string, `searchValue`: string, `isLoading`: boolean, `results`: Array<{ id?: string; title: string; description?: string; icon?: string; date?: number; items?: Array<{ id?: string; title: string; description?: string; icon?: string; date?: number }> }>, `historyResults`: Array<{ id?: string; title: string; description?: string; icon?: string; date?: number; items?: Array<{ id?: string; title: string; description?: string; icon?: string; date?: number }> }>, `noResultsLabel`: string *(+9 more)*
+
+**Examples:**
+  `<SearchModal modalProps={{ isOpen, onClose }} results={results} historyResults={recent} />`
+  `<SearchModal searchValue={query} isLoading={isLoading} onResultClick={handleResultClick} />`
+
+## Navigation & Display
+
+### Carousel
+
+Import: `import { Carousel } from 'gd-design-library'`
+
+Container component for displaying a series of content in a scrollable format with navigation controls. Supports horizontal and vertical layouts with touch/swipe, keyboard navigation, and customizable slide dimensions. In A2UI, use this for prompts like image gallery, gallery, slider, slideshow, or "generate carousel 7 images", and whenever vertical layout or a single focused image sequence is requested.
+
+**Props:** `children`: A2UIComponent[], `layout`: "horizontal"|"vertical", `variant`: "cards"|"single", `showArrows`: boolean, `showDots`: boolean, `thumbs`: "start"|"end" *(+3 more)*
+
+**Examples:**
+  `<Carousel showDots={true}><Carousel.Slide><Image src="/slide1.jpg" /></Carousel.Slide><Carousel.Slide><Image src="/slide2.jpg" /></Carousel.Slide></Carousel>`
+  `<Carousel layout="vertical" styling={{height: "400px"}}>{slides}</Carousel>`
+  `<Carousel showArrows={false} showDots={true} options={{loop: true}}>{productImages.map(img => <Carousel.Slide key={img.id}><Carousel.Image src={img.url} /></Carousel.Slide>)}</Carousel>`
+  `<Carousel variant="cards" showArrows>{cards}</Carousel>`
+
+### ContentCarousel
+
+Import: `import { ContentCarousel } from 'gd-design-library'`
+
+Production-ready horizontal carousel component with smart navigation, accessibility, and touch support. Built on Embla Carousel with item-by-item scrolling, keyboard navigation, and responsive design. Use for product galleries, testimonials, team showcases, image collections, or any repeated horizontal content. In A2UI, prefer this over "carousel" for prompts like "generate carousel 5 image items", "carousel of cards", "carousel of text blocks", "carousel of blocks", or other repeated horizontal item collections that explicitly say items/cards/blocks/text. Plain image-only carousel prompts should use "carousel" instead. In A2UI JSON, encode slide content in children[] and never emit React-only items/renderItem fields.
+
+**Props:** `children`: A2UIComponent[], `showArrows`: boolean, `showDots`: boolean, `isFocusable`: boolean, `visibleItems`: number, `scrollStep`: number *(+2 more)*
+
+**Quick Start:**
+  - basic: `{ type: "content-carousel", children: [{ type: "card", ... }] }`
+  - withNavigation: `{ type: "content-carousel", showArrows: true, showDots: true, children: [{ type: "card", ... }] }`
+  - multipleVisible: `{ type: "content-carousel", visibleItems: 3, scrollStep: 1, children: [{ type: "card", ... }] }`
+  - centered: `{ type: "content-carousel", visibleItems: 3, scrollAlignment: "centered", isFocusable: true, children: [{ type: "image", ... }] }`
+  - customScrollStep: `{ type: "content-carousel", visibleItems: 3, scrollStep: 2, children: [{ type: "card", ... }] }`
+
+**Common Patterns:**
+  - **Product Gallery** (E-commerce product showcases with images and pricing): `{ type: "content-carousel", showArrows: true, showDots: true, visibleItems: 3, scrollStep: 1, children: [{ type: "card", children: [{ type: "image", ... }, { type: "card-column", ... }] }] }`
+  - **Testimonials** (Customer testimonials with quotes and author information): `{ type: "content-carousel", showDots: true, isFocusable: true, visibleItems: 2, children: [{ type: "card", children: [{ type: "typography", ... }, { type: "typography", ... }] }] }`
+  - **Team Members** (Team member showcases with photos and roles): `{ type: "content-carousel", showArrows: true, children: [{ type: "card", children: [{ type: "avatar", ... }, { type: "card-column", ... }] }] }`
+  - **Image Item Strip** (Repeated horizontal image items when the request explicitly says image items rather than a plain image carousel): `{ type: "content-carousel", showDots: true, isFocusable: true, scrollAlignment: "centered", children: [{ type: "image", src: "...", alt: "Gallery image" }] }`
+
+**Best Practices:**
+  - Always use isFocusable={true} for accessibility compliance
+  - Use scrollStep={1} for item-by-item navigation (default), scrollStep={2} or {3} to scroll multiple item widths
+  - Set visibleItems to show multiple items side-by-side (e.g., visibleItems={3})
+  - Use scrollAlignment="left" for default left-aligned navigation, "centered" for single item focus
+  - Set showArrows={false} on mobile devices, rely on touch gestures
+  - Use showDots for mobile, showArrows for desktop
+  - Include proper alt text in image children
+  - Use consistent item heights to prevent layout shifts
+  - In A2UI, never emit React-only items or renderItem fields; use children[] only
+  - Use Card components in children[] for consistent styling
+  - Add loading states while data is being fetched
+  - Use unique child ids for stable rendering
+
+**Troubleshooting:**
+  - **Items not rendering:** Ensure children[] contains supported A2UI components such as image, card, or carousel-slide.
+  - **Navigation not working:** Check if showArrows or showDots are enabled, and children[] has content
+  - **Accessibility issues:** Set isFocusable={true} and ensure each child component is accessible content with labels or alt text where needed
+  - **Performance issues:** Use scrollStep={1} for item-by-item navigation, visibleItems to limit rendered items
+  - **Touch gestures not working:** Ensure container has proper touch event handling and sufficient space
+
+**Examples:**
+  `{ type: "content-carousel", showArrows: true, showDots: true, visibleItems: 3, children: [{ type: "card", ... }] }`
+  `{ type: "content-carousel", showDots: true, isFocusable: true, visibleItems: 2, scrollAlignment: "centered", children: [{ type: "card", ... }] }`
+  `{ type: "content-carousel", showArrows: true, visibleItems: 2, scrollStep: 2, children: [{ type: "flex-container", ... }] }`
+  `{ type: "content-carousel", showDots: true, isFocusable: true, scrollAlignment: "centered", children: [{ type: "image", src: "...", alt: "Gallery image" }] }`
+  `{ type: "content-carousel", showArrows: true, visibleItems: 4, children: [{ type: "card", ... }] }`
+
+## Widgets
+
+### DragAndDrop
+
+Import: `import { DragAndDrop } from 'gd-design-library'`
+
+Workflow upload widget that combines drag-and-drop handling, inline validation, and an InputFile fallback trigger into a single controlled upload surface. In A2UI, describe it with JSON-safe fields and actions[] rather than React callbacks or refs.
+
+**Props:** `title`: string, `description`: string, `inputFileButtonLabel`: string, `acceptedFileTypes`: string[], `maxFileSize`: number, `maxFiles`: number *(+9 more)*
+
+**Quick Start:**
+  - basic: `{ type: "drag-and-drop", title: "Upload files", inputFileButtonLabel: "Choose files" }`
+  - withValidation: `{ type: "drag-and-drop", title: "Upload assets", description: "PNG or PDF up to 10MB", acceptedFileTypes: ["image/png", "application/pdf"], maxFiles: 3, maxFileSize: 10000000 }`
+  - withActions: `{ type: "drag-and-drop", title: "Attach report", inputFileButtonLabel: "Browse files", actions: ["upload_report_action"] }`
+  - withCustomOverlay: `{ type: "drag-and-drop", title: "Upload assets", isLoading: true, loadingOverlay: [{ type: "loader", name: "circle" }, { type: "typography", value: "Uploading files..." }] }`
+
+**Common Patterns:**
+  - **Document Intake** (Multi-file document intake flows with clear validation guidance): `{ type: "drag-and-drop", title: "Upload contracts", description: "PDF or DOCX up to 15MB", inputFileButtonLabel: "Choose documents", acceptedFileTypes: ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"], maxFiles: 5, maxFileSize: 15000000 }`
+  - **Avatar Upload** (Single-image upload workflows with immediate action dispatch): `{ type: "drag-and-drop", title: "Drop a new profile photo", description: "PNG or JPG up to 5MB", acceptedFileTypes: ["image/png", "image/jpeg"], maxFiles: 1, maxFileSize: 5000000, actions: ["upload_avatar_action"] }`
+  - **Async Upload State** (Long-running uploads or post-processing states that need custom loading feedback): `{ type: "drag-and-drop", title: "Upload assets", isLoading: true, loadingOverlay: [{ type: "loader", name: "circle" }, { type: "typography", value: "Uploading files..." }] }`
+  - **Custom Drag State** (Branded drag-over feedback while keeping the normal idle upload layout): `{ type: "drag-and-drop", title: "Attach evidence", dragOverContent: [{ type: "icon", icon: "upload" }, { type: "typography", value: "Release to upload" }] }`
+
+**Best Practices:**
+  - Use title, description, and inputFileButtonLabel together so upload expectations remain obvious in the default layout.
+  - Keep maxFiles, maxFileSize, and acceptedFileTypes explicit so the renderer can validate files before dispatching actions.
+  - Wire file selection through actions[] instead of raw callbacks; the renderer sends file metadata and validation errors in the action payload.
+  - Use errors[] for server-returned or previously known validation messages so users see the reason for a failed upload immediately.
+  - Prefer loadingOverlay[] over replacing the whole widget when uploads are in progress.
+  - Only use children[] when you truly need a custom idle-state surface; otherwise keep the default layout for consistent guidance and accessibility.
+  - Use dragOverContent[] sparingly to reinforce the drop target without hiding the upload requirements.
+
+**Troubleshooting:**
+  - **Upload action never fires:** Attach one or more action IDs through actions[]. The renderer forwards selected file metadata through those actions instead of exposing React callbacks.
+  - **Validation rules are ignored:** Use top-level acceptedFileTypes, maxFiles, and maxFileSize fields. Do not emit React-only props such as onFilesChanged, onError, onDrop, targetRef, or triggerRef.
+  - **Custom drag state does not appear:** Provide dragOverContent[] with A2UI component objects. The default drag overlay is used when dragOverContent is omitted.
+
+**Examples:**
+  `{ type: "drag-and-drop", title: "Upload assets", description: "PNG, JPG or PDF up to 10MB", inputFileButtonLabel: "Choose files" }`
+  `{ type: "drag-and-drop", title: "Upload assets", acceptedFileTypes: ["image/png", "image/jpeg"], maxFiles: 5, maxFileSize: 10000000 }`
+  `{ type: "drag-and-drop", title: "Upload receipts", errors: ["File too large", "Only PDFs are supported"], actions: ["upload_receipt_action"] }`
+  `{ type: "drag-and-drop", title: "Upload files", dragOverContent: [{ type: "typography", value: "Release to upload" }], loadingOverlay: [{ type: "loader", name: "circle" }] }`
+
+## Data Display
+
+### Chart
+
+Import: `import { Chart } from 'gd-design-library'`
+
+Reusable data visualization component supporting line, bar, area, pie, and donut chart variants. Built on visx internally with a GridKit-native API. Features consistent theming, interactive legend, custom tooltips, responsive sizing, and built-in loading/empty/error states.
+
+**Props:** `variant`: "line"|"bar"|"area"|"pie"|"donut", `data`: Array<Record<string, string | number | null>>, `xKey`: string, `series`: Array<{ dataKey: string; label?: string; color?: string; stackId?: string; curveType?: "monotone" | "linear" | "step" | "natural"; fillOpacity?: number; hidden?: boolean }>, `pieConfig`: { nameKey: string; dataKey: string; innerRadius?: string | number; outerRadius?: string | number; showLabels?: boolean; paddingAngle?: number; startAngle?: number; endAngle?: number }, `title`: string *(+17 more)*
+
+**Best Practices:**
+  - CRITICAL: Do NOT import visx directly. Always use the Chart component from gd-design-library.
+  - Use xKey for line, bar, and area charts to specify the x-axis data key.
+  - Use pieConfig (with nameKey and dataKey) for pie and donut charts instead of xKey/series.
+  - Use chartHeight (not height) to control the chart rendering area size. height controls the outer container.
+  - Always provide a title for accessibility - it renders as a visually hidden heading.
+  - Use legend.interactive: true to allow users to toggle series visibility by clicking legend items.
+  - Provide loading, empty, and error states for production-ready charts.
+  - Use the colors prop with theme token paths to override the default palette while staying aligned with the active theme.
+  - Use yAxis.tickFormatter to format numeric values (e.g., currency, percentages).
+  - Use stackId on series items to create stacked bar charts.
+  - The component is fully responsive - it adapts to container width automatically.
+  - CRITICAL: Do NOT use tickFormatter, valueFormatter, or labelFormatter in A2UI/JSON context — functions cannot be serialized. The Chart component handles default formatting automatically.
+  - Always ensure series[].dataKey values match actual keys in the data array objects.
+  - Always ensure pieConfig.nameKey and pieConfig.dataKey match actual keys in the data array objects.
+
+**Examples:**
+  `// Line Chart - Monthly revenue and profit
+import { Chart } from 'gd-design-library';
+
+const data = [
+  { month: 'Jan', revenue: 4000, profit: 2400 },
+  { month: 'Feb', revenue: 3000, profit: 1398 },
+  { month: 'Mar', revenue: 5000, profit: 3800 },
+];
+
+<Chart
+  variant="line"
+  data={data}
+  xKey="month"
+  series={[
+    { dataKey: 'revenue', label: 'Revenue' },
+    { dataKey: 'profit', label: 'Profit' },
+  ]}
+  title="Revenue vs Profit"
+/>`
+  `// Bar Chart - Category comparison
+import { Chart } from 'gd-design-library';
+
+<Chart
+  variant="bar"
+  data={[
+    { category: 'Electronics', sales: 4200 },
+    { category: 'Clothing', sales: 3800 },
+    { category: 'Books', sales: 2100 },
+  ]}
+  xKey="category"
+  series={[{ dataKey: 'sales', label: 'Sales' }]}
+  yAxis={{ tickFormatter: (v) => `$${v}` }}
+/>`
+  `// Stacked Bar Chart
+import { Chart } from 'gd-design-library';
+
+<Chart
+  variant="bar"
+  data={data}
+  xKey="quarter"
+  series={[
+    { dataKey: 'online', label: 'Online', stackId: 'sales' },
+    { dataKey: 'inStore', label: 'In-Store', stackId: 'sales' },
+  ]}
+/>`
+  `// Area Chart with gradient fills
+import { Chart } from 'gd-design-library';
+
+<Chart
+  variant="area"
+  data={data}
+  xKey="month"
+  series={[{ dataKey: 'revenue', label: 'Revenue' }]}
+  chartHeight={400}
+/>`
+  `// Pie Chart - Market share
+import { Chart } from 'gd-design-library';
+
+<Chart
+  variant="pie"
+  data={[
+    { name: 'Desktop', value: 45 },
+    { name: 'Mobile', value: 35 },
+    { name: 'Tablet', value: 20 },
+  ]}
+  pieConfig={{ nameKey: 'name', dataKey: 'value', showLabels: true }}
+/>`
+  `// Donut Chart
+import { Chart } from 'gd-design-library';
+
+<Chart
+  variant="donut"
+  data={data}
+  pieConfig={{ nameKey: 'name', dataKey: 'value', paddingAngle: 2 }}
+  title="Budget Distribution"
+/>`
+  `// Interactive Legend with loading state
+import { Chart, Skeleton, Column, Row } from 'gd-design-library';
+
+<Chart
+  variant="line"
+  data={data}
+  xKey="month"
+  series={series}
+  legend={{ interactive: true, position: 'top' }}
+  loading={isLoading}
+  loadingState={
+    <Column gap="12px" padding="40px">
+      <Skeleton variant="rounded" width="100%" height="200px" />
+    </Column>
+  }
+/>`
+
+## Media & Display
+
+### ImagePreview
+
+Import: `import { ImagePreview } from 'gd-design-library'`
+
+Image gallery organism with thumbnail navigation, counter overlay, and optional lightbox. Use for previewing collections of images with navigation controls.
+
+**Props:** `images`: Array<{ src: string; alt?: string; caption?: string }>, `initialIndex`: number, `showThumbnails`: boolean, `showCounter`: boolean, `showArrows`: boolean, `thumbnailPosition`: 'bottom' | 'left' *(+3 more)*
+
+**Examples:**
+  `<ImagePreview images={photos} showThumbnails showArrows onImageChange={setActive} />`
+  `<ImagePreview images={gallery} showCounter thumbnailPosition="left" />`
+  `<ImagePreview images={items} showCounter thumbnailPosition="left" showArrows />`
+
+<!-- AUTO-GENERATED:COMPONENTS:END -->
+
+## Usage Patterns
+
+> 📘 **For detailed prompt usage instructions and examples, see [Prompt Usage Manual](./ai/PROMPT_USAGE_MANUAL.md)**  
+> 📖 **For comprehensive overview and quick start, see [AI README](./ai/README.md)**
+
+### 1. Programmatic Prompt Builder (Recommended)
+```typescript
+import { buildClaudeSystemPrompt } from 'gd-design-library/ai';
+
+const prompt = buildClaudeSystemPrompt('Create a sign-in form with email and password');
+```
+
+### 2. Contextual Prompt (For Specific Components)
+```typescript
+import { buildContextualPrompt } from 'gd-design-library/ai';
+
+const prompt = buildContextualPrompt('Create a form', {
+  components: ['Form', 'Input', 'Button'],
+});
+```
+
+### 3. Discovery Utilities
+```typescript
+import { discovery, getComponentsByCategory } from 'gd-design-library/ai';
+
+// Get component by name
+const button = discovery.getComponent('Button');
+
+// Search components
+const formComponents = discovery.searchComponents('form');
+
+// Get by category
+const layoutComponents = getComponentsByCategory('Layout & Structure');
+
+// Get related components
+const related = discovery.getRelatedComponents('Input');
+```
+
+### 4. Validation
+```typescript
+import { validateSchema, validateGeneratedCode } from 'gd-design-library/ai';
+
+// Validate schema
+const result = validateSchema(componentSchema);
+
+// Validate generated code
+const codeResult = validateGeneratedCode(generatedCode);
+```
+
+### 5. Agent-Specific Prompts
+```typescript
+import { buildGPT4Prompt, buildGeminiPrompt } from 'gd-design-library/ai';
+
+// GPT-4 format (OpenAI)
+const messages = buildGPT4Prompt('Create a form');
+
+// Gemini format (Google)
+const request = buildGeminiPrompt('Create a form');
+```
+
+### 6. Schema Index
+```typescript
+import { componentIndex } from 'gd-design-library/ai';
+
+// Get components by category
+const formControls = componentIndex.byCategory['Forms & Inputs'];
+
+// Get by complexity
+const simpleComponents = componentIndex.byComplexity.Low;
+```
+
+## Figma Token Maps
+
+Purpose-built reverse-lookup tables that translate Figma inspection output (variable names, hex values, px values, shadow strings, icon names) into GridKit design tokens and `useTheme()` access patterns. **Load before any Figma-to-code or Figma-to-A2UI task.**
+
+Path: `$GD_PATH/ai/figma-maps/` (default `node_modules/gd-design-library/ai/figma-maps/`).
+
+Each file has a top-level `$usage` key with `keyQuestion`, `lookupSteps`, and `criticalRules`.
+
+### Available Maps
+
+| File | Answers | Reverse index |
+|------|---------|---------------|
+| `figma-color-map.json` | Hex / Figma `gds.color.*` var → color token | `hexIndex["#RRGGBB"]` → `tokenPath` |
+| `figma-spacing-map.json` | px / `gds.spacing.*` var → spacing token | `pxIndex["16px"]` → `{ preferred, aliases }` |
+| `figma-radius-map.json` | px/% / `gds.border.radius.*` var → radius token | `pxIndex["4px"]` → `"radius.sm"` |
+| `figma-font-map.json` | font value / `gds.font.*` var → `font.*` token | `valueIndex.fontSize["20px"]` → `"font.size.h5"` |
+| `figma-shadow-map.json` | Shadow style / CSS value → `shadows.box.*` token | `valueIndex["0px 2px..."]` → `"shadows.box.1"` |
+| `figma-icon-map.json` | Figma Material icon name → GridKit `IconsList` key | `figmaNameIndex["close"]` → `"cross"` |
+
+### Token Resolution Priority (apply in order, stop at first hit)
+
+1. **CSS var name present** — Figma dev mode emits `var(--gds-color-text-default, #171717)`. Strip `--gds-` prefix, convert kebab-case to dot-notation: `color.text.default`. Use verbatim — do **not** run a value reverse-lookup.
+2. **Figma variable name known** — Apply the CamelCase split rule: `borderRadiusXL` → `radius.xl`; `fontSizeH5` → `font.size.h5`; `lineHeightH5` → `font.line.height.h5`. Find the entry in the matching map group.
+3. **Value-only fallback** — Query the matching `*Index` reverse-lookup in the relevant map file: `hexIndex` for colors, `pxIndex` for radius and spacing, `valueIndex` for font and shadow.
+4. **No match** — Record `"unmatched:<rawValue>"` in `tokenBindings`.
+
+### Color (`figma-color-map.json`)
+
+Groups: `bg` (29), `border` (11), `text` (15), `icon` (12), `neutral` (19), `palette` (100) + `hexIndex` (34 entries).
+
+Each entry shape: `{ tokenPath, cssVar, themeAccess, hex }`.
+
+- Hex lookup: `hexIndex["#FFFFFF"]` → `"color.bg.surface"`. Normalize short hex first: `#FFF` → `#FFFFFF`.
+- In code: **always use `themeAccess`** (e.g. `theme.colors?.bg?.surface`). Never emit `cssVar` strings in TSX.
+- Typography `color` prop: pass `tokenPath` string directly (`color="text.default"`). All other components: use `themeAccess` via `useTheme()`.
+- `#FFFFFF` → `color.bg.surface` (not "unmatched white"). `#000000` → `color.neutral.black`.
+
+### Spacing (`figma-spacing-map.json`)
+
+Groups: `spacing` (semantic, 7 entries), `space` (numeric, 13), `scale` (7) + `pxIndex` + `scaleDecisionGuide`.
+
+- `pxIndex["16px"]` → `{ preferred: "spacing.md", aliases: ["space.200", "scale.200"] }`.
+- `scaleDecisionGuide` context rule: layout padding/margin/gap → `spacing.*`; gaps >40px → `space.*`; component-internal → `scale.*`.
+- 12px has no `spacing.*` alias → use `space.150` (`theme.space?.['150']`).
+- Unmatched px: record `"unmatched:<value>px"` in `tokenBindings` — **never** hardcode the literal.
+
+### Radius (`figma-radius-map.json`)
+
+Structure: `radius` (8), `pxIndex` (9 values from `0px` to `50%`), `camelCaseSplitExamples`.
+
+- `pxIndex["4px"]` → `"radius.sm"`. `pxIndex["50%"]` → `"radius.round"`.
+- CamelCase split: `borderRadiusXL` → `radius.xl`. See `camelCaseSplitExamples` for all 8 variants.
+- In TSX: `theme.radius?.xl` via `useTheme()`. **Never** `var(--gds-radius-xl, 32px)` in JSX.
+
+### Font (`figma-font-map.json`)
+
+Groups: `family` (2), `weight` (4), `size` (20 scale entries), `lineHeight` (20) + `valueIndex` + `camelCaseSplitExamples` + `knownGaps`.
+
+- `valueIndex.fontSize["20px"]` → `"font.size.h5"`. `valueIndex.lineHeight["26px"]` → `"font.line.height.h5"`.
+- CamelCase: `fontSizeH5` → `font.size.h5`; `lineHeightH5` → `font.line.height.h5`.
+- **lineHeight is 3 levels deep**: `font.line.height.<scale>`. Access: `theme.font?.line?.height?.h5`. Never `theme.font?.lineHeight?.h5`.
+- Font tokens are **not** CSS vars — never emit `var(--gds-font-*)` in TSX. Put raw CSS value in `styling`; token dot-path in `tokenBindings`.
+- `styleVariant="bold"` = `fontWeight: 700`. Never combine with a `fontWeight` override in `styling`.
+- Known gaps: `34px lineHeight` (no token — use h2/h3 by context); `fontWeight 800/900` (no token — record `"unmatched:800"`).
+
+### Shadow (`figma-shadow-map.json`)
+
+Groups: `light` (5), `dark` (5), `semantic` (modal/snackbar/notification) + `valueIndex` + `elevationDecisionGuide` + `designDrift`.
+
+- By Figma style name: `light["Shadow/Light Mode/shadow 1"]` → `{ tokenPath: "shadows.box.1", themeAccess: "theme.shadows?.box?.['1']", ... }`.
+- By element role (`elevationDecisionGuide`): card/tile → `shadows.box.1`; dropdown/popover → `shadows.box.2`; drawer/panel → `shadows.box.3`; modal/dialog → `shadows.modal.default`; snackbar/toast → `shadows.snackbar.default`.
+- **Design drift**: Figma levels 1–3 show single-layer values; GridKit tokens are multi-layer Material-style. Token value is always canonical — never copy Figma raw shadow strings into code.
+- Dark mode: no separate tokens; dark `ThemeProvider` override resolves automatically.
+- Numeric keys require bracket notation: `theme.shadows?.box?.['1']`.
+
+### Icons (`figma-icon-map.json`)
+
+Structure: `icons` (54 GridKit keys), `figmaNameIndex` (48 Figma name → GridKit key), `stats`.
+
+- Figma → GridKit: `figmaNameIndex["close"]` → `"cross"`. Use GridKit key in all generated code.
+- 8 custom icons have no Figma equivalent: `success`, `error`, `warning`, `info`, `dot`, `slash`, `ruler`, `processing`.
+- Always validate icon name against `A2UI_AVAILABLE_ICONS` (or `Icon.ts` schema) before emitting.
+
+### Common Traps
+
+- `#FFFFFF` → `color.bg.surface`, **not** unmatched white. Always run `hexIndex` before declaring no match.
+- `lineHeight` token path: `font.line.height.h5` (3 levels). Never `font.lineHeight.h5`.
+- `styleVariant="bold"` conflicts with `fontWeight` in `styling` — use only one.
+- Radius in TSX: `theme.radius?.xl` — never `var(--gds-radius-xl, 32px)`.
+- Shadow drift: Figma raw value ≠ token multi-layer value. Token is canonical.
+- `border: "1px solid #000"` — split into parts; only run color lookup on the hex segment.
+
+## Critical Guardrails (Automatically Extracted from Schemas)
+
+These guardrails are automatically extracted from component schemas and included in prompts:
+
+- **Icon**: ONLY use icon names from the IconsList (51 icons). Do NOT use: "add" (use plus), "chevronRight" (use arrowRight), "settings", etc.
+- **Row/Column/Card.Row/Card.Column**: Use `isWrap` (boolean), NOT `wrap`. IMPORTANT: `isWrap` defaults to true
+- **Image and Card.Image**: width and height props are numbers only (e.g., width={96}, not width="96px")
+- **Button**: variant must be one of: Primary, Secondary, Tertiary, Outlined, Text, Inherit
+- **Counter**: Use `initial` (not `value`) for starting quantity; `onCounterChange` is the change handler
+- **Card.Title**: sizeVariant only accepts Default or Sm
+- **Typography**: Use variant VALUES (HTML tag names) like `variant="p"`, `variant="h1"`, NOT `variant="body"`
+- **Chart**: CRITICAL: Do NOT import Recharts directly. Use `xKey` + `series` for line/bar/area; `pieConfig` for pie/donut. Use `chartHeight` (not `height`) for chart sizing
+- **Box**: Use variant="horizontal" or variant="vertical" (defaults to "vertical"). Prefer Box over raw divs
+
+## Resources
+
+### Documentation
+- [AI README](./ai/README.md) - **Comprehensive overview, quick start, and examples** ⭐ **Start here**
+- [Prompt Usage Manual](./ai/PROMPT_USAGE_MANUAL.md) - **Complete guide for using prompts** ⭐
+- [Component Storybook](https://storybook.cto-rnd-system-design.griddynamics.net/) - Interactive component documentation and playground
+- API Documentation: Generated from component schemas
+- Theme Documentation: Available in theme configuration
+- Accessibility Guidelines: Built into component schemas
+
+### Storybook Resources
+
+**Instructions & Getting Started:**
+- [Introduction](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/introduction-welcome--docs) - Overview of the GridKit Design System
+- [Installation](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/introduction-getting-started--docs) - Step-by-step integration guide
+- [Theme Tokens Usage](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/introduction-theme-tokens-usage--docs) - Using theme tokens
+- [Logging and Debugging](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/introduction-logging-and-debugging--docs) - Logging system guidelines
+- [Usage Guidelines](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/patterns-best-practices-ux-ui-design-patterns-and-best-practices--docs) - Best practices
+- [Contributing](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/introduction-feedback-contribution--docs) - Contribution guidelines
+
+**Theme & Tokens:**
+- [Theme Overview](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/theme-tokens-theme--docs) - Theming system guide
+- [Color Tokens](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/theme-tokens-colors--docs) - Color palette
+- [Typography Tokens](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/theme-tokens-fonts--docs) - Typography system
+- [Spacing Tokens](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/theme-tokens-spacing--docs) - Spacing scale
+- [Radius Tokens](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/theme-tokens-radius--docs) - Border radius tokens
+- [Breakpoint Tokens](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/theme-tokens-breakpoints--docs) - Responsive breakpoints
+- [Shadow Tokens](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/theme-tokens-shadows--docs) - Elevation tokens
+- [Animation Tokens](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/theme-tokens-animations--docs) - Motion tokens
+- [Values Tokens](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/theme-tokens-values--docs) - Miscellaneous tokens
+- [zIndex Tokens](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/theme-tokens-zindex--docs) - Stacking order
+- [Theme Customization](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/introduction-getting-started--docs) - Custom themes
+
+### Support
+- Component schemas provide comprehensive prop documentation
+- Composition tips offer usage best practices
+- System prompts ensure consistent code generation
+- Discovery utilities help find components and patterns
+- Validation system ensures code quality
+- AI README provides detailed usage instructions and practical examples
+
+## Best Practices for AI Agents
+
+1. **Use Discovery Utilities**: Leverage discovery functions to find relevant components
+2. **Validate Generated Code**: Always validate generated code before use
+3. **Use Contextual Prompts**: Use contextual prompts for better accuracy with specific components
+4. **Follow Guardrails**: Pay attention to CRITICAL/IMPORTANT notes in schemas
+5. **Check Examples**: Review quick start examples and common patterns in schemas
+6. **Use Schema Index**: Use componentIndex for quick category/feature lookups
+7. **Validate Schemas**: Ensure component schemas are complete and valid
+
+This AI integration system ensures that all generated code follows the design system's principles, maintains consistency, and provides excellent user experience through proper accessibility and theming support.

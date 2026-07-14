@@ -1,0 +1,23 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`typography > SHOULD render correctly with children 1`] = `
+<div>
+  <h1
+    class="css-15ay0p1"
+    data-testid="typography"
+  >
+    Hello World
+  </h1>
+</div>
+`;
+
+exports[`typography > SHOULD render with different variants 1`] = `
+<div>
+  <h2
+    class="css-1erwtp8"
+    data-testid="typography"
+  >
+    Heading Level 2
+  </h2>
+</div>
+`;

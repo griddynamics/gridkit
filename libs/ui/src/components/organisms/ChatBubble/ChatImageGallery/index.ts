@@ -1,0 +1,1 @@
+export { ChatImageGallery } from './ChatImageGallery';

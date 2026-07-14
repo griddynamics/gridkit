@@ -1,0 +1,55 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Button > SHOULD match Icon button snapshot 1`] = `
+<div>
+  <button
+    class="css-oznb67"
+    data-testid="Button"
+    role="button"
+    tabindex="0"
+    type="button"
+  >
+    <span
+      class="gd-button__content css-4vlwk1"
+      data-testid="Button-content"
+    >
+      Icon
+    </span>
+  </button>
+</div>
+`;
+
+exports[`Button > SHOULD match snapshot 1`] = `
+<div>
+  <button
+    class="test-text-button-class css-1xtbs7r"
+    data-testid="Button"
+    role="button"
+    tabindex="0"
+    type="button"
+  >
+    <span
+      class="css-0"
+      data-testid="Button-icon-start"
+    >
+      <span>
+        Start Icon
+      </span>
+    </span>
+    <span
+      class="gd-button__content css-4vlwk1"
+      data-testid="Button-content"
+    >
+      text
+    </span>
+    <span
+      class="css-0"
+      data-testid="Button-icon-end"
+    >
+      <span>
+        End Icon
+      </span>
+    </span>
+  </button>
+</div>
+`;

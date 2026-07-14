@@ -1,0 +1,50 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Loader > SHOULD match Dots snapshot 1`] = `
+<div>
+  <span
+    class="css-1ssfmm"
+    data-testid="wrapper"
+  >
+    <span
+      class="css-1noy2ls"
+      data-testid="Loader"
+    >
+      <span
+        class="dot css-vemsis"
+      />
+      <span
+        class="dot css-vemsis"
+      />
+      <span
+        class="dot css-vemsis"
+      />
+    </span>
+  </span>
+</div>
+`;
+
+exports[`Loader > SHOULD match default snapshot 1`] = `
+<div>
+  <span
+    class="css-1ssfmm"
+    data-testid="wrapper"
+  >
+    <span
+      class="css-hf7z1t"
+      data-testid="Loader"
+    />
+  </span>
+</div>
+`;
+
+exports[`Loader > SHOULD match snapshot & render correctly with children 1`] = `
+<div>
+  <span
+    class="css-1ssfmm"
+    data-testid="wrapper"
+  >
+    Custom loader
+  </span>
+</div>
+`;

@@ -1,0 +1,13 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Card > SHOULD match snapshot 1`] = `
+<div>
+  <div
+    class="css-1t2giug"
+    data-testid="Card"
+    tabindex="0"
+  >
+    Line 1
+  </div>
+</div>
+`;

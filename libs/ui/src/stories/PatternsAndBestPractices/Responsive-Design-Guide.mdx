@@ -1,0 +1,131 @@
+import { Meta, Markdown } from '@storybook/addon-docs/blocks';
+
+<Meta title="Patterns & Best Practices/Responsive Design Guide" />
+
+# Responsive Tokens & Breakpoints
+
+This page explains how to use and extend responsive design tokens and breakpoints in the GridKit Design System.
+
+## 1. Mobile-First & Progressive Enhancement
+
+- Design and implement components for smaller viewports first (e.g., 320–480px).
+- Progressively enhance layouts and features for tablets, desktops, and wide screens.
+- Use `min-width` media queries to scale up layouts.
+
+## 2. Breakpoints, Grid & Layout Principles
+
+- Adopt consistent breakpoint values (see table below).
+- Use tokenized grid spacing and column systems for consistent layout behavior.
+- Make components flexible using percentage widths, flexbox, or CSS grid.
+
+<Markdown>
+  {`
+| Token              | Value  | Usage Example       |
+| ------------------ | ------ | ------------------- |
+| screenSmall      | 480px  | Small screens (sm)  |
+| screenMedium     | 768px  | Medium screens (md) |
+| screenLarge      | 1024px | Large screens (lg)  |
+| screenXLarge     | 1280px | Extra large (xl)    |
+| responsiveSmall  | 20%    | Fluid width (sm)    |
+| responsiveMedium | 40%    | Fluid width (md)    |
+| responsiveLarge  | 60%    | Fluid width (lg)    |
+| responsiveXLarge | 80%    | Fluid width (xl)    |
+`}
+</Markdown>
+
+_Tokens are defined in `libs/ui/src/tokens/values.ts`._
+
+## 3. Responsive Props & Documentation
+
+- Allow components to accept responsive props (e.g., `width={{ sm: '100%', md: '50%', lg: '33%' }}`).
+- Use utility hooks or tokenized helpers to handle prop adaptation internally.
+- Document all responsive behavior and default breakpoints in component docs.
+
+**Example: CSS-in-JS with tokens**
+
+```javascript
+const {
+  theme: { values },
+} = useTheme();
+
+const Box = styled.div`
+  display: block;
+  width: 100%;
+  @media (min-width: ${values.screenMedium}) {
+    width: ${values.responsiveMedium};
+  }
+  @media (min-width: ${values.screenLarge}) {
+    width: ${values.responsiveLarge};
+  }
+`;
+```
+
+**Example: Responsive Props in Components**
+
+```jsx
+<MyComponent width={{ sm: '100%', md: '50%', lg: '33%' }} />
+```
+
+**Example: Using a Media Query Hook**
+
+```javascript
+import { useMediaQuery } from 'gd-design-library/hooks';
+
+const isLargeScreen = useMediaQuery('(min-width: 1024px)');
+
+if (isLargeScreen) {
+  // Render layout for large screens
+} else {
+  // Render layout for small screens
+}
+```
+
+## 4. Fluid Typography & Spacing
+
+- Use relative units (`rem`, `em`, `%`) instead of fixed pixels.
+- Scale font sizes, line heights, and spacing based on screen size using design tokens.
+- Use `clamp()` for modern fluid type scaling if supported by target browsers.
+
+## 5. Adaptive Components
+
+- Design components to adapt — not just shrink — across breakpoints.
+- Collapse tabs into accordions, filters into drawers, menus into overlays when on small screens.
+- Provide alternate touch-friendly layouts and behaviors on mobile.
+
+## 6. Images & Media
+
+- Use `srcset` and `sizes` attributes for responsive image loading.
+- Use `object-fit` and `max-width` to prevent overflow or distortion.
+- Lazy-load media when offscreen and defer non-critical assets for better performance.
+
+## 7. Testing & Debugging
+
+- Test components in multiple viewport sizes using browser dev tools and Storybook viewports.
+- Validate with actual mobile and tablet devices when possible.
+- Check for overflow, zoom accessibility, and tap target sizing.
+
+## 8. Adding New Breakpoints or Responsive Tokens
+
+1. Edit `libs/ui/src/tokens/values.ts` (or `breakpoints.ts` if you have one).
+2. Add your new token, e.g.:
+
+```javascript
+export const values = {
+  // ...existing tokens
+  screenXXLarge: '1600px',
+  responsiveXXLarge: '90%',
+};
+```
+
+3. Use your new token in code as shown above.
+
+## 9. Best Practices
+
+- Use tokens for all breakpoints and responsive values.
+- Prefer relative units (`%`, `rem`, `em`) over fixed `px`.
+- Test components in Storybook with different viewport sizes.
+- Document all responsive props and behaviors in your component stories.
+
+---
+
+_Last updated: July 31, 2025 · GridKit Design System_

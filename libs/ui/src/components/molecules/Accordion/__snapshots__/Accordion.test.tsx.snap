@@ -1,0 +1,87 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Accordion > SHOULD match snapshot 1`] = `
+<div>
+  <div
+    class="css-1vu4ox4"
+    data-open="false"
+    data-testid="AccordionItem-item1"
+    data-value="item1"
+  >
+    <button
+      aria-controls="accordion-panel-item1"
+      aria-expanded="false"
+      class="css-v2bb20"
+      data-testid="AccordionHeader-item1"
+      id="accordion-header-item1"
+    >
+      <h1>
+        Title 1
+      </h1>
+    </button>
+    <div
+      aria-labelledby="accordion-header-item1"
+      class="css-1jqc4vi"
+      data-testid="AccordionContent-item1"
+      id="accordion-panel-item1"
+      role="region"
+    >
+      Content 1
+    </div>
+  </div>
+  <div
+    class="css-1vu4ox4"
+    data-open="false"
+    data-testid="AccordionItem-item2"
+    data-value="item2"
+  >
+    <button
+      aria-controls="accordion-panel-item2"
+      aria-expanded="false"
+      class="css-v2bb20"
+      data-testid="AccordionHeader-item2"
+      id="accordion-header-item2"
+    >
+      <h1>
+        Title 2
+      </h1>
+    </button>
+    <div
+      aria-labelledby="accordion-header-item2"
+      class="css-1jqc4vi"
+      data-testid="AccordionContent-item2"
+      id="accordion-panel-item2"
+      role="region"
+    >
+      Content 2
+    </div>
+  </div>
+  <div
+    class="css-1vu4ox4"
+    data-open="false"
+    data-testid="AccordionItem-item3"
+    data-value="item3"
+  >
+    <button
+      aria-controls="accordion-panel-item3"
+      aria-expanded="false"
+      class="css-v2bb20"
+      data-testid="AccordionHeader-item3"
+      id="accordion-header-item3"
+    >
+      <h1>
+        Title 3
+      </h1>
+    </button>
+    <div
+      aria-labelledby="accordion-header-item3"
+      class="css-1jqc4vi"
+      data-testid="AccordionContent-item3"
+      id="accordion-panel-item3"
+      role="region"
+    >
+      Content 3
+    </div>
+  </div>
+</div>
+`;

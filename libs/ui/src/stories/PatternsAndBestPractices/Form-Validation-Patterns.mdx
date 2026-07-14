@@ -1,0 +1,53 @@
+import { Meta, Markdown } from '@storybook/addon-docs/blocks';
+
+<Meta title="Patterns & Best Practices/Form Validation Patterns" />
+
+# Form Validation Patterns
+
+This guide outlines best practices for validating form inputs in the GridKit Design System, covering both visual and programmatic patterns for creating accessible, usable, and consistent forms.
+
+## 1. Validation Modes
+
+- Use **onBlur** or **onSubmit** as the default validation mode.
+- Avoid real-time validation (`onChange`) unless it's for lightweight checks (e.g., formatting).
+- Allow for configurable validation triggers when building form wrappers or reusable form components.
+
+## 2. Error Messaging
+
+- Always display validation messages near the associated input field.
+- Use clear, concise language. Prefer user-friendly messages like _"Please enter a valid email address."_ over technical descriptions.
+- Associate messages with fields using `aria-describedby` for screen reader accessibility.
+
+## 3. Field-Level Validation
+
+- Use field-level rules for common constraints: `required`, `minLength`, `pattern`, etc.
+- Reuse validation functions across components to maintain consistency.
+- Mark required fields with both a visual indicator and `aria-required="true"`.
+
+## 4. Form-Level Validation
+
+- Validate cross-field dependencies at form level (e.g., password confirmation).
+- Provide global form errors above the submit button if needed (e.g., server-side issues).
+- Use a consistent layout and structure for form-wide error summaries.
+
+## 5. Visual Feedback
+
+- Apply visual indicators (e.g., red borders, icons) only after validation is triggered.
+- Maintain consistent colors and styles via tokens: e.g., `color.error`, `border.danger`.
+- Do not rely on color alone — include icons or text for users with visual impairments.
+
+## 6. Accessibility Considerations
+
+- Use semantic HTML inputs and labels to ensure default accessibility support.
+- Expose validation state using `aria-invalid="true"` and link messages with `aria-describedby`.
+- Support keyboard navigation and screen readers for all validation feedback.
+
+## 7. Tooling & Libraries
+
+- GridKit components are compatible with tools like **React Hook Form**, **Zod**, **Yup**, or **Formik**.
+- Prefer schema-based validation for complex forms to reduce repetition and centralize logic.
+- Include examples in documentation for most common integrations (e.g., GridKit + RHF).
+
+---
+
+_Last updated: July 1, 2025 · GridKit Design System_

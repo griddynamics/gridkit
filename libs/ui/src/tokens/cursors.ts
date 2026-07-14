@@ -1,0 +1,17 @@
+export const cursors = {
+  default: 'default',
+  pointer: 'pointer',
+  text: 'text',
+  move: 'move',
+  wait: 'wait',
+  crosshair: 'crosshair',
+  notAllowed: 'not-allowed',
+  grab: 'grab',
+  grabbing: 'grabbing',
+  help: 'help',
+  progress: 'progress',
+  alias: 'alias',
+  zoomIn: 'zoom-in',
+  zoomOut: 'zoom-out',
+  inherit: 'inherit',
+};

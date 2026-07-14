@@ -1,0 +1,84 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Tabs > SHOULD match snapshot 1`] = `
+<div>
+  <div
+    class="css-ihz6y5"
+    data-testid="Tabs"
+  >
+    <div
+      class="css-oxiy6j"
+      data-testid="Tabs-header"
+      role="tablist"
+    >
+      <div
+        class="css-g5oqtx"
+        data-testid="Tabs-tab"
+      >
+        <button
+          aria-controls="Tabs-tabpanel-0-tab-1"
+          aria-selected="true"
+          class="css-1avfb7g"
+          data-testid="Button"
+          id="Tabs-tab-0-tab-1"
+          role="tab"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="gd-button__content css-4vlwk1"
+            data-testid="Button-content"
+          >
+            Tab 1
+          </span>
+        </button>
+      </div>
+      <div
+        class="css-1b44fos"
+        data-testid="Tabs-tab"
+      >
+        <button
+          aria-controls="Tabs-tabpanel-1-tab-2"
+          class="css-1avfb7g"
+          data-testid="Button"
+          id="Tabs-tab-1-tab-2"
+          role="tab"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="gd-button__content css-4vlwk1"
+            data-testid="Button-content"
+          >
+            Tab 2
+          </span>
+        </button>
+      </div>
+    </div>
+    <div
+      class="css-1u8qly9"
+      data-testid="Tabs-wrapper"
+    >
+      <div
+        aria-labelledby="Tabs-tab-0-tab-1"
+        class="css-1u8qly9"
+        data-testid="Tabs-tabpanel"
+        id="Tabs-tabpanel-0-tab-1"
+        role="tabpanel"
+      >
+        Tab 1 Content
+      </div>
+      <div
+        aria-labelledby="Tabs-tab-1-tab-2"
+        class="css-1u8qly9"
+        data-testid="Tabs-tabpanel"
+        hidden=""
+        id="Tabs-tabpanel-1-tab-2"
+        role="tabpanel"
+      >
+        Tab 2 Content
+      </div>
+    </div>
+  </div>
+</div>
+`;

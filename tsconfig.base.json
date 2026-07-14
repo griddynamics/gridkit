@@ -1,0 +1,30 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "importHelpers": true,
+    "jsx": "react-jsx",
+    "target": "es2015",
+    "resolveJsonModule": true,
+    "module": "esnext",
+    "lib": ["es2020", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@form-configurator/core": ["libs/form-configurator/core/src/index.ts"],
+      "@form-configurator/adapter-react": ["libs/form-configurator/adapter-react/src/index.ts"],
+      "@griddynamics/ui": ["libs/ui/src/index.ts"],
+      "@griddynamics/ui/*": ["libs/ui/src/*"],
+      "gd-design-library": ["libs/ui/src/index.ts"],
+      "gd-design-library/*": ["libs/ui/src/*"]
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
+}

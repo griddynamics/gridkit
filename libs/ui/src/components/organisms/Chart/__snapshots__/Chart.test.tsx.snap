@@ -1,0 +1,766 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Chart > SHOULD match snapshot 1`] = `
+<div>
+  <div
+    aria-label="line chart"
+    class="css-xoiw0p"
+    data-testid="Chart"
+    role="img"
+  >
+    <div
+      style="position: relative; width: 100%; height: 300px;"
+    >
+      <div
+        aria-hidden="true"
+        style="position: absolute; inset: 0; visibility: hidden; pointer-events: none;"
+      />
+      <div
+        style="position: absolute; inset: 0; overflow: hidden;"
+      >
+        <div
+          data-chart-id="rt"
+          style="clip-path: inset(0 100% 0 0); transition: clip-path 0.8s ease-out;"
+        >
+          <style>
+            [data-chart-id="rt"] path[stroke]:not([fill]):not([stroke-dasharray]){transition:filter 150ms ease-out, stroke-width 150ms ease-out}[data-chart-id="rt"] path[stroke]:not([fill]):not([stroke-dasharray]):hover{filter:brightness(1.2);stroke-width:3px}@media(prefers-reduced-motion:reduce){[data-chart-id="rt"] path{transition:none!important}}
+          </style>
+          <svg
+            aria-label="XYChart"
+            height="300"
+            width="600"
+          >
+            <g
+              class="visx-group visx-rows"
+              transform="translate(56, 0)"
+            >
+              <line
+                class="visx-line"
+                fill="transparent"
+                shape-rendering="crispEdges"
+                stroke="#E0E0E0"
+                stroke-dasharray="3 3"
+                stroke-width="1"
+                style="stroke: #adb5bd; stroke-width: 1;"
+                x1="0"
+                x2="524"
+                y1="260"
+                y2="260"
+              />
+              <line
+                class="visx-line"
+                fill="transparent"
+                shape-rendering="crispEdges"
+                stroke="#E0E0E0"
+                stroke-dasharray="3 3"
+                stroke-width="1"
+                style="stroke: #adb5bd; stroke-width: 1;"
+                x1="0"
+                x2="524"
+                y1="236"
+                y2="236"
+              />
+              <line
+                class="visx-line"
+                fill="transparent"
+                shape-rendering="crispEdges"
+                stroke="#E0E0E0"
+                stroke-dasharray="3 3"
+                stroke-width="1"
+                style="stroke: #adb5bd; stroke-width: 1;"
+                x1="0"
+                x2="524"
+                y1="212"
+                y2="212"
+              />
+              <line
+                class="visx-line"
+                fill="transparent"
+                shape-rendering="crispEdges"
+                stroke="#E0E0E0"
+                stroke-dasharray="3 3"
+                stroke-width="1"
+                style="stroke: #adb5bd; stroke-width: 1;"
+                x1="0"
+                x2="524"
+                y1="188"
+                y2="188"
+              />
+              <line
+                class="visx-line"
+                fill="transparent"
+                shape-rendering="crispEdges"
+                stroke="#E0E0E0"
+                stroke-dasharray="3 3"
+                stroke-width="1"
+                style="stroke: #adb5bd; stroke-width: 1;"
+                x1="0"
+                x2="524"
+                y1="164"
+                y2="164"
+              />
+              <line
+                class="visx-line"
+                fill="transparent"
+                shape-rendering="crispEdges"
+                stroke="#E0E0E0"
+                stroke-dasharray="3 3"
+                stroke-width="1"
+                style="stroke: #adb5bd; stroke-width: 1;"
+                x1="0"
+                x2="524"
+                y1="140"
+                y2="140"
+              />
+              <line
+                class="visx-line"
+                fill="transparent"
+                shape-rendering="crispEdges"
+                stroke="#E0E0E0"
+                stroke-dasharray="3 3"
+                stroke-width="1"
+                style="stroke: #adb5bd; stroke-width: 1;"
+                x1="0"
+                x2="524"
+                y1="116"
+                y2="116"
+              />
+              <line
+                class="visx-line"
+                fill="transparent"
+                shape-rendering="crispEdges"
+                stroke="#E0E0E0"
+                stroke-dasharray="3 3"
+                stroke-width="1"
+                style="stroke: #adb5bd; stroke-width: 1;"
+                x1="0"
+                x2="524"
+                y1="92.00000000000001"
+                y2="92.00000000000001"
+              />
+              <line
+                class="visx-line"
+                fill="transparent"
+                shape-rendering="crispEdges"
+                stroke="#E0E0E0"
+                stroke-dasharray="3 3"
+                stroke-width="1"
+                style="stroke: #adb5bd; stroke-width: 1;"
+                x1="0"
+                x2="524"
+                y1="67.99999999999999"
+                y2="67.99999999999999"
+              />
+              <line
+                class="visx-line"
+                fill="transparent"
+                shape-rendering="crispEdges"
+                stroke="#E0E0E0"
+                stroke-dasharray="3 3"
+                stroke-width="1"
+                style="stroke: #adb5bd; stroke-width: 1;"
+                x1="0"
+                x2="524"
+                y1="43.99999999999999"
+                y2="43.99999999999999"
+              />
+              <line
+                class="visx-line"
+                fill="transparent"
+                shape-rendering="crispEdges"
+                stroke="#E0E0E0"
+                stroke-dasharray="3 3"
+                stroke-width="1"
+                style="stroke: #adb5bd; stroke-width: 1;"
+                x1="0"
+                x2="524"
+                y1="20"
+                y2="20"
+              />
+            </g>
+            <g
+              class="visx-group visx-axis"
+              transform="translate(0, 260)"
+            >
+              <g
+                class="visx-group visx-axis-tick"
+                transform="translate(0, 0)"
+              >
+                <line
+                  class="visx-line"
+                  fill="transparent"
+                  shape-rendering="crispEdges"
+                  stroke="#E5E5E5"
+                  stroke-linecap="square"
+                  stroke-width="2"
+                  x1="121.50000000000003"
+                  x2="121.50000000000003"
+                  y1="0"
+                  y2="4"
+                />
+                <text
+                  dy="0.125em"
+                  fill="#838383"
+                  font-family="-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif"
+                  font-size="12px"
+                  font-weight="200"
+                  letter-spacing="0.4"
+                  pointer-events="all"
+                  stroke="none"
+                  text-anchor="middle"
+                  x="121.50000000000003"
+                  y="14"
+                >
+                  Jan
+                </text>
+              </g>
+              <g
+                class="visx-group visx-axis-tick"
+                transform="translate(0, 0)"
+              >
+                <line
+                  class="visx-line"
+                  fill="transparent"
+                  shape-rendering="crispEdges"
+                  stroke="#E5E5E5"
+                  stroke-linecap="square"
+                  stroke-width="2"
+                  x1="252.50000000000003"
+                  x2="252.50000000000003"
+                  y1="0"
+                  y2="4"
+                />
+                <text
+                  dy="0.125em"
+                  fill="#838383"
+                  font-family="-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif"
+                  font-size="12px"
+                  font-weight="200"
+                  letter-spacing="0.4"
+                  pointer-events="all"
+                  stroke="none"
+                  text-anchor="middle"
+                  x="252.50000000000003"
+                  y="14"
+                >
+                  Feb
+                </text>
+              </g>
+              <g
+                class="visx-group visx-axis-tick"
+                transform="translate(0, 0)"
+              >
+                <line
+                  class="visx-line"
+                  fill="transparent"
+                  shape-rendering="crispEdges"
+                  stroke="#E5E5E5"
+                  stroke-linecap="square"
+                  stroke-width="2"
+                  x1="383.5"
+                  x2="383.5"
+                  y1="0"
+                  y2="4"
+                />
+                <text
+                  dy="0.125em"
+                  fill="#838383"
+                  font-family="-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif"
+                  font-size="12px"
+                  font-weight="200"
+                  letter-spacing="0.4"
+                  pointer-events="all"
+                  stroke="none"
+                  text-anchor="middle"
+                  x="383.5"
+                  y="14"
+                >
+                  Mar
+                </text>
+              </g>
+              <g
+                class="visx-group visx-axis-tick"
+                transform="translate(0, 0)"
+              >
+                <line
+                  class="visx-line"
+                  fill="transparent"
+                  shape-rendering="crispEdges"
+                  stroke="#E5E5E5"
+                  stroke-linecap="square"
+                  stroke-width="2"
+                  x1="514.5"
+                  x2="514.5"
+                  y1="0"
+                  y2="4"
+                />
+                <text
+                  dy="0.125em"
+                  fill="#838383"
+                  font-family="-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif"
+                  font-size="12px"
+                  font-weight="200"
+                  letter-spacing="0.4"
+                  pointer-events="all"
+                  stroke="none"
+                  text-anchor="middle"
+                  x="514.5"
+                  y="14"
+                >
+                  Apr
+                </text>
+              </g>
+              <line
+                class="visx-line visx-axis-line"
+                fill="transparent"
+                shape-rendering="crispEdges"
+                stroke="#E5E5E5"
+                stroke-width="2"
+                x1="56.5"
+                x2="580.5"
+                y1="0"
+                y2="0"
+              />
+            </g>
+            <g
+              class="visx-group visx-axis"
+              transform="translate(56, 0)"
+            >
+              <g
+                class="visx-group visx-axis-tick"
+                transform="translate(0, 0)"
+              >
+                <line
+                  class="visx-line"
+                  fill="transparent"
+                  shape-rendering="crispEdges"
+                  stroke="#E5E5E5"
+                  stroke-linecap="square"
+                  stroke-width="1"
+                  x1="0"
+                  x2="-4"
+                  y1="260"
+                  y2="260"
+                />
+                <text
+                  dx="-0.25em"
+                  dy="0.25em"
+                  fill="#838383"
+                  font-family="-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif"
+                  font-size="12px"
+                  font-weight="200"
+                  letter-spacing="0.4"
+                  pointer-events="all"
+                  stroke="none"
+                  text-anchor="end"
+                  width="56"
+                  x="-4"
+                  y="260"
+                >
+                  0
+                </text>
+              </g>
+              <g
+                class="visx-group visx-axis-tick"
+                transform="translate(0, 0)"
+              >
+                <line
+                  class="visx-line"
+                  fill="transparent"
+                  shape-rendering="crispEdges"
+                  stroke="#E5E5E5"
+                  stroke-linecap="square"
+                  stroke-width="1"
+                  x1="0"
+                  x2="-4"
+                  y1="236"
+                  y2="236"
+                />
+                <text
+                  dx="-0.25em"
+                  dy="0.25em"
+                  fill="#838383"
+                  font-family="-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif"
+                  font-size="12px"
+                  font-weight="200"
+                  letter-spacing="0.4"
+                  pointer-events="all"
+                  stroke="none"
+                  text-anchor="end"
+                  width="56"
+                  x="-4"
+                  y="236"
+                >
+                  500
+                </text>
+              </g>
+              <g
+                class="visx-group visx-axis-tick"
+                transform="translate(0, 0)"
+              >
+                <line
+                  class="visx-line"
+                  fill="transparent"
+                  shape-rendering="crispEdges"
+                  stroke="#E5E5E5"
+                  stroke-linecap="square"
+                  stroke-width="1"
+                  x1="0"
+                  x2="-4"
+                  y1="212"
+                  y2="212"
+                />
+                <text
+                  dx="-0.25em"
+                  dy="0.25em"
+                  fill="#838383"
+                  font-family="-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif"
+                  font-size="12px"
+                  font-weight="200"
+                  letter-spacing="0.4"
+                  pointer-events="all"
+                  stroke="none"
+                  text-anchor="end"
+                  width="56"
+                  x="-4"
+                  y="212"
+                >
+                  1.0K
+                </text>
+              </g>
+              <g
+                class="visx-group visx-axis-tick"
+                transform="translate(0, 0)"
+              >
+                <line
+                  class="visx-line"
+                  fill="transparent"
+                  shape-rendering="crispEdges"
+                  stroke="#E5E5E5"
+                  stroke-linecap="square"
+                  stroke-width="1"
+                  x1="0"
+                  x2="-4"
+                  y1="188"
+                  y2="188"
+                />
+                <text
+                  dx="-0.25em"
+                  dy="0.25em"
+                  fill="#838383"
+                  font-family="-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif"
+                  font-size="12px"
+                  font-weight="200"
+                  letter-spacing="0.4"
+                  pointer-events="all"
+                  stroke="none"
+                  text-anchor="end"
+                  width="56"
+                  x="-4"
+                  y="188"
+                >
+                  1.5K
+                </text>
+              </g>
+              <g
+                class="visx-group visx-axis-tick"
+                transform="translate(0, 0)"
+              >
+                <line
+                  class="visx-line"
+                  fill="transparent"
+                  shape-rendering="crispEdges"
+                  stroke="#E5E5E5"
+                  stroke-linecap="square"
+                  stroke-width="1"
+                  x1="0"
+                  x2="-4"
+                  y1="164"
+                  y2="164"
+                />
+                <text
+                  dx="-0.25em"
+                  dy="0.25em"
+                  fill="#838383"
+                  font-family="-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif"
+                  font-size="12px"
+                  font-weight="200"
+                  letter-spacing="0.4"
+                  pointer-events="all"
+                  stroke="none"
+                  text-anchor="end"
+                  width="56"
+                  x="-4"
+                  y="164"
+                >
+                  2.0K
+                </text>
+              </g>
+              <g
+                class="visx-group visx-axis-tick"
+                transform="translate(0, 0)"
+              >
+                <line
+                  class="visx-line"
+                  fill="transparent"
+                  shape-rendering="crispEdges"
+                  stroke="#E5E5E5"
+                  stroke-linecap="square"
+                  stroke-width="1"
+                  x1="0"
+                  x2="-4"
+                  y1="140"
+                  y2="140"
+                />
+                <text
+                  dx="-0.25em"
+                  dy="0.25em"
+                  fill="#838383"
+                  font-family="-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif"
+                  font-size="12px"
+                  font-weight="200"
+                  letter-spacing="0.4"
+                  pointer-events="all"
+                  stroke="none"
+                  text-anchor="end"
+                  width="56"
+                  x="-4"
+                  y="140"
+                >
+                  2.5K
+                </text>
+              </g>
+              <g
+                class="visx-group visx-axis-tick"
+                transform="translate(0, 0)"
+              >
+                <line
+                  class="visx-line"
+                  fill="transparent"
+                  shape-rendering="crispEdges"
+                  stroke="#E5E5E5"
+                  stroke-linecap="square"
+                  stroke-width="1"
+                  x1="0"
+                  x2="-4"
+                  y1="116"
+                  y2="116"
+                />
+                <text
+                  dx="-0.25em"
+                  dy="0.25em"
+                  fill="#838383"
+                  font-family="-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif"
+                  font-size="12px"
+                  font-weight="200"
+                  letter-spacing="0.4"
+                  pointer-events="all"
+                  stroke="none"
+                  text-anchor="end"
+                  width="56"
+                  x="-4"
+                  y="116"
+                >
+                  3.0K
+                </text>
+              </g>
+              <g
+                class="visx-group visx-axis-tick"
+                transform="translate(0, 0)"
+              >
+                <line
+                  class="visx-line"
+                  fill="transparent"
+                  shape-rendering="crispEdges"
+                  stroke="#E5E5E5"
+                  stroke-linecap="square"
+                  stroke-width="1"
+                  x1="0"
+                  x2="-4"
+                  y1="92.00000000000001"
+                  y2="92.00000000000001"
+                />
+                <text
+                  dx="-0.25em"
+                  dy="0.25em"
+                  fill="#838383"
+                  font-family="-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif"
+                  font-size="12px"
+                  font-weight="200"
+                  letter-spacing="0.4"
+                  pointer-events="all"
+                  stroke="none"
+                  text-anchor="end"
+                  width="56"
+                  x="-4"
+                  y="92.00000000000001"
+                >
+                  3.5K
+                </text>
+              </g>
+              <g
+                class="visx-group visx-axis-tick"
+                transform="translate(0, 0)"
+              >
+                <line
+                  class="visx-line"
+                  fill="transparent"
+                  shape-rendering="crispEdges"
+                  stroke="#E5E5E5"
+                  stroke-linecap="square"
+                  stroke-width="1"
+                  x1="0"
+                  x2="-4"
+                  y1="67.99999999999999"
+                  y2="67.99999999999999"
+                />
+                <text
+                  dx="-0.25em"
+                  dy="0.25em"
+                  fill="#838383"
+                  font-family="-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif"
+                  font-size="12px"
+                  font-weight="200"
+                  letter-spacing="0.4"
+                  pointer-events="all"
+                  stroke="none"
+                  text-anchor="end"
+                  width="56"
+                  x="-4"
+                  y="67.99999999999999"
+                >
+                  4.0K
+                </text>
+              </g>
+              <g
+                class="visx-group visx-axis-tick"
+                transform="translate(0, 0)"
+              >
+                <line
+                  class="visx-line"
+                  fill="transparent"
+                  shape-rendering="crispEdges"
+                  stroke="#E5E5E5"
+                  stroke-linecap="square"
+                  stroke-width="1"
+                  x1="0"
+                  x2="-4"
+                  y1="43.99999999999999"
+                  y2="43.99999999999999"
+                />
+                <text
+                  dx="-0.25em"
+                  dy="0.25em"
+                  fill="#838383"
+                  font-family="-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif"
+                  font-size="12px"
+                  font-weight="200"
+                  letter-spacing="0.4"
+                  pointer-events="all"
+                  stroke="none"
+                  text-anchor="end"
+                  width="56"
+                  x="-4"
+                  y="43.99999999999999"
+                >
+                  4.5K
+                </text>
+              </g>
+              <g
+                class="visx-group visx-axis-tick"
+                transform="translate(0, 0)"
+              >
+                <line
+                  class="visx-line"
+                  fill="transparent"
+                  shape-rendering="crispEdges"
+                  stroke="#E5E5E5"
+                  stroke-linecap="square"
+                  stroke-width="1"
+                  x1="0"
+                  x2="-4"
+                  y1="20"
+                  y2="20"
+                />
+                <text
+                  dx="-0.25em"
+                  dy="0.25em"
+                  fill="#838383"
+                  font-family="-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif"
+                  font-size="12px"
+                  font-weight="200"
+                  letter-spacing="0.4"
+                  pointer-events="all"
+                  stroke="none"
+                  text-anchor="end"
+                  width="56"
+                  x="-4"
+                  y="20"
+                >
+                  5.0K
+                </text>
+              </g>
+              <line
+                class="visx-line visx-axis-line"
+                fill="transparent"
+                shape-rendering="crispEdges"
+                stroke="#E5E5E5"
+                stroke-width="1"
+                x1="0"
+                x2="0"
+                y1="260.5"
+                y2="20.5"
+              />
+            </g>
+            <path
+              d="M121.50000000000003,67.99999999999999C165.16666666666669,92,208.83333333333337,116,252.50000000000003,116C296.1666666666667,116,339.83333333333337,20,383.5,20C427.1666666666667,20,470.8333333333333,32,514.5,43.99999999999999"
+              fill="transparent"
+              stroke="#0069B4"
+              stroke-linecap="round"
+              stroke-width="2"
+            />
+            <path
+              d="M121.50000000000003,144.8C165.16666666666669,168.84799999999998,208.83333333333337,192.896,252.50000000000003,192.896C296.1666666666667,192.896,339.83333333333337,77.6,383.5,77.6C427.1666666666667,77.6,470.8333333333333,101.6,514.5,125.6"
+              fill="transparent"
+              stroke="#FFB800"
+              stroke-linecap="round"
+              stroke-width="2"
+            />
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div
+      class="css-xa30v6"
+      data-testid="Chart-legend"
+    >
+      <div
+        class="css-1u8ih4x"
+        data-testid="Chart-legend-item-revenue"
+      >
+        <span
+          class="css-e2vn3u"
+        />
+        <span
+          class="css-pbeyq1"
+        >
+          Revenue
+        </span>
+      </div>
+      <div
+        class="css-1u8ih4x"
+        data-testid="Chart-legend-item-profit"
+      >
+        <span
+          class="css-cgrlys"
+        />
+        <span
+          class="css-pbeyq1"
+        >
+          Profit
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+`;

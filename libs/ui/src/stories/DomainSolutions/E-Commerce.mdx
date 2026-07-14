@@ -1,0 +1,152 @@
+import { Meta, Markdown } from '@storybook/addon-docs/blocks';
+
+<Meta title="Domain Solutions/E-Commerce" />
+
+# 🛒 E-Commerce
+
+This guide helps **developers, designers, and architects** build high-performing, consistent, and user-friendly **e-commerce experiences** using the our Design System. It provides patterns, component guidance, and practical tips tailored specifically for the e-commerce domain.
+
+---
+
+## 📦 Overview
+
+E-commerce platforms face unique UX and technical challenges where **speed, clarity, and trust** directly impact revenue. Users expect seamless product discovery, transparent pricing, fast checkout, and mobile-optimized experiences.
+
+### Common UX Challenges in E-Commerce
+
+- **Product discovery**: Navigating large inventories through effective search, filters, and categories.
+- **Conversion optimization**: Simplifying CTAs, checkout, and trust elements.
+- **Trust-building**: Showing stock levels, delivery info, and customer reviews.
+- **Performance**: Managing media-heavy content and real-time data.
+- **Scalability**: Supporting product variants, personalized content, and cross-device usage.
+
+---
+
+## 🧠 Design Best Practices for E-Commerce
+
+### 🔺 Visual Hierarchy & CTAs
+
+- Highlight key actions like “Add to Cart” and “Buy Now” with size, contrast, and placement.
+- Ensure pricing, shipping info, and availability are immediately visible.
+- Use consistent button styles for primary vs. secondary actions.
+
+### 🔍 Search & Filter Usability
+
+- Provide prominent, fast, and forgiving **SearchBar** functionality.
+- Use a **FilterSidebar** with clear states, counts, and reset controls.
+- Avoid over-nesting filters; group by relevance (e.g., price, brand, availability).
+
+### 💳 Checkout Flow Optimization
+
+- Use **progress indicators** and a **step-by-step layout** (cart → delivery → payment → confirmation).
+- Keep forms short and support autofill.
+- Show order summary persistently on desktop and collapsibly on mobile.
+
+### 📱 Responsiveness & Accessibility
+
+- Prioritize mobile-first layout with clear tap targets.
+- Ensure keyboard navigation and screen reader support for all interactive elements.
+- Use accessible form labels, alt text for images, and clear focus states.
+
+---
+
+## 🧱 Recommended Components & Patterns
+
+The Design System offers ready-to-use and composable UI components for e-commerce use cases.
+
+### 🧩 Core Components
+
+<Markdown>
+{`
+| Component                        | Use Case                                          |
+| -------------------------------- | ------------------------------------------------- |
+| ProductCard                      | Visual snapshot with image, title, price, CTA     |
+| PriceTag                         | Highlight discounted, original, and sale pricing  |
+| RatingStars                      | Show average ratings and review count             |
+| CartDropdown                     | Display mini-cart from header with item overview  |
+| SearchBar                        | Typeahead-enabled search with clear/reset options |
+| FilterSidebar                    | Faceted filtering with checkboxes, sliders, etc.  |
+| Pagination or InfiniteScroll     | Navigate product grids                            |
+`}
+
+</Markdown>
+
+### 📦 Compound Patterns
+
+<Markdown>
+{`
+| Pattern                  | Description                                                                               |
+| ------------------------ | ----------------------------------------------------------------------------------------- |
+| **Product Listing Grid** | Responsive layout of 'ProductCard' components with filters, sorting, and pagination       |
+| **Product Detail View**  | Combines gallery, 'PriceTag', 'RatingStars', variant selectors, and detailed descriptions |
+| **Mini-Cart Behavior**   | Hover or click-to-open 'CartDropdown' with edit and remove actions                        |
+| **Empty States**         | Clear messaging and illustrations when no results or cart is empty                        |
+`}
+
+</Markdown>
+> 🧠 All components follow accessibility and theming guidelines by default, and are easily extended per project needs.
+
+---
+
+## 🔧 Implementation Tips
+
+### 🛠 Customization & Extension
+
+- Use **slots or component composition** to add badges (e.g., “New”, “-20%”) to `ProductCard`.
+- Extend `PriceTag` with loyalty points, tiered pricing, or subscription indicators.
+- Override layout tokens for tighter grids on category pages or more padding in detail views.
+
+### ⚡ Performance Optimization
+
+- **Lazy-load images** and components using intersection observers or SSR-friendly methods.
+- Minimize hydration time by rendering skeletons for product lists.
+- Debounce or throttle expensive filtering interactions (e.g., price sliders).
+
+### 🔌 Backend Integration
+
+- Connect `SearchBar` to a product API with fuzzy search and suggestions.
+- Drive `FilterSidebar` from taxonomy or CMS data.
+- Integrate `CartDropdown` with cart APIs for real-time updates.
+
+---
+
+## 🧩 Example Layouts
+
+### 🏠 Home Page
+
+- Hero banner with CTA
+- Category previews (cards or carousels)
+- Product highlights (e.g., “Trending”, “New Arrivals”)
+- Newsletter sign-up
+
+### 📁 Category Listing
+
+- Page header with filters and breadcrumbs
+- ProductListingGrid with pagination
+- Sort controls (price, popularity, rating)
+
+### 📦 Product Detail Page
+
+- Image gallery
+- Product info: title, `PriceTag`, reviews
+- Variant selectors (size, color)
+- “Add to Cart” and wishlist buttons
+- Delivery info & related products
+
+### 🛒 Cart & Checkout
+
+- Item list with edit/remove
+- Delivery address and method forms
+- Payment method selection
+- Summary with discounts and total
+- Confirmation step with order ID
+
+---
+
+## 🚨 Common Pitfalls to Avoid
+
+- ❌ **Overcomplicating Checkout**: Don’t require account creation before showing shipping costs.
+- ❌ **Hiding Key Info**: Always show delivery estimates, return policy, and stock availability.
+- ❌ **Ignoring Mobile Performance**: Avoid loading full-size images or uncompressed scripts.
+- ❌ **Disrupting Flow**: Don’t interrupt users with modals or carousels during product browsing.
+- ❌ **Inconsistent Styling**: Don’t mix design system buttons with raw HTML or mismatched CTAs.

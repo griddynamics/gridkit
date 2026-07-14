@@ -1,0 +1,273 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+import { version } from '../../../package.json';
+
+<Meta title="Introduction/Getting Started" />
+
+# 🚀 Getting Started
+
+The GridKit Design System provides a fast, scalable, and consistent way to build user interfaces across all
+internal projects. It includes a library of reusable components, styling tokens, and theming tools mapped directly
+from Figma designs.
+
+## 📦 Installation
+
+### Prerequisites
+
+- Node.js **version ≥22.17.0**
+- React **version ≥18.0.0**
+- TypeScript **version ≥5.0.0** (recommended)
+
+### Install Dependencies
+
+Start by ensuring that you have the required peer dependencies installed:
+
+```bash
+# Install peer dependencies first
+npm install @emotion/react @emotion/styled
+# or
+yarn add @emotion/react @emotion/styled
+```
+
+Then install the GridKit Design System:
+
+```bash
+npm install gd-design-library
+# or
+yarn add gd-design-library
+```
+
+### Optional: Global Styles (Recommended)
+
+For the complete design system experience, include the global styles:
+
+```tsx
+import 'gd-design-library/styles.css';
+```
+
+## 🧩 Basic Usage
+
+### 1. Setup Theme Provider
+
+Wrap your app in the `ThemeProvider` to enable the design system:
+
+```tsx
+import React from 'react';
+import { ThemeProvider } from 'gd-design-library';
+// Optional: Include global styles for complete design system experience
+import 'gd-design-library/styles.css';
+
+function App() {
+  return (
+    <ThemeProvider isDefault>
+      <YourAppRoutes />
+    </ThemeProvider>
+  );
+}
+```
+
+### 2. Use Components
+
+Import and use components throughout your application:
+
+```tsx
+import { Button, Typography, Card, Row, Column } from 'gd-design-library';
+
+function MyComponent() {
+  return (
+    <Card>
+      <Typography variant="h3">Welcome to GridKit</Typography>
+      <Row>
+        <Button>Primary Action</Button>
+        <Button variant="outlined">Secondary Action</Button>
+      </Row>
+    </Card>
+  );
+}
+```
+
+### 3. Custom Theme Setup
+
+For custom themes, use the `initialTheme` prop:
+
+```tsx
+import { ThemeProvider, defaultTheme } from 'gd-design-library';
+// Based on defaultTheme structure
+import myCustomTheme from './myCustomTheme.json';
+
+const App = () => {
+  return (
+    <ThemeProvider initialTheme={myCustomTheme}>
+      <YourAppRoutes />
+    </ThemeProvider>
+  );
+};
+```
+
+## 🎨 Theme Tokens Usage
+
+The GridKit Design System provides a powerful theming system with **three approaches** for styling components. We **strongly recommend** using Component Tokens with `updateThemeTokens` for most use cases.
+
+### Quick Overview
+
+#### ✅ Approach 1: Component Tokens (Recommended)
+
+Centralized, type-safe theming with automatic theme updates:
+
+```tsx
+import { updateThemeTokens, defaultTheme, useTheme } from 'gd-design-library';
+
+updateThemeTokens(customTheme, {
+  'button.primary': {
+    backgroundColor: '#007bff',
+    color: '#ffffff',
+    '&:hover': {
+      backgroundColor: '#0056b3',
+    },
+  },
+});
+```
+
+#### ⚠️ Approach 2: Styled Components (Less Desired)
+
+Runtime theme access with scattered styling:
+
+```tsx
+import styled from '@emotion/styled';
+
+const CustomButton = styled(Button)((props) => ({
+  backgroundColor: props.theme.colors.primary,
+}));
+```
+
+#### ⚠️ Approach 3: Direct Theme Access (Least Desired)
+
+Inline styles with performance overhead:
+
+```tsx
+const { theme } = useTheme();
+<div style={{ color: theme.colors.text.default }} />;
+```
+
+### Dynamic Theme Binding
+
+Use theme functions to preserve dynamic binding:
+
+```tsx
+import { get } from 'gd-design-library';
+
+updateThemeTokens(customTheme, {
+  'button.primary': {
+    // ✅ Updates automatically when theme changes
+    backgroundColor: (theme: Record<symbol, unknown>) =>
+      get(theme, 'colors.neutral.white', 'theme.colors.neutral.white'),
+  },
+});
+```
+
+**For comprehensive theming documentation, best practices, and advanced examples, see the [Theme Tokens Usage Guide](/docs/introduction-theme-tokens-usage--docs).**
+
+---
+
+## 🔍 Logging and Debugging
+
+The library includes a flexible logging system that allows you to monitor component behavior, debug issues, and integrate with your existing logging infrastructure.
+
+### Basic Logger Setup
+
+Wrap your app with `LoggerProvider` to enable logging:
+
+```tsx
+import { ThemeProvider, LoggerProvider } from 'gd-design-library';
+
+// Simple console logger
+const consoleLogger = {
+  debug: (msg: string, ...meta: unknown[]) => console.debug(msg, ...meta),
+  info: (msg: string, ...meta: unknown[]) => console.info(msg, ...meta),
+  warn: (msg: string, ...meta: unknown[]) => console.warn(msg, ...meta),
+  error: (msg: string, ...meta: unknown[]) => console.error(msg, ...meta),
+};
+
+function App() {
+  return (
+    <LoggerProvider logger={consoleLogger} isEnabled={true}>
+      <ThemeProvider isDefault>
+        <YourAppRoutes />
+      </ThemeProvider>
+    </LoggerProvider>
+  );
+}
+```
+
+### Using Logger in Components
+
+Access the logger in any component:
+
+```tsx
+import { useLogger } from 'gd-design-library';
+
+function MyComponent() {
+  const logger = useLogger();
+
+  const handleAction = () => {
+    logger.info('User action performed', { action: 'button_click', timestamp: Date.now() });
+  };
+
+  return <button onClick={handleAction}>Click Me</button>;
+}
+```
+
+### Without Logger (Silent Mode)
+
+If you don't configure a logger, the library will use a no-op logger (no logs produced):
+
+```tsx
+// No LoggerProvider - library runs silently
+<ThemeProvider isDefault>
+  <YourAppRoutes />
+</ThemeProvider>
+```
+
+**For comprehensive logging documentation, integration examples, and best practices, see the [Logging and Debugging Guide](/docs/introduction-logging-and-debugging--docs).**
+
+---
+
+## 📚 Documentation & Resources
+
+### Storybook Reference
+
+All components are documented with usage examples, props, and accessibility guidelines in our live Storybook:
+
+- **Interactive Examples**: Live component demos with editable props
+- **Accessibility Guidelines**: WCAG compliance notes and best practices
+- **Responsive Design**: Mobile and desktop usage patterns
+- **Theme Tokens**: Complete design token reference
+
+### Design System Features
+
+- **50+ Components**: Buttons, Forms, Layout, Navigation, Data Display
+- **Design Tokens**: Colors, Typography, Spacing, Shadows, Animations
+- **Theme System**: Dynamic theming with custom token overrides
+- **TypeScript Support**: Full type safety and IntelliSense
+- **Accessibility**: WCAG 2.1 AA compliant components
+- **Responsive**: Mobile-first design with breakpoint system
+
+## 🤝 Contributing
+
+We welcome contributions! Here's how you can help:
+
+- **Report Issues**: Found a bug? Let us know in our issue tracker
+- **Feature Requests**: Suggest new components or improvements
+- **Documentation**: Help improve our docs and examples
+- **Code Contributions**: Submit pull requests for bug fixes and features
+
+## 🔭 Coming Soon
+
+- **Theme Builder**: Visual theme customization tool
+- **Component Generator**: AI-powered component creation
+- **Design System CLI**: Command-line tools for theme management
+- **Figma Integration**: Direct sync with Figma designs
+- **Performance Dashboard**: Bundle size and performance metrics
+
+---
+
+Made with ❤️ by Grid Dynamics · GridKit v{version}

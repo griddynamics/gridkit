@@ -1,0 +1,27 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Avatar > SHOULD match snapshot 1`] = `
+<div>
+  <div
+    class="css-1m9q9nx"
+    data-testid="Avatar"
+    role="img"
+  >
+    <div
+      class="css-fc435w"
+    >
+      <div
+        class="css-5mo9zt"
+        data-testid="AvatarFallback"
+      >
+        <h4
+          class="css-1w3z2b6"
+          data-testid="typography"
+        >
+          DC
+        </h4>
+      </div>
+    </div>
+  </div>
+</div>
+`;

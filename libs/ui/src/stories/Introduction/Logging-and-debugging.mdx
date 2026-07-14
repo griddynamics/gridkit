@@ -1,0 +1,725 @@
+import { Meta, Markdown } from '@storybook/addon-docs/blocks';
+
+<Meta title="Introduction/Logging and Debugging" />
+
+# 🔍 Logging and Debugging
+
+The GridKit Design System includes a flexible, non-intrusive logging system that allows you to monitor component behavior, debug issues, and integrate with your existing logging infrastructure.
+
+## 🎯 Core Concepts
+
+### 1. **Logger Proxy Pattern**
+
+The library uses a **proxy pattern** for logging:
+
+- ✅ **No default logging** - Library stays silent unless you configure it
+- ✅ **Bring your own logger** - Works with any logging library (Winston, Pino, Sentry, etc.)
+- ✅ **Simple interface** - Four methods: `debug`, `info`, `warn`, `error`
+- ✅ **Zero overhead** - When disabled, uses no-op logger with minimal performance impact
+
+### 2. **Log Levels**
+
+The logger supports four standard log levels:
+
+<Markdown>
+  {`
+| Level   | Purpose                               | Example Use Case                        |
+| ------- | ------------------------------------- | --------------------------------------- |
+| **debug** | Detailed diagnostic information       | State transitions, prop changes         |
+| **info**  | General informational messages        | Component initialization, user actions  |
+| **warn**  | Warning messages for potential issues | Deprecated props, missing optional data |
+| **error** | Error messages for serious problems   | Invalid props, failed operations        |
+`}
+</Markdown>
+
+### 3. **ILogger Interface**
+
+All loggers must implement this simple interface:
+
+```tsx
+interface ILogger {
+  debug(message: string, ...meta: unknown[]): void;
+  info(message: string, ...meta: unknown[]): void;
+  warn(message: string, ...meta: unknown[]): void;
+  error(message: string, ...meta: unknown[]): void;
+}
+```
+
+---
+
+## 🚀 Quick Start
+
+### Step 1: Create Your Logger
+
+Choose one of these approaches:
+
+#### Option A: Simple Console Logger (Development)
+
+```tsx
+const consoleLogger = {
+  debug: (msg: string, ...meta: unknown[]) => console.debug('[DEBUG]', msg, ...meta),
+  info: (msg: string, ...meta: unknown[]) => console.info('[INFO]', msg, ...meta),
+  warn: (msg: string, ...meta: unknown[]) => console.warn('[WARN]', msg, ...meta),
+  error: (msg: string, ...meta: unknown[]) => console.error('[ERROR]', msg, ...meta),
+};
+```
+
+#### Option B: Conditional Logger (Environment-Based)
+
+```tsx
+const isDevelopment = import.meta.env.DEV;
+
+const logger = isDevelopment
+  ? {
+      debug: (msg: string, ...meta: unknown[]) => console.debug(msg, ...meta),
+      info: (msg: string, ...meta: unknown[]) => console.info(msg, ...meta),
+      warn: (msg: string, ...meta: unknown[]) => console.warn(msg, ...meta),
+      error: (msg: string, ...meta: unknown[]) => console.error(msg, ...meta),
+    }
+  : undefined; // Production: no logging
+```
+
+#### Option C: Custom Logger with Filtering
+
+```tsx
+type LogLevel = 'debug' | 'info' | 'warn' | 'error';
+
+function createLogger(minLevel: LogLevel = 'info') {
+  const levels: Record<LogLevel, number> = { debug: 0, info: 1, warn: 2, error: 3 };
+
+  const shouldLog = (level: LogLevel) => levels[level] >= levels[minLevel];
+
+  return {
+    debug: (msg: string, ...meta: unknown[]) => shouldLog('debug') && console.debug(msg, ...meta),
+    info: (msg: string, ...meta: unknown[]) => shouldLog('info') && console.info(msg, ...meta),
+    warn: (msg: string, ...meta: unknown[]) => shouldLog('warn') && console.warn(msg, ...meta),
+    error: (msg: string, ...meta: unknown[]) => shouldLog('error') && console.error(msg, ...meta),
+  };
+}
+
+// Usage
+const logger = createLogger('warn'); // Only warn and error
+```
+
+### Step 2: Configure LoggerProvider
+
+Wrap your application with `LoggerProvider`:
+
+```tsx
+import React from 'react';
+import { ThemeProvider, LoggerProvider } from 'gd-design-library';
+
+function App() {
+  const logger = createLogger('debug');
+
+  return (
+    <LoggerProvider logger={logger} isEnabled={true}>
+      <ThemeProvider isDefault>
+        <YourAppRoutes />
+      </ThemeProvider>
+    </LoggerProvider>
+  );
+}
+
+export default App;
+```
+
+**Props:**
+
+- `logger` - Your logger instance implementing `ILogger` interface
+- `isEnabled` - Enable/disable logging (optional, defaults to true if logger provided)
+- `children` - Your application components
+
+### Step 3: Use Logger in Components
+
+Access the logger using the `useLogger` hook:
+
+```tsx
+import { useLogger } from 'gd-design-library';
+
+function MyComponent() {
+  const logger = useLogger();
+
+  useEffect(() => {
+    logger.info('Component mounted', { component: 'MyComponent' });
+
+    return () => {
+      logger.info('Component unmounting', { component: 'MyComponent' });
+    };
+  }, [logger]);
+
+  const handleAction = () => {
+    logger.debug('User action triggered', {
+      action: 'button_click',
+      timestamp: Date.now(),
+    });
+  };
+
+  return <button onClick={handleAction}>Click Me</button>;
+}
+```
+
+---
+
+## 🔌 Integration Examples
+
+### With Winston (Node.js / SSR)
+
+```tsx
+import winston from 'winston';
+import { LoggerProvider } from 'gd-design-library';
+
+// Create Winston logger
+const winstonLogger = winston.createLogger({
+  level: 'info',
+  format: winston.combine(winston.format.timestamp(), winston.format.json()),
+  transports: [new winston.transports.Console(), new winston.transports.File({ filename: 'app.log' })],
+});
+
+// Use in your app
+function App() {
+  return (
+    <LoggerProvider logger={winstonLogger} isEnabled={true}>
+      <YourApp />
+    </LoggerProvider>
+  );
+}
+```
+
+### With Pino (Node.js / SSR)
+
+```tsx
+import pino from 'pino';
+import { LoggerProvider } from 'gd-design-library';
+
+// Create Pino logger
+const pinoLogger = pino({
+  level: 'info',
+  transport: {
+    target: 'pino-pretty',
+    options: { colorize: true },
+  },
+});
+
+function App() {
+  return (
+    <LoggerProvider logger={pinoLogger} isEnabled={true}>
+      <YourApp />
+    </LoggerProvider>
+  );
+}
+```
+
+### With Sentry (Error Tracking)
+
+```tsx
+import * as Sentry from '@sentry/react';
+import { LoggerProvider, ILogger } from 'gd-design-library';
+
+Sentry.init({ dsn: 'your-dsn' });
+
+// Custom logger that sends to Sentry
+const sentryLogger: ILogger = {
+  debug: (msg, ...meta) => console.debug(msg, ...meta),
+  info: (msg, ...meta) => {
+    console.info(msg, ...meta);
+    Sentry.captureMessage(msg, 'info');
+  },
+  warn: (msg, ...meta) => {
+    console.warn(msg, ...meta);
+    Sentry.captureMessage(msg, 'warning');
+  },
+  error: (msg, ...meta) => {
+    console.error(msg, ...meta);
+    const error = meta[0] instanceof Error ? meta[0] : new Error(msg);
+    Sentry.captureException(error);
+  },
+};
+
+function App() {
+  return (
+    <LoggerProvider logger={sentryLogger} isEnabled={true}>
+      <YourApp />
+    </LoggerProvider>
+  );
+}
+```
+
+### With LogRocket (Session Replay)
+
+```tsx
+import LogRocket from 'logrocket';
+import { LoggerProvider, ILogger } from 'gd-design-library';
+
+LogRocket.init('your-app-id');
+
+const logRocketLogger: ILogger = {
+  debug: (msg, ...meta) => console.debug(msg, ...meta),
+  info: (msg, ...meta) => {
+    console.info(msg, ...meta);
+    LogRocket.log(msg, meta);
+  },
+  warn: (msg, ...meta) => {
+    console.warn(msg, ...meta);
+    LogRocket.warn(msg, meta);
+  },
+  error: (msg, ...meta) => {
+    console.error(msg, ...meta);
+    LogRocket.error(msg, meta);
+  },
+};
+
+function App() {
+  return (
+    <LoggerProvider logger={logRocketLogger} isEnabled={true}>
+      <YourApp />
+    </LoggerProvider>
+  );
+}
+```
+
+### With Custom Remote Logger
+
+```tsx
+import { ILogger } from 'gd-design-library';
+
+class RemoteLogger implements ILogger {
+  private endpoint: string;
+
+  constructor(endpoint: string) {
+    this.endpoint = endpoint;
+  }
+
+  private async send(level: string, message: string, meta: unknown[]) {
+    try {
+      await fetch(this.endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          level,
+          message,
+          meta,
+          timestamp: new Date().toISOString(),
+          userAgent: navigator.userAgent,
+        }),
+      });
+    } catch (error) {
+      console.error('Failed to send log', error);
+    }
+  }
+
+  debug(message: string, ...meta: unknown[]) {
+    console.debug(message, ...meta);
+    this.send('debug', message, meta);
+  }
+
+  info(message: string, ...meta: unknown[]) {
+    console.info(message, ...meta);
+    this.send('info', message, meta);
+  }
+
+  warn(message: string, ...meta: unknown[]) {
+    console.warn(message, ...meta);
+    this.send('warn', message, meta);
+  }
+
+  error(message: string, ...meta: unknown[]) {
+    console.error(message, ...meta);
+    this.send('error', message, meta);
+  }
+}
+
+// Usage
+const logger = new RemoteLogger('https://your-api.com/logs');
+
+<LoggerProvider logger={logger} isEnabled={true}>
+  <App />
+</LoggerProvider>;
+```
+
+---
+
+## 🎓 Best Practices
+
+### 1. **Environment-Based Logging**
+
+Configure different log levels for different environments:
+
+```tsx
+function getLogger() {
+  const env = import.meta.env.MODE;
+
+  switch (env) {
+    case 'development':
+      return createLogger('debug'); // Verbose in development
+    case 'staging':
+      return createLogger('info'); // Moderate in staging
+    case 'production':
+      return createLogger('warn'); // Minimal in production
+    default:
+      return undefined; // No logging
+  }
+}
+
+<LoggerProvider logger={getLogger()} isEnabled={true}>
+  <App />
+</LoggerProvider>;
+```
+
+### 2. **Include Contextual Metadata**
+
+Always include relevant metadata with your logs:
+
+```tsx
+function UserProfile({ userId }: { userId: string }) {
+  const logger = useLogger();
+
+  const handleSave = async () => {
+    logger.info('Saving user profile', {
+      userId,
+      timestamp: Date.now(),
+      action: 'save_profile',
+    });
+
+    try {
+      await saveProfile(userId);
+      logger.info('Profile saved successfully', { userId });
+    } catch (error) {
+      logger.error('Failed to save profile', {
+        userId,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+  };
+
+  return <button onClick={handleSave}>Save Profile</button>;
+}
+```
+
+### 3. **Use Appropriate Log Levels**
+
+Choose the right log level for each situation:
+
+```tsx
+function DataTable({ data }: { data: unknown[] }) {
+  const logger = useLogger();
+
+  useEffect(() => {
+    // DEBUG: Detailed diagnostic info
+    logger.debug('DataTable rendering', {
+      rowCount: data.length,
+      columns: Object.keys(data[0] || {}),
+    });
+
+    // INFO: General information
+    logger.info('DataTable initialized', { rowCount: data.length });
+
+    // WARN: Potential issues
+    if (data.length > 1000) {
+      logger.warn('Large dataset detected', {
+        rowCount: data.length,
+        recommendation: 'Consider pagination',
+      });
+    }
+
+    // ERROR: Serious problems
+    if (!data || data.length === 0) {
+      logger.error('DataTable received empty data', {
+        dataProvided: !!data,
+        dataLength: data?.length || 0,
+      });
+    }
+  }, [data, logger]);
+
+  return <table>{/* table content */}</table>;
+}
+```
+
+### 4. **Structured Logging**
+
+Use consistent structure for your log metadata:
+
+```tsx
+// Good: Structured metadata
+logger.info('User action', {
+  action: 'click',
+  component: 'Button',
+  target: 'submit-form',
+  userId: user.id,
+  timestamp: Date.now(),
+});
+
+// Bad: Unstructured string
+logger.info(`User ${user.id} clicked submit button at ${new Date()}`);
+```
+
+### 5. **Avoid Logging Sensitive Data**
+
+Never log passwords, tokens, or personal information:
+
+```tsx
+// Bad: Logging sensitive data
+logger.info('User login', {
+  username: user.email,
+  password: user.password, // ❌ Never do this!
+  authToken: response.token, // ❌ Never do this!
+});
+
+// Good: Log only non-sensitive identifiers
+logger.info('User login successful', {
+  userId: user.id,
+  loginMethod: 'email',
+  timestamp: Date.now(),
+});
+```
+
+---
+
+## 🐛 Debugging Components
+
+### Component Lifecycle Logging
+
+Track component lifecycle events:
+
+```tsx
+function MyComponent({ id, name }: Props) {
+  const logger = useLogger();
+
+  useEffect(() => {
+    logger.debug('Component mounted', { component: 'MyComponent', id, name });
+
+    return () => {
+      logger.debug('Component unmounting', { component: 'MyComponent', id });
+    };
+  }, []);
+
+  useEffect(() => {
+    logger.debug('Props changed', {
+      component: 'MyComponent',
+      changes: { id, name },
+    });
+  }, [id, name]);
+
+  return <div>{name}</div>;
+}
+```
+
+### State Change Logging
+
+Log state changes for debugging:
+
+```tsx
+function Counter() {
+  const logger = useLogger();
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    logger.debug('Count changed', {
+      component: 'Counter',
+      previousCount: count - 1,
+      newCount: count,
+    });
+  }, [count, logger]);
+
+  const increment = () => {
+    logger.info('Increment button clicked', { currentCount: count });
+    setCount((prev) => prev + 1);
+  };
+
+  return <button onClick={increment}>Count: {count}</button>;
+}
+```
+
+### Error Boundary Integration
+
+Integrate logging with error boundaries:
+
+```tsx
+import React, { Component, ReactNode } from 'react';
+import { useLogger } from 'gd-design-library';
+
+interface Props {
+  children: ReactNode;
+  fallback?: ReactNode;
+}
+
+interface State {
+  hasError: boolean;
+  error?: Error;
+}
+
+class ErrorBoundary extends Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error): State {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    // You'll need to pass logger as a prop or use a context
+    console.error('Error boundary caught error', {
+      error: error.message,
+      stack: error.stack,
+      componentStack: errorInfo.componentStack,
+    });
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback || <h1>Something went wrong.</h1>;
+    }
+
+    return this.props.children;
+  }
+}
+
+// Usage with logger
+function App() {
+  const logger = useLogger();
+
+  return (
+    <ErrorBoundary fallback={<ErrorFallback />}>
+      <YourComponents />
+    </ErrorBoundary>
+  );
+}
+```
+
+---
+
+## 🔧 Advanced Configuration
+
+### Dynamic Log Level Switching
+
+Change log levels at runtime:
+
+```tsx
+function App() {
+  const [logLevel, setLogLevel] = useState<'debug' | 'info' | 'warn' | 'error'>('info');
+  const logger = useMemo(() => createLogger(logLevel), [logLevel]);
+
+  return (
+    <>
+      <select value={logLevel} onChange={(e) => setLogLevel(e.target.value as any)}>
+        <option value="debug">Debug</option>
+        <option value="info">Info</option>
+        <option value="warn">Warn</option>
+        <option value="error">Error</option>
+      </select>
+
+      <LoggerProvider logger={logger} isEnabled={true}>
+        <YourApp />
+      </LoggerProvider>
+    </>
+  );
+}
+```
+
+### Performance Monitoring
+
+Use logger for performance tracking:
+
+```tsx
+function ExpensiveComponent() {
+  const logger = useLogger();
+
+  useEffect(() => {
+    const startTime = performance.now();
+
+    logger.debug('Starting expensive operation');
+
+    // Your expensive operation
+    doExpensiveWork();
+
+    const endTime = performance.now();
+    const duration = endTime - startTime;
+
+    logger.info('Expensive operation completed', {
+      duration: `${duration.toFixed(2)}ms`,
+      component: 'ExpensiveComponent',
+    });
+  }, [logger]);
+
+  return <div>Content</div>;
+}
+```
+
+### Logging Decorators (Advanced)
+
+Create reusable logging decorators:
+
+```tsx
+function withLogging<P extends object>(Component: React.ComponentType<P>, componentName: string): React.FC<P> {
+  return (props: P) => {
+    const logger = useLogger();
+
+    useEffect(() => {
+      logger.debug(`${componentName} mounted`, { props });
+      return () => logger.debug(`${componentName} unmounted`);
+    }, [logger]);
+
+    return <Component {...props} />;
+  };
+}
+
+// Usage
+const MyButton = withLogging(Button, 'MyButton');
+```
+
+---
+
+## 🚫 Without Logger (Silent Mode)
+
+If you don't configure a `LoggerProvider`, the library uses a **no-op logger** that silently discards all log calls:
+
+```tsx
+// No LoggerProvider - all logger calls are no-ops
+<ThemeProvider isDefault>
+  <App />
+</ThemeProvider>
+```
+
+This ensures:
+
+- ✅ **Zero overhead** - No performance impact
+- ✅ **No console spam** - Clean console in production
+- ✅ **Backward compatibility** - Existing code works without changes
+
+---
+
+## ❓ FAQ
+
+**Q: Does logging affect performance?**  
+A: The no-op logger has negligible overhead. When enabled, performance depends on your logger implementation. Use log level filtering to minimize impact.
+
+**Q: Can I use multiple loggers?**  
+A: The `LoggerProvider` accepts one logger. To send logs to multiple destinations, create a logger that forwards to multiple services.
+
+**Q: How do I disable logging in production?**  
+A: Either don't use `LoggerProvider`, or pass `undefined` as the logger, or set `isEnabled={false}`.
+
+**Q: Can I log to a file?**  
+A: In Node.js/SSR environments, yes (use Winston/Pino). In the browser, you'll need to send logs to a remote endpoint.
+
+**Q: What if I call `useLogger()` outside LoggerProvider?**  
+A: It returns a no-op logger, so your code won't break, but no logs will be produced.
+
+**Q: Can I filter logs by component?**  
+A: Yes, include component names in your log metadata, then filter in your logger implementation or log viewer.
+
+---
+
+## 📖 Summary
+
+The GridKit logging system provides:
+
+- ✅ **Flexible** - Works with any logging library
+- ✅ **Non-intrusive** - Silent by default, enable when needed
+- ✅ **Simple** - Four methods, one interface
+- ✅ **Powerful** - Supports metadata, structured logging, filtering
+- ✅ **Production-ready** - Integrates with Sentry, LogRocket, Winston, Pino
+
+Start with a simple console logger in development, then integrate with your production logging infrastructure as needed!

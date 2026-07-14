@@ -1,0 +1,54 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Modal > SHOULD match snapshot & render correctly when isOpen is true 1`] = `
+<body
+  style="overflow: hidden;"
+>
+  <div />
+  <div
+    class="css-17zz0uv"
+    data-testid="wrapper"
+  >
+    <div
+      class="css-1felv7"
+    >
+      <div
+        class="css-1ts48ry"
+        data-testid="Modal"
+      >
+        <div
+          class="css-1srq769"
+          data-testid="Modal-header"
+        >
+          <button
+            aria-label="Close modal"
+            class="css-ul24yz"
+            data-testid="close-button"
+          >
+            <svg
+              class="css-1u8qly9"
+              data-testid="Icon-cross"
+              fill="none"
+              height="14"
+              viewBox="0 0 14 14"
+              width="14"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M14 1.41L12.59 0L7 5.59L1.41 0L0 1.41L5.59 7L0 12.59L1.41 14L7 8.41L12.59 14L14 12.59L8.41 7L14 1.41Z"
+                fill="#000000"
+              />
+            </svg>
+          </button>
+        </div>
+        <div
+          class="css-f1yomn"
+          data-testid="Modal-body"
+        >
+          Modal Content
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;

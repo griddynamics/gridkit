@@ -1,0 +1,18 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Slider > SHOULD match snapshot 1`] = `
+<div>
+  <input
+    aria-valuemax="100"
+    aria-valuemin="0"
+    aria-valuenow="0"
+    class="css-1dwbng7"
+    data-testid="Slider"
+    max="100"
+    min="0"
+    role="slider"
+    type="range"
+    value="0"
+  />
+</div>
+`;

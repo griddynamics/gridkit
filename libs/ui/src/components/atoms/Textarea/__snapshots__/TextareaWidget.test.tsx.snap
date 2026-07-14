@@ -1,0 +1,94 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Textarea > SHOULD apply readOnly state correctly 1`] = `
+<div>
+  <textarea
+    aria-invalid="false"
+    aria-multiline="true"
+    class="sc-kFXyV lcAiZM"
+    data-testid="Textarea"
+    id=":r7:"
+    readonly=""
+    role="textbox"
+  />
+</div>
+`;
+
+exports[`Textarea > SHOULD call onChange when typing 1`] = `
+<div>
+  <textarea
+    aria-invalid="false"
+    aria-multiline="true"
+    class="sc-kFXyV lcAiZM"
+    data-testid="Textarea"
+    id=":r1:"
+    role="textbox"
+  />
+</div>
+`;
+
+exports[`Textarea > SHOULD correctly track character count when maxLength is set 1`] = `
+<div>
+  <textarea
+    aria-invalid="false"
+    aria-multiline="true"
+    class="sc-kFXyV lcAiZM"
+    data-testid="Textarea"
+    id=":r2:"
+    maxlength="10"
+    role="textbox"
+  />
+  <small
+    class="textarea-char-counter css-1eif5ff"
+    data-testid="typography"
+    id=":r2:-char-counter"
+  >
+    5
+     / 
+    10
+  </small>
+</div>
+`;
+
+exports[`Textarea > SHOULD render correctly with label and default value 1`] = `
+<div>
+  <label
+    class="css-4g6ai3"
+    data-testid="Label"
+    for=":r0:"
+  >
+    Test Label
+  </label>
+  <textarea
+    aria-invalid="false"
+    aria-multiline="true"
+    class="sc-kFXyV lcAiZM"
+    data-testid="Textarea"
+    id=":r0:"
+    role="textbox"
+  >
+    Test Value
+  </textarea>
+</div>
+`;
+
+exports[`Textarea > SHOULD render helper text if provided 1`] = `
+<div>
+  <textarea
+    aria-describedby=":r4:-helper"
+    aria-invalid="false"
+    aria-multiline="true"
+    class="sc-kFXyV lcAiZM"
+    data-testid="Textarea"
+    id=":r4:"
+    role="textbox"
+  />
+  <small
+    class="css-1eif5ff"
+    data-testid="typography"
+    id=":r4:-helper"
+  >
+    This is helper text
+  </small>
+</div>
+`;

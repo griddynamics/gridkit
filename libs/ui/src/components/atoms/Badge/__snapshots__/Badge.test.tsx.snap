@@ -1,0 +1,17 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Badge > SHOULD match snapshot 1`] = `
+<div>
+  <span
+    class="test-badge-class css-t1iwku"
+    data-testid="Badge"
+  >
+    <span
+      class="gd-badge__content css-1u8qly9"
+      data-testid="Badge-content"
+    >
+      Badge Text
+    </span>
+  </span>
+</div>
+`;
