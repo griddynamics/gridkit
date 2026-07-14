@@ -1,0 +1,166 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Patterns & Best Practices/Prompt Engineering & AI Integration" />
+
+# Prompt Engineering & AI Integration
+
+This page is for developers who use a coding agent (Claude Code) to build UI in this repo. It explains the in-repo `ui-development` skill, when it auto-activates, and how to prompt it for the four scenarios it covers: greenfield setup, brownfield page additions, refactoring to library components, and A2UI JSON spec generation.
+
+For the runtime side — how the application asks an LLM to produce an A2UI spec at request time via `buildA2UISystemPrompt` — see **[Introduction / AI Integration](/docs/introduction-ai-integration-overview--docs)**.
+
+**Contents**
+
+- [Two different prompts](#two-different-prompts)
+- [The ui-development skill](#the-ui-development-skill)
+- [When the skill auto-activates](#when-the-skill-auto-activates)
+- [Scenario 1: Greenfield](#scenario-1-greenfield)
+- [Scenario 2: Brownfield](#scenario-2-brownfield)
+- [Scenario 3: Refactor to library components](#scenario-3-refactor-to-library-components)
+- [Scenario 4: A2UI JSON spec generation](#scenario-4-a2ui-json-spec-generation)
+- [What you still own](#what-you-still-own)
+- [What not to ask the skill to do](#what-not-to-ask-the-skill-to-do)
+
+---
+
+## Two different prompts
+
+There are two prompts in this codebase and they should not be confused.
+
+| Prompt | Audience | Where it lives | Purpose |
+|---|---|---|---|
+| `ui-development` skill | Claude Code (you, the developer, via the agent) | [`.claude/skills/ui-development/`](https://github.com/griddynamics/cto-rnd-system-design/tree/develop/.claude/skills/ui-development) | Guides the agent that writes TSX, sets up theming, picks the right components, and respects WCAG 2.1 AA. |
+| `buildA2UISystemPrompt(options)` | The application's runtime LLM (Gemini, GPT-4, Claude API) | `libs/ui/src/ai/a2ui/` | Produced at request time. Tells the model how to emit valid A2UI JSON the renderer can consume. |
+
+The skill is for build-time authoring. `buildA2UISystemPrompt` is for run-time generation. The skill is never shipped to the runtime LLM and the runtime system prompt is never invoked by the agent.
+
+---
+
+## The ui-development skill
+
+Source: [github.com/griddynamics/cto-rnd-system-design/tree/develop/.claude/skills/ui-development](https://github.com/griddynamics/cto-rnd-system-design/tree/develop/.claude/skills/ui-development)
+
+What it gives the agent:
+
+- The full `gd-design-library` component catalog (66 components — props, enums, default values, examples, common patterns, troubleshooting) resolved from `llms.txt` in `node_modules/gd-design-library` or the fallback catalog in `libs/ui`. The skill consults this resolved catalog before writing any component usage.
+- Theming rules (`ThemeProvider`, `addTheme`, `setTheme`, `useTheme`) in [`references/theme-tokens.md`](https://github.com/griddynamics/cto-rnd-system-design/blob/develop/.claude/skills/ui-development/references/theme-tokens.md).
+- Layout and responsiveness guidance (`Row`, `Column`, `FlexContainer`, `useMediaQuery`, 8pt grid) in [`references/layout-and-responsiveness.md`](https://github.com/griddynamics/cto-rnd-system-design/blob/develop/.claude/skills/ui-development/references/layout-and-responsiveness.md).
+- The skeleton → blocks → content → polish workflow in [`references/development-workflow.md`](https://github.com/griddynamics/cto-rnd-system-design/blob/develop/.claude/skills/ui-development/references/development-workflow.md).
+- Greenfield and brownfield walkthroughs in [`references/scenario-greenfield.md`](https://github.com/griddynamics/cto-rnd-system-design/blob/develop/.claude/skills/ui-development/references/scenario-greenfield.md) and [`references/scenario-brownfield.md`](https://github.com/griddynamics/cto-rnd-system-design/blob/develop/.claude/skills/ui-development/references/scenario-brownfield.md).
+- A WCAG 2.1 AA checklist enforced in the skill's *Checks* section (contrast ratios, focus trap and restore, tap target ≥ 44×44px, single `<h1>`, `prefers-reduced-motion`, etc.).
+
+Because the skill encodes all of this, you do not need to paste component rules, theme tokens, or accessibility checks into the chat. Describe the task in plain language and let the skill cover the rest.
+
+---
+
+## When the skill auto-activates
+
+The skill description is:
+
+> Create or extend UIs with gd-design-library (GridKit Design System). Handles greenfield theme setup, brownfield page additions, refactoring to library components, and A2UI JSON spec generation. Do not trigger for library-source edits inside libs/ui or non-UI work.
+
+Claude Code matches your prompt against that description. It activates when the task is UI work in a consumer app and skips when the work is inside `libs/ui` itself or unrelated (backend, data, infra).
+
+You can also force-invoke it with `/ui-development`.
+
+---
+
+## Scenario 1: Greenfield
+
+Use when you are starting a new app or a new surface that does not yet have `ThemeProvider`, `SnackbarManager`, or any `gd-design-library` imports.
+
+**Example prompt:**
+
+```text
+Start a new dashboard app in apps/insights-web/. Set up gd-design-library with the
+default theme, mount SnackbarManager at the root, and scaffold a landing page with
+a top header, a left sidebar, and a main content area with four metric cards above
+a chart and an activity feed.
+```
+
+What the skill will do:
+
+- Add `ThemeProvider` at the root, register `defaultTheme`, and mount `SnackbarManager` once.
+- Build the page as a Level 1 skeleton first (`Row`, `Column`, `FlexContainer`), confirm proportions, then place blocks (`Card`, `Chart`, `Sidebar`) without final content, then fill content.
+- Verify every prop against the resolved `llms.txt` — prefer `node_modules/gd-design-library/llms.txt`, fall back to `libs/ui/llms.txt` — no guessed enum values.
+
+---
+
+## Scenario 2: Brownfield
+
+Use when adding a page or feature to an app that already has the theme set up.
+
+**Example prompt:**
+
+```text
+Add a settings drawer to the profile page in apps/insights-web/. It should slide in
+from the right, contain a tabbed layout (Account, Notifications, Integrations), trap
+focus while open, and restore focus to the trigger button on close.
+```
+
+What the skill will do:
+
+- Pick the existing `Drawer` and `Tabs` components from `gd-design-library`, not invent wrappers.
+- Apply focus trap and restore-focus via the patterns in the skill's *Accessibility* section.
+- Use Box props for spacing (`padding`, `gap`) rather than wrapper `<div>` elements.
+
+---
+
+## Scenario 3: Refactor to library components
+
+Use when an app has accumulated raw HTML or third-party components and you want to bring it back to the design system.
+
+**Example prompt:**
+
+```text
+Refactor apps/insights-web/src/pages/Reports.tsx to use gd-design-library. Replace
+all raw <div> spacing wrappers with Box props, swap the hand-rolled buttons for
+Button, swap the table for DataTable, and ensure every input has a visible label
+rather than placeholder-only.
+```
+
+What the skill will do:
+
+- Apply the *Constraints* section of the skill: no raw `<div>` for spacing, no hardcoded hex colors when a token exists, no placeholder-as-label.
+- Map each replaced element to the catalog entry in the resolved `llms.txt` (`node_modules/gd-design-library/llms.txt`, or `libs/ui/llms.txt` inside this monorepo) and use the exact prop names listed there.
+- Run the *Checks* section before declaring the refactor done.
+
+---
+
+## Scenario 4: A2UI JSON spec generation
+
+Use when you need a hand-written A2UI JSON spec — for fixtures, tests, or seeding pattern files in `apps/agent-service/responses/examples/`.
+
+**Example prompt:**
+
+```text
+Generate an A2UI spec for a product analytics dashboard with: a header bar, three
+KPI cards (revenue, orders, conversion), a sales-over-time line chart, and a recent
+activity list with click actions. Use the schema in node_modules/gd-design-library/ai/a2ui/.
+```
+
+What the skill will do:
+
+- Emit a spec matching `A2UI_SPEC_SCHEMA` — `version`, `metadata`, `ui: { layout, components, actions }`.
+- Use only component types the renderer supports (see the resolved `llms.txt` — `node_modules/gd-design-library/llms.txt`, or `libs/ui/llms.txt` inside this monorepo — and the AI Integration section).
+- Wire `actions` by ID and reference them from the relevant components.
+
+This is the same JSON shape `buildA2UISystemPrompt` instructs the runtime LLM to produce — the skill gives you a deterministic way to author one by hand.
+
+---
+
+## What you still own
+
+- Writing a clear task description. The skill does not invent product requirements.
+- Reviewing the diff against the skill's *Checks* section before merging:
+  - imports from `'gd-design-library'` only
+  - every prop verified in the resolved `llms.txt` (`node_modules/gd-design-library/llms.txt`, or `libs/ui/llms.txt` inside this monorepo)
+  - tap targets ≥ 44×44px, focus rings preserved, single `<h1>`
+  - 8pt grid spacing values
+  - `isLoading` on submit buttons during async operations
+
+---
+
+## What not to ask the skill to do
+
+- Backend, infra, or data-pipeline work — the skill will refuse to activate.
+- Pasting in raw HTML/CSS expecting it to be preserved — the skill will rewrite to library components and Box props.

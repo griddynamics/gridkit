@@ -1,0 +1,64 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/out-tsc",
+    "types": [
+      "node",
+      "@nx/react/typings/cssmodule.d.ts",
+      "@nx/react/typings/image.d.ts",
+      "vite/client",
+      "@emotion/react/types/css-prop"
+    ],
+    "composite": true,
+    "declaration": true,
+    // Aliases
+    "baseUrl": ".",
+    "paths": {
+      "@types": ["src/types/"],
+      "@types/*": ["src/types/*"],
+      "@constants": ["src/constants/"],
+      "@constants/*": ["src/constants/*"],
+      "@utils": ["src/utils/"],
+      "@utils/*": ["src/utils/*"],
+      "@hooks/*": ["src/hooks/*"],
+      "@hooks": ["src/hooks/"],
+      "@tokens/*": ["src/tokens/*"],
+      "@tokens": ["src/tokens/"],
+      "@components/*": ["src/components/*"],
+      "@components": ["src/components/"],
+      "@assets/*": ["src/assets/*"],
+      "@assets": ["src/assets/"],
+      "@testUtils": ["src/test-utils.tsx"],
+      "@playUtils": ["src/utils/play"]
+    }
+  },
+  "exclude": [
+    "src/test-utils.tsx",
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "**/*.spec.tsx",
+    "**/*.test.tsx",
+    "**/*.spec.js",
+    "**/*.test.js",
+    "**/*.spec.jsx",
+    "**/*.test.jsx",
+    "**/*.stories.ts",
+    "**/*.stories.js",
+    "**/*.stories.jsx",
+    "**/*.stories.tsx",
+    "**/*.stories.play.ts",
+    "**/*.stories.play.js",
+    "**/*.stories.play.jsx",
+    "**/*.stories.play.tsx",
+    "**/*.visual.ts",
+    "**/*.visual.tsx",
+    "src/utils/play/**/*.ts",
+    "src/utils/play/**/*.tsx",
+    "src/utils/play/**/*.js",
+    "src/utils/play/**/*.jsx",
+    "**/*.integration.ts",
+    "**/*.integration.tsx",
+    "**/*.integration.helpers.tsx"
+  ],
+  "include": ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx", "src/**/*.json"]
+}

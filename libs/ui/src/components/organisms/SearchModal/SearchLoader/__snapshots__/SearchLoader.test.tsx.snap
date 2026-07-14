@@ -1,0 +1,23 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SearchLoader > SHOULD match snapshot 1`] = `
+<div>
+  <div
+    class="css-e6aoit"
+    data-testid="SearchLoader"
+  >
+    <span
+      class="css-11q7xwo"
+      data-testid="Skeleton"
+    />
+    <span
+      class="css-11q7xwo"
+      data-testid="Skeleton"
+    />
+    <span
+      class="css-11q7xwo"
+      data-testid="Skeleton"
+    />
+  </div>
+</div>
+`;

@@ -1,0 +1,12 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`InputHelper > SHOULD match snapshot 1`] = `
+<div>
+  <span
+    class="css-1i310g0"
+    data-testid="InputHelper"
+  >
+    text node
+  </span>
+</div>
+`;

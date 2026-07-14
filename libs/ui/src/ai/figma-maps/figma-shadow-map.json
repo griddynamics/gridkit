@@ -1,0 +1,167 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Figma style name → GridKit token. Source: libs/ui/src/tokens/shadow.ts + Figma file bCDJhVLlAFSIZtPFbEwDRO node 36:2. Usage: tokenPath → useTheme() dot-path, cssVar → --gds-* reference only (never emit in TSX). Note: Figma shadows are published styles (not variable-bound). Dark-mode variants have no GridKit token equivalent — dark theme handles them via the theme override system.",
+  "$usage": {
+    "keyQuestion": "What GridKit shadow token corresponds to this Figma shadow style or UI element elevation?",
+    "lookupSteps": [
+      "1. Figma style name (e.g. 'Shadow/Light Mode/shadow 1'): find in light group by key → tokenPath.",
+      "2. Shadow CSS value: query valueIndex[value] → tokenPath string.",
+      "3. By UI element role: consult elevationDecisionGuide — e.g. 'dropdown/popover'→shadows.box.2, 'modal'→shadows.modal.default, 'snackbar'→shadows.snackbar.default.",
+      "4. No match: record 'unmatched:<value>' in tokenBindings."
+    ],
+    "criticalRules": [
+      "Design drift: Figma shadow values for levels 1-3 differ from GridKit token values. See designDrift. Token value is ALWAYS canonical — never use Figma raw values in code.",
+      "Dark mode: no separate GridKit shadow tokens; dark ThemeProvider override resolves automatically.",
+      "themeAccess for numeric box levels uses bracket notation: theme.shadows?.box?.['1'].",
+      "Semantic aliases (modal, snackbar, inlineNotification) should be preferred over box.* for those components."
+    ]
+  },
+  "light": {
+    "$comment": "Light mode shadows. Figma naming: 'Shadow/Light Mode/shadow <N>'. Maps to shadows.box.<N> in GridKit. Values for levels 1-3 have minor design drift from the Figma baseline — see designDrift section.",
+    "Shadow/Light Mode/shadow 1": {
+      "tokenPath": "shadows.box.1",
+      "cssVar": "--gds-shadow-box-1",
+      "themeAccess": "theme.shadows?.box?.['1']",
+      "figmaValue": "0px 2px 3px -1px rgba(0,0,0,0.20)",
+      "tokenValue": "0px 2px 1px -1px rgba(0, 0, 0, 0.20), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12)",
+      "elevation": "1 — xs / very subtle",
+      "drift": "Figma is single-layer; token is multi-layer Material-style. Use token value."
+    },
+    "Shadow/Light Mode/shadow 2": {
+      "tokenPath": "shadows.box.2",
+      "cssVar": "--gds-shadow-box-2",
+      "themeAccess": "theme.shadows?.box?.['2']",
+      "figmaValue": "0px 4px 14px -1px rgba(0,0,0,0.20)",
+      "tokenValue": "0px 4px 5px -1px rgba(0, 0, 0, 0.20)",
+      "elevation": "2 — sm / subtle",
+      "drift": "Blur differs: Figma 14px vs token 5px. Use token value."
+    },
+    "Shadow/Light Mode/shadow 3": {
+      "tokenPath": "shadows.box.3",
+      "cssVar": "--gds-shadow-box-3",
+      "themeAccess": "theme.shadows?.box?.['3']",
+      "figmaValue": "0px 8px 18px 3px rgba(0,0,0,0.20)",
+      "tokenValue": "0px 8px 15px 1px rgba(0, 0, 0, 0.20)",
+      "elevation": "3 — md / medium",
+      "drift": "Blur 18→15px, spread 3→1px. Use token value."
+    },
+    "Shadow/Light Mode/shadow 4": {
+      "tokenPath": "shadows.box.4",
+      "cssVar": "--gds-shadow-box-4",
+      "themeAccess": "theme.shadows?.box?.['4']",
+      "figmaValue": "0px 12px 28px 5px rgba(0,0,0,0.25)",
+      "tokenValue": "0px 12px 28px 5px rgba(0, 0, 0, 0.25)",
+      "elevation": "4 — lg / prominent",
+      "drift": "none — exact match"
+    },
+    "Shadow/Light Mode/shadow 5": {
+      "tokenPath": "shadows.box.5",
+      "cssVar": "--gds-shadow-box-5",
+      "themeAccess": "theme.shadows?.box?.['5']",
+      "figmaValue": "0px 16px 38px 7px rgba(0,0,0,0.25)",
+      "tokenValue": "0px 16px 38px 7px rgba(0, 0, 0, 0.25)",
+      "elevation": "5 — xl / most prominent",
+      "drift": "none — exact match"
+    }
+  },
+  "dark": {
+    "$comment": "Dark mode shadows use off-white rgba(250,249,249,...) instead of black. No corresponding GridKit token exists — dark theme handles elevation via the theme override system. Provided here for reference only; never hardcode dark shadow values in TSX.",
+    "Shadow/Dark Mode/shadow 1": {
+      "tokenPath": null,
+      "figmaValue": "0px 2px 3px -1px rgba(250,249,249,0.05)",
+      "elevation": "1 — xs",
+      "note": "No GridKit token. Resolved by dark theme override of shadows.box.1."
+    },
+    "Shadow/Dark Mode/shadow 2": {
+      "tokenPath": null,
+      "figmaValue": "0px 4px 14px -1px rgba(250,249,249,0.10)",
+      "elevation": "2 — sm",
+      "note": "No GridKit token. Resolved by dark theme override of shadows.box.2."
+    },
+    "Shadow/Dark Mode/shadow 3": {
+      "tokenPath": null,
+      "figmaValue": "0px 8px 18px 3px rgba(250,249,249,0.10)",
+      "elevation": "3 — md",
+      "note": "No GridKit token. Resolved by dark theme override of shadows.box.3."
+    },
+    "Shadow/Dark Mode/shadow 4": {
+      "tokenPath": null,
+      "figmaValue": "0px 12px 28px 5px rgba(250,249,249,0.15)",
+      "elevation": "4 — lg",
+      "note": "No GridKit token. Resolved by dark theme override of shadows.box.4."
+    },
+    "Shadow/Dark Mode/shadow 5": {
+      "tokenPath": null,
+      "figmaValue": "0px 16px 38px 7px rgba(250,249,249,0.15)",
+      "elevation": "5 — xl",
+      "note": "No GridKit token. Resolved by dark theme override of shadows.box.5."
+    }
+  },
+  "semantic": {
+    "$comment": "Component-level semantic shadow tokens. All resolve to DEFAULT_SHADOW = '0 4px 12px rgba(0,0,0,0.10)'. This value sits between Figma shadow 2 and 3 and is not explicitly represented in the Figma shadow scale — it is a GridKit-only semantic alias.",
+    "modal": {
+      "tokenPath": "shadows.modal.default",
+      "cssVar": "--gds-shadow-modal-default",
+      "themeAccess": "theme.shadows?.modal?.default",
+      "value": "0 4px 12px rgba(0, 0, 0, 0.10)",
+      "usedBy": ["Modal", "Dialog"]
+    },
+    "modal.content": {
+      "tokenPath": "shadows.modal.content",
+      "cssVar": "--gds-shadow-modal-content",
+      "themeAccess": "theme.shadows?.modal?.content",
+      "value": "0 4px 12px rgba(0, 0, 0, 0.10)",
+      "usedBy": ["Modal content area"]
+    },
+    "snackbar": {
+      "tokenPath": "shadows.snackbar.default",
+      "cssVar": "--gds-shadow-snackbar-default",
+      "themeAccess": "theme.shadows?.snackbar?.default",
+      "value": "0 4px 12px rgba(0, 0, 0, 0.10)",
+      "usedBy": ["Snackbar", "Toast"]
+    },
+    "inlineNotification": {
+      "tokenPath": "shadows.inlineNotification.default",
+      "cssVar": "--gds-shadow-inline-notification-default",
+      "themeAccess": "theme.shadows?.inlineNotification?.default",
+      "value": "0 4px 12px rgba(0, 0, 0, 0.10)",
+      "usedBy": ["InlineNotification"]
+    }
+  },
+  "valueIndex": {
+    "$comment": "Reverse-lookup: CSS box-shadow string → tokenPath. Match the token value (not the Figma value) for levels 1-3. For DEFAULT_SHADOW use any of the semantic aliases — prefer the component-appropriate one.",
+    "0px 2px 1px -1px rgba(0, 0, 0, 0.20), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12)": "shadows.box.1",
+    "0px 4px 5px -1px rgba(0, 0, 0, 0.20)": "shadows.box.2",
+    "0px 8px 15px 1px rgba(0, 0, 0, 0.20)": "shadows.box.3",
+    "0px 12px 28px 5px rgba(0, 0, 0, 0.25)": "shadows.box.4",
+    "0px 16px 38px 7px rgba(0, 0, 0, 0.25)": "shadows.box.5",
+    "0 4px 12px rgba(0, 0, 0, 0.10)": "shadows.modal.default"
+  },
+  "elevationDecisionGuide": {
+    "$comment": "Which shadow level to use by component context.",
+    "card / tile / resting surface": "shadows.box.1 — theme.shadows?.box?.['1']",
+    "dropdown / popover / tooltip": "shadows.box.2 — theme.shadows?.box?.['2']",
+    "drawer / panel / side sheet": "shadows.box.3 — theme.shadows?.box?.['3']",
+    "dialog / modal overlay": "shadows.modal.default — theme.shadows?.modal?.default",
+    "floating action button / prominent card": "shadows.box.4 — theme.shadows?.box?.['4']",
+    "fullscreen overlay / maximum elevation": "shadows.box.5 — theme.shadows?.box?.['5']",
+    "snackbar / toast": "shadows.snackbar.default — theme.shadows?.snackbar?.default",
+    "inline notification banner": "shadows.inlineNotification.default — theme.shadows?.inlineNotification?.default",
+    "dark mode — any level": "Use same tokenPath; dark theme override resolves to off-white shadow automatically"
+  },
+  "designDrift": {
+    "$comment": "Values where Figma baseline and GridKit token differ. Token value is canonical for implementation — never use Figma raw values in code.",
+    "level 1": {
+      "figma": "0px 2px 3px -1px rgba(0,0,0,0.20) — single layer",
+      "token": "0px 2px 1px -1px rgba(0, 0, 0, 0.20), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12) — multi-layer"
+    },
+    "level 2": {
+      "figma": "0px 4px 14px -1px rgba(0,0,0,0.20)",
+      "token": "0px 4px 5px -1px rgba(0, 0, 0, 0.20)"
+    },
+    "level 3": {
+      "figma": "0px 8px 18px 3px rgba(0,0,0,0.20)",
+      "token": "0px 8px 15px 1px rgba(0, 0, 0, 0.20)"
+    }
+  }
+}

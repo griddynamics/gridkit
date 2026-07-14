@@ -1,0 +1,48 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Scroll > SHOULD match snapshot 1`] = `
+<div>
+  <div
+    class="gd-scroll css-1d72473"
+    data-testid="Scroll"
+  >
+    <div
+      class="gd-scroll--scrollbars css-17yqval"
+      data-testid="Scroll-scrollbars"
+    />
+    <div
+      class="gd-scroll--content css-myjri9"
+      data-testid="Scroll-content"
+    >
+      <div>
+        Test Content
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Scroll > autoHide feature > SHOULD render container with autoHide prop 1`] = `
+<div>
+  <div
+    class="gd-scroll css-1d72473"
+    data-testid="Scroll"
+    style="height: 50px;"
+  >
+    <div
+      class="gd-scroll--scrollbars css-17yqval"
+      data-testid="Scroll-scrollbars"
+    />
+    <div
+      class="gd-scroll--content css-myjri9"
+      data-testid="Scroll-content"
+    >
+      <div
+        style="height: 200px;"
+      >
+        Overflow Content
+      </div>
+    </div>
+  </div>
+</div>
+`;

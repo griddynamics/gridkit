@@ -1,0 +1,341 @@
+import { Meta, Markdown } from '@storybook/addon-docs/blocks';
+
+<Meta title="Patterns & Best Practices/AI Experience" />
+
+# 🧠 AI Experience (AX) Design Best Practices
+
+Welcome to the **AI Experience (AX)** design guide. This page is created for **front-end developers**, **UX designers**, and **product teams** working with AI-driven interfaces. From personalized recommendations to conversational assistants, AI is changing how users interact with digital products — and with that comes new design challenges and responsibilities.
+
+> 🚀 **Latest Update (2024-2025)**: This guide now includes information about the latest LLMs (Gemini 3, GPT-4, Claude) and the **agentic era** of AI, where models can reason, plan, and take action autonomously.
+
+---
+
+## 👋 What Is AX?
+
+**AI Experience (AX)** refers to the \*user’s interaction with AI-powered features\_ within a product or system. This includes **smart suggestions**, **automated decisions**, **adaptive interfaces**, **AI assistants**, and more.
+
+While **traditional UX/UI** focuses on **deterministic, user-initiated interactions**, AX introduces **adaptive, probabilistic behaviors**. AI often takes initiative or personalizes results, making **transparency, control, and ethical handling** critical.
+
+### 🧭 UX vs. AX: A Quick Comparison
+
+<Markdown>
+{`
+| Dimension              | Traditional UX/UI              | AI Experience (AX)                                       |
+| ---------------------- | ------------------------------ | -------------------------------------------------------- |
+| **User Control**       | Full control over actions      | Shared control with automated suggestions or decisions   |
+| **Determinism**        | Predictable outcomes           | Probabilistic, context-aware outputs                     |
+| **Design Focus**       | Task efficiency, clarity       | Trust, transparency, adaptability                        |
+| **System Behavior**    | Reactive to user input         | Proactive and adaptive                                   |
+| **Feedback Loop**      | Based on usability testing     | Continuous via user interaction and model updates        |
+| **Explainability**     | Rarely needed                  | Crucial to build trust (e.g., “why did the AI do this?”) |
+| **Ethical Complexity** | Moderate (e.g., dark patterns) | High (bias, transparency, data usage, automation)        |
+`}
+
+</Markdown>
+
+## 🌟 Core Principles of AX Design
+
+Designing for AI requires new thinking. Here are the foundational principles:
+
+### ✨ Transparency & Explainability
+
+- Clearly label AI-generated content (e.g., “AI Suggestion”).
+- Explain _why_ something was recommended or generated.
+- Show **confidence levels** (e.g., “80% match”) when appropriate.
+- Use **progressive disclosure** to provide deeper insight without overwhelming users.
+- Link to **sources**, training data, or model context when possible.
+
+> ✅ Transparency builds confidence.
+
+> ❌ Hidden logic creates doubt.
+
+### 🕹️ Human-in-the-Loop Control
+
+- Let users **undo**, **reject**, or **edit** AI suggestions.
+- Always provide **manual alternatives** to automated flows.
+- Allow users to **choose or customize** model behavior.
+
+> Empower users to override automation — AX is a partnership, not a takeover.
+
+### 🔄 Feedback & Recovery
+
+- Offer **fallback UIs** when AI fails or is unavailable.
+- Handle errors gracefully with **helpful messages** and **retry options**.
+- Include **inline feedback tools** (thumbs up/down, “Was this helpful?”).
+
+> Reliable UX anticipates failure and guides users to recovery.
+
+### 🔒 Personalization vs. Privacy
+
+- Let users **opt out** of personalization or data tracking.
+- Clearly distinguish between **user data** and **AI-generated output**.
+- Always **disclose how AI uses personal data** and model inputs.
+
+### ⚖️ Ethics & Safety
+
+- Audit models for **bias**, **hallucinations**, and **harmful outputs**.
+- Distinguish between **facts** and **AI-generated opinions**.
+- Treat ethics as a **core interface responsibility**, not a backend concern.
+
+> 🚫 Ethics is not optional — it’s part of the interface.
+
+---
+
+## 🛠️ Practical Guidelines
+
+Here’s how to put AX principles into action in your product:
+
+### ✅ Do:
+
+- ✅ Label AI features clearly and explain their role.
+- ✅ Show users how to influence results.
+- ✅ Use **visual aids** like badges, confidence bars, and model origin tags.
+- ✅ Respect user agency with options to reject or revert changes.
+
+### 🚫 Don’t:
+
+- ❌ Hide AI functionality behind generic UI.
+- ❌ Assume users will trust the system without explanations.
+- ❌ Let automation take over without human context or fail-safes.
+
+---
+
+### 🔍 AX Design Checklist
+
+  <Markdown>
+  {`
+  | Guideline                            | Status |
+  | ------------------------------------ | ------ |
+  | Clear AI labeling                    | ✅      |
+  | User control over AI decisions       | ✅      |
+  | Explanation for major decisions      | ✅      |
+  | Feedback channels for improvement    | ✅      |
+  | Privacy settings accessible          | ✅      |
+  | Ethical risks reviewed and mitigated | ✅      |
+  | Prompt engineering best practices    | ✅      |
+  | Code validation for AI-generated code | ✅      |
+  | Support for multimodal input/output  | ✅      |
+  | Agentic AI oversight and control      | ✅      |
+  | Accessibility for AI-generated content | ✅      |
+  `}
+
+  </Markdown>
+
+## 📦 Common AX Component Patterns
+
+To scale AX design, use **standardized, reusable components** in your design system:
+
+### 🧩 Visual Agent Builder
+
+- Drag-and-drop blocks for configuring agent logic.
+- Inline validation for real-time error feedback.
+- Tracing and debugging views.
+- Fully **accessible** with keyboard and screen reader support.
+
+> Democratize AI development through intuitive, inclusive UI tools.
+
+### 📂 Progressive Disclosure
+
+- Show **only essentials** up front.
+- Use **tooltips**, **collapsible sections**, and **advanced toggles**.
+- Balance simplicity with expert control.
+
+### ⚠️ Feedback UIs
+
+- In-context controls: thumbs up/down, comments, “regenerate”.
+- Visual representation of AI confidence (e.g., bars, colors, ranges).
+- Clear **distinction between user and AI-generated responses**.
+
+### 🤖 Conversational UI
+
+- Retain **context and memory** in conversations (modern LLMs support up to 1M+ tokens).
+- Offer **guided replies** and **smart suggestions**.
+- Support **multimodal input** (text, emoji, voice, file, images, video).
+- Design with a tone that's **adaptive, supportive, and human**.
+- Show **reasoning steps** for complex queries (especially with agentic models).
+- Support **interruptions** and **task modification** mid-execution.
+- Use **`ChatContainer`** for layout and **`ChatBubble`** for messages (question/answer variants, `sm`/`md`/`lg` sizes).
+- Embed rich media with **`ChatBubble.ImageGallery`** and **`ChatBubble.LinkPreview`** sub-components.
+- Use **`InputArea`** for chat input with send button, attachments, and character count.
+
+### ⚖️ Reusable UI Blocks
+
+- **Chat components**: `ChatBubble` (with action buttons, status indicators), `ChatContainer`, `InputArea`.
+- **User identity**: `Avatar.User` with `variant="card"` (compact) or `variant="profile"` (detailed with action slot).
+- **Search & discovery**: `SearchModal` with `popularItems`, `aiSuggestions`, and `articles` sections.
+- **Navigation**: `Sidebar` with collapsible items and sub-items for AI app shells.
+- **Notifications**: `Snackbar` with variant support for AI feedback.
+- **Status indicators**: `Badge` (sm/md/lg), `Loader`, `Skeleton` for loading states.
+- **Feedback**: `Rating` for whole-step user feedback, with fractional display support in read-only mode.
+- Use **design tokens** for consistent styling.
+- Document everything in **Storybook**.
+- **Agent status indicators**: Show when AI is thinking, planning, or executing actions.
+- **Tool usage displays**: Visualize which tools/APIs the AI is using.
+- **Progress indicators**: For long-running agentic tasks.
+
+> Treat AI UX like a design system — not a collection of one-offs.
+
+### 🎨 Generative UI Patterns
+
+With modern LLMs like Gemini 3, AI can generate interactive UIs on the fly:
+
+- **Dynamic layouts**: AI-generated visual layouts tailored to specific queries
+- **Interactive tools**: Real-time generation of calculators, simulators, visualizations
+- **Custom components**: AI-generated React components for specific use cases
+- **Adaptive interfaces**: UIs that evolve based on user needs and context
+
+> 💡 **Design Tip**: When using generative UI, always provide fallbacks and ensure accessibility standards are maintained.
+
+---
+
+## 🤖 The Agentic Era: Latest LLM Capabilities (2024-2025)
+
+The AI landscape has evolved dramatically with the introduction of **agentic AI models** that can reason, plan, and take autonomous action. Understanding these capabilities is crucial for designing effective AI experiences.
+
+### Latest LLM Models & Capabilities
+
+#### Gemini 3 (Google DeepMind)
+
+- **State-of-the-art reasoning**: PhD-level reasoning with unprecedented depth and nuance
+- **Multimodal understanding**: Native support for text, images, video, audio, and code
+- **Agentic capabilities**: Can plan ahead, use tools, and execute multi-step workflows
+- **Generative UI**: Dynamically creates interactive visual layouts, tools, and simulations
+- **Long context**: Up to 1 million tokens for comprehensive understanding
+- **Deep Think mode**: Enhanced reasoning mode for complex problem-solving
+
+#### GPT-4 & GPT-4 Turbo (OpenAI)
+
+- **Advanced reasoning**: Strong performance on complex reasoning tasks
+- **Multimodal vision**: Understanding and generating content across modalities
+- **Function calling**: Native tool use and API integration capabilities
+- **Code generation**: Excellent at generating and debugging code
+
+#### Claude (Anthropic)
+
+- **Constitutional AI**: Built with safety and helpfulness principles
+- **Long context windows**: Extended context for comprehensive conversations
+- **Code generation**: Strong performance in code-related tasks
+- **Tool use**: Native function calling and tool integration
+
+### Key Trends in Modern AI (2024-2025)
+
+1. **Agentic AI**: Models that can autonomously plan and execute tasks
+   - Multi-step reasoning and planning
+   - Tool use and function calling
+   - Long-horizon task completion
+   - Browser and system control capabilities
+
+2. **Multimodal Understanding**: Native support for multiple input/output types
+   - Text, images, video, audio, code
+   - Cross-modal reasoning
+   - Native image and audio generation
+
+3. **Generative UI**: AI-generated interactive interfaces
+   - Dynamic visual layouts tailored to queries
+   - Real-time tool and simulation generation
+   - Custom interactive components
+
+4. **Enhanced Reasoning**: Deeper understanding and problem-solving
+   - Context-aware responses
+   - Nuanced understanding of intent
+   - Reduced need for explicit prompting
+
+5. **Improved Safety & Reliability**: Better handling of edge cases
+   - Reduced hallucinations
+   - Better factual accuracy
+   - Enhanced resistance to prompt injection
+
+### Designing for Agentic AI
+
+When designing for agentic AI capabilities:
+
+- **Show planning steps**: Display the AI's reasoning process when appropriate
+- **Provide oversight**: Always allow users to review and approve actions
+- **Explain tool usage**: Show which tools the AI is using and why
+- **Handle long tasks**: Design UIs that can handle multi-step, long-running tasks
+- **Support interruption**: Allow users to pause, modify, or cancel agent actions
+- **Visualize agent state**: Show when AI is thinking, planning, executing, or waiting for input
+- **Display confidence**: Show AI confidence levels for generated content or decisions
+
+### Choosing the Right LLM for Your Use Case
+
+Different LLMs excel in different areas:
+
+<Markdown>
+  {`
+  | Model        | Best For                                              | Key Strengths                                                                         |
+| ------------ | ----------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| **Gemini 3** | Multimodal tasks, agentic workflows, generative UI    | State-of-the-art reasoning, native multimodal I/O, long context (1M tokens), tool use |
+| **GPT-4**    | Code generation, general reasoning, API integration   | Strong code capabilities, function calling, multimodal vision                         |
+| **Claude**   | Long conversations, code review, safety-critical apps | Constitutional AI, extended context, helpful and harmless design                      |
+  `}
+
+</Markdown>
+**Considerations**:
+
+- **Token limits**: Plan for context window sizes (Gemini 3: 1M tokens, GPT-4: varies, Claude: extended)
+- **Latency**: Some models are faster but less capable; choose based on use case
+- **Cost**: Factor in API costs for production applications
+- **Multimodality**: If you need image/video/audio, ensure the model supports it natively
+
+---
+
+## 📝 Prompt Engineering & AI Integration
+
+Effective prompt engineering is crucial for building reliable AI-powered features. The GridKit Design System provides comprehensive tools for working with modern LLMs.
+
+> 📖 **For comprehensive prompt engineering guidance, see the dedicated [Prompt Engineering & AI Integration](./?path=/docs/patterns-best-practices-prompt-engineering-ai-integration--docs) guide.**
+
+The guide covers:
+
+- **Prompt Generation**: Standard, contextual, and agent-specific prompts (Claude, GPT-4, Gemini)
+- **Component Discovery**: Finding components by name, category, feature, or use case
+- **Validation**: Validating schemas and generated code
+- **Best Practices**: Proven patterns and workflows for reliable code generation
+- **Troubleshooting**: Common issues and solutions
+
+Quick example:
+
+```typescript
+import { buildClaudeSystemPrompt, validateGeneratedCode } from 'gd-design-library/ai';
+
+// Generate prompt
+const prompt = buildClaudeSystemPrompt('Create a sign-in form with email and password');
+
+// After generation, validate code
+const result = validateGeneratedCode(generatedCode);
+if (!result.valid) {
+  console.error('Code errors:', result.errors);
+}
+```
+
+For detailed examples, API reference, and advanced patterns, see the [Prompt Engineering & AI Integration](./?path=/docs/patterns-best-practices-prompt-engineering-ai-integration--docs) guide.
+
+---
+
+## 🔐 Ethical & Accessibility Considerations
+
+### Accessibility First
+
+- Ensure **screen reader compatibility** for all dynamic AI content.
+- Don't rely solely on **color or visuals** to convey meaning.
+- Ensure **keyboard navigation** works across suggestion flows, modals, and interactive elements.
+- Support **multimodal input** (voice, text, images) with accessible alternatives.
+
+> 🔎 Accessibility is not separate from innovation — it enables it.
+
+### Safety & Reliability
+
+- **Validate AI outputs**: Always validate AI-generated content and code
+- **Handle hallucinations**: Design UIs that can detect and handle incorrect AI outputs
+- **Resist prompt injection**: Implement safeguards against malicious prompts
+- **Monitor AI behavior**: Track and log AI actions for debugging and safety
+
+---
+
+## 📚 Additional Reading
+
+- [People + AI Guidebook](https://pair.withgoogle.com/guidebook/)
+- [IBM: Everyday Ethics for AI](https://www.ibm.com/design/ai/)
+- [GridKit AI Integration README](../../ai/README.md) - Comprehensive AI integration documentation
+- [Prompt Usage Manual](../../ai/PROMPT_USAGE_MANUAL.md) - Complete guide for prompt generation

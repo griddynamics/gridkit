@@ -1,0 +1,16 @@
+import { forwardRef } from 'react';
+
+import { useTheme } from '@hooks/useTheme';
+
+import { COMPONENT_NAME } from './constants';
+import { &PLACEHOLDER_COMPONENT_NAME&Styled } from './&PLACEHOLDER_COMPONENT_NAME&Styled';
+import type { &PLACEHOLDER_COMPONENT_NAME&Props } from './&PLACEHOLDER_COMPONENT_NAME&.types';
+
+export const  &PLACEHOLDER_COMPONENT_NAME& = forwardRef<HTMLDivElement, &PLACEHOLDER_COMPONENT_NAME&Props>((props, forwardedRef) => {
+  const { styles = {}, ...restProps } = props;
+  const { theme } = useTheme();
+
+  return <&PLACEHOLDER_COMPONENT_NAME&Styled theme={theme} styles={styles} ref={forwardedRef} data-testid={COMPONENT_NAME} {...restProps}/>;
+});
+
+&PLACEHOLDER_COMPONENT_NAME&.displayName = COMPONENT_NAME;

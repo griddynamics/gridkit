@@ -1,0 +1,28 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CardPrice > SHOULD match snapshot 1`] = `
+<div>
+  <div
+    class="css-hwczhd"
+    data-testid="CardPrice"
+  >
+    <div
+      class="css-axw7ok"
+      data-testid="Price"
+    >
+      <span
+        class="css-1xfhlpt"
+        data-testid="Price-current"
+      >
+        3
+      </span>
+      <del
+        class="css-1d1z3u4"
+        data-testid="Price-old"
+      >
+        12
+      </del>
+    </div>
+  </div>
+</div>
+`;

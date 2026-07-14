@@ -1,0 +1,12 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`InputAdornment > SHOULD match snapshot 1`] = `
+<div>
+  <span
+    class="css-luz7hd"
+    data-testid="InputAdornment"
+  >
+    text node
+  </span>
+</div>
+`;

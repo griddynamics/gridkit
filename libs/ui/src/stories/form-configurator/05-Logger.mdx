@@ -1,0 +1,491 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Form Configurator/Logger" />
+
+# Logger Integration
+
+## Overview
+
+The Form Configurator includes built-in logging capabilities for debugging and monitoring form behavior. The logger system is optional and operates silently by default.
+
+## ILogger Interface
+
+The logger interface defines four logging levels:
+
+```typescript
+interface ILogger {
+  /**
+   * Log a debug message
+   * @param message - The debug message
+   * @param meta - Optional metadata
+   */
+  debug(message: string, ...meta: unknown[]): void;
+
+  /**
+   * Log an info message
+   * @param message - The info message
+   * @param meta - Optional metadata
+   */
+  info(message: string, ...meta: unknown[]): void;
+
+  /**
+   * Log a warning message
+   * @param message - The warning message
+   * @param meta - Optional metadata
+   */
+  warn(message: string, ...meta: unknown[]): void;
+
+  /**
+   * Log an error message
+   * @param message - The error message
+   * @param meta - Optional metadata
+   */
+  error(message: string, ...meta: unknown[]): void;
+}
+```
+
+## Built-in Logger Implementations
+
+### NoOpLogger (Default)
+
+Silent logger that performs no operations:
+
+```typescript
+class NoOpLogger implements ILogger {
+  debug(_message: string, ..._meta: unknown[]): void {}
+  info(_message: string, ..._meta: unknown[]): void {}
+  warn(_message: string, ..._meta: unknown[]): void {}
+  error(_message: string, ..._meta: unknown[]): void {}
+}
+```
+
+**When to use**: Default behavior - no logging needed (production).
+
+### ConsoleLogger
+
+Outputs to browser console with prefix:
+
+```typescript
+class ConsoleLogger implements ILogger {
+  constructor(private prefix = '[FormConfigurator]') {}
+
+  debug(message: string, ...meta: unknown[]): void {
+    console.debug(this.prefix, message, ...meta);
+  }
+
+  info(message: string, ...meta: unknown[]): void {
+    console.info(this.prefix, message, ...meta);
+  }
+
+  warn(message: string, ...meta: unknown[]): void {
+    console.warn(this.prefix, message, ...meta);
+  }
+
+  error(message: string, ...meta: unknown[]): void {
+    console.error(this.prefix, message, ...meta);
+  }
+}
+```
+
+**When to use**: Development and debugging.
+
+## Using Logger with FormBuilder
+
+### Silent Mode (Default)
+
+No logger provided - operates silently:
+
+```jsx
+import { FormBuilder } from 'gd-form-configurator-react';
+
+function MyForm() {
+  return (
+    <FormBuilder
+      schema={schema}
+      uischema={uischema}
+      initialData={{}}
+      // No logger prop - silent operation
+    />
+  );
+}
+```
+
+### With Console Logger
+
+```jsx
+import { FormBuilder } from 'gd-form-configurator-react';
+import { ConsoleLogger } from 'gd-form-configurator';
+
+const logger = new ConsoleLogger('[MyForm]');
+
+function MyForm() {
+  return <FormBuilder schema={schema} uischema={uischema} initialData={{}} logger={logger} />;
+}
+```
+
+### With Custom Logger
+
+```jsx
+import { FormBuilder, ILogger } from 'gd-form-configurator-react';
+
+const customLogger: ILogger = {
+  debug: (msg, ...meta) => {
+    // Send to analytics service
+    analytics.track('form_debug', { message: msg, metadata: meta });
+  },
+  info: (msg, ...meta) => {
+    console.info('ℹ️', msg, ...meta);
+  },
+  warn: (msg, ...meta) => {
+    console.warn('⚠️', msg, ...meta);
+  },
+  error: (msg, ...meta) => {
+    // Send to error tracking service
+    errorTracker.captureMessage(msg, { extra: meta });
+    console.error('❌', msg, ...meta);
+  },
+};
+
+function MyForm() {
+  return <FormBuilder schema={schema} uischema={uischema} initialData={{}} logger={customLogger} />;
+}
+```
+
+## What Gets Logged
+
+### Error Level
+
+**Critical issues that prevent normal operation**
+
+- Form initialization failures
+- Renderer not found for control
+- Array operation errors
+- Schema validation failures
+
+**Example:**
+
+```typescript
+error('No renderer found for uischema', { uischema, schema });
+error('Failed to add array item', { path, error });
+```
+
+### Warn Level
+
+**Non-critical issues that should be addressed**
+
+- UISchema validation warnings
+- Missing control testers
+- Deprecated API usage
+- Schema inconsistencies
+
+**Example:**
+
+```typescript
+warn('Control scope does not exist in schema', { scope: '#/properties/unknown' });
+warn('UISchema element missing required property', { element });
+```
+
+### Info Level
+
+**Important state changes and lifecycle events**
+
+- Form initialization
+- Schema updates
+- UISchema updates
+- Validation completion
+- Data reset operations
+
+**Example:**
+
+```typescript
+info('Form initialized', { schema, uischema, data });
+info('Validation completed', { errorCount: errors.length });
+info('Schema updated', { newSchema });
+```
+
+### Debug Level
+
+**Detailed information for troubleshooting**
+
+- Field value updates
+- Component re-renders
+- Rule evaluations
+- Tester priority calculations
+- State transitions
+
+**Example:**
+
+```typescript
+debug('Field value updated', { path: 'user.email', newValue, oldValue });
+debug('Rule evaluated', { effect: 'SHOW', condition, result: true });
+debug('Control selected', { control: 'EmailControl', priority: 3 });
+```
+
+## Logging Best Practices
+
+### 1. Use Appropriate Levels
+
+```typescript
+// ✅ Good
+logger.debug('Computing validation...', { fieldCount });
+logger.info('Form submitted successfully');
+logger.warn('Schema missing recommended field', { field });
+logger.error('Failed to submit form', { error });
+
+// ❌ Bad
+logger.error('User clicked submit button'); // Too verbose, not an error
+logger.debug('Form submission failed'); // Wrong level
+```
+
+### 2. Include Useful Context
+
+```typescript
+// ✅ Good
+logger.error('Validation failed', {
+  fieldPath: 'user.email',
+  error: validationError,
+  currentValue: value,
+  schema: fieldSchema,
+});
+
+// ❌ Bad
+logger.error('Validation failed'); // No context
+```
+
+### 3. Don't Log Sensitive Data
+
+```typescript
+// ✅ Good
+logger.info('User authenticated', { userId: user.id });
+
+// ❌ Bad
+logger.info('User authenticated', {
+  password: user.password, // Never log passwords!
+  ssn: user.ssn, // Never log PII!
+});
+```
+
+### 4. Use Structured Logging
+
+```typescript
+// ✅ Good - Structured metadata
+logger.info('Form validation', {
+  formId: 'user-registration',
+  errorCount: errors.length,
+  fieldCount: Object.keys(data).length,
+  timestamp: Date.now(),
+});
+
+// ❌ Bad - String concatenation
+logger.info(`Form user-registration has ${errors.length} errors`);
+```
+
+## Custom Logger Examples
+
+### Logger with Log Levels
+
+```typescript
+class ConfigurableLogger implements ILogger {
+  constructor(private minLevel: 'debug' | 'info' | 'warn' | 'error' = 'info') {}
+
+  private shouldLog(level: string): boolean {
+    const levels = ['debug', 'info', 'warn', 'error'];
+    const minIndex = levels.indexOf(this.minLevel);
+    const currentIndex = levels.indexOf(level);
+    return currentIndex >= minIndex;
+  }
+
+  debug(message: string, ...meta: unknown[]): void {
+    if (this.shouldLog('debug')) {
+      console.debug('[DEBUG]', message, ...meta);
+    }
+  }
+
+  info(message: string, ...meta: unknown[]): void {
+    if (this.shouldLog('info')) {
+      console.info('[INFO]', message, ...meta);
+    }
+  }
+
+  warn(message: string, ...meta: unknown[]): void {
+    if (this.shouldLog('warn')) {
+      console.warn('[WARN]', message, ...meta);
+    }
+  }
+
+  error(message: string, ...meta: unknown[]): void {
+    if (this.shouldLog('error')) {
+      console.error('[ERROR]', message, ...meta);
+    }
+  }
+}
+
+// Usage
+const logger = new ConfigurableLogger('warn'); // Only warn and error
+```
+
+### Logger with Remote Logging
+
+```typescript
+class RemoteLogger implements ILogger {
+  constructor(private endpoint: string) {}
+
+  private send(level: string, message: string, meta: unknown[]): void {
+    fetch(this.endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        level,
+        message,
+        metadata: meta,
+        timestamp: new Date().toISOString(),
+        source: 'form-configurator',
+      }),
+    }).catch((err) => console.error('Failed to send log', err));
+  }
+
+  debug(message: string, ...meta: unknown[]): void {
+    this.send('debug', message, meta);
+  }
+
+  info(message: string, ...meta: unknown[]): void {
+    this.send('info', message, meta);
+  }
+
+  warn(message: string, ...meta: unknown[]): void {
+    this.send('warn', message, meta);
+    console.warn(message, ...meta); // Also log locally
+  }
+
+  error(message: string, ...meta: unknown[]): void {
+    this.send('error', message, meta);
+    console.error(message, ...meta); // Also log locally
+  }
+}
+```
+
+### Logger with Filtering
+
+```typescript
+class FilteredLogger implements ILogger {
+  constructor(
+    private baseLogger: ILogger,
+    private filter: (message: string) => boolean
+  ) {}
+
+  debug(message: string, ...meta: unknown[]): void {
+    if (this.filter(message)) {
+      this.baseLogger.debug(message, ...meta);
+    }
+  }
+
+  info(message: string, ...meta: unknown[]): void {
+    if (this.filter(message)) {
+      this.baseLogger.info(message, ...meta);
+    }
+  }
+
+  warn(message: string, ...meta: unknown[]): void {
+    if (this.filter(message)) {
+      this.baseLogger.warn(message, ...meta);
+    }
+  }
+
+  error(message: string, ...meta: unknown[]): void {
+    // Always log errors
+    this.baseLogger.error(message, ...meta);
+  }
+}
+
+// Usage - only log validation-related messages
+const logger = new FilteredLogger(new ConsoleLogger(), (msg) => msg.includes('validation') || msg.includes('error'));
+```
+
+## Environment-Based Logger
+
+```typescript
+// utils/logger.ts
+import { ILogger, NoOpLogger, ConsoleLogger } from 'gd-form-configurator';
+
+export function createLogger(): ILogger {
+  if (process.env.NODE_ENV === 'development') {
+    return new ConsoleLogger('[FormConfigurator]');
+  }
+
+  if (process.env.NODE_ENV === 'production' && process.env.ENABLE_LOGGING) {
+    // Use remote logger in production if enabled
+    return new RemoteLogger('/api/logs');
+  }
+
+  // Silent by default in production
+  return new NoOpLogger();
+}
+
+// Usage
+import { createLogger } from './utils/logger';
+
+const logger = createLogger();
+
+function MyForm() {
+  return <FormBuilder schema={schema} uischema={uischema} initialData={{}} logger={logger} />;
+}
+```
+
+## Debugging Tips
+
+### Enable Debug Logging in Development
+
+```jsx
+import { ConsoleLogger } from 'gd-form-configurator';
+
+const logger = new ConsoleLogger('[FormDebug]');
+
+<FormBuilder
+  schema={schema}
+  uischema={uischema}
+  initialData={initialData}
+  logger={logger}
+  onChange={(data) => {
+    logger.debug('Form data changed', { data });
+  }}
+/>;
+```
+
+### Track Validation Errors
+
+```jsx
+const logger: ILogger = {
+  // ... other methods
+  error: (msg, ...meta) => {
+    if (msg.includes('validation')) {
+      console.error('Validation Error:', meta);
+      // Could send to analytics
+    }
+  },
+};
+```
+
+### Monitor Performance
+
+```jsx
+const logger: ILogger = {
+  debug: (msg, ...meta) => {
+    if (msg.includes('render')) {
+      console.time('render');
+      console.debug(msg, ...meta);
+      console.timeEnd('render');
+    }
+  },
+  // ... other methods
+};
+```
+
+## Related Documentation
+
+- **[Getting Started](/docs/form-configurator-getting-started--docs)**: Basic setup
+- **[Custom Controls](/docs/form-configurator-custom-controls--docs)**: Add logging to custom controls
+
+## Resources
+
+- [Core Library Logger](https://www.npmjs.com/package/gd-form-configurator)
+- [React Adapter Documentation](https://www.npmjs.com/package/gd-form-configurator-react)

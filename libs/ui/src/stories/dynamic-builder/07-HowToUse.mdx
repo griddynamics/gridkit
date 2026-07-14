@@ -1,0 +1,199 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+import { CollapsibleSections } from './CollapsibleSections';
+
+<Meta title="Domain Solutions/Dynamic Builder/How to Use" />
+
+# How to Use
+
+<CollapsibleSections />
+
+**Contents**
+
+- [Pick the right starting point](#pick-the-right-starting-point)
+- [Vite config required](#vite-config-required)
+- [Setup 1: full builder page](#setup-1-full-builder-page)
+- [Setup 2: AI stack only](#setup-2-ai-stack-only)
+- [Setup 3: Dynamic Form only](#setup-3-dynamic-form-only)
+- [Setup 4: add a new scenario](#setup-4-add-a-new-scenario)
+- [Common patterns](#common-patterns)
+- [What to avoid](#what-to-avoid)
+
+---
+
+## Pick the right starting point
+
+| You want to...                                          | Start with                                                          |
+| ------------------------------------------------------- | ------------------------------------------------------------------- |
+| mount the full builder experience                       | `UIBuilderPage`                                                     |
+| generate and validate A2UI in your own route or service | `providers/` + `runtime/` + `validation/`                           |
+| build forms and export them                             | `dynamic-form/ui.ts` or `dynamic-form/headless.ts`                  |
+| add a new Dashboard or Catalog-like tab                 | `prompt-library/` + `scenarios/config.ts` + `scenarios/registry.ts` |
+
+## Vite config required
+
+`ajv` and `ajv-formats` ship as CJS. Without pre-bundling, their internal format definitions arrive undefined at runtime and the validator crashes on first render.
+
+Add this to your `vite.config.ts` before using any setup below:
+
+```ts
+// vite.config.ts
+export default defineConfig({
+  optimizeDeps: {
+    include: ['ajv', 'ajv-formats'],
+  },
+  // ...rest of config
+});
+```
+
+> **This must be defined.** Omitting it causes `Uncaught TypeError: Cannot read properties of undefined (reading 'code')` in `createA2UIValidator` at startup.
+
+---
+
+## Setup 1: full builder page
+
+Requires: `gd-design-library`, `@emotion/react`, `@emotion/styled`, `zustand`, `ajv`, `ajv-formats`, `@google/generative-ai`
+
+Use this when you want tabs, provider selector, undo/redo, reset, fullscreen preview, section editing, and Dynamic Form.
+
+```tsx
+import { UIBuilderPage } from 'apps/main/src/app/ui-builder';
+
+export function BuilderRoute() {
+  return <UIBuilderPage navigate={(path) => router.push(path)} />;
+}
+```
+
+```text
+route
+  -> UIBuilderPage
+  -> hooks/useUIBuilderPageController.ts
+  -> scenarios and subpages
+  -> rendered builder experience
+```
+
+## Setup 2: AI stack only
+
+Requires: `gd-design-library`, `@emotion/react`, `@emotion/styled`, `ajv`, `ajv-formats`, `@google/generative-ai`
+
+Use this when your app already has its own shell and you only need generation.
+
+### Small request: direct provider call
+
+```ts
+import { createProvider } from 'apps/main/src/app/ui-builder/providers';
+import { parseAndValidateA2UI, sanitizeA2UISpec, enrichA2UIMetadata } from 'apps/main/src/app/ui-builder/validation';
+
+const provider = createProvider('anthropic', {
+  apiKey: process.env.VITE_ANTHROPIC_API_KEY!,
+});
+
+const response = await provider.generate({
+  systemPrompt: 'Generate an analytics dashboard in valid A2UI JSON.',
+  messages: [{ role: 'user', content: 'Show revenue KPIs and monthly trends.' }],
+});
+
+const result = parseAndValidateA2UI(response.text);
+
+if (!result.valid || !result.spec) {
+  throw new Error(result.errors.join('\n'));
+}
+
+const safeSpec = enrichA2UIMetadata(sanitizeA2UISpec(result.spec));
+```
+
+### Large request: runtime with chunking and retries
+
+```ts
+import { createBuilderRuntime } from 'apps/main/src/app/ui-builder/runtime';
+
+const runtime = createBuilderRuntime({
+  providerId: 'anthropic',
+  apiKey: process.env.VITE_ANTHROPIC_API_KEY!,
+  systemPrompt: 'Return valid A2UI JSON only.',
+  parser: parseDashboardReply,
+});
+
+const result = await runtime.generate({
+  tasks: [
+    { label: 'header', messages: [{ role: 'user', content: 'Build the header and KPI row.' }] },
+    { label: 'charts', messages: [{ role: 'user', content: 'Build the chart section.' }] },
+  ],
+  merge: mergeDashboardChunks,
+});
+```
+
+Use the direct path for small requests. Use the runtime path when you need chunking, retries, or merging.
+
+## Setup 3: Dynamic Form only
+
+Requires: `gd-design-library`, `@emotion/react`, `@emotion/styled`, `zustand`
+
+### Full form UI
+
+```tsx
+import { DynamicFormBuilder } from 'apps/main/src/app/ui-builder/dynamic-form/ui';
+
+export function FormDesignScreen() {
+  return <DynamicFormBuilder />;
+}
+```
+
+### Headless exports only
+
+```ts
+import { toA2UISpec, toDataSchema, toUISchema, toReactCode } from 'apps/main/src/app/ui-builder/dynamic-form/headless';
+
+const a2uiSpec = toA2UISpec(formState);
+const dataSchema = toDataSchema(formState);
+const uiSchema = toUISchema(formState);
+const reactCode = toReactCode(formState);
+```
+
+## Setup 4: add a new scenario
+
+Use this when you want a new tab like Dashboard or Product Catalog.
+
+1. add prompt content in `prompt-library/`
+2. update `prompt-factory/` only if shared prompt helper logic is needed
+3. add tab metadata and quick actions in `scenarios/config.ts`
+4. wire the renderer in `scenarios/registry.ts`
+5. implement the experience in `subpages/` or `dynamic-form/`
+
+Ownership rule:
+
+| Path              | Owns                       |
+| ----------------- | -------------------------- |
+| `prompt-library/` | scenario content           |
+| `prompt-factory/` | shared prompt helper logic |
+| `scenarios/`      | tab metadata and wiring    |
+| `subpages/`       | rendered experience        |
+
+## Common patterns
+
+### Dashboard
+
+- broad prompts split into multiple smaller requests
+- section prompts target one card or one row
+- the merged result becomes the new current spec
+
+### Product Catalog
+
+- broad prompts use chunked generation too
+- section prompts replace only the selected section
+- the current edited spec is always the source of truth for the home view
+
+### Dynamic Form
+
+- one `FormBuilderState`, many outputs
+- use `headless.ts` for transforms in custom shells
+
+## What to avoid
+
+- do not import `prompt-library/` from general app code
+- do not use `dynamic-form/index.ts` for headless transforms — use `headless.ts`
+- do not put page-specific logic into `runtime/` or `validation/`
+- do not make lower layers depend on `UIBuilderPage`
+
+## Key point
+
+**Use the full page when you want the whole product experience. Use the lower layers when you only need one piece.**

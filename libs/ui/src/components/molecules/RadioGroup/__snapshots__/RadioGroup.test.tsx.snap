@@ -1,0 +1,100 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`RadioGroup > SHOULD match snapshot 1`] = `
+<div>
+  <fieldset
+    class="css-1tniigo"
+    data-testid="RadioGroup"
+    role="radiogroup"
+  >
+    <div
+      class="css-dux1py"
+      data-testid="Column"
+    >
+      <div
+        class="css-116n9yo"
+      >
+        <div
+          class="css-1u8qly9"
+          data-testid="Tooltip-wrapper"
+        >
+          <div
+            class="css-i6z6q4"
+            data-testid="RadioGroupItem-opt1"
+          >
+            <input
+              aria-checked="false"
+              class="css-1s90lkc"
+              data-testid="RadioGroupItem-input-opt1"
+              name="radio-group-snapshot"
+              type="radio"
+              value="opt1"
+            />
+            <label
+              class="css-i89cgy"
+            >
+              Option 1
+            </label>
+          </div>
+        </div>
+        <div
+          class="css-fewgzu"
+          data-testid="RadioGroupItem-opt2"
+        >
+          <input
+            aria-checked="false"
+            aria-disabled="true"
+            class="css-1s90lkc"
+            data-testid="RadioGroupItem-input-opt2"
+            disabled=""
+            name="radio-group-snapshot"
+            type="radio"
+            value="opt2"
+          />
+          <label
+            class="css-1gi1fij"
+          >
+            Option 2
+          </label>
+        </div>
+        <div
+          class="css-i6z6q4"
+          data-testid="RadioGroupItem-opt3"
+        >
+          <input
+            aria-checked="false"
+            class="css-1s90lkc"
+            data-testid="RadioGroupItem-input-opt3"
+            name="radio-group-snapshot"
+            type="radio"
+            value="opt3"
+          />
+          <label
+            class="css-i89cgy"
+          >
+            Option 3
+          </label>
+        </div>
+        <div
+          class="css-i6z6q4"
+          data-testid="RadioGroupItem-opt4"
+        >
+          <input
+            aria-checked="false"
+            class="css-1s90lkc"
+            data-testid="RadioGroupItem-input-opt4"
+            name="radio-group-snapshot"
+            type="radio"
+            value="opt4"
+          />
+          <label
+            class="css-i89cgy"
+          >
+            Option 4
+          </label>
+        </div>
+      </div>
+    </div>
+  </fieldset>
+</div>
+`;

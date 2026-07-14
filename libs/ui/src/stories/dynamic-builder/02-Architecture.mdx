@@ -1,0 +1,141 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+import { CollapsibleSections } from './CollapsibleSections';
+
+<Meta title="Domain Solutions/Dynamic Builder/Architecture" />
+
+# Architecture
+
+<CollapsibleSections />
+
+**Contents**
+
+- [Overview](#overview)
+- [Simple scheme](#simple-scheme)
+- [Layer groups](#layer-groups)
+- [Top-level structure](#top-level-structure)
+- [Full page flow](#full-page-flow)
+- [Section edit flow](#section-edit-flow)
+- [Dynamic Form flow](#dynamic-form-flow)
+- [Boundary notes](#boundary-notes)
+- [Real implementation examples](#real-implementation-examples)
+
+---
+
+## Overview
+
+Dynamic Builder is a small stack of layers, not one big component.
+
+- reusable layers for provider calls, validation, and transforms
+- orchestration layers for prompt shaping and state
+- experience layers for the real builder page and scenario tabs
+
+## Simple scheme
+
+```text
+UIBuilderPage
+  -> scenarios decide the active tab
+  -> subpages build the current experience
+  -> hooks orchestrate prompts, history, and state
+  -> runtime calls the provider
+  -> validation repairs and checks the response
+  -> the A2UI spec is rendered
+```
+
+## Layer groups
+
+| Layer group            | Paths                                                                                            | Purpose                                       |
+| ---------------------- | ------------------------------------------------------------------------------------------------ | --------------------------------------------- |
+| Reusable core          | `providers/`, `runtime/`, `validation/`, `utils/`                                                | code that works outside the full builder page |
+| Reusable UI            | `shell/`, `dynamic-form/ui.ts`, `dynamic-form/headless.ts`                                       | builder shell and form exports                |
+| Orchestration          | `hooks/`, `actions/`, `prompt-factory/`                                                          | state, prompt shaping, action wiring          |
+| Experience composition | `UIBuilderPage.tsx`, `UIBuilderHeader.tsx`, `scenarios/`, `subpages/`, most of `prompt-library/` | the product experience                        |
+
+## Top-level structure
+
+| Path                                  | Owns                                    |
+| ------------------------------------- | --------------------------------------- |
+| `UIBuilderPage.tsx`                   | full page assembly                      |
+| `UIBuilderHeader.tsx`                 | top toolbar and page controls           |
+| `hooks/useUIBuilderPageController.ts` | page orchestration                      |
+| `scenarios/config.ts`                 | tab metadata and quick actions          |
+| `scenarios/registry.ts`               | which component renders each tab        |
+| `subpages/`                           | Dashboard and Catalog experience        |
+| `providers/`                          | provider metadata and factory           |
+| `runtime/`                            | generation, retries, chunk merge        |
+| `validation/`                         | parse, validate, sanitize, enrich       |
+| `dynamic-form/`                       | form builder UI and headless transforms |
+| `shell/`                              | chat input, content area, reset modal   |
+
+## Full page flow
+
+```text
+user prompt
+  -> prompt config
+  -> useUIBuilderAgent
+  -> createBuilderRuntime / generateSpec
+  -> provider.generate
+  -> parseAndValidateA2UI
+  -> sanitizeA2UISpec
+  -> enrichA2UIMetadata
+  -> rendered screen
+```
+
+Dashboard and Product Catalog both support multi-request generation for large prompts.
+
+## Section edit flow
+
+When the user edits only one section:
+
+```text
+section selected
+  -> usePromptHandlers scopes the request
+  -> provider returns one section
+  -> parseAndValidateA2UISection checks the reply
+  -> componentTree helpers find the matching node
+  -> the section is replaced in the current spec
+```
+
+Example: "change only the header" or "rewrite only featured products" — neither touches the rest of the page.
+
+## Dynamic Form flow
+
+```text
+form builder state
+  -> transforms
+  -> A2UI preview
+  -> data schema
+  -> UI schema
+  -> React output
+```
+
+## Boundary notes
+
+- `UIBuilderPage.tsx` is the product shell — do not make lower layers depend on it
+- `hooks/useUIBuilderPageController.ts` owns page-level orchestration
+- `subpages/catalog/storefront.ts` is the scenario-facing storefront facade
+- `prompt-library/catalog.ts` owns Catalog prompt content behind that facade
+- put generic logic lower in the stack; keep page-specific logic in `scenarios/` or `subpages/`
+
+## Real implementation examples
+
+### Add a new provider
+
+1. register the factory in `providers/index.ts`
+2. add the metadata entry in `providers/metadata.ts`
+
+### Add a new scenario tab
+
+1. add prompt content in `prompt-library/`
+2. add tab metadata in `scenarios/config.ts`
+3. wire the renderer in `scenarios/registry.ts`
+4. add page code in `subpages/` if needed
+
+### Add a new form field type
+
+1. extend `FieldType` in `dynamic-form/types.ts`
+2. register the field in `dynamic-form/constants.ts`
+3. update the transforms that need to understand it
+
+## Key point
+
+**Keep generic logic in the reusable layers. Keep experience logic in scenarios and subpages.**

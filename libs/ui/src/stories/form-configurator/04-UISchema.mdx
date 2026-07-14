@@ -1,0 +1,681 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Form Configurator/UI Schema & Layouts" />
+
+# UI Schema & Layouts API
+
+## Overview
+
+The **UI Schema** defines how your form is rendered and laid out. While the Data Schema defines _what_ data you need, the UI Schema defines _how_ it's displayed.
+
+## UISchema Type
+
+```typescript
+type UISchema =
+  | BaseUISchemaElement
+  | ControlElement
+  | Layout
+  | LabelElement
+  | VerticalLayout
+  | HorizontalLayout
+  | GroupLayout
+  | CategorizationLayout;
+
+interface BaseUISchemaElement {
+  type: string;
+  rule?: Rule;
+  options?: { [key: string]: any };
+}
+```
+
+## Core Concepts
+
+### Scope Property
+
+The `scope` property uses JSON Pointer syntax to reference fields in your data schema:
+
+```typescript
+// Data Schema
+{
+  type: 'object',
+  properties: {
+    firstName: { type: 'string' },
+    email: { type: 'string', format: 'email' }
+  }
+}
+
+// UI Schema - scope references
+{
+  type: 'Control',
+  scope: '#/properties/firstName'  // Points to firstName
+}
+{
+  type: 'Control',
+  scope: '#/properties/email'      // Points to email
+}
+```
+
+### Control Element
+
+A control represents a single form field:
+
+```typescript
+interface ControlElement extends BaseUISchemaElement {
+  type: 'Control';
+  scope: string;
+  label?: string; // Override default label from schema
+}
+```
+
+Example:
+
+```typescript
+{
+  type: 'Control',
+  scope: '#/properties/email',
+  label: 'Your Email Address'  // Custom label
+}
+```
+
+## Layout Types
+
+### VerticalLayout
+
+Stacks elements vertically (default layout):
+
+```typescript
+interface VerticalLayout extends Layout {
+  type: 'VerticalLayout';
+  elements: UISchema[];
+}
+```
+
+**Example:**
+
+```typescript
+{
+  type: 'VerticalLayout',
+  elements: [
+    { type: 'Control', scope: '#/properties/firstName' },
+    { type: 'Control', scope: '#/properties/lastName' },
+    { type: 'Control', scope: '#/properties/email' }
+  ]
+}
+```
+
+**Renders as:**
+
+```
+┌─────────────────┐
+│ First Name      │
+├─────────────────┤
+│ Last Name       │
+├─────────────────┤
+│ Email           │
+└─────────────────┘
+```
+
+### HorizontalLayout
+
+Arranges elements side by side:
+
+```typescript
+interface HorizontalLayout extends Layout {
+  type: 'HorizontalLayout';
+  elements: UISchema[];
+}
+```
+
+**Example:**
+
+```typescript
+{
+  type: 'HorizontalLayout',
+  elements: [
+    { type: 'Control', scope: '#/properties/firstName' },
+    { type: 'Control', scope: '#/properties/lastName' }
+  ]
+}
+```
+
+**Renders as:**
+
+```
+┌──────────┬──────────┐
+│ First    │ Last     │
+│ Name     │ Name     │
+└──────────┴──────────┘
+```
+
+### GroupLayout
+
+Groups related fields with an optional label:
+
+```typescript
+interface GroupLayout extends Layout {
+  type: 'Group';
+  label?: string;
+  elements: ControlElement[];
+}
+```
+
+**Example:**
+
+```typescript
+{
+  type: 'Group',
+  label: 'Personal Information',
+  elements: [
+    { type: 'Control', scope: '#/properties/firstName' },
+    { type: 'Control', scope: '#/properties/lastName' },
+    { type: 'Control', scope: '#/properties/dateOfBirth' }
+  ]
+}
+```
+
+**Renders as:**
+
+```
+┌─ Personal Information ──┐
+│ First Name              │
+│ Last Name               │
+│ Date of Birth           │
+└─────────────────────────┘
+```
+
+### CategorizationLayout
+
+Creates tabbed sections for complex forms:
+
+```typescript
+interface CategorizationLayout extends Layout {
+  type: 'Categorization';
+  elements: Category[];
+}
+
+interface Category extends Layout {
+  type: 'Category';
+  label: string;
+  elements: ControlElement[];
+}
+```
+
+**Example:**
+
+```typescript
+{
+  type: 'Categorization',
+  elements: [
+    {
+      type: 'Category',
+      label: 'Personal',
+      elements: [
+        { type: 'Control', scope: '#/properties/firstName' },
+        { type: 'Control', scope: '#/properties/lastName' }
+      ]
+    },
+    {
+      type: 'Category',
+      label: 'Contact',
+      elements: [
+        { type: 'Control', scope: '#/properties/email' },
+        { type: 'Control', scope: '#/properties/phone' }
+      ]
+    }
+  ]
+}
+```
+
+**Renders as:**
+
+```
+┌─────────────────────────┐
+│ [Personal] [Contact]    │
+├─────────────────────────┤
+│ First Name              │
+│ Last Name               │
+└─────────────────────────┘
+```
+
+### NestedLayout
+
+Handles nested object properties:
+
+```typescript
+{
+  type: 'NestedLayout',
+  scope: '#/properties/address',
+  elements: [
+    { type: 'Control', scope: '#/properties/street' },
+    { type: 'Control', scope: '#/properties/city' },
+    { type: 'Control', scope: '#/properties/zipCode' }
+  ]
+}
+```
+
+## Combining Layouts
+
+Layouts can be nested to create complex structures:
+
+```typescript
+{
+  type: 'VerticalLayout',
+  elements: [
+    {
+      type: 'HorizontalLayout',
+      elements: [
+        { type: 'Control', scope: '#/properties/firstName' },
+        { type: 'Control', scope: '#/properties/lastName' }
+      ]
+    },
+    { type: 'Control', scope: '#/properties/email' },
+    {
+      type: 'Group',
+      label: 'Address',
+      elements: [
+        { type: 'Control', scope: '#/properties/street' },
+        {
+          type: 'HorizontalLayout',
+          elements: [
+            { type: 'Control', scope: '#/properties/city' },
+            { type: 'Control', scope: '#/properties/state' },
+            { type: 'Control', scope: '#/properties/zipCode' }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+## Rules System
+
+Rules control conditional visibility and enablement:
+
+```typescript
+interface Rule {
+  effect: RuleEffect;
+  condition: Condition;
+}
+
+enum RuleEffect {
+  HIDE = 'HIDE',
+  SHOW = 'SHOW',
+  ENABLE = 'ENABLE',
+  DISABLE = 'DISABLE',
+}
+```
+
+### Simple Condition
+
+```typescript
+interface LeafCondition {
+  type: 'LEAF';
+  scope: string;
+  expectedValue: any;
+}
+```
+
+**Example - Hide field:**
+
+```typescript
+{
+  type: 'Control',
+  scope: '#/properties/companyName',
+  rule: {
+    effect: 'HIDE',
+    condition: {
+      type: 'LEAF',
+      scope: '#/properties/employed',
+      expectedValue: false
+    }
+  }
+}
+```
+
+### Disable Field
+
+```typescript
+{
+  type: 'Control',
+  scope: '#/properties/reason',
+  rule: {
+    effect: 'DISABLE',
+    condition: {
+      scope: '#/properties/hasReason',
+      expectedValue: false
+    }
+  }
+}
+```
+
+### OR Condition
+
+```typescript
+interface OrCondition {
+  type: 'OR';
+  conditions: Condition[];
+}
+```
+
+**Example:**
+
+```typescript
+{
+  type: 'Control',
+  scope: '#/properties/discount',
+  rule: {
+    effect: 'SHOW',
+    condition: {
+      type: 'OR',
+      conditions: [
+        {
+          scope: '#/properties/isMember',
+          expectedValue: true
+        },
+        {
+          scope: '#/properties/isStudent',
+          expectedValue: true
+        }
+      ]
+    }
+  }
+}
+```
+
+### AND Condition
+
+```typescript
+interface AndCondition {
+  type: 'AND';
+  conditions: Condition[];
+}
+```
+
+**Example:**
+
+```typescript
+{
+  type: 'Control',
+  scope: '#/properties/creditLimit',
+  rule: {
+    effect: 'ENABLE',
+    condition: {
+      type: 'AND',
+      conditions: [
+        {
+          scope: '#/properties/isVerified',
+          expectedValue: true
+        },
+        {
+          scope: '#/properties/hasIncome',
+          expectedValue: true
+        }
+      ]
+    }
+  }
+}
+```
+
+### Schema-Based Condition
+
+Validate against a schema:
+
+```typescript
+interface SchemaBasedCondition {
+  scope: string;
+  schema: DataSchema;
+  failWhenUndefined?: boolean;
+}
+```
+
+**Example:**
+
+```typescript
+{
+  type: 'Control',
+  scope: '#/properties/businessDetails',
+  rule: {
+    effect: 'SHOW',
+    condition: {
+      scope: '#/properties/revenue',
+      schema: {
+        type: 'number',
+        minimum: 100000
+      }
+    }
+  }
+}
+```
+
+### Custom Validation Function
+
+```typescript
+interface ValidateFunctionCondition {
+  scope: string;
+  validate: (context: ValidateFunctionContext) => boolean;
+}
+
+interface ValidateFunctionContext {
+  data: unknown;
+  fullData: unknown;
+  path: string | undefined;
+  uischemaElement: UISchema;
+}
+```
+
+**Example:**
+
+```typescript
+{
+  type: 'Control',
+  scope: '#/properties/confirmPassword',
+  rule: {
+    effect: 'ENABLE',
+    condition: {
+      scope: '#/properties/password',
+      validate: (context) => {
+        return context.data && context.data.length >= 8;
+      }
+    }
+  }
+}
+```
+
+## Complex Form Example
+
+Multi-step form with categorization:
+
+```typescript
+const schema = {
+  type: 'object',
+  properties: {
+    // Step 1: Personal
+    firstName: { type: 'string', title: 'First Name' },
+    lastName: { type: 'string', title: 'Last Name' },
+    dateOfBirth: { type: 'string', format: 'date', title: 'Date of Birth' },
+
+    // Step 2: Contact
+    email: { type: 'string', format: 'email', title: 'Email' },
+    phone: { type: 'string', format: 'tel', title: 'Phone' },
+
+    // Step 3: Address
+    street: { type: 'string', title: 'Street' },
+    city: { type: 'string', title: 'City' },
+    state: { type: 'string', title: 'State' },
+    zipCode: { type: 'string', title: 'ZIP Code' },
+
+    // Step 4: Preferences
+    newsletter: { type: 'boolean', title: 'Subscribe to Newsletter' },
+    notifications: { type: 'boolean', title: 'Enable Notifications' },
+  },
+  required: ['firstName', 'lastName', 'email'],
+};
+
+const uischema = {
+  type: 'Categorization',
+  elements: [
+    {
+      type: 'Category',
+      label: 'Personal Information',
+      elements: [
+        {
+          type: 'HorizontalLayout',
+          elements: [
+            { type: 'Control', scope: '#/properties/firstName' },
+            { type: 'Control', scope: '#/properties/lastName' },
+          ],
+        },
+        { type: 'Control', scope: '#/properties/dateOfBirth' },
+      ],
+    },
+    {
+      type: 'Category',
+      label: 'Contact Details',
+      elements: [
+        { type: 'Control', scope: '#/properties/email' },
+        { type: 'Control', scope: '#/properties/phone' },
+      ],
+    },
+    {
+      type: 'Category',
+      label: 'Address',
+      elements: [
+        { type: 'Control', scope: '#/properties/street' },
+        {
+          type: 'HorizontalLayout',
+          elements: [
+            { type: 'Control', scope: '#/properties/city' },
+            { type: 'Control', scope: '#/properties/state' },
+          ],
+        },
+        { type: 'Control', scope: '#/properties/zipCode' },
+      ],
+    },
+    {
+      type: 'Category',
+      label: 'Preferences',
+      elements: [
+        { type: 'Control', scope: '#/properties/newsletter' },
+        { type: 'Control', scope: '#/properties/notifications' },
+      ],
+    },
+  ],
+};
+```
+
+## Options Property
+
+The `options` property allows custom configuration:
+
+```typescript
+{
+  type: 'Control',
+  scope: '#/properties/description',
+  options: {
+    custom: 'textarea',  // Force specific control
+    multi: true,
+    placeholder: 'Enter description...'
+  }
+}
+```
+
+### Common Options
+
+- `custom`: Force a specific custom control
+- `placeholder`: Placeholder text
+- `multi`: Enable multi-line (for text inputs)
+- `rows`: Number of rows (for textarea)
+- `cols`: Number of columns (for textarea)
+
+## Label Element
+
+Display static text labels:
+
+```typescript
+interface LabelElement extends BaseUISchemaElement {
+  type: 'Label';
+  text: string;
+}
+```
+
+**Example:**
+
+```typescript
+{
+  type: 'VerticalLayout',
+  elements: [
+    {
+      type: 'Label',
+      text: 'Please fill out all required fields'
+    },
+    { type: 'Control', scope: '#/properties/name' }
+  ]
+}
+```
+
+## Best Practices
+
+1. **Keep layouts simple**: Don't over-nest layouts
+2. **Use groups wisely**: Group related fields for better UX
+3. **Consider mobile**: Horizontal layouts may not work well on small screens
+4. **Use categorization for long forms**: Break complex forms into logical sections
+5. **Apply rules sparingly**: Too many conditional rules can confuse users
+6. **Test rule combinations**: Ensure AND/OR conditions work as expected
+7. **Provide clear labels**: Override schema titles when needed for clarity
+
+## Common Patterns
+
+### Two-Column Layout
+
+```typescript
+{
+  type: 'HorizontalLayout',
+  elements: [
+    {
+      type: 'VerticalLayout',
+      elements: [
+        { type: 'Control', scope: '#/properties/field1' },
+        { type: 'Control', scope: '#/properties/field2' }
+      ]
+    },
+    {
+      type: 'VerticalLayout',
+      elements: [
+        { type: 'Control', scope: '#/properties/field3' },
+        { type: 'Control', scope: '#/properties/field4' }
+      ]
+    }
+  ]
+}
+```
+
+### Conditional Section
+
+```typescript
+{
+  type: 'Group',
+  label: 'Business Information',
+  rule: {
+    effect: 'SHOW',
+    condition: {
+      scope: '#/properties/accountType',
+      expectedValue: 'business'
+    }
+  },
+  elements: [
+    { type: 'Control', scope: '#/properties/companyName' },
+    { type: 'Control', scope: '#/properties/taxId' }
+  ]
+}
+```
+
+### Wizard-Style Form
+
+Use Categorization with descriptive category labels to create a wizard experience.
+
+## Related Documentation
+
+- **[Data Schema](/docs/form-configurator-data-schema--docs)**: Define your data structure
+- **[Controls](/docs/form-configurator-controls--docs)**: Available form controls
+- **[Getting Started](/docs/form-configurator-getting-started--docs)**: Basic examples

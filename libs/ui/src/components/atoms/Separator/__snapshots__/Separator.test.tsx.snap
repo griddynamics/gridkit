@@ -1,0 +1,14 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Separator > SHOULD match snapshot 1`] = `
+<div>
+  <div
+    class="css-it18s5"
+    data-testid="Separator"
+  >
+    <div
+      class="css-1glakdc"
+    />
+  </div>
+</div>
+`;

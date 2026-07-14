@@ -1,0 +1,53 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Toggle > SHOULD renders all toggle items 1`] = `
+<div>
+  <div
+    class="css-sszbnq"
+    data-testid="Toggle"
+  >
+    <button
+      class="css-1xtbs7r"
+      data-testid="Button"
+      role="button"
+      tabindex="0"
+      type="button"
+    >
+      <span
+        class="gd-button__content css-4vlwk1"
+        data-testid="Button-content"
+      >
+        Option 1
+      </span>
+    </button>
+    <button
+      class="css-wcbrd3"
+      data-testid="Button"
+      role="button"
+      tabindex="0"
+      type="button"
+    >
+      <span
+        class="gd-button__content css-4vlwk1"
+        data-testid="Button-content"
+      >
+        Option 2
+      </span>
+    </button>
+    <button
+      class="css-wcbrd3"
+      data-testid="Button"
+      role="button"
+      tabindex="0"
+      type="button"
+    >
+      <span
+        class="gd-button__content css-4vlwk1"
+        data-testid="Button-content"
+      >
+        Option 3
+      </span>
+    </button>
+  </div>
+</div>
+`;

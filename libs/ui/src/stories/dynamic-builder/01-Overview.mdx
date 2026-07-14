@@ -1,0 +1,140 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+import { CollapsibleSections } from './CollapsibleSections';
+
+<Meta title="Domain Solutions/Dynamic Builder/Overview" />
+
+# Dynamic Builder
+
+<CollapsibleSections />
+
+**Contents**
+
+- [Required dependencies](#required-dependencies)
+- [What it is](#what-it-is)
+- [A simple end-to-end example](#a-simple-end-to-end-example)
+- [The 3 user-facing experiences](#the-3-user-facing-experiences)
+- [Where to look in code](#where-to-look-in-code)
+- [Layer stability](#layer-stability)
+- [Good next pages](#good-next-pages)
+
+---
+
+## Required dependencies
+
+Install all required packages before using any part of Dynamic Builder:
+
+```bash
+# npm
+npm install gd-design-library @emotion/react @emotion/styled zustand ajv ajv-formats @google/generative-ai
+
+# yarn
+yarn add gd-design-library @emotion/react @emotion/styled zustand ajv ajv-formats @google/generative-ai
+```
+
+| Package | Required for | Notes |
+|---|---|---|
+| `gd-design-library` | everything | design system — UI components, `renderA2UISpec`, `showSnackbar` |
+| `gd-design-library/ai` | everything | A2UI types, `buildA2UISystemPrompt`, `A2UI_SPEC_SCHEMA` — sub-path of the same package |
+| `react` ≥ 18 | everything | peer dep, must already be in your project |
+| `@emotion/react` | everything | CSS-in-JS runtime required by the design system |
+| `@emotion/styled` | everything | styled component support required by the design system |
+| `zustand` | Dynamic Form UI | powers the internal field store in `dynamic-form/` |
+| `ajv` | validation | JSON Schema validation used by `validation/a2ui-validator.ts` |
+| `ajv-formats` | validation | adds `date`, `uri`, and other format validators required by the A2UI schema |
+| `@google/generative-ai` | Gemini provider | only needed when using `providers/gemini` — safe to omit for other providers |
+
+> `gd-design-library` and `gd-design-library/ai` are path aliases for `libs/ui/src` — they resolve to the same local library package.
+
+### Vite projects — required config
+
+`ajv` and `ajv-formats` ship as CJS and must be pre-bundled. Add them to `optimizeDeps` in your `vite.config.ts`, otherwise their internal format definitions arrive undefined at runtime:
+
+```ts
+optimizeDeps: {
+  include: ['ajv', 'ajv-formats'],
+},
+```
+
+---
+
+## What it is
+
+Dynamic Builder is the internal workspace where AI output becomes a working screen.
+
+It lets a person:
+
+- ask an LLM to create a UI as JSON
+- validate and repair that JSON
+- preview the result as a real page
+- edit one section without regenerating everything
+- build forms and export them to multiple formats
+
+Source: `apps/main/src/app/ui-builder/`
+
+## A simple end-to-end example
+
+User types:
+
+`Build a product catalog with hero banner, featured products, and newsletter`
+
+What happens:
+
+```text
+prompt
+  -> provider generates A2UI JSON
+  -> validation checks and repairs the JSON
+  -> builder renders the page
+  -> user edits one section or regenerates the full screen
+```
+
+More examples:
+
+| Goal             | Example request                                                             | Typical result                                     |
+| ---------------- | --------------------------------------------------------------------------- | -------------------------------------------------- |
+| dashboard        | `Create a revenue dashboard with KPIs, monthly trend, and top performers`   | dashboard with editable cards and charts           |
+| storefront       | `Build a catalog with hero, categories, featured products, and footer`      | storefront with scoped section editing             |
+| form design      | `Generate an employee onboarding form with approvals and equipment request` | form state plus exportable schema and React output |
+| one small change | `Make the Home nav item an icon`                                            | one section regenerated and merged into the screen |
+
+## The 3 user-facing experiences
+
+| Experience           | What people see                                 | Main code areas                                        |
+| -------------------- | ----------------------------------------------- | ------------------------------------------------------ |
+| AI UI Builder        | Dashboard and Product Catalog tabs              | `prompt-library/`, `hooks/`, `subpages/`, `scenarios/` |
+| Dynamic Form Builder | Template → fields → layout → rules → preview    | `dynamic-form/`                                        |
+| Shared builder shell | provider selector, history, reset, section edit | `UIBuilderPage.tsx`, `shell/`, `hooks/`                |
+
+## Where to look in code
+
+| You want to change...           | Start here                                              |
+| ------------------------------- | ------------------------------------------------------- |
+| the full builder route          | `UIBuilderPage.tsx`                                     |
+| provider setup                  | `providers/`                                            |
+| generation and retry flow       | `runtime/`                                              |
+| validation and JSON repair      | `validation/`                                           |
+| section replacement logic       | `utils/componentTree.ts` + `hooks/usePromptHandlers.ts` |
+| Dynamic Form UI                 | `dynamic-form/ui.ts`                                    |
+| Dynamic Form transforms only    | `dynamic-form/headless.ts`                              |
+| Dashboard or Catalog experience | `subpages/` + `scenarios/`                              |
+
+## Layer stability
+
+| Stability | Paths                                                                                                                                   |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Stable    | `providers/`, `runtime/`, `validation/`, `shell/`, `dynamic-form/ui.ts`, `dynamic-form/headless.ts`, `utils/`, `actions/definitions.ts` |
+| Mixed     | `hooks/`, `actions/`, `prompt-factory/`                                                                                                 |
+| Product   | `UIBuilderPage.tsx`, `scenarios/`, `subpages/`, most of `prompt-library/`                                                               |
+
+Stable layers are safe to reuse outside the full page. Product layers are built for the experience.
+
+## Good next pages
+
+- read **Architecture** to understand module boundaries
+- read **Providers** to understand the LLM provider abstraction
+- read **Validation** to see how AI output is made safe to render
+- read **Form Builder** if your main use case is forms
+- read **How to Use** to start from a real integration pattern
+
+## Key point
+
+**Dynamic Builder is the place where AI output becomes a working screen that people can refine.**

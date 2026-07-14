@@ -1,0 +1,12 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Textarea Component > SHOULD math to snapshot 1`] = `
+<div>
+  <textarea
+    aria-multiline="true"
+    class="css-l8m9zm"
+    data-testid="Textarea"
+    role="textbox"
+  />
+</div>
+`;

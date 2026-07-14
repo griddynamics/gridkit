@@ -1,0 +1,681 @@
+import { Meta, Markdown } from '@storybook/addon-docs/blocks';
+
+<Meta title="Introduction/Charts" />
+
+# Chart Component
+
+## Overview
+
+The **Chart** component is a reusable data visualization wrapper built on [visx](https://airbnb.io/visx/) that supports **line**, **bar**, **area**, **pie**, and **donut** chart variants. It provides consistent theming, accessibility, interactive legends, responsive sizing, and debug logging out of the box.
+
+### Why use Chart instead of raw visx?
+
+<Markdown>
+  {`
+| Feature                        | Raw visx              | Chart component                                           |
+| ------------------------------ | --------------------- | --------------------------------------------------------- |
+| Theming                        | Manual                | Automatic via design tokens                               |
+| Responsive                     | Manual ResizeObserver | Built-in                                                  |
+| Accessibility                  | Manual ARIA setup     | Built-in \`role="img"\`, hidden \`title\`/\`description\` |
+| Legend toggle                  | Custom implementation | \`legend.interactive\` flag                               |
+| Loading / Error / Empty states | Custom implementation | Built-in with override slots                              |
+| Debug logging                  | None                  | \`useLogger\` in every sub-component                      |
+| Color palette                  | Hardcoded             | Theme-aware with \`colors\` override                      |
+`}
+</Markdown>
+
+---
+
+## Installation
+
+The Chart component is part of the GridKit Design System:
+
+```bash
+npm install gd-design-library
+# or
+yarn add gd-design-library
+```
+
+---
+
+## Quick Start
+
+### Line Chart
+
+```tsx
+import { Chart } from 'gd-design-library';
+
+const data = [
+  { month: 'Jan', revenue: 4000, profit: 2400 },
+  { month: 'Feb', revenue: 3000, profit: 1398 },
+  { month: 'Mar', revenue: 5000, profit: 3800 },
+  { month: 'Apr', revenue: 4500, profit: 2800 },
+];
+
+function RevenueChart() {
+  return (
+    <Chart
+      variant="line"
+      data={data}
+      xKey="month"
+      series={[
+        { dataKey: 'revenue', label: 'Revenue' },
+        { dataKey: 'profit', label: 'Profit' },
+      ]}
+      title="Monthly Revenue vs Profit"
+    />
+  );
+}
+```
+
+### Pie Chart
+
+```tsx
+import { Chart } from 'gd-design-library';
+
+const data = [
+  { name: 'Desktop', value: 45 },
+  { name: 'Mobile', value: 35 },
+  { name: 'Tablet', value: 15 },
+  { name: 'Other', value: 5 },
+];
+
+function MarketShareChart() {
+  return (
+    <Chart
+      variant="pie"
+      data={data}
+      pieConfig={{
+        nameKey: 'name',
+        dataKey: 'value',
+        showLabels: true,
+      }}
+      title="Device Market Share"
+    />
+  );
+}
+```
+
+---
+
+## Variants
+
+### Cartesian Charts (line, bar, area)
+
+These require `xKey` (the field mapped to the x-axis) and `series` (array of data series definitions):
+
+```tsx
+<Chart
+  variant="line" // or "bar" or "area"
+  data={data}
+  xKey="month"
+  series={[
+    { dataKey: 'revenue', label: 'Revenue' },
+    { dataKey: 'profit', label: 'Profit' },
+  ]}
+/>
+```
+
+**Series options:**
+
+<Markdown>
+  {`
+| Property | Type | Description |
+|----------|------|-------------|
+| \`dataKey\` | \`string\` | **Required.** Key in data record for this series |
+| \`label\` | \`string\` | Display name (defaults to dataKey) |
+| \`color\` | \`string\` | Per-series color override |
+| \`stackId\` | \`string\` | Stack group identifier (bar only) |
+| \`curveType\` | \`'monotone' \\| 'linear' \\| 'step' \\| 'natural'\` | Line/area interpolation |
+| \`fillOpacity\` | \`number\` | Area fill opacity (area only) |
+| \`hidden\` | \`boolean\` | Programmatically hide this series |
+`}
+</Markdown>
+
+### Pie/Donut Charts
+
+These require `pieConfig` instead of `xKey`/`series`:
+
+```tsx
+<Chart
+  variant="pie" // or "donut"
+  data={data}
+  pieConfig={{
+    nameKey: 'name', // field for slice labels
+    dataKey: 'value', // field for slice values
+    showLabels: true, // show percentage labels on slices
+    paddingAngle: 2, // gap between slices (donut)
+  }}
+/>
+```
+
+**pieConfig options:**
+
+<Markdown>
+  {`
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| \`nameKey\` | \`string\` | — | **Required.** Key for slice name/label |
+| \`dataKey\` | \`string\` | — | **Required.** Key for slice numeric value |
+| \`showLabels\` | \`boolean\` | \`false\` | Show labels on slices |
+| \`labelFormatter\` | \`(value, name) => string\` | percentage | Custom label format |
+| \`innerRadius\` | \`string \\| number\` | \`0\` / \`'60%'\` | Inner radius (auto for donut) |
+| \`outerRadius\` | \`string \\| number\` | \`'80%'\` | Outer radius |
+| \`paddingAngle\` | \`number\` | \`0\` | Gap angle between slices |
+| \`startAngle\` | \`number\` | \`0\` | Start angle in degrees |
+| \`endAngle\` | \`number\` | \`360\` | End angle (use 180/0 for semi-circle) |
+`}
+</Markdown>
+
+---
+
+## Tree-Shakeable Imports
+
+The unified `Chart` component imports all variants. For smaller bundles, use the standalone components:
+
+```tsx
+// Unified — all variants in bundle
+import { Chart } from 'gd-design-library';
+<Chart variant="line" data={data} xKey="month" series={series} />
+
+// Tree-shakeable — only the code you use
+import { LineChart } from 'gd-design-library';
+<LineChart data={data} xKey="month" series={series} />
+
+import { BarChart } from 'gd-design-library';
+<BarChart data={data} xKey="month" series={series} />
+
+import { AreaChart } from 'gd-design-library';
+<AreaChart data={data} xKey="month" series={series} />
+
+import { PieChart } from 'gd-design-library';
+<PieChart data={data} pieConfig={pieConfig} />
+<PieChart data={data} pieConfig={pieConfig} donut />  // donut mode
+```
+
+The standalone components have the same features — they just skip the `variant` prop and enforce the correct required props via TypeScript.
+
+---
+
+## Axis & Grid Configuration
+
+### Formatting Ticks
+
+```tsx
+<Chart
+  variant="line"
+  data={data}
+  xKey="month"
+  series={series}
+  yAxis={{
+    tickFormatter: (value) => `$${Number(value).toLocaleString()}`,
+    label: 'Revenue (USD)',
+    unit: 'k',
+    domain: [0, 'dataMax'],
+  }}
+  xAxis={{
+    tickFormatter: (value) => `${value} '24`,
+    label: 'Month',
+    tickCount: 6,
+  }}
+/>
+```
+
+### Hiding Axes (sparkline style)
+
+```tsx
+<Chart
+  variant="line"
+  data={data}
+  xKey="month"
+  series={series}
+  xAxis={{ show: false }}
+  yAxis={{ show: false }}
+  chartHeight={100}
+  legend={{ position: 'none' }}
+/>
+```
+
+### Grid Lines
+
+```tsx
+// Default: horizontal only
+// Enable vertical grid:
+<Chart grid={{ horizontal: true, vertical: true }} />
+
+// Custom dash pattern:
+<Chart grid={{ strokeDasharray: '5 5' }} />
+
+// No grid:
+<Chart grid={{ horizontal: false, vertical: false }} />
+```
+
+---
+
+## Legend
+
+### Position
+
+```tsx
+<Chart legend={{ position: 'top' }} />     // above chart
+<Chart legend={{ position: 'bottom' }} />  // below chart (default)
+<Chart legend={{ position: 'left' }} />    // left side
+<Chart legend={{ position: 'right' }} />   // right side
+<Chart legend={{ position: 'none' }} />    // hidden
+```
+
+### Interactive Toggle
+
+Enable `legend.interactive` to let users click legend items to show/hide series:
+
+```tsx
+<Chart
+  variant="line"
+  data={data}
+  xKey="month"
+  series={[
+    { dataKey: 'revenue', label: 'Revenue' },
+    { dataKey: 'profit', label: 'Profit' },
+    { dataKey: 'expenses', label: 'Expenses' },
+  ]}
+  legend={{ interactive: true, position: 'top' }}
+/>
+```
+
+- Click or **Enter/Space** on a legend item to toggle visibility
+- Hidden series are visually dimmed but remain in the legend
+- For pie/donut charts, toggling hides the corresponding slice
+
+---
+
+## Tooltip
+
+### Custom Formatting
+
+```tsx
+<Chart
+  tooltip={{
+    valueFormatter: (value, name) => (name === 'Revenue' ? `$${value.toLocaleString()}` : `${value} units`),
+    labelFormatter: (label) => `Period: ${label}`,
+  }}
+/>
+```
+
+### Disable Tooltip
+
+```tsx
+<Chart tooltip={{ enabled: false }} />
+```
+
+---
+
+## Colors
+
+### Theme Palette (default)
+
+Colors come from `theme.chart.colors.palette`. No configuration needed.
+
+### Custom Palette
+
+Replace the entire palette:
+
+```tsx
+<Chart colors={['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4']} />
+```
+
+### Per-Series Color
+
+Override individual series colors (takes precedence over palette):
+
+```tsx
+<Chart
+  series={[
+    { dataKey: 'revenue', label: 'Revenue', color: '#E74C3C' },
+    { dataKey: 'profit', label: 'Profit', color: '#2ECC71' },
+  ]}
+/>
+```
+
+---
+
+## States
+
+The Chart handles three special states that take priority over rendering:
+
+```tsx
+// Loading — shows loadingState or default text
+<Chart loading={true} />
+<Chart loading={true} loadingState={<MySkeleton />} />
+
+// Error — shows errorState or default text
+<Chart error={true} />
+<Chart error={true} errorState={<ErrorBanner onRetry={refetch} />} />
+
+// Empty data — shows emptyState or default text
+<Chart data={[]} />
+<Chart data={[]} emptyState={<EmptyIllustration message="No records found" />} />
+```
+
+**Priority order:** `loading` > `error` > configuration error > empty data > chart render.
+
+### Configuration Errors
+
+If required props are missing (`xKey` for cartesian, `pieConfig` for pie/donut), the Chart shows "Unable to render chart" and logs a warning via `useLogger`.
+
+---
+
+## Events
+
+### Click
+
+```tsx
+<Chart
+  onDataPointClick={(data, index) => {
+    console.log('Clicked record:', data, 'at index:', index);
+    // Navigate, open detail, etc.
+  }}
+/>
+```
+
+Works on: line dots, bar segments, area dots, pie slices.
+
+### Hover
+
+```tsx
+<Chart
+  onDataPointHover={(data, index) => {
+    if (data) {
+      console.log('Hovered:', data);
+    } else {
+      console.log('Mouse left');
+    }
+  }}
+/>
+```
+
+Works on: line dots, bar segments, area dots. **Not available** for pie/donut.
+
+---
+
+## Accessibility
+
+Always provide a `title` for screen readers:
+
+```tsx
+<Chart
+  title="Monthly Revenue Trend Q4 2024"
+  description="Line chart showing revenue increasing from $3,000 in January to $5,500 in June"
+/>
+```
+
+- Container gets `role="img"` and `aria-label` from `title`
+- `title` and `description` are rendered as visually hidden `<h3>` and `<p>` elements
+- Interactive legend items have `role="button"`, `tabIndex={0}`, and `aria-pressed`
+
+---
+
+## Logging & Debugging
+
+All Chart sub-components use the `useLogger` hook from the GridKit logging system. When a `LoggerProvider` is configured, you'll see debug-level messages prefixed with `[Chart]`.
+
+### What gets logged
+
+<Markdown>
+  {`
+| Sub-component | When | What |
+|---------------|------|------|
+| **ChartBase** | Config error or missing series | Warning with variant and provided props |
+| **ChartLine** | Render / visibility change | Series count, visible/hidden series, data points |
+| **ChartBar** | Render / visibility change | Same as ChartLine + \`hasStacking\` flag |
+| **ChartArea** | Render / visibility change | Same as ChartLine |
+| **ChartPie** | Render / visibility change | Total slices, visible slices, hidden slices, isDonut |
+| **ChartLegend** | Click or keyboard toggle | dataKey, label, action (Show/Hide), trigger (click/keyboard) |
+| **ChartTooltip** | Activation / deactivation | Label, series count (only on transitions) |
+`}
+</Markdown>
+
+### Setup
+
+```tsx
+import { LoggerProvider } from 'gd-design-library';
+
+const logger = {
+  debug: (msg, ...meta) => console.debug(msg, ...meta),
+  info: (msg, ...meta) => console.info(msg, ...meta),
+  warn: (msg, ...meta) => console.warn(msg, ...meta),
+  error: (msg, ...meta) => console.error(msg, ...meta),
+};
+
+<LoggerProvider logger={logger} isEnabled={true}>
+  <Chart variant="line" ... />
+</LoggerProvider>
+```
+
+See the [Logging and Debugging](?path=/docs/introduction-logging-and-debugging--docs) guide for advanced configuration (Winston, Sentry, LogRocket integration).
+
+---
+
+## Stacking (Bar Charts)
+
+Add the same `stackId` to series that should stack:
+
+```tsx
+<Chart
+  variant="bar"
+  data={data}
+  xKey="quarter"
+  series={[
+    { dataKey: 'online', label: 'Online', stackId: 'total' },
+    { dataKey: 'inStore', label: 'In-Store', stackId: 'total' },
+    { dataKey: 'wholesale', label: 'Wholesale', stackId: 'total' },
+  ]}
+/>
+```
+
+- All series with the same `stackId` stack on top of each other
+- Series **without** `stackId` render as separate grouped bars
+- You can have multiple stack groups with different `stackId` values
+
+---
+
+## Responsive Behavior
+
+The Chart automatically adapts to its container width using `ResizeObserver`. No width prop needed — just place it in a container:
+
+```tsx
+<div style={{ width: '100%' }}>
+  <Chart variant="line" data={data} xKey="month" series={series} />
+</div>
+
+<div style={{ width: '50%' }}>
+  <Chart variant="pie" data={data} pieConfig={pieConfig} />
+</div>
+```
+
+Use `chartHeight` (not CSS `height`) to control the chart rendering area height.
+
+---
+
+## Performance Tips
+
+For large datasets (100+ data points):
+
+1. **Disable animations** — `animate={false}`
+2. **Reduce tick density** — `xAxis={{ tickCount: 10 }}`
+3. **Prefer line variant** — lighter rendering than bars or areas
+4. **Aggregate data** — daily to weekly, hourly to daily before passing to Chart
+5. **Avoid unnecessary re-renders** — memoize `data` and `series` arrays
+
+---
+
+## Dos and Don'ts
+
+### Use `chartHeight`, not CSS `height`
+
+```tsx
+// Correct
+<Chart chartHeight={400} ... />
+
+// Wrong — CSS height affects the container, not the SVG chart
+<Chart style={{ height: 400 }} ... />
+```
+
+### Always provide `title` for accessibility
+
+```tsx
+// Good — screen readers announce the chart
+<Chart title="Monthly Revenue Trend" ... />
+
+// Bad — screen readers just say "line chart"
+<Chart ... />
+```
+
+### Use consistent `stackId` for stacking
+
+```tsx
+// Correct — all stacked series share the same stackId
+series={[
+  { dataKey: 'a', stackId: 'group1' },
+  { dataKey: 'b', stackId: 'group1' },
+]}
+
+// Wrong — different stackIds mean bars won't stack
+series={[
+  { dataKey: 'a', stackId: 'group1' },
+  { dataKey: 'b', stackId: 'group2' },
+]}
+```
+
+### Do NOT import visx directly
+
+```tsx
+// Correct
+import { Chart } from 'gd-design-library';
+import { LineChart } from 'gd-design-library';
+
+// Wrong — bypasses theming, logging, responsive sizing, accessibility
+import { XYChart } from '@visx/xychart';
+```
+
+### Always provide required props per variant
+
+```tsx
+// Line/Bar/Area — require xKey and series
+<Chart variant="line" xKey="month" series={[...]} data={data} />
+
+// Pie/Donut — require pieConfig
+<Chart variant="pie" pieConfig={{ nameKey: 'name', dataKey: 'value' }} data={data} />
+
+// Missing xKey or pieConfig → "Unable to render chart" + console warning
+```
+
+---
+
+## FAQ
+
+**How do I format axis values (e.g., currency, percentages)?**
+
+Use `yAxis.tickFormatter` or `xAxis.tickFormatter`. The function receives the raw tick value and returns a string:
+
+```tsx
+<Chart
+  yAxis={{ tickFormatter: (value) => `$${Number(value).toLocaleString()}` }}
+  xAxis={{ tickFormatter: (value) => `${value} '24` }}
+/>
+```
+
+---
+
+**How do I create a stacked bar chart?**
+
+Add the same `stackId` to all series that should be stacked. Series without `stackId` render as separate grouped bars:
+
+```tsx
+series={[
+  { dataKey: 'online', label: 'Online', stackId: 'total' },
+  { dataKey: 'inStore', label: 'In-Store', stackId: 'total' },
+]}
+```
+
+---
+
+**Why does my chart show "Unable to render chart"?**
+
+A required prop is missing:
+
+- **Line/Bar/Area** charts require `xKey`
+- **Pie/Donut** charts require `pieConfig` (with `nameKey` and `dataKey`)
+
+Check the browser console — the component logs a warning via `useLogger`.
+
+---
+
+**How does the interactive legend work?**
+
+Set `legend={{ interactive: true }}`. Users can click or use keyboard (Enter/Space) to toggle series visibility. For pie/donut charts, the legend toggles slice visibility. Hidden items are dimmed but remain visible in the legend.
+
+---
+
+**What's the difference between `Chart` and `LineChart`/`BarChart`/etc.?**
+
+- `Chart` — unified component with `variant` prop. Imports all chart types. Convenient but larger bundle.
+- `LineChart`, `BarChart`, `AreaChart`, `PieChart` — tree-shakeable standalone components. Only import what you need.
+
+Same features, same API (minus `variant`), just different import granularity.
+
+---
+
+**How do I handle loading and error states?**
+
+```tsx
+<Chart loading={true} />                              // Default: "Loading chart data..."
+<Chart loading={true} loadingState={<Spinner />} />   // Custom loading UI
+<Chart error={true} />                                 // Default: "Failed to load chart data"
+<Chart error={true} errorState={<ErrorBanner />} />    // Custom error UI
+<Chart data={[]} />                                    // Default: "No data available"
+<Chart data={[]} emptyState={<EmptyState />} />        // Custom empty UI
+```
+
+---
+
+**How do I enable debug logging?**
+
+1. Wrap your app with `LoggerProvider` and provide a logger implementation
+2. Set `isEnabled={true}`
+3. Look for `[Chart]` prefixed messages in your console/logger
+
+All sub-components (ChartLine, ChartBar, ChartArea, ChartPie, ChartLegend, ChartTooltip) log render info, visibility changes, and user interactions at the `debug` level.
+
+---
+
+**How do I handle large datasets efficiently?**
+
+- Disable animations: `animate={false}`
+- Reduce tick density: `xAxis={{ tickCount: 10 }}`
+- Use the line variant (lighter than bars or areas)
+- Aggregate data before passing to Chart (daily to weekly, etc.)
+
+---
+
+**Can I use the Chart without a ThemeProvider?**
+
+The Chart relies on `useTheme` for design tokens. Without a `ThemeProvider`, it will fall back to defaults but may not look correct. Always wrap in a `ThemeProvider`.
+
+---
+
+**How do I make a semi-circle (half-pie) chart?**
+
+Use `startAngle` and `endAngle` in `pieConfig`:
+
+```tsx
+<Chart
+  variant="pie"
+  pieConfig={{
+    nameKey: 'name',
+    dataKey: 'value',
+    startAngle: 180,
+    endAngle: 0,
+  }}
+  chartHeight={200}
+/>
+```

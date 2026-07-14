@@ -1,0 +1,12 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Truncate > SHOULD match snapshot 1`] = `
+<div>
+  <span
+    class="css-11fkq4u"
+    data-testid="Truncate"
+  >
+    Hello World
+  </span>
+</div>
+`;

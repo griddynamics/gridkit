@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+set -e
+
+npx nx run-many --target=lint --projects=ui,form-configurator-core,form-configurator-adapter-react
+
+npx nx run-many --target=typecheck --projects=ui,form-configurator-core,form-configurator-adapter-react --pretty --parallel
+
+npx nx run-many --target=test --projects=ui,form-configurator-core,form-configurator-adapter-react --watch=false
+
+npx nx run-many --target=build --projects=ui --parallel
+
+npx nx run ui:build-storybook

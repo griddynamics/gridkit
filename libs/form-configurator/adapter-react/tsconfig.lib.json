@@ -1,0 +1,48 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../../dist/out-tsc",
+    "types": [
+      "node",
+      "@nx/react/typings/cssmodule.d.ts",
+      "@nx/react/typings/image.d.ts",
+      "vite/client",
+      "@emotion/react/types/css-prop"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "gd-form-configurator": ["../core/src/index.ts"],
+      "@form-configurator/adapter-react": ["./src/index.ts"],
+      "@griddynamics/ui": ["../../../libs/ui/src/index.ts"],
+      "@griddynamics/ui/*": ["../../../libs/ui/src/*"],
+      "@types": ["../../../libs/ui/src/types/"],
+      "@types/*": ["../../../libs/ui/src/types/*"],
+      "@constants": ["../../../libs/ui/src/constants/"],
+      "@constants/*": ["../../../libs/ui/src/constants/*"],
+      "@utils": ["../../../libs/ui/src/utils/"],
+      "@utils/*": ["../../../libs/ui/src/utils/*"],
+      "@hooks/*": ["../../../libs/ui/src/hooks/*"],
+      "@hooks": ["../../../libs/ui/src/hooks/"],
+      "@tokens/*": ["../../../libs/ui/src/tokens/*"],
+      "@tokens": ["../../../libs/ui/src/tokens/"],
+      "@components/*": ["../../../libs/ui/src/components/*"],
+      "@components": ["../../../libs/ui/src/components/"],
+      "@assets": ["../../../libs/ui/src/assets/"]
+    }
+  },
+  "exclude": [
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "**/*.spec.tsx",
+    "**/*.test.tsx",
+    "**/*.spec.js",
+    "**/*.test.js",
+    "**/*.spec.jsx",
+    "**/*.test.jsx",
+    "vite.config.ts",
+    "vite.config.mts",
+    "vitest.config.ts",
+    "vitest.config.mts"
+  ],
+  "include": ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx"]
+}

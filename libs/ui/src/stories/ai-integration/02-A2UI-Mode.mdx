@@ -1,0 +1,352 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+import { CollapsibleSections } from './CollapsibleSections';
+
+<Meta title="Introduction/AI Integration/A2UI Mode" />
+
+# A2UI Mode
+
+<CollapsibleSections />
+
+**Contents**
+
+- [What It Is](#what-it-is)
+- [Simple scheme](#simple-scheme)
+- [Quick start: Gemini](#quick-start-gemini)
+- [buildA2UISystemPrompt options](#builda2uisystemprompt-options)
+  - [agentId and agentName](#agentid-and-agentname)
+  - [provider, scenario, segment](#provider-scenario-segment)
+  - [theme](#theme)
+  - [imageSources](#imagesources)
+  - [context](#context)
+  - [locale](#locale)
+  - [priceFormat](#priceformat)
+  - [customGuardrails](#customguardrails)
+  - [customRules](#customrules)
+  - [actions](#actions)
+  - [customComponents](#customcomponents)
+- [All options at a glance](#all-options-at-a-glance)
+- [Important to know](#important-to-know)
+
+---
+
+## What It Is
+
+A2UI (Agent-to-UI) is the JSON protocol that GridKit uses for LLM-generated interfaces.
+
+An A2UI spec describes a complete screen as JSON:
+
+- which components exist
+- how they are laid out and nested
+- what text, styling, and actions they carry
+
+The LLM produces the spec. GridKit renders it. No code execution required.
+
+Source: `libs/ui/src/ai/a2ui/`
+
+## Simple scheme
+
+```text
+buildA2UISystemPrompt(options)
+  -> injects component rules and guardrails into the LLM context
+  -> LLM produces A2UI JSON in response to user messages
+  -> renderA2UISpec(spec, actions) turns it into live components
+```
+
+## Quick start: Gemini
+
+```typescript
+import { buildA2UISystemPrompt, A2UI_SPEC_SCHEMA } from 'gd-design-library/ai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+
+const model = genAI.getGenerativeModel({
+  model: 'gemini-2.5-flash',
+  systemInstruction: buildA2UISystemPrompt({ agentId: 'my-agent' }),
+  generationConfig: {
+    responseMimeType: 'application/json',
+    responseSchema: A2UI_SPEC_SCHEMA,
+  },
+});
+
+const result = await model.generateContent('Show a product analytics dashboard');
+const spec = JSON.parse(result.response.text());
+// pass spec to renderA2UISpec
+```
+
+Or use the pre-packaged helper to skip manual assembly:
+
+```typescript
+import { buildA2UIGeminiRequest } from 'gd-design-library/ai';
+
+const result = await model.generateContent(
+  buildA2UIGeminiRequest('Show a product analytics dashboard', {
+    agentId: 'my-agent',
+    context: 'E-commerce analytics platform.',
+  })
+);
+```
+
+## buildA2UISystemPrompt options
+
+All options are optional. Sensible defaults apply to everything.
+
+### agentId and agentName
+
+Stamped into `metadata.agentId` and `metadata.agentName` in every spec the LLM produces.
+Use these to identify which agent or service generated a given spec.
+
+```typescript
+buildA2UISystemPrompt({
+  agentId: 'shop-assistant',
+  agentName: 'Shop Assistant',
+});
+```
+
+| Option      | Type     | Default                     |
+| ----------- | -------- | --------------------------- |
+| `agentId`   | `string` | `"a2ui-agent"`              |
+| `agentName` | `string` | `"Grid Dynamics Assistant"` |
+
+### provider, scenario, segment
+
+Optional tracing labels stamped into every spec metadata. Provider-agnostic — works with any LLM.
+
+```typescript
+buildA2UISystemPrompt({
+  provider: 'openai',
+  scenario: 'checkout-flow',
+  segment: 'summary',
+});
+```
+
+| Option     | Type     | Description                                                 |
+| ---------- | -------- | ----------------------------------------------------------- |
+| `provider` | `string` | Source model — e.g. `"openai"`, `"anthropic"`, `"gemini"`   |
+| `scenario` | `string` | Business workflow — e.g. `"checkout-flow"`                  |
+| `segment`  | `string` | Part of a larger orchestration — e.g. `"summary"`, `"list"` |
+
+### theme
+
+Sets `metadata.theme` in every spec. Tells the renderer which color mode to use.
+
+```typescript
+buildA2UISystemPrompt({ theme: 'dark' });
+```
+
+| Option  | Type                          | Default   |
+| ------- | ----------------------------- | --------- |
+| `theme` | `"light" \| "dark" \| "auto"` | `"light"` |
+
+### imageSources
+
+Controls which image hosts the LLM may use for `src` values.
+
+```typescript
+// Default — any public CDN, no restriction
+buildA2UISystemPrompt();
+
+// Restricted to your own hosts
+buildA2UISystemPrompt({
+  imageSources: ['cdn.myshop.com', 'assets.myshop.com'],
+});
+
+// No images at all
+buildA2UISystemPrompt({ imageSources: [] });
+```
+
+| Option         | Type                 | Default                      |
+| -------------- | -------------------- | ---------------------------- |
+| `imageSources` | `string \| string[]` | `undefined` (any public CDN) |
+
+### context
+
+Free-form description of your application, injected near the top of the prompt.
+
+The more specific the context, the better the component choices and realistic data the LLM produces.
+
+```typescript
+buildA2UISystemPrompt({
+  context: `
+    E-commerce product catalog for MyShop.
+    Products always have: name, price (USD), SKU, stock level, primary image.
+    Never use placeholder product names like "Product 1".
+  `,
+});
+```
+
+### locale
+
+BCP 47 locale code. Tells the LLM to generate content in that locale — labels, copy, date and number formats.
+
+```typescript
+buildA2UISystemPrompt({ locale: 'de-DE' });
+// German labels, European date formats, EU price convention
+```
+
+Use `priceFormat` to override the price convention independently of locale.
+
+### priceFormat
+
+Controls how the LLM formats prices. When provided, overrides locale-based detection.
+
+```typescript
+// US preset — $1,299.99
+buildA2UISystemPrompt({ priceFormat: 'us' });
+
+// EU preset — 1 299,99 €
+buildA2UISystemPrompt({ priceFormat: 'eu' });
+
+// Custom
+buildA2UISystemPrompt({
+  priceFormat: {
+    symbolPosition: 'before',
+    decimalSeparator: ',',
+    thousandsSeparator: '.',
+    trailingZeros: false,
+  },
+});
+```
+
+| Option        | Type                                | Default                |
+| ------------- | ----------------------------------- | ---------------------- |
+| `priceFormat` | `"us" \| "eu" \| PriceFormatCustom` | inferred from `locale` |
+
+### customGuardrails
+
+Application-specific constraints appended after the built-in system guardrails. Each string is one rule.
+
+```typescript
+buildA2UISystemPrompt({
+  customGuardrails: [
+    'Always show prices in USD with the $ symbol.',
+    'Every product card must include price, rating, and an "Add to Cart" button.',
+    'Never use placeholder names like "Product 1" — use realistic retail names.',
+  ],
+});
+```
+
+### customRules
+
+Application-specific generation rules appended after the built-in rules. Each string is one rule, auto-numbered.
+
+```typescript
+buildA2UISystemPrompt({
+  customRules: [
+    'Use grid layout with gridColumns: 2 for all product listings.',
+    'Always include a progress-bar for stock level on product cards.',
+    'When displaying any list of items wrap all cards in a row container with isWrap: true.',
+  ],
+});
+```
+
+Real-world example — RJChatDemo passes two rule arrays merged together:
+
+```typescript
+buildA2UISystemPrompt({
+  customRules: [...DOMAIN_TECH_SPEC_PROMPT, ...DOMAIN_TECH_WORKFLOW_SPEC_PROMPT],
+});
+```
+
+This lets you keep rules in separate domain-specific arrays and compose them per agent.
+
+### actions
+
+**This is the only way to make action types available to the LLM.** No built-in action types exist — any `ui.actions` in a generated spec will only appear if you declare them here.
+
+Pass the **same array** to both `buildA2UISystemPrompt` and `renderA2UISpec`. One definition, no duplication.
+
+```typescript
+import type { A2UIActionDefinition } from 'gd-design-library/ai';
+
+const actions: A2UIActionDefinition[] = [
+  {
+    type: 'add-to-cart',
+    description: 'Add a product to the cart. payload: { productId: string, quantity: number }',
+    handler: (action) => cart.add(action.payload),
+  },
+  {
+    type: 'show-toast',
+    description: 'Show a notification. payload: { message: string, variant: "success" | "error" | "info" }',
+    handler: (action) => toast(action.payload?.message),
+  },
+];
+
+buildA2UISystemPrompt({ actions });   // LLM sees only these action types as valid
+renderA2UISpec(spec, actions);        // renderer wires button clicks to handlers
+```
+
+If `actions` is omitted or empty, the LLM is explicitly told to omit `ui.actions` entirely.
+
+See the **Actions** page for `A2UIActionDefinition` fields and dispatch internals.
+
+| Option | Type | Default |
+|--------|------|---------|
+| `actions` | `A2UIActionDefinition[]` | `[]` |
+
+### customComponents
+
+Registers custom React components in both the LLM prompt and the renderer. The LLM can use them the same way it uses built-in types.
+
+Accepts `A2UICustomComponentMeta[]` — the prompt-only type that is safe to use on the server. On the client, pass the full `A2UICustomComponentDefinition[]` (which extends meta with `renderer`) to `renderA2UISpec`.
+
+```typescript
+import type { A2UICustomComponentMeta } from 'gd-design-library/ai';
+
+const customComponents: A2UICustomComponentMeta[] = [
+  {
+    type: 'login-form',
+    description: 'A self-contained login form card with sign-in and sign-out states.',
+    props: {
+      label: 'Card title shown above the form.',
+      actions: 'Array of action IDs — actions[0] is sign-in, actions[1] is sign-out.',
+    },
+    notes: ['Do NOT add input or button children — the form renders its own internals.'],
+    category: 'Auth',
+  },
+];
+
+// Server side — meta only, no renderer needed
+buildA2UISystemPrompt({ customComponents });
+
+// Client side — full definition with renderer (see Custom Components page)
+renderA2UISpec(spec, actions, customComponentDefinitions);
+```
+
+See the **Custom Components** page for the full registration pattern, `Renderer` function signature, and real-world examples.
+
+| Option | Type | Default |
+|--------|------|---------|
+| `customComponents` | `A2UICustomComponentMeta[]` | `[]` |
+
+## All options at a glance
+
+Complete reference for `A2UISystemPromptOptions`:
+
+| Option | Type | Default | Purpose |
+|--------|------|---------|---------|
+| `agentId` | `string` | `"a2ui-agent"` | Stamped into `metadata.agentId` of every spec |
+| `agentName` | `string` | `"Grid Dynamics Assistant"` | Stamped into `metadata.agentName` of every spec |
+| `provider` | `string` | — | Tracing label for the LLM source |
+| `scenario` | `string` | — | Tracing label for the business workflow |
+| `segment` | `string` | — | Tracing label for the orchestration stage |
+| `theme` | `"light" \| "dark" \| "auto"` | `"light"` | Color mode stamped into `metadata.theme` |
+| `imageSources` | `string \| string[]` | `undefined` (any CDN) | Allowed image hosts for `src` values |
+| `context` | `string` | — | Free-form application description injected into the prompt |
+| `locale` | `string` | — | BCP 47 locale code for content language and number formats |
+| `priceFormat` | `"us" \| "eu" \| PriceFormatCustom` | inferred from `locale` | Price and currency symbol formatting |
+| `customGuardrails` | `string[]` | `[]` | Additional constraint rules appended to built-in guardrails |
+| `customRules` | `string[]` | `[]` | Additional generation rules appended to built-in rules |
+| `actions` | `A2UIActionDefinition[]` | `[]` | Action types available to the LLM — the only source of valid action types |
+| `customComponents` | `A2UICustomComponentMeta[]` | `[]` | Custom component types available to the LLM |
+
+## Important to know
+
+- `A2UI_SPEC_SCHEMA` as Gemini `responseSchema` locks the model to a valid output shape — use it
+- every spec the LLM returns will contain `metadata.agentId`, `metadata.agentName`, and `metadata.theme`
+- the system prompt is generated from the live component list — never write one by hand
+- `buildA2UIGeminiRequest` packages the entire Gemini request in one call for convenience
+
+## Key point
+
+**A2UI mode is a JSON contract: one system prompt generates it, one renderer displays it.**

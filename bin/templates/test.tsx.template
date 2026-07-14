@@ -1,0 +1,13 @@
+import { render } from '@testUtils';
+import { expect } from 'vitest';
+
+import { COMPONENT_NAME } from './constants';
+import { &PLACEHOLDER_COMPONENT_NAME& } from './&PLACEHOLDER_COMPONENT_NAME&';
+
+describe(COMPONENT_NAME, () => {
+  it('SHOULD match snapshot', () => {
+      const props = {};
+      const { container } = render(<&PLACEHOLDER_COMPONENT_NAME& {...props}/>);
+      expect(container).toMatchSnapshot();
+    });
+});

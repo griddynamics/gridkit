@@ -1,0 +1,68 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Stepper > SHOULD match snapshot 1`] = `
+<div>
+  <div
+    class="css-tunzn2"
+    data-testid="Stepper"
+  >
+    <div
+      class="css-wwyq98"
+      data-testid="Stepper-step"
+    >
+      <div
+        class="css-1xbvod6"
+        data-testid="Stepper-step-icon"
+      >
+        Step 1 customView
+      </div>
+      <div
+        class="css-1apr3nt"
+        data-testid="Stepper-step-label"
+      >
+        Step 1
+      </div>
+    </div>
+    <div
+      class="css-ojiv7m"
+    />
+    <div
+      class="css-wwyq98"
+      data-testid="Stepper-step"
+    >
+      <div
+        class="css-33dtkp"
+        data-testid="Stepper-step-icon"
+      >
+        Step 2 customView
+      </div>
+      <div
+        class="css-1apr3nt"
+        data-testid="Stepper-step-label"
+      >
+        Step 2
+      </div>
+    </div>
+    <div
+      class="css-ojiv7m"
+    />
+    <div
+      class="css-wwyq98"
+      data-testid="Stepper-step"
+    >
+      <div
+        class="css-33dtkp"
+        data-testid="Stepper-step-icon"
+      >
+        Step 3 customView
+      </div>
+      <div
+        class="css-1apr3nt"
+        data-testid="Stepper-step-label"
+      >
+        Step 3
+      </div>
+    </div>
+  </div>
+</div>
+`;

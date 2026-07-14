@@ -1,0 +1,29 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Input > SHOULD match snapshot 1`] = `
+<div>
+  <label
+    class="css-qhydga"
+    data-testid="InputWrapper"
+  >
+    <span
+      class="css-1n9btb7"
+      data-testid="InputWrapper"
+    >
+      <input
+        aria-required="false"
+        class="css-1ojf3jn"
+        data-testid="Input"
+        tabindex="0"
+        type="text"
+      />
+      <span
+        class="Input__border"
+      />
+      <span
+        class="Input__outline"
+      />
+    </span>
+  </label>
+</div>
+`;

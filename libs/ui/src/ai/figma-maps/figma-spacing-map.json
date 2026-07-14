@@ -1,0 +1,247 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Figma spacing variable name → GridKit token. Source: libs/ui/src/tokens/spacing.ts + Figma file bCDJhVLlAFSIZtPFbEwDRO node 141:793. Usage: tokenPath → useTheme() dot-path, cssVar → --gds-* reference only (never emit in TSX). Three parallel scales: `spacing` (semantic), `space` (full numeric), `scale` (component-level subset).",
+  "$usage": {
+    "keyQuestion": "What GridKit spacing token corresponds to this Figma spacing variable or px value?",
+    "lookupSteps": [
+      "1. Figma variable name known (e.g. gds.spacing.md): find entry in spacing/space/scale groups by key.",
+      "2. px value only: query pxIndex['16px'] → { preferred, aliases }. Use preferred as starting point.",
+      "3. Refine using scaleDecisionGuide: layout padding/margin/gap → spacing.*, large (>40px) layout → space.*, component-internal → scale.*.",
+      "4. Special case: 12px has no spacing.* alias — use space.150 (theme.space?.['150']).",
+      "5. No match: record 'unmatched:<value>px' in tokenBindings. Never hardcode the literal."
+    ],
+    "criticalRules": [
+      "spacing.* = semantic T-shirt scale for layout. space.* = full numeric scale for large/precise layout. scale.* = component-internal padding/gap.",
+      "Never hardcode raw px literals in TSX — always resolve to themeAccess.",
+      "pxIndex preferred entry is the best starting guess; scaleDecisionGuide gives context-aware refinement."
+    ]
+  },
+  "spacing": {
+    "$comment": "Semantic T-shirt scale. Prefer this over `space` or `scale` for layout/component spacing. Figma variables: gds.spacing.*",
+    "gds.spacing.none": {
+      "tokenPath": "spacing.none",
+      "cssVar": "--gds-spacing-none",
+      "themeAccess": "theme.spacing?.none",
+      "value": "0"
+    },
+    "gds.spacing.xs": {
+      "tokenPath": "spacing.xs",
+      "cssVar": "--gds-spacing-xs",
+      "themeAccess": "theme.spacing?.xs",
+      "value": "4px"
+    },
+    "gds.spacing.sm": {
+      "tokenPath": "spacing.sm",
+      "cssVar": "--gds-spacing-sm",
+      "themeAccess": "theme.spacing?.sm",
+      "value": "8px"
+    },
+    "gds.spacing.md": {
+      "tokenPath": "spacing.md",
+      "cssVar": "--gds-spacing-md",
+      "themeAccess": "theme.spacing?.md",
+      "value": "16px"
+    },
+    "gds.spacing.lg": {
+      "tokenPath": "spacing.lg",
+      "cssVar": "--gds-spacing-lg",
+      "themeAccess": "theme.spacing?.lg",
+      "value": "24px"
+    },
+    "gds.spacing.xl": {
+      "tokenPath": "spacing.xl",
+      "cssVar": "--gds-spacing-xl",
+      "themeAccess": "theme.spacing?.xl",
+      "value": "32px"
+    },
+    "gds.spacing.xxl": {
+      "tokenPath": "spacing.xxl",
+      "cssVar": "--gds-spacing-xxl",
+      "themeAccess": "theme.spacing?.xxl",
+      "value": "40px"
+    }
+  },
+  "space": {
+    "$comment": "Full numeric scale covering 0–80px in 13 steps. Use when the design references a step beyond xxl (48–80px) or when a numeric alias is more readable in context. Figma extended scale maps here.",
+    "gds.space.0": {
+      "tokenPath": "space.0",
+      "cssVar": "--gds-space-0",
+      "themeAccess": "theme.space?.['0']",
+      "value": "0px"
+    },
+    "gds.space.050": {
+      "tokenPath": "space.050",
+      "cssVar": "--gds-space-050",
+      "themeAccess": "theme.space?.['050']",
+      "value": "4px"
+    },
+    "gds.space.100": {
+      "tokenPath": "space.100",
+      "cssVar": "--gds-space-100",
+      "themeAccess": "theme.space?.['100']",
+      "value": "8px"
+    },
+    "gds.space.150": {
+      "tokenPath": "space.150",
+      "cssVar": "--gds-space-150",
+      "themeAccess": "theme.space?.['150']",
+      "value": "12px"
+    },
+    "gds.space.200": {
+      "tokenPath": "space.200",
+      "cssVar": "--gds-space-200",
+      "themeAccess": "theme.space?.['200']",
+      "value": "16px"
+    },
+    "gds.space.300": {
+      "tokenPath": "space.300",
+      "cssVar": "--gds-space-300",
+      "themeAccess": "theme.space?.['300']",
+      "value": "24px"
+    },
+    "gds.space.400": {
+      "tokenPath": "space.400",
+      "cssVar": "--gds-space-400",
+      "themeAccess": "theme.space?.['400']",
+      "value": "32px"
+    },
+    "gds.space.500": {
+      "tokenPath": "space.500",
+      "cssVar": "--gds-space-500",
+      "themeAccess": "theme.space?.['500']",
+      "value": "40px"
+    },
+    "gds.space.600": {
+      "tokenPath": "space.600",
+      "cssVar": "--gds-space-600",
+      "themeAccess": "theme.space?.['600']",
+      "value": "48px"
+    },
+    "gds.space.700": {
+      "tokenPath": "space.700",
+      "cssVar": "--gds-space-700",
+      "themeAccess": "theme.space?.['700']",
+      "value": "56px"
+    },
+    "gds.space.800": {
+      "tokenPath": "space.800",
+      "cssVar": "--gds-space-800",
+      "themeAccess": "theme.space?.['800']",
+      "value": "64px"
+    },
+    "gds.space.900": {
+      "tokenPath": "space.900",
+      "cssVar": "--gds-space-900",
+      "themeAccess": "theme.space?.['900']",
+      "value": "72px"
+    },
+    "gds.space.1000": {
+      "tokenPath": "space.1000",
+      "cssVar": "--gds-space-1000",
+      "themeAccess": "theme.space?.['1000']",
+      "value": "80px"
+    }
+  },
+  "scale": {
+    "$comment": "Component-level subset of `space` (4–40px, 6 steps). Used for internal component padding and gap tokens. Same values as spacing.xs–xxl but accessed via theme.scale.",
+    "gds.scale.050": {
+      "tokenPath": "scale.050",
+      "cssVar": "--gds-scale-050",
+      "themeAccess": "theme.scale?.['050']",
+      "value": "4px"
+    },
+    "gds.scale.100": {
+      "tokenPath": "scale.100",
+      "cssVar": "--gds-scale-100",
+      "themeAccess": "theme.scale?.['100']",
+      "value": "8px"
+    },
+    "gds.scale.200": {
+      "tokenPath": "scale.200",
+      "cssVar": "--gds-scale-200",
+      "themeAccess": "theme.scale?.['200']",
+      "value": "16px"
+    },
+    "gds.scale.300": {
+      "tokenPath": "scale.300",
+      "cssVar": "--gds-scale-300",
+      "themeAccess": "theme.scale?.['300']",
+      "value": "24px"
+    },
+    "gds.scale.400": {
+      "tokenPath": "scale.400",
+      "cssVar": "--gds-scale-400",
+      "themeAccess": "theme.scale?.['400']",
+      "value": "32px"
+    },
+    "gds.scale.500": {
+      "tokenPath": "scale.500",
+      "cssVar": "--gds-scale-500",
+      "themeAccess": "theme.scale?.['500']",
+      "value": "40px"
+    }
+  },
+  "pxIndex": {
+    "$comment": "Reverse-lookup: px value → preferred token (most semantic wins). When Figma emits a raw pixel value with no variable name, look here first. Values ≤40px have both a `spacing.*` alias (semantic) and a `space.*` alias (numeric) — prefer spacing.* for layout, scale.* for component internals.",
+    "0": {
+      "preferred": "spacing.none",
+      "aliases": ["space.0"]
+    },
+    "4px": {
+      "preferred": "spacing.xs",
+      "aliases": ["space.050", "scale.050"]
+    },
+    "8px": {
+      "preferred": "spacing.sm",
+      "aliases": ["space.100", "scale.100"]
+    },
+    "12px": {
+      "preferred": "space.150",
+      "aliases": []
+    },
+    "16px": {
+      "preferred": "spacing.md",
+      "aliases": ["space.200", "scale.200"]
+    },
+    "24px": {
+      "preferred": "spacing.lg",
+      "aliases": ["space.300", "scale.300"]
+    },
+    "32px": {
+      "preferred": "spacing.xl",
+      "aliases": ["space.400", "scale.400"]
+    },
+    "40px": {
+      "preferred": "spacing.xxl",
+      "aliases": ["space.500", "scale.500"]
+    },
+    "48px": {
+      "preferred": "space.600",
+      "aliases": []
+    },
+    "56px": {
+      "preferred": "space.700",
+      "aliases": []
+    },
+    "64px": {
+      "preferred": "space.800",
+      "aliases": []
+    },
+    "72px": {
+      "preferred": "space.900",
+      "aliases": []
+    },
+    "80px": {
+      "preferred": "space.1000",
+      "aliases": []
+    }
+  },
+  "scaleDecisionGuide": {
+    "$comment": "Which scale to use for a given Figma context.",
+    "layout padding/margin/gap (page/section level)": "spacing.*  — theme.spacing?.md etc.",
+    "layout >40px gap or padding": "space.*    — theme.space?.['600'] etc.",
+    "component internal padding/gap": "scale.*   — theme.scale?.['100'] etc.",
+    "12px (no semantic alias)": "space.150  — theme.space?.['150']",
+    "unmatched px value": "record as unmatched:<value>px in tokenBindings; do NOT hardcode the literal"
+  }
+}

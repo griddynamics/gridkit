@@ -1,0 +1,29 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`InputFile > SHOULD match snapshot 1`] = `
+<div>
+  <div
+    class="css-z8aoti"
+    data-testid="InputFile"
+  >
+    <button
+      class="css-1wvgqsj"
+      data-testid="Button"
+      role="button"
+      tabindex="0"
+      type="button"
+    >
+      <span
+        class="gd-button__content css-4vlwk1"
+        data-testid="Button-content"
+      >
+        Browse Files
+      </span>
+    </button>
+    <input
+      class="css-1ukmigv"
+      type="file"
+    />
+  </div>
+</div>
+`;

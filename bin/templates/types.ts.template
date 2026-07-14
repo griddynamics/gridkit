@@ -1,0 +1,13 @@
+import type { PropsWithChildren } from 'react';
+
+import type { CommonCssComponentProps, CommonCssComponentStyledProps } from '@components';
+
+export interface &PLACEHOLDER_COMPONENT_NAME&Props<T = HTMLDivElement> extends CommonCssComponentProps<T>, PropsWithChildren {
+  // Add your props here & replace HTMLDivElement with the appropriate HTML view
+  prop?: any;
+}
+
+export interface &PLACEHOLDER_COMPONENT_NAME&StyledProps<T = HTMLDivElement> extends CommonCssComponentStyledProps<T>, PropsWithChildren {
+  // Add your props here & replace HTMLDivElement with the appropriate HTML view
+  prop?: any;
+}

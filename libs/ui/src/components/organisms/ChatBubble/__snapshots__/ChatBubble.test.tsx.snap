@@ -1,0 +1,31 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ChatBubble > SHOULD match snapshot 1`] = `
+<div>
+  <div
+    class="css-83ngu"
+    data-testid="ChatBubble"
+  >
+    <div
+      class="css-x5ai3i"
+      data-testid="ChatBubble-content"
+    >
+      Sure! Please paste the code you'd like me to convert, and I’ll generate the SVG file for you.
+    </div>
+    <div
+      class="css-kc2rm"
+      data-testid="ChatBubble-actions"
+    >
+      <div>
+        1
+      </div>
+      <div>
+        2
+      </div>
+      <div>
+        3
+      </div>
+    </div>
+  </div>
+</div>
+`;

@@ -1,0 +1,10 @@
+{
+  "default": true,
+  "line_length": false,
+  "ol-prefix": false,
+  "no-inline-html": false,
+  "no-duplicate-heading": {
+    "siblings_only": true
+  },
+  "ul-style": { "style": "dash" }
+}

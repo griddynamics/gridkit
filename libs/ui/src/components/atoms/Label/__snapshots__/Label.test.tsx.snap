@@ -1,0 +1,12 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Label > SHOULD match snapshot 1`] = `
+<div>
+  <label
+    class="test-text-label-class css-vhr0sx"
+    data-testid="Label"
+  >
+    Label
+  </label>
+</div>
+`;

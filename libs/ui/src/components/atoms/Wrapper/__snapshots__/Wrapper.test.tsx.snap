@@ -1,0 +1,22 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`wrapper > SHOULD match snapshot & render correctly with children 1`] = `
+<div>
+  <div
+    class="css-sypw4x"
+    data-testid="wrapper"
+  >
+    Hello World
+  </div>
+</div>
+`;
+
+exports[`wrapper > SHOULD match snapshot 1`] = `
+<div>
+  <div
+    class="css-sypw4x"
+    classnames="wrapper-custom-class"
+    data-testid="wrapper"
+  />
+</div>
+`;

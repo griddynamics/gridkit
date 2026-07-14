@@ -1,0 +1,143 @@
+{
+  "name": "ui",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/ui/src",
+  "projectType": "library",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project ui --web",
+  "targets": {
+    "nx-release-publish": {
+      "options": {
+        "packageRoot": "dist/{projectRoot}"
+      }
+    },
+    "test": {
+      "cache": true,
+      "options": {
+        "project": "unit"
+      }
+    },
+    "audit-api": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node libs/ui/scripts/audit-api.mjs",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "audit-api:check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node libs/ui/scripts/audit-api.mjs --check",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "audit-api:json": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node libs/ui/scripts/audit-api.mjs --json",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "treeshake-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node libs/ui/scripts/treeshake-check.mjs",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "treeshake-check:ci": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node libs/ui/scripts/treeshake-check.mjs --check --json",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "build-lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node libs/ui/scripts/build-lint.mjs",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "build-lint:ci": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node libs/ui/scripts/build-lint.mjs --check --json",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "ssr-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node libs/ui/scripts/ssr-check.mjs",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "ssr-check:ci": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node libs/ui/scripts/ssr-check.mjs --check --json",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "cjs-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node libs/ui/scripts/cjs-check.mjs",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "cjs-check:ci": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node libs/ui/scripts/cjs-check.mjs --check --json",
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "build:ui": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "commands": [
+          "node libs/ui/scripts/audit-api.mjs --json",
+          "node libs/ui/scripts/treeshake-check.mjs --json",
+          "node libs/ui/scripts/build-lint.mjs --json",
+          "node libs/ui/scripts/ssr-check.mjs --json",
+          "node libs/ui/scripts/cjs-check.mjs --json",
+          "node libs/ui/scripts/build-summary.mjs"
+        ],
+        "parallel": false,
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "verify": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "commands": [
+          "node libs/ui/scripts/audit-api.mjs --check --json",
+          "node libs/ui/scripts/treeshake-check.mjs --check --json",
+          "node libs/ui/scripts/build-lint.mjs --check --json",
+          "node libs/ui/scripts/ssr-check.mjs --check --json",
+          "node libs/ui/scripts/cjs-check.mjs --check --json"
+        ],
+        "parallel": false,
+        "cwd": "{workspaceRoot}"
+      }
+    },
+    "test-a2ui-integration": {
+      "cache": false,
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "npx vitest --config=libs/ui/vitest.config.ts --project=a2ui-integration --run"
+          }
+        ]
+      },
+      "metadata": {
+        "description": "Browser integration: LLM → A2UI JSON → renderA2UISpec. Requires Playwright browsers (npx playwright install), ANTHROPIC_API_KEY in workspace root .env or env. Optional: A2UI_LLM_MODEL."
+      }
+    }
+  }
+}

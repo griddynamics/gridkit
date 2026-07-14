@@ -1,0 +1,55 @@
+name: Release · UI install verification
+
+# Phase 8 (Verdaccio install + ESM/CJS smoke test) is too slow for every PR (~30-60s
+# of registry spin-up + real npm install). It runs only when:
+#   - a PR is opened/updated from a `release/*` branch (release readiness gate)
+#   - manually via workflow_dispatch (ad-hoc verification)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  checks: write
+
+jobs:
+  verify-ui-install:
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.head_ref, 'release/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 'lts/*'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build UI library
+        run: |
+          set -eu
+          npm run type-check
+          npx nx build ui
+          cp libs/ui/package.json dist/libs/ui/package.json
+          node libs/ui/scripts/postbuild-types.mjs
+
+      - name: Verify UI install (Verdaccio publish + ESM/CJS smoke)
+        run: npm run verify:ui:install
+
+      - name: Upload install-check report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: ui-install-report
+          path: |
+            libs/ui/scripts/output/install-check-report.json
+            libs/ui/scripts/output/report.html
+            libs/ui/scripts/output/history
+          retention-days: 30

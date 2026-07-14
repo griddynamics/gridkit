@@ -1,0 +1,329 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "Figma variable name → GridKit token. Source: libs/ui/src/tokens/font.ts + Figma file bCDJhVLlAFSIZtPFbEwDRO node 2:3. CRITICAL: font tokens are NOT CSS custom properties — never emit var(--gds-font-*) in TSX. All values come from useTheme(). Access lineHeight as theme.font?.line?.height?.h5 (three levels deep), NEVER theme.font?.lineHeight?.h5.",
+  "$usage": {
+    "keyQuestion": "What GridKit font token corresponds to this Figma typography variable or value?",
+    "lookupSteps": [
+      "1. Figma variable name (camelCase): split → fontSizeH5→font.size.h5, lineHeightH5→font.line.height.h5, fontWeightBold→font.weight.bold, fontFamily→font.family. See camelCaseSplitExamples.",
+      "2. Value only: query valueIndex.fontSize['20px'], valueIndex.lineHeight['26px'], or valueIndex.fontWeight['400'].",
+      "3. Check knownGaps before marking as unmatched — 34px lineHeight and fontWeight 800/900 are documented gaps.",
+      "4. No match: record 'unmatched:<value>' in tokenBindings."
+    ],
+    "criticalRules": [
+      "Font tokens are NOT CSS vars — never emit var(--gds-font-*) in TSX. Use useTheme() dot-paths for all font values.",
+      "lineHeight path is 3 levels deep: font.line.height.<scale>. Access: theme.font?.line?.height?.h5. NEVER theme.font?.lineHeight?.h5.",
+      "Use the raw CSS value in styling fields; record the token dot-path in tokenBindings.",
+      "styleVariant='bold' = fontWeight 700. Never combine styleVariant='bold' with fontWeight override in styling.",
+      "fontWeight 800/900 has no GridKit token — record as 'unmatched:800' in tokenBindings and use literal in styling."
+    ]
+  },
+  "family": {
+    "gds.font.family": {
+      "tokenPath": "font.family",
+      "themeAccess": "theme.font?.family",
+      "value": "\"Fira Sans\", sans-serif"
+    },
+    "gds.font.family.code": {
+      "tokenPath": "font.family.code",
+      "themeAccess": "theme.font?.['family.code']",
+      "value": "\"Fira Code\", Monaco"
+    }
+  },
+  "weight": {
+    "$comment": "font.weight tops at bold=700. Weights 800/900 have no token — record as unmatched:<value> in tokenBindings. Never combine styleVariant='bold' with a fontWeight override in styling.",
+    "gds.font.weight.light": {
+      "tokenPath": "font.weight.light",
+      "themeAccess": "theme.font?.weight?.light",
+      "value": 300
+    },
+    "gds.font.weight.normal": {
+      "tokenPath": "font.weight.normal",
+      "themeAccess": "theme.font?.weight?.normal",
+      "value": 400
+    },
+    "gds.font.weight.medium": {
+      "tokenPath": "font.weight.medium",
+      "themeAccess": "theme.font?.weight?.medium",
+      "value": 500
+    },
+    "gds.font.weight.bold": {
+      "tokenPath": "font.weight.bold",
+      "themeAccess": "theme.font?.weight?.bold",
+      "value": 700
+    }
+  },
+  "size": {
+    "$comment": "Semantic size scale. xs–xl are display/hero sizes; h1–h6 are heading scales; p/small/caption/header are body/ui text; code/kbd/sub/sup are inline elements.",
+    "gds.font.size.xl": {
+      "tokenPath": "font.size.xl",
+      "themeAccess": "theme.font?.size?.xl",
+      "value": "64px",
+      "role": "display / hero"
+    },
+    "gds.font.size.lg": {
+      "tokenPath": "font.size.lg",
+      "themeAccess": "theme.font?.size?.lg",
+      "value": "48px",
+      "role": "display"
+    },
+    "gds.font.size.md": {
+      "tokenPath": "font.size.md",
+      "themeAccess": "theme.font?.size?.md",
+      "value": "40px",
+      "role": "display"
+    },
+    "gds.font.size.sm": {
+      "tokenPath": "font.size.sm",
+      "themeAccess": "theme.font?.size?.sm",
+      "value": "36px",
+      "role": "display"
+    },
+    "gds.font.size.xs": {
+      "tokenPath": "font.size.xs",
+      "themeAccess": "theme.font?.size?.xs",
+      "value": "32px",
+      "role": "display"
+    },
+    "gds.font.size.h1": {
+      "tokenPath": "font.size.h1",
+      "themeAccess": "theme.font?.size?.h1",
+      "value": "48px",
+      "role": "heading 1"
+    },
+    "gds.font.size.h2": {
+      "tokenPath": "font.size.h2",
+      "themeAccess": "theme.font?.size?.h2",
+      "value": "34px",
+      "role": "heading 2"
+    },
+    "gds.font.size.h3": {
+      "tokenPath": "font.size.h3",
+      "themeAccess": "theme.font?.size?.h3",
+      "value": "28px",
+      "role": "heading 3"
+    },
+    "gds.font.size.h4": {
+      "tokenPath": "font.size.h4",
+      "themeAccess": "theme.font?.size?.h4",
+      "value": "24px",
+      "role": "heading 4"
+    },
+    "gds.font.size.h5": {
+      "tokenPath": "font.size.h5",
+      "themeAccess": "theme.font?.size?.h5",
+      "value": "20px",
+      "role": "heading 5"
+    },
+    "gds.font.size.h6": {
+      "tokenPath": "font.size.h6",
+      "themeAccess": "theme.font?.size?.h6",
+      "value": "18px",
+      "role": "heading 6"
+    },
+    "gds.font.size.p": {
+      "tokenPath": "font.size.p",
+      "themeAccess": "theme.font?.size?.p",
+      "value": "16px",
+      "role": "body / paragraph"
+    },
+    "gds.font.size.small": {
+      "tokenPath": "font.size.small",
+      "themeAccess": "theme.font?.size?.small",
+      "value": "14px",
+      "role": "small text"
+    },
+    "gds.font.size.caption": {
+      "tokenPath": "font.size.caption",
+      "themeAccess": "theme.font?.size?.caption",
+      "value": "12px",
+      "role": "caption / label"
+    },
+    "gds.font.size.header": {
+      "tokenPath": "font.size.header",
+      "themeAccess": "theme.font?.size?.header",
+      "value": "8px",
+      "role": "overline / section header"
+    },
+    "gds.font.size.code": {
+      "tokenPath": "font.size.code",
+      "themeAccess": "theme.font?.size?.code",
+      "value": "16px",
+      "role": "inline code"
+    },
+    "gds.font.size.kbd": {
+      "tokenPath": "font.size.kbd",
+      "themeAccess": "theme.font?.size?.kbd",
+      "value": "14px",
+      "role": "keyboard shortcut"
+    },
+    "gds.font.size.sub": {
+      "tokenPath": "font.size.sub",
+      "themeAccess": "theme.font?.size?.sub",
+      "value": "12px",
+      "role": "subscript"
+    },
+    "gds.font.size.sup": {
+      "tokenPath": "font.size.sup",
+      "themeAccess": "theme.font?.size?.sup",
+      "value": "12px",
+      "role": "superscript"
+    }
+  },
+  "lineHeight": {
+    "$comment": "CRITICAL: access as theme.font?.line?.height?.h5 — three levels deep. NEVER theme.font?.lineHeight?.h5 (collapsed camelCase). The unmatched 34px value from Figma (closest to h2 line-height) has no GridKit token — use theme.font?.line?.height?.h2 (36px) or h3 (32px) depending on context.",
+    "gds.font.line.height.xl": {
+      "tokenPath": "font.line.height.xl",
+      "themeAccess": "theme.font?.line?.height?.xl",
+      "value": "77px"
+    },
+    "gds.font.line.height.lg": {
+      "tokenPath": "font.line.height.lg",
+      "themeAccess": "theme.font?.line?.height?.lg",
+      "value": "58px"
+    },
+    "gds.font.line.height.md": {
+      "tokenPath": "font.line.height.md",
+      "themeAccess": "theme.font?.line?.height?.md",
+      "value": "48px"
+    },
+    "gds.font.line.height.sm": {
+      "tokenPath": "font.line.height.sm",
+      "themeAccess": "theme.font?.line?.height?.sm",
+      "value": "44px"
+    },
+    "gds.font.line.height.xs": {
+      "tokenPath": "font.line.height.xs",
+      "themeAccess": "theme.font?.line?.height?.xs",
+      "value": "38px"
+    },
+    "gds.font.line.height.h1": {
+      "tokenPath": "font.line.height.h1",
+      "themeAccess": "theme.font?.line?.height?.h1",
+      "value": "56px"
+    },
+    "gds.font.line.height.h2": {
+      "tokenPath": "font.line.height.h2",
+      "themeAccess": "theme.font?.line?.height?.h2",
+      "value": "36px"
+    },
+    "gds.font.line.height.h3": {
+      "tokenPath": "font.line.height.h3",
+      "themeAccess": "theme.font?.line?.height?.h3",
+      "value": "32px"
+    },
+    "gds.font.line.height.h4": {
+      "tokenPath": "font.line.height.h4",
+      "themeAccess": "theme.font?.line?.height?.h4",
+      "value": "28px"
+    },
+    "gds.font.line.height.h5": {
+      "tokenPath": "font.line.height.h5",
+      "themeAccess": "theme.font?.line?.height?.h5",
+      "value": "26px"
+    },
+    "gds.font.line.height.h6": {
+      "tokenPath": "font.line.height.h6",
+      "themeAccess": "theme.font?.line?.height?.h6",
+      "value": "24px"
+    },
+    "gds.font.line.height.p": {
+      "tokenPath": "font.line.height.p",
+      "themeAccess": "theme.font?.line?.height?.p",
+      "value": "24px"
+    },
+    "gds.font.line.height.small": {
+      "tokenPath": "font.line.height.small",
+      "themeAccess": "theme.font?.line?.height?.small",
+      "value": "20px"
+    },
+    "gds.font.line.height.caption": {
+      "tokenPath": "font.line.height.caption",
+      "themeAccess": "theme.font?.line?.height?.caption",
+      "value": "16px"
+    },
+    "gds.font.line.height.header": {
+      "tokenPath": "font.line.height.header",
+      "themeAccess": "theme.font?.line?.height?.header",
+      "value": "16px"
+    },
+    "gds.font.line.height.code": {
+      "tokenPath": "font.line.height.code",
+      "themeAccess": "theme.font?.line?.height?.code",
+      "value": "24px"
+    },
+    "gds.font.line.height.kbd": {
+      "tokenPath": "font.line.height.kbd",
+      "themeAccess": "theme.font?.line?.height?.kbd",
+      "value": "20px"
+    },
+    "gds.font.line.height.sub": {
+      "tokenPath": "font.line.height.sub",
+      "themeAccess": "theme.font?.line?.height?.sub",
+      "value": "16px"
+    },
+    "gds.font.line.height.sup": {
+      "tokenPath": "font.line.height.sup",
+      "themeAccess": "theme.font?.line?.height?.sup",
+      "value": "16px"
+    }
+  },
+  "valueIndex": {
+    "$comment": "Reverse-lookup for when Figma emits raw values with no variable name. For ambiguous values (e.g. 48px appears in both size.h1 and size.lg; 24px in multiple lineHeights) use the Figma variable name or element role to disambiguate — see camelCase split rule in gd-design-rag-resolution.md.",
+    "fontSize": {
+      "64px": "font.size.xl",
+      "48px": "font.size.h1",
+      "40px": "font.size.md",
+      "36px": "font.size.sm",
+      "34px": "font.size.h2",
+      "32px": "font.size.xs",
+      "28px": "font.size.h3",
+      "24px": "font.size.h4",
+      "20px": "font.size.h5",
+      "18px": "font.size.h6",
+      "16px": "font.size.p",
+      "14px": "font.size.small",
+      "12px": "font.size.caption",
+      "8px": "font.size.header"
+    },
+    "fontWeight": {
+      "300": "font.weight.light",
+      "400": "font.weight.normal",
+      "500": "font.weight.medium",
+      "700": "font.weight.bold",
+      "800": "unmatched:800",
+      "900": "unmatched:900"
+    },
+    "lineHeight": {
+      "77px": "font.line.height.xl",
+      "58px": "font.line.height.lg",
+      "56px": "font.line.height.h1",
+      "48px": "font.line.height.md",
+      "44px": "font.line.height.sm",
+      "38px": "font.line.height.xs",
+      "36px": "font.line.height.h2",
+      "34px": "unmatched:34px",
+      "32px": "font.line.height.h3",
+      "28px": "font.line.height.h4",
+      "26px": "font.line.height.h5",
+      "24px": "font.line.height.h6",
+      "20px": "font.line.height.small",
+      "16px": "font.line.height.caption"
+    }
+  },
+  "camelCaseSplitExamples": {
+    "$comment": "Split Figma variable name on camelCase boundaries to derive GridKit token dot-path.",
+    "fontSizeH5": "font.size.h5",
+    "fontSizeKbd": "font.size.kbd",
+    "lineHeightH5": "font.line.height.h5",
+    "lineHeightKbd": "font.line.height.kbd",
+    "fontWeightBold": "font.weight.bold",
+    "fontWeightMedium": "font.weight.medium",
+    "fontWeightNormal": "font.weight.normal",
+    "fontFamily": "font.family"
+  },
+  "knownGaps": {
+    "$comment": "Values present in Figma but unmatched to any GridKit token.",
+    "34px lineHeight": "No token. Figma VariableID 165:4887. Use font.line.height.h2 (36px) or h3 (32px) by context.",
+    "fontWeight 800/900": "No token — GridKit tops at bold=700. Record as unmatched:<value> in tokenBindings."
+  }
+}

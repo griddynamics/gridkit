@@ -1,0 +1,53 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Patterns & Best Practices/Layout Composition Techniques" />
+
+# Layout Composition Techniques
+
+Effective layout composition is critical for creating responsive, scalable, and maintainable interfaces. This guide outlines recommended techniques and reusable patterns for composing layouts in the GridKit Design System.
+
+## 1. Use Flex and Grid as Primitives
+
+- Use `FlexContainer` for directional layouts (rows, columns, alignment, distribution).
+- Use CSS Grid or token-based `GridContainer` for two-dimensional structures like dashboards or cards.
+- Avoid deep nesting of layout wrappers — prefer flat, tokenized spacing.
+
+## 2. Compose from Tokens
+
+- Use spacing tokens (`gap`, `padding`, `margin`) to create predictable layout rhythm.
+- Use token-based width/height constraints (e.g., `maxWidth="xl"`) instead of hardcoded values.
+- Align layout behavior with design system constraints (grid columns, breakpoints, spacing scale).
+
+## 3. Use Layout Components
+
+- Reuse layout wrappers such as `FlexContainer`, `Row`, `Column`, and `Wrapper` to avoid duplication.
+- Abstract complex compositions into **layout templates** (e.g., SidebarLayout, HeaderContentLayout).
+- Keep layout components stateless and style-only, without business logic.
+
+## 4. Responsive Composition
+
+- Use responsive props or utilities to change direction, spacing, or alignment at different breakpoints.
+- Collapse side-by-side elements into stacked layouts on smaller screens.
+- Use media queries, tokens, or a utility hook (e.g., `useBreakpointValue`) to adapt layout behavior.
+
+## 5. Alignment & Spacing Consistency
+
+- Use flex alignment properties (`justify-content`, `align-items`) over manual margins for centering and positioning.
+- Avoid arbitrary spacing — use system tokens like `gap="sm"`, `padding="md"`, etc.
+- Maintain consistent vertical rhythm with tokenized line height and spacing scale.
+
+## 6. Nesting Strategy
+
+- Avoid excessive nesting. Aim for layout components to wrap only where a clear design structure exists.
+- Use composition helpers (e.g., `Stack`, `GridItem`) when needed, but abstract repetitive nesting into reusable patterns.
+- Ensure nested layouts do not conflict with parent-level responsiveness or spacing.
+
+## 7. Accessibility Considerations
+
+- Ensure layout changes (e.g., drawers, modals, menus) are focus-managed properly.
+- Avoid visual-only layouts that interfere with semantic structure (e.g., columns with no landmarks).
+- When hiding elements visually, ensure they remain keyboard and screen reader accessible if necessary.
+
+---
+
+_Last updated: July 1, 2025 · GridKit Design System_

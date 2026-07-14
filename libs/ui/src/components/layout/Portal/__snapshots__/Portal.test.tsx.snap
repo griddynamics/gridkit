@@ -1,0 +1,27 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Portal > SHOULD be a portal for defined container 1`] = `
+<body>
+  <div>
+    <div
+      class="css-17zz0uv"
+      data-testid="wrapper"
+    >
+      Hello World!
+    </div>
+  </div>
+  <div />
+</body>
+`;
+
+exports[`Portal > SHOULD match snapshot 1`] = `
+<body>
+  <div />
+  <div
+    class="css-17zz0uv"
+    data-testid="wrapper"
+  >
+    Hello World!
+  </div>
+</body>
+`;

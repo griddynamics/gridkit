@@ -1,0 +1,904 @@
+import { Meta, Canvas, Story } from '@storybook/addon-docs/blocks';
+import { Button, Icon, Input, Typography, Badge, Avatar, Loader } from '../../components';
+import { Accordion, Tabs, Rating, Counter, Breadcrumbs, Tooltip, Link } from '../../components';
+import { Card, Modal, Header, Carousel } from '../../components';
+import { Row, Column, FlexContainer } from '../../components';
+
+<Meta title="Introduction/Atomic Design" />
+
+# Atomic Design
+
+GridKit follows **Brad Frost's Atomic Design** methodology to organize components in a hierarchical, scalable structure. This approach helps teams understand component relationships and build consistent interfaces.
+
+---
+
+## The Five Levels
+
+<Row gutter="20px" style={{ marginBottom: '40px' }}>
+  <Column>
+    <div style={{ padding: '20px', background: '#f5f5f5', borderRadius: '8px', textAlign: 'center' }}>
+      <Typography variant="h4" style={{ marginBottom: '10px' }}>
+        ⚛️ Atoms
+      </Typography>
+      <Typography variant="body2">Basic building blocks</Typography>
+    </div>
+  </Column>
+  <Column>
+    <div style={{ padding: '20px', background: '#e8f4fd', borderRadius: '8px', textAlign: 'center' }}>
+      <Typography variant="h4" style={{ marginBottom: '10px' }}>
+        🧬 Molecules
+      </Typography>
+      <Typography variant="body2">Simple combinations</Typography>
+    </div>
+  </Column>
+  <Column>
+    <div style={{ padding: '20px', background: '#e8f5e9', borderRadius: '8px', textAlign: 'center' }}>
+      <Typography variant="h4" style={{ marginBottom: '10px' }}>
+        🦠 Organisms
+      </Typography>
+      <Typography variant="body2">Complex UI sections</Typography>
+    </div>
+  </Column>
+  <Column>
+    <div style={{ padding: '20px', background: '#fff3e0', borderRadius: '8px', textAlign: 'center' }}>
+      <Typography variant="h4" style={{ marginBottom: '10px' }}>
+        📐 Layout
+      </Typography>
+      <Typography variant="body2">Structure & arrangement</Typography>
+    </div>
+  </Column>
+</Row>
+
+---
+
+## ⚛️ Atoms
+
+**Atoms** are the foundational building blocks — basic UI elements that can't be broken down further without losing functionality. Each atom has distinct properties that influence its application.
+
+### Live Examples
+
+<Row
+  gutter="20px"
+  align="center"
+  style={{ padding: '20px', background: '#fafafa', borderRadius: '8px', marginBottom: '20px' }}
+>
+  <Button variant="primary">Primary Button</Button>
+  <Button variant="secondary">Secondary</Button>
+  <Button variant="ghost">Ghost</Button>
+</Row>
+
+```tsx
+<Button variant="primary">Primary Button</Button>
+<Button variant="secondary">Secondary</Button>
+<Button variant="ghost">Ghost</Button>
+```
+
+<Row
+  gutter="20px"
+  align="center"
+  style={{ padding: '20px', background: '#fafafa', borderRadius: '8px', marginBottom: '20px' }}
+>
+  <Badge variant="success">Success</Badge>
+  <Badge variant="warning">Warning</Badge>
+  <Badge variant="error">Error</Badge>
+  <Avatar size="md" fallback="JD" />
+  <Loader size="sm" />
+</Row>
+
+```tsx
+<Badge variant="success">Success</Badge>
+<Badge variant="warning">Warning</Badge>
+<Avatar size="md" fallback="JD" />
+<Loader size="sm" />
+```
+
+### Component List
+
+<table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '24px' }}>
+  <thead>
+    <tr style={{ background: '#f5f5f5', textAlign: 'left' }}>
+      <th style={{ padding: '12px', borderBottom: '2px solid #ddd' }} colSpan="3">
+        Form Elements
+      </th>
+    </tr>
+    <tr style={{ background: '#fafafa' }}>
+      <th style={{ padding: '8px 12px', borderBottom: '1px solid #eee', width: '25%' }}>Component</th>
+      <th style={{ padding: '8px 12px', borderBottom: '1px solid #eee', width: '40%' }}>Description</th>
+      <th style={{ padding: '8px 12px', borderBottom: '1px solid #eee', width: '35%' }}>Key Props</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Input</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Text input field</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>variant</code>, <code>color</code>, <code>disabled</code>
+      </td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>InputFile</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>File upload input</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>accept</code>, <code>multiple</code>
+      </td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Select</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Dropdown selection</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>items</code>, <code>value</code>, <code>onChange</code>
+      </td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Slider</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Range input</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>min</code>, <code>max</code>, <code>value</code>
+      </td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Switch</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Toggle switch</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>checked</code>, <code>onChange</code>
+      </td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Textarea</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Multi-line text input</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>rows</code>, <code>resize</code>
+      </td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Toggle</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Binary toggle</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>items</code>, <code>value</code>
+      </td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Checkbox</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Checkbox input with label</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>checked</code>, <code>indeterminate</code>, <code>size</code>
+      </td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Label</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Form field label</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>htmlFor</code>, <code>required</code>
+      </td>
+    </tr>
+  </tbody>
+  <thead>
+    <tr style={{ background: '#f5f5f5', textAlign: 'left' }}>
+      <th style={{ padding: '12px', borderBottom: '2px solid #ddd' }} colSpan="3">
+        Interactive Elements
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Button</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Interactive action element</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>variant</code>, <code>size</code>, <code>disabled</code>
+      </td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Link</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Navigation link</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>href</code>, <code>variant</code>, <code>target</code>
+      </td>
+    </tr>
+  </tbody>
+  <thead>
+    <tr style={{ background: '#f5f5f5', textAlign: 'left' }}>
+      <th style={{ padding: '12px', borderBottom: '2px solid #ddd' }} colSpan="3">
+        Text & Typography
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Typography</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Text styling</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>variant</code>, <code>color</code>, <code>align</code>
+      </td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Truncate</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Text truncation</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>lines</code>, <code>children</code>
+      </td>
+    </tr>
+  </tbody>
+  <thead>
+    <tr style={{ background: '#f5f5f5', textAlign: 'left' }}>
+      <th style={{ padding: '12px', borderBottom: '2px solid #ddd' }} colSpan="3">
+        Media & Icons
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Avatar</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>User profile image or placeholder</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>src</code>, <code>size</code>, <code>fallback</code>
+      </td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Icon</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>SVG icon display</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>name</code>, <code>size</code>, <code>fill</code>
+      </td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Image</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Responsive image component</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>src</code>, <code>alt</code>, <code>fallback</code>
+      </td>
+    </tr>
+  </tbody>
+  <thead>
+    <tr style={{ background: '#f5f5f5', textAlign: 'left' }}>
+      <th style={{ padding: '12px', borderBottom: '2px solid #ddd' }} colSpan="3">
+        Feedback & Status
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Badge</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Small status indicator</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>variant</code>, <code>size</code>
+      </td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Loader</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Loading indicator</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>size</code>, <code>name</code>
+      </td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Skeleton</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Loading placeholder</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>variant</code>, <code>width</code>, <code>height</code>
+      </td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>SliderDots</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Dot navigation for sliders</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>count</code>, <code>activeIndex</code>, <code>onDotClick</code>
+      </td>
+    </tr>
+  </tbody>
+  <thead>
+    <tr style={{ background: '#f5f5f5', textAlign: 'left' }}>
+      <th style={{ padding: '12px', borderBottom: '2px solid #ddd' }} colSpan="3">
+        Containers & Structure
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Box</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Generic container element</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>styles</code>, layout props
+      </td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Separator</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Visual divider</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>orientation</code>, <code>variant</code>
+      </td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Wrapper</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Styled container</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>variant</code>, <code>styles</code>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+---
+
+## 🧬 Molecules
+
+**Molecules** are simple combinations of atoms that function together as a unit. They follow the single responsibility principle — doing one thing well.
+
+### Live Examples
+
+<div style={{ padding: '20px', background: '#fafafa', borderRadius: '8px', marginBottom: '20px' }}>
+  <Rating value={4} max={5} />
+</div>
+
+```tsx
+<Rating value={4} max={5} />
+```
+
+<div style={{ padding: '20px', background: '#fafafa', borderRadius: '8px', marginBottom: '20px' }}>
+  <Breadcrumbs
+    items={[
+      <Typography key="home" variant="caption">
+        <Link>Home</Link>
+      </Typography>,
+      <Typography key="products" variant="caption">
+        <Link>Products</Link>
+      </Typography>,
+      <Typography key="category" variant="caption">
+        <Link disabled>Category</Link>
+      </Typography>,
+    ]}
+  />
+</div>
+
+```tsx
+<Breadcrumbs
+  items={[
+    <Typography variant="caption">
+      <Link>Home</Link>
+    </Typography>,
+    <Typography variant="caption">
+      <Link>Products</Link>
+    </Typography>,
+    <Typography variant="caption">
+      <Link disabled>Category</Link>
+    </Typography>,
+  ]}
+/>
+```
+
+<div style={{ padding: '20px', background: '#fafafa', borderRadius: '8px', marginBottom: '20px' }}>
+  <Counter initial={1} min={0} max={10} />
+</div>
+
+```tsx
+<Counter initial={1} min={0} max={10} />
+```
+
+### Component List
+
+<table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '24px' }}>
+  <thead>
+    <tr style={{ background: '#e8f4fd' }}>
+      <th style={{ padding: '8px 12px', borderBottom: '1px solid #ddd', textAlign: 'left', width: '20%' }}>
+        Component
+      </th>
+      <th style={{ padding: '8px 12px', borderBottom: '1px solid #ddd', textAlign: 'left', width: '40%' }}>
+        Description
+      </th>
+      <th style={{ padding: '8px 12px', borderBottom: '1px solid #ddd', textAlign: 'left', width: '40%' }}>
+        Composed Of
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Accordion</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Expandable content panels</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Button, Icon, Typography</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Breadcrumbs</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Navigation path</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Link, Icon, Separator</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Counter</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Numeric increment/decrement</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Button, Input, Typography</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Dropdown</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Dropdown menu container</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Button, Portal, List</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>DropdownItem</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Individual dropdown option</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Typography, Icon</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Form</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Form field composition</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Input, Label, Button</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>InlineNotification</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Inline alert message</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Icon, Typography, Button</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>List</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Ordered/unordered list</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Typography</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Menu</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Navigation menu</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Link, Icon</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Price</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Price display with formatting</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Typography</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>ProgressBar</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Progress indicator</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Box</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>RadioGroup</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Radio button group</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Input, Label</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Rating</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Star rating component</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Icon, Button</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Snackbar</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Toast notification</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Icon, Typography, Button</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Stepper</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Multi-step indicator</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Icon, Typography</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Table</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Data table</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Typography, Button</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Tabs</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Tabbed navigation</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Button, Typography</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Tooltip</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Hover information</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Typography, Portal</td>
+    </tr>
+  </tbody>
+</table>
+
+---
+
+## 🦠 Organisms
+
+**Organisms** are complex UI components composed of molecules and atoms, forming distinct interface sections. They can consist of different molecule types or repeat the same molecule.
+
+### Component List
+
+<table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '24px' }}>
+  <thead>
+    <tr style={{ background: '#e8f5e9' }}>
+      <th style={{ padding: '8px 12px', borderBottom: '1px solid #ddd', textAlign: 'left', width: '20%' }}>
+        Component
+      </th>
+      <th style={{ padding: '8px 12px', borderBottom: '1px solid #ddd', textAlign: 'left', width: '40%' }}>
+        Description
+      </th>
+      <th style={{ padding: '8px 12px', borderBottom: '1px solid #ddd', textAlign: 'left', width: '40%' }}>Use Case</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Card</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Content card with image, text, actions</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Product cards, content previews</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Carousel</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Image/content slider</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Image galleries, product showcases</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>ChatBubble</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Chat message display</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Chat interfaces, messaging</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>ContentCarousel</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Content-focused carousel</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Featured content, testimonials</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>DragAndDropFiles</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>File upload with drag-and-drop</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>File uploads, document management</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Header</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Site header with navigation</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Page headers, navigation bars</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>ImagePreview</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Image viewer with navigation</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Product galleries, media viewers</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>InputArea</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Chat input area with actions</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Chat interfaces, messaging</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Modal</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Dialog overlay</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Confirmations, forms, details</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Search</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Search with suggestions</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Site search, filtering</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>SearchModal</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Full-screen search overlay</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>AI search, advanced search</td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Sidebar</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Navigation sidebar with items</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>App navigation, admin panels</td>
+    </tr>
+  </tbody>
+</table>
+
+### Example: Building a Card
+
+A Card organism combines multiple atoms and molecules:
+
+```tsx
+<Card variant="vertical">
+  <Card.Image src="/product.jpg" alt="Product" />
+  <Card.Content>
+    <Typography variant="h4">Product Name</Typography>
+    <Rating value={4} max={5} />
+    <Price value={99.99} currency="USD" />
+    <Button variant="primary" fullWidth>
+      Add to Cart
+    </Button>
+  </Card.Content>
+</Card>
+```
+
+---
+
+## 📐 Layout
+
+**Layout** components handle page structure and content arrangement. They provide the grid system and structural utilities.
+
+### Live Examples
+
+<div style={{ padding: '20px', background: '#fafafa', borderRadius: '8px', marginBottom: '20px' }}>
+  <Row gutter="10px">
+    <Column style={{ background: '#e3f2fd', padding: '20px', borderRadius: '4px' }}>
+      <Typography>Column 1</Typography>
+    </Column>
+    <Column style={{ background: '#e8f5e9', padding: '20px', borderRadius: '4px' }}>
+      <Typography>Column 2</Typography>
+    </Column>
+    <Column style={{ background: '#fff3e0', padding: '20px', borderRadius: '4px' }}>
+      <Typography>Column 3</Typography>
+    </Column>
+  </Row>
+</div>
+
+```tsx
+<Row gutter="10px">
+  <Column>Column 1</Column>
+  <Column>Column 2</Column>
+  <Column>Column 3</Column>
+</Row>
+```
+
+### Component List
+
+<table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '24px' }}>
+  <thead>
+    <tr style={{ background: '#fff3e0' }}>
+      <th style={{ padding: '8px 12px', borderBottom: '1px solid #ddd', textAlign: 'left', width: '20%' }}>
+        Component
+      </th>
+      <th style={{ padding: '8px 12px', borderBottom: '1px solid #ddd', textAlign: 'left', width: '45%' }}>
+        Description
+      </th>
+      <th style={{ padding: '8px 12px', borderBottom: '1px solid #ddd', textAlign: 'left', width: '35%' }}>
+        Key Props
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>ChatContainer</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Chat interface wrapper</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>styles</code>
+      </td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Column</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Flex column</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>gutter</code>, <code>align</code>, <code>justify</code>
+      </td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>FlexContainer</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Flexible container</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>direction</code>, <code>wrap</code>, <code>gap</code>
+      </td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Portal</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>React portal wrapper</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>container</code>
+      </td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Row</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Flex row</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>gutter</code>, <code>align</code>, <code>justify</code>
+      </td>
+    </tr>
+    <tr>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>Scroll</code>
+      </td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>Scrollable container</td>
+      <td style={{ padding: '8px 12px', borderBottom: '1px solid #eee' }}>
+        <code>height</code>, <code>styles</code>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+---
+
+## Directory Structure
+
+```
+libs/ui/src/components/
+├── atoms/          # 23 basic building blocks
+├── molecules/      # 19 simple combinations
+├── organisms/      # 13 complex UI sections
+├── layout/         # 6 structural components
+├── widget/         # Specialized widgets
+└── templates/      # Page templates
+```
+
+---
+
+## Import Patterns
+
+### Recommended: Main Barrel Export
+
+```tsx
+import { Button, Input, Modal, Card, Row, Column } from '@components';
+```
+
+### Category-Specific Import
+
+```tsx
+// Atoms
+import { Button } from '@components/atoms/Button';
+import { Input } from '@components/atoms/Input';
+
+// Molecules
+import { Accordion } from '@components/molecules/Accordion';
+import { Tabs } from '@components/molecules/Tabs';
+
+// Organisms
+import { Header } from '@components/organisms/Header';
+import { Modal } from '@components/organisms/Modal';
+
+// Layout
+import { Row, Column } from '@components/layout';
+```
+
+---
+
+## Benefits of Atomic Design
+
+| Benefit                | Description                                                            |
+| ---------------------- | ---------------------------------------------------------------------- |
+| **🎯 Consistency**     | Shared atoms ensure visual harmony across the entire application       |
+| **♻️ Reusability**     | Build complex UIs by composing simple, tested parts                    |
+| **🔧 Maintainability** | Changes to atoms propagate predictably through molecules and organisms |
+| **📈 Scalability**     | Easy to add new components at any level                                |
+| **📚 Documentation**   | Clear component hierarchy makes onboarding easier                      |
+| **🧪 Testability**     | Small, isolated atoms are easier to unit test                          |
+
+---
+
+## Best Practices
+
+### 1. Start with Atoms
+
+Always check if an atom exists before creating a new component:
+
+```tsx
+// ✅ Good - uses existing atoms
+<Button variant="primary">
+  <Icon name="cart" /> Add to Cart
+</Button>
+
+// ❌ Bad - creates custom button
+<div className="custom-button" onClick={handleClick}>
+  Add to Cart
+</div>
+```
+
+### 2. Compose, Don't Duplicate
+
+Build molecules by composing atoms:
+
+```tsx
+// ✅ Good - composes atoms
+const SearchField = () => (
+  <Row align="center">
+    <Input placeholder="Search..." />
+    <Button variant="primary">
+      <Icon name="search" />
+    </Button>
+  </Row>
+);
+```
+
+### 3. Keep Organisms Focused
+
+Each organism should represent one distinct UI section:
+
+```tsx
+// ✅ Good - focused organism
+<Header logo={...} navigation={...} actions={...} />
+
+// ❌ Bad - too many responsibilities
+<HeaderWithSidebarAndFooter ... />
+```
+
+---
+
+For more information, see [Atomic Design by Brad Frost](https://atomicdesign.bradfrost.com/).
