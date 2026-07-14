@@ -59,11 +59,6 @@ export function GdButton({ variant = 'primary', disabled, isLoading, onPress, th
       onPress={isDisabled ? undefined : onPress}
       disabled={isDisabled}
       style={({ pressed }): ViewStyle => ({
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderRadius: 4,
-        paddingVertical: 8,
-        paddingHorizontal: 16,
         ...toViewStyle(resolved.container),
         ...(pressed && !isDisabled ? toViewStyle(resolved.containerActive) : null),
         ...(isDisabled ? toViewStyle(resolved.containerDisabled) : null),

@@ -17,7 +17,10 @@ own Nx targets and npm scripts directly (all documented below).
 - `src/index.ts` — barrel export.
 - `harness/` — plain HTML + TSX pages for manual/browser-driven verification (no test
   runner): React consumption wrappers (`Gd*React.tsx`), the CTORNDSD-286 reproduction, the
-  SSR/DSD reproductions, and the visual-fidelity check page.
+  SSR/DSD reproductions, the visual-fidelity check page, the raw render-speed check
+  (`perf-check.tsx`/`.html`, see `FINDINGS.md` Section 14), the "Lit wraps React" shell
+  (`gd-button-shell.ts`) and its own speed/isolation checks (`perf-check.tsx`'s shell scenario,
+  `shell-isolation-check.tsx`/`.html`, see `FINDINGS.md` Section 15).
 - `scripts/` — Node scripts for bundle-size measurement and the SSR/DSD check (see below).
 - `FINDINGS.md` — the investigation write-up.
 

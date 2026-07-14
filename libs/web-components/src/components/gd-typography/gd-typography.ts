@@ -3,11 +3,58 @@ import { customElement, property } from 'lit/decorators.js';
 import { literal, html as staticHtml, type StaticValue } from 'lit/static-html.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import {
-  resolveTypographyStyle,
+  resolveThemeTree,
+  get,
   type TypographyVariantName,
   type TypographyStyleVariantName,
   type DesignCoreTheme,
 } from 'gd-design-core';
+import { typography } from 'gd-design-library/tokens';
+
+const MONOSPACE_VARIANTS: ReadonlySet<TypographyVariantName> = new Set(['code', 'kbd']);
+
+interface ResolvedTypographyStyle {
+  fontFamily: string | number;
+  fontSize?: string | number;
+  fontWeight?: string | number;
+  lineHeight?: string | number;
+  fontStyle?: string;
+  textTransform?: string;
+  textDecoration?: string;
+  marginTop?: string;
+  marginBottom?: string;
+}
+
+/**
+ * Resolves the REAL `typography` object (`gd-design-library/tokens`) against `theme` — the
+ * single-source-of-truth replacement for the old, hand-mirrored `resolveTypographyStyle` in
+ * `gd-design-core` (deleted; see that package's `tokenResolvers/typography.ts`). Mirrors
+ * `Typography.tsx`'s own merge order exactly: base font family, then the variant's own block
+ * (or `span`'s fully-inherited values), then the monospace family override for `code`/`kbd`,
+ * then each `styleVariant` overlaid in array order.
+ */
+function resolveTypographyTokens(
+  theme: DesignCoreTheme,
+  variant: TypographyVariantName,
+  styleVariant?: TypographyStyleVariantName | TypographyStyleVariantName[]
+): ResolvedTypographyStyle {
+  const resolved = resolveThemeTree(typography, theme) as unknown as Record<string, Record<string, unknown>>;
+  const style: Record<string, unknown> = { fontFamily: resolved.base.fontFamily, ...resolved[variant] };
+
+  if (MONOSPACE_VARIANTS.has(variant)) {
+    // Real token key is the flat property `'family.code'` under `font` (a literal dot in the
+    // key, not a nested `font.family.code` path) — array-form path segments are used as-is by
+    // `get()`, so `['font', 'family.code']` reaches the real flat key correctly.
+    style.fontFamily = get(theme, ['font', 'family.code'], '"Fira Code", Monaco');
+  }
+
+  const styleVariants = Array.isArray(styleVariant) ? styleVariant : styleVariant ? [styleVariant] : [];
+  for (const sv of styleVariants) {
+    Object.assign(style, resolved.styleVariant[sv]);
+  }
+
+  return style as unknown as ResolvedTypographyStyle;
+}
 
 /**
  * CTORNDSD-581 Typography port (per the implementation plan's Migration Example). Uses
@@ -67,7 +114,7 @@ export class GdTypography extends LitElement {
   }
 
   render() {
-    const resolved = resolveTypographyStyle(this.theme, this.variant, this.styleVariant);
+    const resolved = resolveTypographyTokens(this.theme, this.variant, this.styleVariant);
     const tag = GdTypography.TAG_MAP[this.as] ?? literal`span`;
 
     const style = {

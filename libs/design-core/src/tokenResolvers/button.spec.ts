@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { resolveButtonVariantStyle, resolveButtonRadius } from './button';
+import { resolveButtonVariantStyle, resolveButtonRadius, buttonCssBlockToText } from './button';
 import type { DesignCoreTheme } from '../types';
 
 const theme: DesignCoreTheme = {
@@ -14,10 +14,11 @@ const theme: DesignCoreTheme = {
         warning: { primary: { default: '#ffb020' } },
       },
     },
-    border: { black: '#000000', disabled: '#cccccc' },
+    border: { black: '#000000', disabled: '#cccccc', focus: '#0a5a9c' },
   },
   font: { weight: { medium: 500 }, family: 'Test Sans', size: { p: '18px' } },
   spacing: { sm: '10px', md: '20px' },
+  values: { transitions: { button: { default: 'background 0.1s linear' } } },
 };
 
 describe('resolveButtonVariantStyle', () => {
@@ -100,6 +101,18 @@ describe('resolveButtonVariantStyle', () => {
     expect(style.gap).toBe('8px');
     expect(style.padding).toBe('8px 16px');
   });
+
+  it("resolves focusColor/transition from the theme's shared tokens", () => {
+    const style = resolveButtonVariantStyle(theme, 'primary');
+    expect(style.focusColor).toBe('#0a5a9c');
+    expect(style.transition).toBe('background 0.1s linear');
+  });
+
+  it('falls back to the real focus color/transition when no theme is passed', () => {
+    const style = resolveButtonVariantStyle({}, 'primary');
+    expect(style.focusColor).toBe('#0069B4');
+    expect(style.transition).toBe('background 0.2s ease-in-out, border 0.2s ease-in-out, color 0.2s ease-in-out');
+  });
 });
 
 describe('resolveButtonRadius', () => {
@@ -116,5 +129,40 @@ describe('resolveButtonRadius', () => {
   it("honors a theme's own radius object instead of its own hardcoded scale", () => {
     const theme: DesignCoreTheme = { radius: { lg: '99px' } };
     expect(resolveButtonRadius(theme, 'lg')).toBe('99px');
+  });
+});
+
+describe('buttonCssBlockToText', () => {
+  it('serializes flat properties as kebab-case declarations under the given selector', () => {
+    const css = buttonCssBlockToText('button', { backgroundColor: '#FFB800', fontWeight: 500 });
+    expect(css).toContain('button {');
+    expect(css).toContain('background-color: #FFB800;');
+    expect(css).toContain('font-weight: 500;');
+  });
+
+  it("replaces '&' with the given selector in nested (possibly comma-separated) selector keys", () => {
+    const css = buttonCssBlockToText('button', { '&:hover, &.hover': { color: 'red' } });
+    expect(css).toContain('button:hover, button.hover {');
+    expect(css).toContain('color: red;');
+  });
+
+  it('recurses through multiple nesting levels (real focus-visible/::after shape)', () => {
+    const css = buttonCssBlockToText('button', {
+      '&:focus-visible': { position: 'relative', '&::after': { content: '""', border: '2px solid blue' } },
+    });
+    expect(css).toContain('button:focus-visible {');
+    expect(css).toContain('position: relative;');
+    expect(css).toContain('button:focus-visible::after {');
+    expect(css).toContain('border: 2px solid blue;');
+  });
+
+  it('emits nothing for an empty block (no pointless empty rule)', () => {
+    expect(buttonCssBlockToText('button', {})).toBe('');
+    expect(buttonCssBlockToText('button', undefined)).toBe('');
+  });
+
+  it("emits nothing for a selector-only key with an empty nested object (matches inherit's '&:hover, &.hover': {})", () => {
+    const css = buttonCssBlockToText('button', { '&:hover, &.hover': {} });
+    expect(css).toBe('');
   });
 });

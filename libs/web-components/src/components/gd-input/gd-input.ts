@@ -2,12 +2,87 @@ import { LitElement, html, css, nothing, type PropertyValues } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import {
-  resolveInputStyle,
+  resolveThemeTree,
+  get,
   createInputStore,
   debounce,
   type InputColorVariantName,
   type DesignCoreTheme,
 } from 'gd-design-core';
+import { input } from 'gd-design-library/tokens';
+
+interface ResolvedInputTokens {
+  fontFamily: string | number;
+  fontSize: string | number;
+  color: string;
+  disabledColor: string;
+  border: string;
+  labelColor: string;
+  helperTextColor: string;
+  wrapperGap: string | number;
+  labelFontSize: string | number;
+  labelLineHeight: string | number;
+  helperFontSize: string | number;
+  helperLineHeight: string | number;
+  zIndex: string | number;
+  horizontalPadding: string | number;
+  borderRadius: string | number;
+}
+
+/**
+ * Resolves the REAL `input` object (`gd-design-library/tokens`) against `theme` — the
+ * single-source-of-truth replacement for the old, hand-mirrored `resolveInputStyle` in
+ * `gd-design-core` (deleted; see that package's `tokenResolvers/input.ts` for the exact real
+ * paths this reads: `input.wrapper.withGap.gap`, `input.helper.default.{sm,md}`,
+ * `input.helper.<variant>.sm.color`, `input.input.default.padding`,
+ * `input.input.defaultInteraction['& + .Input__border'].borderRadius`,
+ * `input.input.<variant>['& + .Input__border'].border`). `fontFamily`/`fontSize` are the one
+ * exception — the real `input.ts` object has neither (the real `<input>` inherits both from the
+ * app's global CSS reset), so those two are resolved from the same shared `font.*` theme tokens
+ * every other component uses, same as `gd-button.ts`.
+ */
+function resolveInputTokens(theme: DesignCoreTheme, color: InputColorVariantName): ResolvedInputTokens {
+  const resolved = resolveThemeTree(input, theme) as unknown as {
+    wrapper: { withGap: { gap: string | number } };
+    input: {
+      default: {
+        color: string;
+        padding: string | number;
+        '&:not([type="radio"], [type="checkbox"], [type="range"])': { zIndex: string | number };
+        '&[readonly], &:disabled': { color: string };
+      };
+      defaultInteraction: { '& + .Input__border': { borderRadius: string | number } };
+    } & Record<InputColorVariantName, { '& + .Input__border': { border: string } }>;
+    helper: {
+      default: {
+        sm: { fontSize: string | number; lineHeight: string | number };
+        md: { color: string; fontSize: string | number; lineHeight: string | number };
+      };
+    } & Record<InputColorVariantName, { sm: { color?: string } }>;
+  };
+
+  const inputDefault = resolved.input.default;
+  const colorTokens = resolved.input[color] ?? resolved.input.primary;
+  const helperColorTokens = resolved.helper[color] ?? resolved.helper.primary;
+
+  return {
+    fontFamily: get(theme, 'font.family', '"Fira Sans", sans-serif'),
+    fontSize: get(theme, 'font.size.p', '16px'),
+    color: inputDefault.color,
+    disabledColor: inputDefault['&[readonly], &:disabled'].color,
+    border: colorTokens['& + .Input__border'].border,
+    labelColor: resolved.helper.default.md.color,
+    helperTextColor: helperColorTokens.sm.color ?? resolved.helper.default.md.color,
+    wrapperGap: resolved.wrapper.withGap.gap,
+    labelFontSize: resolved.helper.default.md.fontSize,
+    labelLineHeight: resolved.helper.default.md.lineHeight,
+    helperFontSize: resolved.helper.default.sm.fontSize,
+    helperLineHeight: resolved.helper.default.sm.lineHeight,
+    zIndex: inputDefault['&:not([type="radio"], [type="checkbox"], [type="range"])'].zIndex,
+    horizontalPadding: inputDefault.padding,
+    borderRadius: resolved.input.defaultInteraction['& + .Input__border'].borderRadius,
+  };
+}
 
 /**
  * CTORNDSD-581 Input port (per the implementation plan's Migration Example) — the highest-risk
@@ -176,7 +251,7 @@ export class GdInput extends LitElement {
   }
 
   render() {
-    const resolved = resolveInputStyle(this.theme, this.color);
+    const resolved = resolveInputTokens(this.theme, this.color);
     const focusColor = (this.theme.colors as { border?: { focus?: string } } | undefined)?.border?.focus ?? '#0069B4';
     const textColor = this.disabled ? resolved.disabledColor : resolved.color;
 
@@ -190,8 +265,7 @@ export class GdInput extends LitElement {
       '--gd-input-placeholder-color': resolved.disabledColor,
     };
     const borderStyle = {
-      borderWidth: `${resolved.borderWidth}`,
-      borderColor: resolved.borderColor,
+      border: resolved.border,
       borderRadius: `${resolved.borderRadius}`,
     };
     const outlineStyle = { outlineColor: focusColor, borderRadius: `${resolved.borderRadius}` };

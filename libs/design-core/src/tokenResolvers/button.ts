@@ -34,6 +34,11 @@ export interface ResolvedButtonStyle {
   gap: string | number;
   /** `button.default.padding` — `` `${spacing.sm} ${spacing.md}` ``. */
   padding: string;
+  /** `button.default['&:focus-visible']`'s `getFocusStyles({...border})` color —
+   *  `get(theme, 'colors.border.focus', ...)`. */
+  focusColor: string;
+  /** `button.default.transition` — `get(theme, 'values.transitions.button.default', ...)`. */
+  transition: string;
 }
 
 /** Real libs/ui/src/tokens/radius.ts values — used as the `get()` fallback so a themeless
@@ -99,10 +104,16 @@ export function resolveButtonVariantStyle(
   const fontSize = get(theme, 'font.size.p', '16px');
   const spacingSm = get(theme, 'spacing.sm', '8px');
   const spacingMd = get(theme, 'spacing.md', '16px');
+  const focusColor = get(theme, 'colors.border.focus', '#0069B4');
+  const transition = get(
+    theme,
+    'values.transitions.button.default',
+    'background 0.2s ease-in-out, border 0.2s ease-in-out, color 0.2s ease-in-out'
+  );
 
   const variants: Record<
     ButtonVariantName,
-    Omit<ResolvedButtonStyle, 'fontFamily' | 'fontSize' | 'gap' | 'padding'>
+    Omit<ResolvedButtonStyle, 'fontFamily' | 'fontSize' | 'gap' | 'padding' | 'focusColor' | 'transition'>
   > = {
     primary: {
       container: { backgroundColor: fillPrimary, color: textBlack },
@@ -168,5 +179,83 @@ export function resolveButtonVariantStyle(
     fontSize,
     gap: spacingSm,
     padding: `${spacingSm} ${spacingMd}`,
+    focusColor,
+    transition,
   };
+}
+
+/**
+ * A CSS-in-JS style block — a flat set of CSS properties, optionally with nested pseudo-
+ * selector/pseudo-element keys (e.g. `'&:hover, &.hover'`, `'&::after'`) mapping to another
+ * block, exactly like `libs/ui/src/tokens/button.ts`'s own object shape and how Emotion's
+ * `css` prop compiles it. Unlike `ResolvedButtonStyle` above (deliberately flattened and
+ * pseudo-selector-free so RN's `StyleSheet`/`Pressable` model can consume it), this shape is
+ * for CSS-text-capable web adapters only (Lit, or any other real-DOM/real-CSS consumer) —
+ * RN has no equivalent for a nested selector key at all, so this type isn't meant for it.
+ */
+export interface ButtonCssBlock {
+  [property: string]: string | number | ButtonCssBlock;
+}
+
+export interface ButtonTokenTree {
+  default: ButtonCssBlock;
+  icon: ButtonCssBlock;
+  content: { default: ButtonCssBlock };
+  fullWidth: ButtonCssBlock;
+  startIcon: { default: ButtonCssBlock };
+  endIcon: { default: ButtonCssBlock };
+  primary: ButtonCssBlock;
+  secondary: ButtonCssBlock;
+  tertiary: ButtonCssBlock;
+  outlined: ButtonCssBlock;
+  text: ButtonCssBlock;
+  inherit: ButtonCssBlock;
+}
+
+/**
+ * There is deliberately no `resolveButtonTokens` hand-mirroring `button.ts`'s object here
+ * (an earlier revision had one) — that would be a second, manually-kept-in-sync copy of the
+ * same data, exactly the "not a single source of truth" problem this shape exists to solve.
+ * `gd-button.ts` instead imports the REAL `button` object from `gd-design-library/tokens` and
+ * resolves it directly with `resolveThemeTree` (below), so any edit to
+ * `libs/ui/src/tokens/button.ts` is picked up automatically — no gd-design-core change
+ * required. This package still can't depend on `gd-design-library` itself (see the README's
+ * "Theme parameter" section — RN and any other zero-React-dep consumer must stay unaffected),
+ * so the real import only happens in the one adapter (Lit/web) that both needs this
+ * nested-selector shape and is allowed to take the dependency.
+ */
+
+function toKebabCase(property: string): string {
+  return property.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`);
+}
+
+/**
+ * Serializes one `ButtonCssBlock` (or any nested slice of `ButtonTokenTree`) into real CSS
+ * text under `selector` — the same compilation Emotion's `css` prop does for the real
+ * component's object styles, just done by hand for a Lit adopted stylesheet. Nested
+ * selector keys (containing `&`) recurse, replacing `&` with `selector` (so `'&:hover,
+ * &.hover'` under `selector='button'` becomes `'button:hover, button.hover'`); plain keys
+ * become `kebab-case: value;` declarations. Empty blocks (e.g. `inherit`'s `'&:hover, &.hover':
+ * {}`) emit nothing rather than a pointless empty rule.
+ */
+export function buttonCssBlockToText(selector: string, block: ButtonCssBlock | undefined): string {
+  if (!block) return '';
+
+  let declarations = '';
+  let nested = '';
+
+  for (const [key, value] of Object.entries(block)) {
+    if (value === undefined) continue;
+    if (typeof value === 'object') {
+      const nestedSelector = key
+        .split(',')
+        .map((part) => part.trim().replace(/&/g, selector))
+        .join(', ');
+      nested += buttonCssBlockToText(nestedSelector, value);
+    } else {
+      declarations += `${toKebabCase(key)}: ${value};\n`;
+    }
+  }
+
+  return (declarations ? `${selector} {\n${declarations}}\n` : '') + nested;
 }

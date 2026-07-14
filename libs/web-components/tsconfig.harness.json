@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
     "noEmit": true,
-    "types": ["node", "@emotion/react/types/css-prop"],
+    "types": ["node", "vite/client", "@emotion/react/types/css-prop"],
     "jsxImportSource": "@emotion/react"
   },
   "include": ["harness/**/*.tsx", "harness/**/*.ts"]

@@ -2,12 +2,70 @@ import { LitElement, html, css, type PropertyValues } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import {
-  resolveSelectStyle,
+  resolveThemeTree,
   createSelectStore,
   type InputColorVariantName,
   type SelectOption,
   type DesignCoreTheme,
 } from 'gd-design-core';
+import { select } from 'gd-design-library/tokens';
+
+interface ResolvedSelectTokens {
+  fontFamily: string | number;
+  fontSize: string | number;
+  fontWeight: string | number;
+  color: string;
+  surfaceColor: string;
+  border: string;
+  hoverBackgroundColor: string;
+  boxShadow: string;
+  triggerPadding: string | number;
+  dropdownPadding: string | number;
+}
+
+/**
+ * Resolves the REAL `select` object (`gd-design-library/tokens`) against `theme` — the
+ * single-source-of-truth replacement for the old, hand-mirrored `resolveSelectStyle` in
+ * `gd-design-core` (deleted; see that package's `tokenResolvers/select.ts` history). Reads
+ * `select.dropdown.*` for surface/typography, `select.button.<variant>.border` (falling back to
+ * `select.button.default`, which is itself the `primary`-equivalent border) for the trigger
+ * border, and `select.item.default['&:hover, &.active'].backgroundColor` for the hover/selected
+ * background — the exact paths `resolveSelectStyle` used to hand-duplicate.
+ */
+function resolveSelectTokens(theme: DesignCoreTheme, color: InputColorVariantName): ResolvedSelectTokens {
+  const resolved = resolveThemeTree(select, theme) as unknown as {
+    dropdown: {
+      color: string;
+      fontFamily: string | number;
+      fontSize: string | number;
+      fontWeight: string | number;
+      background: string;
+      boxShadow: string;
+      margin: string | number;
+      padding: string | number;
+    };
+    button: { default: { border: string; padding: string | number } } & Record<
+      InputColorVariantName,
+      { border: string }
+    >;
+    item: { default: { '&:hover, &.active': { backgroundColor: string } } };
+  };
+
+  const buttonTokens = resolved.button[color] ?? resolved.button.default;
+
+  return {
+    fontFamily: resolved.dropdown.fontFamily,
+    fontSize: resolved.dropdown.fontSize,
+    fontWeight: resolved.dropdown.fontWeight,
+    color: resolved.dropdown.color,
+    surfaceColor: resolved.dropdown.background,
+    border: buttonTokens.border,
+    hoverBackgroundColor: resolved.item.default['&:hover, &.active'].backgroundColor,
+    boxShadow: resolved.dropdown.boxShadow,
+    triggerPadding: resolved.button.default.padding,
+    dropdownPadding: resolved.dropdown.padding,
+  };
+}
 
 /**
  * CTORNDSD-581 Select port (per the implementation plan's Migration Example) — reduced-scope PoC:
@@ -174,7 +232,7 @@ export class GdSelect extends LitElement {
 
   render() {
     const state = this._store.getState();
-    const resolved = resolveSelectStyle(this.theme, this.color);
+    const resolved = resolveSelectTokens(this.theme, this.color);
     const selected = Array.isArray(state.internalValue) ? null : state.internalValue;
 
     // Sizing itself (`width`/`maxWidth`/`minWidth`) is applied directly to the host in
@@ -186,9 +244,7 @@ export class GdSelect extends LitElement {
       fontSize: `${resolved.fontSize}`,
       fontWeight: `${resolved.fontWeight}`,
       color: resolved.color,
-      borderWidth: `${resolved.borderWidth}`,
-      borderStyle: 'solid',
-      borderColor: resolved.borderColor,
+      border: resolved.border,
       borderRadius: '0px',
       padding: `${resolved.triggerPadding}`,
       background: resolved.surfaceColor,

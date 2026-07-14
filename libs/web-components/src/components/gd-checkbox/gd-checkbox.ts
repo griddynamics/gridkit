@@ -1,7 +1,46 @@
 import { LitElement, html, css, nothing, type PropertyValues } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
-import { resolveCheckboxStyle, createCheckboxStore, type CheckboxSizeName, type DesignCoreTheme } from 'gd-design-core';
+import { resolveThemeTree, createCheckboxStore, type CheckboxSizeName, type DesignCoreTheme } from 'gd-design-core';
+import { checkbox } from 'gd-design-library/tokens';
+
+interface ResolvedCheckboxTokens {
+  indicatorSize: number;
+  iconSize: number;
+  indicatorDefault: { border: string; backgroundColor: string; borderRadius: string | number };
+  indicatorChecked: { backgroundColor: string; borderColor: string };
+  indicatorIndeterminate: { backgroundColor: string; borderColor: string };
+  wrapperGap: string | number;
+}
+
+/**
+ * Resolves the REAL `checkbox` object (`gd-design-library/tokens`) against `theme` — the
+ * single-source-of-truth replacement for the old, hand-mirrored `resolveCheckboxStyle` in
+ * `gd-design-core` (deleted; see that package's `tokenResolvers/checkbox.ts`). `size` reads the
+ * real `checkbox.size.<sm|md>` scale directly instead of a hand-copied `SIZE_PX` table. No
+ * `label` fields are read — `Checkbox.tsx` renders its label as a bare, unstyled span.
+ */
+function resolveCheckboxTokens(theme: DesignCoreTheme, size: CheckboxSizeName): ResolvedCheckboxTokens {
+  const resolved = resolveThemeTree(checkbox, theme) as unknown as {
+    wrapper: { default: { gap: string | number } };
+    indicator: {
+      default: { border: string; backgroundColor: string; borderRadius: string | number };
+      checked: { backgroundColor: string; borderColor: string };
+      indeterminate: { backgroundColor: string; borderColor: string };
+    };
+    size: Record<CheckboxSizeName, { width: string; height: string; iconSize: number }>;
+  };
+  const sizeTokens = resolved.size[size] ?? resolved.size.md;
+
+  return {
+    indicatorSize: parseFloat(sizeTokens.width),
+    iconSize: sizeTokens.iconSize,
+    indicatorDefault: resolved.indicator.default,
+    indicatorChecked: resolved.indicator.checked,
+    indicatorIndeterminate: resolved.indicator.indeterminate,
+    wrapperGap: resolved.wrapper.default.gap,
+  };
+}
 
 /**
  * CTORNDSD-581 Checkbox port (per the implementation plan's Migration Example). Delegates all
@@ -101,7 +140,7 @@ export class GdCheckbox extends LitElement {
 
   render() {
     const state = this._store.getState();
-    const resolved = resolveCheckboxStyle(this.theme, this.size);
+    const resolved = resolveCheckboxTokens(this.theme, this.size);
     const currentChecked = state.checked;
 
     const wrapperStyle = { gap: `${resolved.wrapperGap}` };
@@ -110,9 +149,7 @@ export class GdCheckbox extends LitElement {
       width: `${resolved.indicatorSize}px`,
       height: `${resolved.indicatorSize}px`,
       borderRadius: `${resolved.indicatorDefault.borderRadius}`,
-      borderWidth: `${resolved.indicatorDefault.borderWidth}`,
-      borderStyle: 'solid',
-      borderColor: resolved.indicatorDefault.borderColor,
+      border: resolved.indicatorDefault.border,
       backgroundColor: resolved.indicatorDefault.backgroundColor,
       ...(this.indeterminate
         ? {
