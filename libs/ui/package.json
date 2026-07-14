@@ -38,6 +38,11 @@
       "require": "./tokens/index.cjs"
     }
   },
+  "typesVersions": {
+    "*": {
+      "renderer": ["./utils/a2ui/index.d.ts"]
+    }
+  },
   "peerDependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
