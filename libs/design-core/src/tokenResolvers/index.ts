@@ -8,8 +8,20 @@ export type {
   ButtonTokenTree,
 } from './button';
 
-export type { TypographyVariantName, TypographyStyleVariantName } from './typography';
+export { resolveTypographyStyle } from './typography';
+export type { TypographyVariantName, TypographyStyleVariantName, ResolvedTypographyStyle } from './typography';
 
-export type { CheckboxSizeName } from './checkbox';
+export { resolveCheckboxStyle } from './checkbox';
+export type { CheckboxSizeName, ResolvedCheckboxStyle } from './checkbox';
 
-export type { InputColorVariantName } from './input';
+export {
+  resolveInputStyle,
+  COLOR_VARIANT_BORDER_PATH,
+  COLOR_VARIANT_BORDER_DEFAULT,
+  HELPER_TEXT_COLOR_PATH,
+  HELPER_TEXT_COLOR_DEFAULT,
+} from './input';
+export type { InputColorVariantName, ResolvedInputStyle } from './input';
+
+export { resolveSelectStyle } from './select';
+export type { ResolvedSelectStyle } from './select';

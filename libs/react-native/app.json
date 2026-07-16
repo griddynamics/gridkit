@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "spike-react-native",
-    "slug": "spike-react-native",
+    "name": "react-native",
+    "slug": "react-native",
     "version": "0.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",

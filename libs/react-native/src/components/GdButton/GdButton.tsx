@@ -1,36 +1,18 @@
-import {
-  ActivityIndicator,
-  Pressable,
-  Text,
-  type GestureResponderEvent,
-  type TextStyle,
-  type ViewStyle,
-} from 'react-native';
+import { ActivityIndicator, Pressable, Text, type GestureResponderEvent, type ViewStyle } from 'react-native';
 import { resolveButtonVariantStyle, type ButtonVariantName, type DesignCoreTheme } from 'gd-design-core';
+import { pxToNumber } from '../../utils/pxToNumber';
+import { toFontWeight } from '../../utils/toFontWeight';
 
-/** Picks only the ViewStyle-compatible fields — gd-design-core's `color` field is for text, not the container view. */
-function toViewStyle(style: { backgroundColor?: string; borderColor?: string; borderWidth?: number }): ViewStyle {
+/** Picks only the ViewStyle-compatible fields — gd-design-core's `color` field is for text, not
+ *  the container view. `borderWidth` arrives as a CSS px-string (e.g. `'1px'`) from the resolver;
+ *  `pxToNumber` bridges it to the plain number RN's `ViewStyle` requires. */
+function toViewStyle(style: {
+  backgroundColor?: string;
+  borderColor?: string;
+  borderWidth?: string | number;
+}): ViewStyle {
   const { backgroundColor, borderColor, borderWidth } = style;
-  return { backgroundColor, borderColor, borderWidth };
-}
-
-/** gd-design-core's fontWeight is a loose `string | number`; RN's TextStyle only accepts a fixed string union. */
-function toFontWeight(fontWeight: string | number): TextStyle['fontWeight'] {
-  const asString = String(fontWeight);
-  const allowed: ReadonlyArray<TextStyle['fontWeight']> = [
-    'normal',
-    'bold',
-    '100',
-    '200',
-    '300',
-    '400',
-    '500',
-    '600',
-    '700',
-    '800',
-    '900',
-  ];
-  return (allowed as readonly string[]).includes(asString) ? (asString as TextStyle['fontWeight']) : undefined;
+  return { backgroundColor, borderColor, borderWidth: pxToNumber(borderWidth) };
 }
 
 export interface GdButtonProps {

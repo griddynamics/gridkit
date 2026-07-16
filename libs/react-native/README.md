@@ -1,0 +1,78 @@
+# react-native (CTORNDSD-590)
+
+Disposable React Native (Expo) PoC. See `FINDINGS.md` for the spike's verdict, per-atom findings,
+the Select dropdown-presentation approach evaluation, and what was and wasn't verified on-device.
+
+All 5 GridKit atoms are ported: `GdButton`, `GdCheckbox`, `GdTypography`, `GdInput`, `GdSelect`
+(each under `src/components/<Name>/`), all consuming `gd-design-core`'s shared token resolvers and
+`zustand/vanilla` stores — the same shared core `libs/web-components`'s Lit port (CTORNDSD-581)
+consumes for the same 5 atoms.
+
+## Per-component quick reference
+
+| Component      | Key props (all also take `theme`)                                                                                                     | Callback                         |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
+| `GdButton`     | `variant` (`primary`\|`secondary`\|`tertiary`\|`outlined`\|`text`\|`inherit`), `disabled`, `isLoading`                                | `onPress`                        |
+| `GdCheckbox`   | `checked`, `indeterminate`, `disabled`, `size` (`sm`\|`md`)                                                                           | `onValueChange(checked)`         |
+| `GdTypography` | `variant` (`span`\|`h1`–`h6`\|`p`\|`small`\|`caption`\|`header`\|`code`\|`kbd`), `styleVariant` (single/array)                        | — (renders `children` as `Text`) |
+| `GdInput`      | `value`, `placeholder`, `label`, `helperText`, `disabled`, `color` (`primary`\|`success`\|`warning`\|`error`), `debounceCallbackTime` | `onValueChange(value)`           |
+| `GdSelect`     | `items` (array), `value`, `disabled`, `color`, `placeholder`, `emptyLabel`                                                            | `onValueChange(value)`           |
+
+No `as` prop on `GdTypography` (RN's `Text` has no DOM-tag concept to swap — see `FINDINGS.md`).
+`GdSelect` is reduced-scope: single-select, no search, fixed-below positioning only.
+
+## Setup
+
+`gd-design-core` is resolved straight to its TS source (`libs/design-core/src`) via a workspace
+dependency (`"gd-design-core": "*"`) plus a `resolver.extraNodeModules` alias in
+`metro.config.js` — the same single-source-of-truth approach `libs/web-components`'s vite config
+uses for `gd-design-library`. No build step in between; editing a token resolver is reflected
+immediately.
+
+```bash
+npm install                 # from the repo root (npm workspaces)
+cd libs/react-native
+npm run type-check
+npm test                    # 23 interaction tests across all 5 atoms (jest-expo + RNTL)
+```
+
+Workspace hoisting gives `react-test-renderer` and `@testing-library/react-native` (no version
+conflict, so npm hoists them to the repo root) a _different_ `react` module instance than this
+package's own pinned `react@18.2.0` (kept local because it conflicts with the root's
+`react@^18.3.1`) — two React copies means two hooks dispatchers, so `useState` reads `null`
+inside `act()`. Fixed with a Jest `moduleNameMapper` forcing every `react` import back to this
+package's own `node_modules/react` (see `package.json`'s `jest` config).
+
+This package also depends on `zustand` (required by `gd-design-core` at runtime) and
+`react-native-svg` (Checkbox's check/indeterminate icons, Select's chevron — see `FINDINGS.md`
+Decision 3).
+
+### Metro config is required, not optional
+
+`metro.config.js` aliases `gd-design-core` to `../design-core/src` via `resolver.extraNodeModules`
+and adds that path to `watchFolders` (Metro refuses to read files outside `projectRoot`
+otherwise). Do not remove this file. `FINDINGS.md`'s "Environment Note" documents the earlier
+`file:../dist/libs/design-core` + symlink/exports-map setup this replaced, and the failure
+sequence it was debugged from.
+
+### Running on a simulator
+
+```bash
+npm run start           # Expo dev server
+# then press `i` for iOS or `a` for Android, or scan the QR code with Expo Go on a physical device
+```
+
+If the simulator reports "Could not connect to the server" using the default LAN URL, restart with
+`npx expo start --ios --localhost` — iOS Simulators share the host's network stack directly, so
+`localhost` works in environments where the LAN-visible IP doesn't (see `FINDINGS.md`).
+
+## Workspace membership
+
+This package lives at `libs/react-native`, alongside `libs/design-core` and
+`libs/web-components`, and is listed in the root `package.json`'s `workspaces` array — the same
+setup `libs/web-components` uses. Its `package.json` name is `gd-react-native` (not `react-native`)
+so npm's workspace symlinking doesn't collide with the real `react-native` npm dependency.
+
+This package is the sibling React Native track under epic CTORNDSD-580 ("Add webcomponents
+support"), alongside `libs/web-components`'s Lit/Web-Components track (CTORNDSD-581). Both consume
+the same `gd-design-core` shared resolvers/stores for the same 5 atoms.

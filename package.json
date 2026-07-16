@@ -65,6 +65,7 @@
     "libs/ui",
     "libs/design-core",
     "libs/web-components",
+    "libs/react-native",
     "libs/form-configurator/core",
     "libs/form-configurator/adapter-react"
   ],

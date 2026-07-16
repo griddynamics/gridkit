@@ -136,7 +136,7 @@ in a second terminal from the repo root: `npm run storybook` (serves at `http://
 
 This package is the only one of the two CTORNDSD-580 investigation tracks that touches shared
 root config (one line in `package.json`'s `workspaces` array). The sibling React Native track
-(`spike-react-native`, CTORNDSD-590) is deliberately kept fully standalone, outside npm
+(`react-native`, CTORNDSD-590) is deliberately kept fully standalone, outside npm
 workspaces — see its own README — so the two tracks never edit the same shared file and can be
 worked on independently (parallel branches/worktrees, or two engineers) with no merge conflicts
 between them.

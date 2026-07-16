@@ -4,8 +4,8 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
-      "gd-design-core": ["../libs/design-core/src/index.ts"],
-      "gd-design-core/*": ["../libs/design-core/src/*"]
+      "gd-design-core": ["../design-core/src/index.ts"],
+      "gd-design-core/*": ["../design-core/src/*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx"],

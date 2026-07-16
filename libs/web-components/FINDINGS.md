@@ -1064,7 +1064,7 @@ hardcoded-fallback copy of its real token file, same category of problem `resolv
 was) are deleted outright, along with their spec suites and (for Input/Select) the
 `COLOR_VARIANT_BORDER_PATH`/`HELPER_TEXT_COLOR_PATH`/etc. constant tables that hand-duplicated
 real per-variant paths. `resolveButtonVariantStyle`/`resolveButtonRadius` are untouched — they're
-still shared with `spike-react-native`'s `GdButton`; confirmed via grep that none of the four
+still shared with `react-native`'s `GdButton`; confirmed via grep that none of the four
 deleted resolvers had any consumer outside `web-components` (RN has ported Button only so far).
 
 **Per-component extraction, not a hand-mirror:** each component gets a small, local
