@@ -2555,4 +2555,65 @@ describe('renderA2UISpec', () => {
       expect(screen.queryByTestId('custom-button-override')).toBeNull();
     });
   });
+
+  describe('memoization', () => {
+    it('SHOULD NOT re-invoke a custom renderer when spec, actions, and customComponents keep the same references', () => {
+      let renderCount = 0;
+      const customComponents: A2UICustomComponentDefinition[] = [
+        {
+          type: 'stable-badge',
+          description: 'Renders a status badge.',
+          renderer: (component) => {
+            renderCount += 1;
+            return <div data-testid="stable-badge">{component.label}</div>;
+          },
+        },
+      ];
+      const actions: A2UIActionDefinition[] = [{ type: 'noop', description: '', handler: vi.fn() }];
+      const spec = {
+        ui: {
+          layout: { type: 'vertical' as const, spacing: '0' },
+          components: [{ id: 'badge', type: 'stable-badge', label: 'Featured' }],
+        },
+      } as Parameters<typeof renderA2UISpec>[0];
+
+      const { rerender } = render(<>{renderA2UISpec(spec, actions, customComponents)}</>);
+
+      expect(renderCount).toBe(1);
+
+      rerender(<>{renderA2UISpec(spec, actions, customComponents)}</>);
+
+      expect(renderCount).toBe(1);
+    });
+
+    it('SHOULD re-invoke a custom renderer when the actions reference changes', () => {
+      let renderCount = 0;
+      const customComponents: A2UICustomComponentDefinition[] = [
+        {
+          type: 'stable-badge',
+          description: 'Renders a status badge.',
+          renderer: (component) => {
+            renderCount += 1;
+            return <div data-testid="stable-badge">{component.label}</div>;
+          },
+        },
+      ];
+      const spec = {
+        ui: {
+          layout: { type: 'vertical' as const, spacing: '0' },
+          components: [{ id: 'badge', type: 'stable-badge', label: 'Featured' }],
+        },
+      } as Parameters<typeof renderA2UISpec>[0];
+      const firstActions: A2UIActionDefinition[] = [{ type: 'noop', description: '', handler: vi.fn() }];
+      const secondActions: A2UIActionDefinition[] = [{ type: 'noop', description: '', handler: vi.fn() }];
+
+      const { rerender } = render(<>{renderA2UISpec(spec, firstActions, customComponents)}</>);
+
+      expect(renderCount).toBe(1);
+
+      rerender(<>{renderA2UISpec(spec, secondActions, customComponents)}</>);
+
+      expect(renderCount).toBe(2);
+    });
+  });
 });
