@@ -27,6 +27,7 @@
     "measure:web-components-size": "npm run build:web-components && node libs/web-components/scripts/measure-bundle-size.mjs --json",
     "check:web-components-ssr": "node libs/web-components/scripts/run-ssr-dsd-check.mjs",
     "dev:web-components": "vite --config libs/web-components/vite.config.ts",
+    "dev:react-native": "npm run start --workspace=libs/react-native",
     "update-readme-stats": "node libs/ui/scripts/update-readme-stats.mjs",
     "check:readme-stats": "node libs/ui/scripts/update-readme-stats.mjs --check",
     "verify:ui:run": "concurrently --group --kill-others-on-fail=false --names=api,knip,tree,agadoo,lint,ssr,cjs,attw,size,rsc -c=cyan,magenta,yellow,green,blue,red,gray,white,bgBlue,bgMagenta \"node libs/ui/scripts/audit-api.mjs --json\" \"node libs/ui/scripts/knip-check.mjs --json\" \"node libs/ui/scripts/treeshake-check.mjs --json\" \"node libs/ui/scripts/agadoo-check.mjs --json\" \"node libs/ui/scripts/build-lint.mjs --json\" \"node libs/ui/scripts/ssr-check.mjs --json\" \"node libs/ui/scripts/cjs-check.mjs --json\" \"node libs/ui/scripts/attw-check.mjs --json\" \"node libs/ui/scripts/size-check.mjs --json\" \"node libs/ui/scripts/rsc-render-check.mjs --json\"",

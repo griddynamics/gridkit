@@ -16,6 +16,11 @@ export interface ResolvedSelectStyle {
   triggerPadding: string | number;
   /** `select.ts`'s `dropdown.padding`/`margin` — both `get(theme, 'spacing.none', ...)`. */
   dropdownPadding: string | number;
+  /** The real trigger renders as a `Button variant="inherit"` under the hood, so its
+   *  `:focus-visible` ring is `button.ts`'s own `getFocusStyles({ inset: '-4px', border: '2px
+   *  solid colors.border.focus' })` — not anything defined in `select.ts` itself. Shared with
+   *  `button.ts`'s/`input.ts`'s own `focusColor` field for the same token/fallback. */
+  focusColor: string;
 }
 
 /**
@@ -55,5 +60,6 @@ export function resolveSelectStyle(
     boxShadow: get(theme, 'shadows.box["3"]', '0px 8px 15px 1px rgba(0, 0, 0, 0.20)'),
     triggerPadding: get(theme, 'spacing.sm', '8px'),
     dropdownPadding: get(theme, 'spacing.none', 0),
+    focusColor: get(theme, 'colors.border.focus', '#0069B4'),
   };
 }

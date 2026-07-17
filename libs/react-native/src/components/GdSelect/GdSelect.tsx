@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Modal, Pressable, Text, View, type LayoutRectangle } from 'react-native';
+import { Modal, Pressable, Text, View, type LayoutRectangle, type ViewStyle } from 'react-native';
 import { Path, Svg } from 'react-native-svg';
 import { useStore } from 'zustand';
 import {
@@ -66,6 +66,7 @@ export function GdSelect({
   const store = storeRef.current;
   const triggerRef = useRef<View>(null);
   const [triggerLayout, setTriggerLayout] = useState<LayoutRectangle>({ x: 0, y: 0, width: 0, height: 0 });
+  const [isFocused, setIsFocused] = useState(false);
 
   const isOpen = useStore(store, (s) => s.isOpen);
   const internalValue = useStore(store, (s) => s.internalValue);
@@ -96,21 +97,32 @@ export function GdSelect({
       <Pressable
         ref={triggerRef}
         onPress={handleTriggerPress}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
         disabled={disabled}
         testID="gd-select-trigger"
         accessibilityRole="button"
         accessibilityState={{ disabled, expanded: isOpen }}
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 8,
-          borderWidth: pxToNumber(resolved.borderWidth),
-          borderColor: resolved.borderColor,
-          backgroundColor: resolved.surfaceColor,
-          paddingHorizontal: pxToNumber(resolved.triggerPadding),
-          paddingVertical: pxToNumber(resolved.triggerPadding),
-        }}
+        style={[
+          {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 8,
+            borderWidth: pxToNumber(resolved.borderWidth),
+            borderColor: resolved.borderColor,
+            backgroundColor: resolved.surfaceColor,
+            paddingHorizontal: pxToNumber(resolved.triggerPadding),
+            paddingVertical: pxToNumber(resolved.triggerPadding),
+          },
+          // react-native-web renders this trigger as a real `<button>`, which picks up the
+          // browser's own native default focus outline (`outline-style: auto`) independently of
+          // our custom `gd-select-focus-ring` overlay above — the two together is a doubled
+          // ring, same root cause `GdInput`'s `TextInput` had. `outlineStyle` is a
+          // react-native-web-only style extension (no-op on iOS/Android); not in RN's own
+          // `ViewStyle` type, hence the cast.
+          { outlineStyle: 'none' } as ViewStyle,
+        ]}
       >
         <Text style={{ fontFamily, fontSize: pxToNumber(resolved.fontSize), color: resolved.color }}>
           {selected?.name ?? placeholder ?? ''}
@@ -131,6 +143,27 @@ export function GdSelect({
           />
         </Svg>
       </Pressable>
+      {isFocused ? (
+        // The real trigger renders as a `Button variant="inherit"`, so its focus ring is
+        // `button.ts`'s own `getFocusStyles({ inset: '-4px', border: '2px solid
+        // colors.border.focus' })` — a `::after` pseudo-element inset by -4px on every edge, not
+        // anything Select-specific. Same "absolutely-positioned sibling, inset outward" technique
+        // as `GdInput`'s focus ring (see that component), just with Button's own -4px/no-radius
+        // values instead of Input's -5px.
+        <View
+          testID="gd-select-focus-ring"
+          style={{
+            position: 'absolute',
+            top: -4,
+            left: -4,
+            right: -4,
+            bottom: -4,
+            borderWidth: 2,
+            borderColor: resolved.focusColor,
+            pointerEvents: 'none',
+          }}
+        />
+      ) : null}
 
       <Modal visible={isOpen} transparent animationType="fade" onRequestClose={() => store.getState().close()}>
         <Pressable

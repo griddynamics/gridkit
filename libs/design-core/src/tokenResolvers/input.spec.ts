@@ -10,7 +10,7 @@ const theme: DesignCoreTheme = {
   },
   colors: {
     text: { default: '#171717', disabled: '#a3a3a3', success: '#0b6', primary: '#111111', error: '#e44' },
-    border: { default: '#cccccc', success: '#0a5', primary: '#000000', error: '#d33' },
+    border: { default: '#cccccc', success: '#0a5', primary: '#000000', error: '#d33', focus: '#0a5a9c' },
   },
   values: { borderThin: '1px' },
   spacing: { xs: '5px', sm: '9px' },
@@ -102,5 +102,13 @@ describe('resolveInputStyle', () => {
     expect(style.zIndex).toBe(1);
     expect(style.horizontalPadding).toBe('8px');
     expect(style.borderRadius).toBe('0px');
+  });
+
+  it("resolves focusColor from the theme's colors.border.focus", () => {
+    expect(resolveInputStyle(theme).focusColor).toBe('#0a5a9c');
+  });
+
+  it('falls back to the real focus color when no theme is passed', () => {
+    expect(resolveInputStyle({}).focusColor).toBe('#0069B4');
   });
 });

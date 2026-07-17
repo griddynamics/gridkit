@@ -57,14 +57,19 @@ sequence it was debugged from.
 
 ### Running on a simulator
 
+From the repo root (same pattern as `npm run dev:web-components`):
+
 ```bash
-npm run start           # Expo dev server
+npm run dev:react-native   # Expo dev server
 # then press `i` for iOS or `a` for Android, or scan the QR code with Expo Go on a physical device
 ```
 
+Or from this package directly: `cd libs/react-native && npm run start`.
+
 If the simulator reports "Could not connect to the server" using the default LAN URL, restart with
-`npx expo start --ios --localhost` — iOS Simulators share the host's network stack directly, so
-`localhost` works in environments where the LAN-visible IP doesn't (see `FINDINGS.md`).
+`npm run dev:react-native -- --ios --localhost` — iOS Simulators share the host's network stack
+directly, so `localhost` works in environments where the LAN-visible IP doesn't (see
+`FINDINGS.md`).
 
 ## Workspace membership
 

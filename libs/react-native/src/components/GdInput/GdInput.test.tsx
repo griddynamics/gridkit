@@ -74,4 +74,31 @@ describe('GdInput', () => {
     render(<GdInput disabled placeholder="Type here" />);
     expect(screen.getByPlaceholderText('Type here').props.editable).toBe(false);
   });
+
+  it(
+    'shows an offset focus ring while focused without touching the default border, ' +
+      'and removes the ring again on blur',
+    () => {
+      render(<GdInput placeholder="Type here" />);
+      const input = screen.getByPlaceholderText('Type here');
+      // `input`'s direct RN-tree parent is the `TextInput` host component itself; the bordered
+      // wrapper `View` is one level further up.
+      const wrapper = input.parent?.parent;
+      const defaultBorderColor = wrapper?.props.style.borderColor;
+      const defaultBorderWidth = wrapper?.props.style.borderWidth;
+
+      expect(screen.queryByTestId('gd-input-focus-ring')).toBeNull();
+
+      fireEvent(input, 'focus');
+      // The real border stays exactly as it was — only a separate offset ring appears next to it.
+      expect(wrapper?.props.style.borderColor).toBe(defaultBorderColor);
+      expect(wrapper?.props.style.borderWidth).toBe(defaultBorderWidth);
+      const ring = screen.getByTestId('gd-input-focus-ring');
+      expect(ring.props.style.borderWidth).toBe(2);
+      expect(ring.props.style.borderColor).toBe('#0069B4');
+
+      fireEvent(input, 'blur');
+      expect(screen.queryByTestId('gd-input-focus-ring')).toBeNull();
+    }
+  );
 });

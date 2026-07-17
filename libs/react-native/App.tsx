@@ -1,3 +1,13 @@
+// The real gd-design-library/styles.css — imported from dist/libs/ui (build output), same
+// test-harness-only exception `libs/web-components/harness/fidelity-check.tsx` already makes
+// (see that file's own comment for the full rationale). Loads the real Fira Sans/Fira Code
+// Google Fonts + base reset so this visual-fidelity harness's web build renders the real
+// typeface instead of falling back to the browser's generic sans-serif — not a source
+// dependency on gd-design-library (this package still only depends on gd-design-core). Expo's
+// Metro web support treats CSS imports as a no-op on iOS/Android, so this is safe cross-platform.
+// Run `npm run build:ui` first if this import 404s.
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import '../../dist/libs/ui/styles.css';
 import { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { ScrollView, StyleSheet, View } from 'react-native';
@@ -7,7 +17,18 @@ import { GdTypography } from './src/components/GdTypography/GdTypography';
 import { GdInput } from './src/components/GdInput/GdInput';
 import { GdSelect } from './src/components/GdSelect/GdSelect';
 
-const SELECT_ITEMS = [{ name: 'Option 1' }, { name: 'Option 2' }, { name: 'Option 3' }];
+/**
+ * Every option needs its own distinct `value` — `GdSelect`'s (and the real `Select`'s) default
+ * `itemIdentifier` compares `selected?.value === item.value`. Omitting `value` leaves every
+ * option's `value` as `undefined`, so before anything is selected `undefined === undefined` is
+ * true for ALL of them at once, permanently rendering the whole list in the hover/selected color
+ * instead of just the pressed/selected row.
+ */
+const SELECT_ITEMS = [
+  { name: 'Option 1', value: 'option-1' },
+  { name: 'Option 2', value: 'option-2' },
+  { name: 'Option 3', value: 'option-3' },
+];
 
 /**
  * Visual-fidelity verification harness for all 5 ported atoms (Task 7) — the RN analog of

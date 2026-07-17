@@ -7,7 +7,7 @@ const theme: DesignCoreTheme = {
   colors: {
     text: { default: '#171717' },
     bg: { surface: '#ffffff', fill: { hover: '#f5f5f5' } },
-    border: { default: '#cccccc', primary: '#000000' },
+    border: { default: '#cccccc', primary: '#000000', focus: '#0a5a9c' },
   },
   values: { borderThin: '1px' },
   spacing: { sm: '10px', none: 0 },
@@ -50,5 +50,13 @@ describe('resolveSelectStyle', () => {
     const style = resolveSelectStyle({});
     expect(style.triggerPadding).toBe('8px');
     expect(style.dropdownPadding).toBe(0);
+  });
+
+  it("resolves focusColor from the theme's colors.border.focus", () => {
+    expect(resolveSelectStyle(theme).focusColor).toBe('#0a5a9c');
+  });
+
+  it('falls back to the real focus color when no theme is passed', () => {
+    expect(resolveSelectStyle({}).focusColor).toBe('#0069B4');
   });
 });

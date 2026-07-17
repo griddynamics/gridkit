@@ -41,6 +41,11 @@ export interface ResolvedInputStyle {
   horizontalPadding: string | number;
   /** `input.input.defaultInteraction['& + .Input__border'].borderRadius` — `radius.none`. */
   borderRadius: string | number;
+  /** `input.ts`'s `'&:focus-visible' ~ .Input__outline` renders a `borders.focus(theme)` —
+   *  `2px solid <colors.border.focus>` — as a separate offset outline layer. RN has no outline
+   *  concept, so adapters approximate it as a border-color/width swap on focus instead of a
+   *  second layer; this is that color, shared with `button.ts`'s own `focusColor` field. */
+  focusColor: string;
 }
 
 export const COLOR_VARIANT_BORDER_PATH: Record<InputColorVariantName, string> = {
@@ -117,5 +122,6 @@ export function resolveInputStyle(
     zIndex: get(theme, 'zIndex.first', 1),
     horizontalPadding: get(theme, 'spacing.sm', '8px'),
     borderRadius: get(theme, 'radius.none', '0px'),
+    focusColor: get(theme, 'colors.border.focus', '#0069B4'),
   };
 }

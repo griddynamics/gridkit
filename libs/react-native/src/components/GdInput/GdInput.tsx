@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Text, TextInput, View } from 'react-native';
+import { Text, TextInput, View, type TextStyle } from 'react-native';
 import {
   createInputStore,
   debounce,
@@ -62,6 +62,7 @@ export function GdInput({
 }: GdInputProps) {
   const isControlled = value !== undefined;
   const [localValue, setLocalValue] = useState(value ?? defaultValue);
+  const [isFocused, setIsFocused] = useState(false);
   const isFocusedRef = useRef(false);
   const storeRef = useRef(createInputStore({ debounceCallbackTime }));
   const debouncedDispatchRef = useRef<((next: string) => void) | undefined>(undefined);
@@ -92,10 +93,12 @@ export function GdInput({
 
   const handleFocus = () => {
     isFocusedRef.current = true;
+    setIsFocused(true);
   };
 
   const handleBlur = () => {
     isFocusedRef.current = false;
+    setIsFocused(false);
     // Reconciles any external `value` write dropped while focused (the guard above).
     if (isControlled && value !== localValue) setLocalValue(value ?? '');
   };
@@ -134,13 +137,45 @@ export function GdInput({
           editable={!disabled}
           placeholder={placeholder}
           placeholderTextColor={resolved.disabledColor}
-          style={{
-            fontFamily: resolved.fontFamily as string,
-            fontSize: pxToNumber(resolved.fontSize),
-            color: textColor,
-            height: 40,
-          }}
+          style={[
+            {
+              fontFamily: resolved.fontFamily as string,
+              fontSize: pxToNumber(resolved.fontSize),
+              color: textColor,
+              height: 40,
+            },
+            // react-native-web's `TextInput` compiles to a real DOM `<input>`, which picks up
+            // the browser's own native focus ring independently of this wrapper `View`'s border
+            // — the two rendered together is the doubled ring. `outlineStyle` is a
+            // react-native-web-only style extension (no-op on iOS/Android) for suppressing it;
+            // not in RN's own `TextStyle` type, hence the cast.
+            { outlineStyle: 'none' } as TextStyle,
+          ]}
         />
+        {isFocused ? (
+          // Real `input.ts` draws focus as a separate `.Input__outline` layer — `outline: 2px
+          // solid colors.border.focus` at `outlineOffset: 3px` — sitting outside the border,
+          // gap and all, while the border itself stays exactly as it was. RN has no `outline`
+          // primitive, so this approximates the same "offset ring, border untouched" look with
+          // an absolutely-positioned sibling `View`, inset by -(offset + width) = -5 on every
+          // edge so its own 2px border lands in the same 3px-to-5px-outside band a CSS outline
+          // would occupy. `pointerEvents: 'none'` keeps it from intercepting the tap that
+          // toggles focus.
+          <View
+            testID="gd-input-focus-ring"
+            style={{
+              position: 'absolute',
+              top: -5,
+              left: -5,
+              right: -5,
+              bottom: -5,
+              borderWidth: 2,
+              borderColor: resolved.focusColor,
+              borderRadius: pxToNumber(resolved.borderRadius),
+              pointerEvents: 'none',
+            }}
+          />
+        ) : null}
       </View>
       {helperText ? (
         <Text
