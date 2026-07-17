@@ -9,7 +9,7 @@ import { renderers } from './renderers';
 
 type RenderChildren = (children?: A2UIComponent[]) => ReactNode[];
 
-function renderFallback(component: A2UIComponent, renderChildren: (children?: A2UIComponent[]) => ReactNode[]) {
+function renderFallback(component: A2UIComponent, renderChildren: RenderChildren) {
   const text = getComponentText(component);
 
   return (
