@@ -57,8 +57,8 @@ type A2UINodeProps = {
 /**
  * Wrapping the per-node dispatch in React.memo lets React skip re-rendering a whole
  * A2UI subtree when its `component` (and the shared dispatchAction/customRenderers/
- * renderChildren references) are unchanged — e.g. when a consumer patches only part
- * of a spec in place rather than fully regenerating it.
+ * renderChildren references) are unchanged — e.g. when a consumer updates a spec via
+ * structural sharing (reusing unchanged component object references).
  *
  * Extra props beyond the four above are forwarded onto the rendered element as-is:
  * some compound components (e.g. AccordionItem) clone their `children` to inject
