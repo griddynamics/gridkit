@@ -1,4 +1,4 @@
-import { cloneElement, Fragment, isValidElement, type ReactElement, type ReactNode } from 'react';
+import { cloneElement, isValidElement, memo, type ReactElement, type ReactNode } from 'react';
 import { Box, InlineNotification, Typography } from '@components';
 import type { A2UIActionDefinition, A2UIComponent } from '../../ai';
 import { A2UI_COMPONENT_MAP, checkA2UISpecLimits } from '../../ai';
@@ -13,7 +13,9 @@ import { ROOT_TEST_ID, SECURITY_FALLBACK_TEST_ID } from './constants';
 import { getMergedComponentStyles, getComponentText } from './helpers';
 import { renderers } from './renderers';
 
-function renderFallback(component: A2UIComponent, renderChildren: (children?: A2UIComponent[]) => ReactNode[]) {
+type RenderChildren = (children?: A2UIComponent[]) => ReactNode[];
+
+function renderFallback(component: A2UIComponent, renderChildren: RenderChildren) {
   const text = getComponentText(component);
 
   return (
@@ -26,7 +28,7 @@ function renderFallback(component: A2UIComponent, renderChildren: (children?: A2
 
 function renderA2UIComponent(
   component: A2UIComponent,
-  renderChildren: (children?: A2UIComponent[]) => ReactNode[],
+  renderChildren: RenderChildren,
   dispatchAction?: DispatchAction,
   customRenderers?: Record<string, Renderer>
 ): ReactNode {
@@ -50,6 +52,49 @@ function renderA2UIComponent(
     ? customRenderer(component, renderChildren, dispatchAction)
     : renderFallback(component, renderChildren);
 }
+
+type A2UINodeProps = {
+  component: A2UIComponent;
+  renderChildren: RenderChildren;
+  dispatchAction?: DispatchAction;
+  customRenderers?: Record<string, Renderer>;
+} & Record<string, unknown>;
+
+/**
+ * Wrapping the per-node dispatch in React.memo lets React skip re-rendering a whole
+ * A2UI subtree when its `component` (and the shared dispatchAction/customRenderers/
+ * renderChildren references) are unchanged — e.g. when a consumer updates a spec via
+ * structural sharing (reusing unchanged component object references).
+ *
+ * Extra props beyond the four above are forwarded onto the rendered element as-is:
+ * some compound components (e.g. AccordionItem) clone their `children` to inject
+ * state-derived props like `isOpen`, and those must reach the real underlying element,
+ * not be swallowed by this wrapper. Forwarding them also means React.memo's default
+ * shallow comparison correctly detects such injected props changing and re-renders.
+ */
+const A2UINode = memo(function A2UINode({
+  component,
+  renderChildren,
+  dispatchAction,
+  customRenderers,
+  ...extraProps
+}: A2UINodeProps) {
+  const renderedChild = renderA2UIComponent(component, renderChildren, dispatchAction, customRenderers);
+
+  if (renderedChild == null) {
+    return null;
+  }
+
+  if (isValidElement(renderedChild)) {
+    return cloneElement(renderedChild as ReactElement<Record<string, unknown>>, {
+      ...extraProps,
+      'data-a2ui-component-id': component.id,
+      'data-a2ui-component-type': component.type,
+    });
+  }
+
+  return <>{renderedChild}</>;
+});
 
 function renderLayout(spec: RenderableA2UISpec, children: ReactNode[]) {
   const layout = spec.ui.layout;
@@ -157,6 +202,86 @@ function createCustomRendererMap(
   return Object.keys(customRendererMap).length > 0 ? customRendererMap : undefined;
 }
 
+// The caches below give `dispatchAction`, `customRenderers`, and `renderChildren` stable
+// object identity across separate `renderA2UISpec` calls whose `spec.ui`/`actions`/
+// `customComponents` inputs are themselves unchanged by reference. Without this, those
+// three values would be freshly allocated on every call, and A2UINode's React.memo could
+// never bail out — even for a `component` whose reference genuinely didn't change.
+const dispatchActionCache = new WeakMap<RenderableA2UISpec['ui'], WeakMap<A2UIActionDefinition[], DispatchAction>>();
+
+function getCachedDispatchAction(spec: RenderableA2UISpec, definitions: A2UIActionDefinition[]): DispatchAction {
+  let byDefinitions = dispatchActionCache.get(spec.ui);
+  if (!byDefinitions) {
+    byDefinitions = new WeakMap();
+    dispatchActionCache.set(spec.ui, byDefinitions);
+  }
+
+  let dispatchAction = byDefinitions.get(definitions);
+  if (!dispatchAction) {
+    dispatchAction = createDispatchAction(spec, definitions);
+    byDefinitions.set(definitions, dispatchAction);
+  }
+
+  return dispatchAction;
+}
+
+const customRendererMapCache = new WeakMap<A2UICustomComponentDefinition[], Record<string, Renderer> | undefined>();
+
+function getCachedCustomRendererMap(
+  customComponents: A2UICustomComponentDefinition[]
+): Record<string, Renderer> | undefined {
+  if (customRendererMapCache.has(customComponents)) {
+    return customRendererMapCache.get(customComponents);
+  }
+
+  const customRendererMap = createCustomRendererMap(customComponents);
+  customRendererMapCache.set(customComponents, customRendererMap);
+
+  return customRendererMap;
+}
+
+const NO_DISPATCH_ACTION = {} as DispatchAction;
+const NO_CUSTOM_RENDERERS = {} as Record<string, Renderer>;
+
+const renderChildrenCache = new WeakMap<
+  DispatchAction | typeof NO_DISPATCH_ACTION,
+  WeakMap<Record<string, Renderer> | typeof NO_CUSTOM_RENDERERS, RenderChildren>
+>();
+
+function getCachedRenderChildren(
+  dispatchAction: DispatchAction | undefined,
+  customRenderers: Record<string, Renderer> | undefined
+): RenderChildren {
+  const dispatchKey = dispatchAction ?? NO_DISPATCH_ACTION;
+  const customKey = customRenderers ?? NO_CUSTOM_RENDERERS;
+
+  let byCustomRenderers = renderChildrenCache.get(dispatchKey);
+  if (!byCustomRenderers) {
+    byCustomRenderers = new WeakMap();
+    renderChildrenCache.set(dispatchKey, byCustomRenderers);
+  }
+
+  let renderChildren = byCustomRenderers.get(customKey);
+  if (!renderChildren) {
+    function newRenderChildren(children?: A2UIComponent[]): ReactNode[] {
+      return (children || []).map((child) => (
+        <A2UINode
+          key={child.id}
+          component={child}
+          renderChildren={newRenderChildren}
+          dispatchAction={dispatchAction}
+          customRenderers={customRenderers}
+        />
+      ));
+    }
+
+    renderChildren = newRenderChildren;
+    byCustomRenderers.set(customKey, renderChildren);
+  }
+
+  return renderChildren;
+}
+
 export function renderA2UISpec(
   spec?: RenderableA2UISpec | null,
   actions?: A2UIActionDefinition[],
@@ -179,28 +304,9 @@ export function renderA2UISpec(
     );
   }
 
-  const dispatchAction = actions?.length ? createDispatchAction(spec, actions) : undefined;
-
-  const customRenderers = customComponents?.length ? createCustomRendererMap(customComponents) : undefined;
-
-  const renderChildren = (children?: A2UIComponent[]) =>
-    (children || []).map((child) => {
-      const renderedChild = renderA2UIComponent(child, renderChildren, dispatchAction, customRenderers);
-
-      if (renderedChild == null) {
-        return null;
-      }
-
-      if (isValidElement(renderedChild)) {
-        return cloneElement(renderedChild as ReactElement<Record<string, unknown>>, {
-          key: child.id,
-          'data-a2ui-component-id': child.id,
-          'data-a2ui-component-type': child.type,
-        });
-      }
-
-      return <Fragment key={child.id}>{renderedChild}</Fragment>;
-    });
+  const dispatchAction = actions?.length ? getCachedDispatchAction(spec, actions) : undefined;
+  const customRenderers = customComponents?.length ? getCachedCustomRendererMap(customComponents) : undefined;
+  const renderChildren = getCachedRenderChildren(dispatchAction, customRenderers);
 
   return renderLayout(spec, renderChildren(spec.ui.components));
 }
