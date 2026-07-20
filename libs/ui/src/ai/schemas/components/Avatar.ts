@@ -33,14 +33,15 @@ const component = {
     {
       name: 'size',
       type: 'string',
-      description: 'Avatar size. Preferred A2UI field — use this over sizeVariant.',
-      enum: ['xs', 'sm', 'md', 'lg', 'xl'] as const,
+      description:
+        'Avatar size. Preferred A2UI field — use this over sizeVariant. Note: the withBadge dot and initials fallback text do not have dedicated xxl token sizing yet — at size="xxl" they render at the same size as the default (md) tier.',
+      enum: ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'] as const,
     },
     {
       name: 'sizeVariant',
       type: 'string',
       description: 'Avatar size variant. Alias for size — both are accepted; size is preferred in A2UI specs.',
-      enum: ['xs', 'sm', 'md', 'lg', 'xl'] as const,
+      enum: ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'] as const,
     },
     { name: 'withBadge', type: 'boolean', description: 'Show status dot badge ON the avatar. Top-level field.' },
     {
@@ -53,7 +54,7 @@ const component = {
       name: 'icon',
       type: 'string',
       description:
-        'A2UI-only avatar fallback icon name (for example "star" or "user"). This renders inside the avatar itself via the existing fallbackComponent behavior.',
+        'A2UI-only avatar fallback icon name (for example "star" or "user"). This renders inside the avatar itself via the existing fallbackComponent behavior. Icon pixel size is derived from sizeVariant/size (xs=12, sm=18, md=20, lg=24, xl=40) — xxl has no dedicated icon size yet and falls back to the md (20px) icon size.',
     },
     {
       name: 'fill',
@@ -146,6 +147,7 @@ const compositionTips: string[] = [
   'Use icon, fill, and fillSvg when the avatar should fall back to an icon instead of initials.',
   'Use withBadge and badgeColor for presence or status indicators.',
   'Wire interactive avatars through actions[] instead of raw onClick handlers.',
+  'Avatar sizes range from xs to xxl. The withBadge dot and initials fallback text share the default (md) token size at xxl — no dedicated xxl badge/fallback-text tokens exist yet.',
 ];
 
 export default { component, compositionTips };

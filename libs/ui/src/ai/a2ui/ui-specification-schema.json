@@ -937,7 +937,7 @@
         "alt": { "type": "string", "description": "Alternative text for image/avatar/carousel media." },
         "sizeVariant": {
           "type": "string",
-          "enum": ["xs", "sm", "md", "lg", "xl"],
+          "enum": ["xs", "sm", "md", "lg", "xl", "xxl"],
           "description": "Avatar size variant — alias for \"size\" on avatar components."
         },
         "orientation": {

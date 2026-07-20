@@ -96,18 +96,22 @@ export const avatar = {
       height: 24,
     },
     sm: {
-      width: 38,
-      height: 38,
+      width: 32,
+      height: 32,
     },
     md: {
-      width: 42,
-      height: 42,
+      width: 40,
+      height: 40,
     },
     lg: {
-      width: 52,
-      height: 52,
+      width: 56,
+      height: 56,
     },
     xl: {
+      width: 64,
+      height: 64,
+    },
+    xxl: {
       width: 80,
       height: 80,
     },

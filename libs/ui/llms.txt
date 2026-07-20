@@ -84,7 +84,7 @@ Pre-built indexes for quick discovery:
 > Run `yarn build:ui` to regenerate. Do not edit the block between the markers manually.
 
 <!-- AUTO-GENERATED:COMPONENTS:START -->
-66 components total — generated from libs/ui/src/ai/schemas/ on 2026-07-17.
+66 components total — generated from libs/ui/src/ai/schemas/ on 2026-07-20.
 
 ## Other
 
@@ -1703,7 +1703,7 @@ Import: `import { Avatar } from 'gd-design-library'`
 
 User avatar component for displaying profile pictures, initials, or icons with support for badges, fallback content, and various size options. A2UI SPEC: all props are top-level fields — do NOT use "attributes" or "fallbackComponent". Use "label" or "value" for initials text. Use "size" or "sizeVariant" for size. For an icon inside the avatar, set top-level "icon" plus optional "fill" or "fillSvg"; the renderer maps that to Avatar fallback content internally. For a status badge ON the avatar use withBadge + badgeColor directly on this component — do NOT place a separate "badge" or sibling "icon" next to the avatar. Prefer theme color tokens before raw CSS/hex. Example: {"type":"avatar","icon":"star","size":"xl","backgroundColor":"#cfaaa7","fill":"#646464"}.
 
-**Props:** `label`: string, `value`: string, `src`: string, `alt`: string, `size`: "xs"|"sm"|"md"|"lg"|"xl", `sizeVariant`: "xs"|"sm"|"md"|"lg"|"xl" *(+8 more)*
+**Props:** `label`: string, `value`: string, `src`: string, `alt`: string, `size`: "xs"|"sm"|"md"|"lg"|"xl"|"xxl", `sizeVariant`: "xs"|"sm"|"md"|"lg"|"xl"|"xxl" *(+8 more)*
 
 **Quick Start:**
   - basic: `<Avatar src="/user-photo.jpg" alt="John Doe" />`
