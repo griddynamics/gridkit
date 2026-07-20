@@ -40,7 +40,7 @@ jobs:
       - name: Config Git User
         run: |
           git config user.name "Github Actions"
-          git config user.email "cto-rnd-system-design-support@griddynamics.com"
+#          git config user.email "gridkit-support@gr1iddynamics.com"
           git fetch --tags --force
 
       - name: Release and publish ui
