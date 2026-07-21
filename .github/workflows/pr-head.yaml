@@ -136,7 +136,9 @@ jobs:
           path: dist/libs/ui
 
       - name: Verify UI install (Verdaccio publish + ESM/CJS smoke)
-        run: npm run verify:ui:install
+        run: |
+          node libs/ui/scripts/install-check.mjs --json
+          node libs/ui/scripts/build-summary.mjs --check
 
       - name: Upload install-check report
         if: ${{ always() }}
