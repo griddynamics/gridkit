@@ -8,7 +8,11 @@ describe('A2UI_COMPONENT_MAP — notes restoration', () => {
     expect(notes.length).toBe(24);
     expect(notes.some((n) => n.includes('Icon Fallback'))).toBe(true);
     expect(
-      notes.some((n) => n.includes('<Avatar icon="star" fill="#646464" backgroundColor="#E0E0E0" size="xl" />'))
+      notes.some((n) =>
+        n.includes(
+          '<Avatar fallbackComponent={<Icon name="star" fill="#646464" />} backgroundColor="#E0E0E0" sizeVariant="xl" />'
+        )
+      )
     ).toBe(true);
     expect(notes.some((n) => n.includes('Troubleshooting — Icon fallback not showing'))).toBe(true);
   });
