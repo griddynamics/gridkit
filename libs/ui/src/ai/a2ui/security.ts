@@ -100,7 +100,12 @@ export function checkA2UISpecLimits(
   spec: Pick<A2UISpec, 'ui'> | A2UISpec | null | undefined,
   limits?: Partial<A2UISecurityLimits>
 ): A2UISpecLimitCheck {
-  const mergedLimits: A2UISecurityLimits = { ...A2UI_SECURITY_LIMITS, ...limits };
+  const mergedLimits: A2UISecurityLimits = {
+    ...A2UI_SECURITY_LIMITS,
+    ...(typeof limits?.maxTreeDepth === 'number' ? { maxTreeDepth: limits.maxTreeDepth } : {}),
+    ...(typeof limits?.maxNodeCount === 'number' ? { maxNodeCount: limits.maxNodeCount } : {}),
+    ...(typeof limits?.maxPayloadBytes === 'number' ? { maxPayloadBytes: limits.maxPayloadBytes } : {}),
+  };
   const violations: string[] = [];
   const accumulator = { nodeCount: 0, maxDepth: 0 };
 
