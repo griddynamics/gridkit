@@ -192,7 +192,7 @@ export function isSafeA2UIUrl(
   return allowedSchemes.includes(scheme);
 }
 
-const EVENT_HANDLER_ATTRIBUTE_PATTERN = /^on[A-Z]/;
+const EVENT_HANDLER_ATTRIBUTE_PATTERN = /^on[a-z]/i;
 
 /**
  * Strips dangerous keys/values from a spec's free-form `attributes` object before it is
