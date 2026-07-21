@@ -29,6 +29,7 @@ export const linkRenderers = {
       role={component.role as string | undefined}
       ariaLabel={component.ariaLabel}
       tabindex={component.tabIndex}
+      className={component.className}
       styles={getMergedComponentStyles(component)}
       onClick={
         dispatchAction && component.actions?.length

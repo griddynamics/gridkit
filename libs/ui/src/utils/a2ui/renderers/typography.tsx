@@ -13,6 +13,8 @@ export const typographyRenderers = {
       align={(component.align || component.styling?.textAlign) as never}
       color={component.color || component.styling?.color}
       styleVariant={component.styleVariant as never}
+      aria-label={component.ariaLabel}
+      className={component.className}
       styles={getComponentStyles(component.styling)}
     >
       {getComponentText(component)}

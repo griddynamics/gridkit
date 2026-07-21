@@ -436,18 +436,15 @@ export function buildA2UISystemPrompt(options?: A2UISystemPromptOptions): string
 function buildComponentList(): string {
   const lines: string[] = [];
   const groups = new Map<string, string[]>();
-  const detailedPropCategories = new Set(['Widgets']);
 
   for (const [type, entry] of Object.entries(A2UI_COMPONENT_MAP)) {
     const cat = `### ${entry.category ?? 'Other'}`;
     if (!groups.has(cat)) groups.set(cat, []);
     const propSummary = buildShortPropSummary(type, entry.props);
     groups.get(cat)!.push(`- "${type}": ${entry.description}${propSummary}`);
-    if (entry.category && detailedPropCategories.has(entry.category)) {
-      const propDetails = buildDetailedPropSummary(entry.props);
-      if (propDetails.length > 0) {
-        groups.get(cat)!.push('  Prop details:', ...propDetails);
-      }
+    const propDetails = buildDetailedPropSummary(entry.props);
+    if (propDetails.length > 0) {
+      groups.get(cat)!.push('  Prop details:', ...propDetails);
     }
     if (entry.notes) {
       entry.notes.forEach((note) => groups.get(cat)!.push(`  → ${note}`));

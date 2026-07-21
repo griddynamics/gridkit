@@ -110,8 +110,10 @@ export const avatarRenderers = {
         (component.withBadge as boolean | undefined) ?? (component.attributes?.['withBadge'] as boolean | undefined)
       }
       badgeColor={(component.badgeColor as string | undefined) || getAttributeString(component, 'badgeColor')}
+      className={component.className}
       styles={getMergedComponentStyles(component)}
       onClick={component.actions?.length ? () => component.actions!.forEach((id) => dispatchAction?.(id)) : undefined}
+      {...(component.ariaLabel ? { 'aria-label': component.ariaLabel } : {})}
     />
   ),
   'avatar-user': (
@@ -142,8 +144,10 @@ export const avatarRenderers = {
           (component.backgroundColor as string | undefined) || getAttributeString(component, 'backgroundColor')
         }
         action={renderComponentSlot(renderChildren, getComponentArrayField(component, 'actionChildren'))}
+        className={component.className}
         styles={getMergedComponentStyles(component)}
         onClick={component.actions?.length ? () => component.actions!.forEach((id) => dispatchAction?.(id)) : undefined}
+        aria-label={component.ariaLabel}
       />
     );
   },

@@ -40,6 +40,7 @@ export const priceRenderers = {
         size={
           component.size === 'sm' || component.size === 'md' || component.size === 'lg' ? component.size : undefined
         }
+        aria-label={component.ariaLabel}
         styles={getMergedComponentStyles(component)}
       />
     );

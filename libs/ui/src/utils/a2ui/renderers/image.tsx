@@ -97,6 +97,8 @@ export const imageRenderers = {
           {`Image unavailable${component.label ? `: ${component.label}` : ''}`}
         </InlineNotification>
       }
+      aria-label={component.ariaLabel}
+      className={component.className}
       styles={getImageStyles(component) as never}
       onClick={component.actions?.length ? () => component.actions!.forEach((id) => dispatchAction?.(id)) : undefined}
     />
@@ -114,6 +116,8 @@ export const imageRenderers = {
       showCounter={component.showCounter}
       showArrows={component.showArrows}
       thumbnailPosition={component.thumbnailPosition}
+      aria-label={component.ariaLabel}
+      className={component.className}
       styles={getComponentStyles(component.styling)}
       onImageChange={
         dispatchAction && component.actions?.length

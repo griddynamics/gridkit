@@ -39,6 +39,8 @@ function ModalRenderer({
       showCloseButton={component.showCloseButton ?? true}
       isCustomView={component.isCustomView}
       footer={footer}
+      aria-label={component.ariaLabel}
+      className={component.className}
       styles={getComponentStyles(component.styling)}
     >
       {renderChildren(component.children)}

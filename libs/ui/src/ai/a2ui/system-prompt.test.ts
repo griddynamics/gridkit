@@ -173,6 +173,21 @@ describe('A2UI system prompt', () => {
     expect(prompt).toContain('interactive icon, link, slider, and slider-dots components use actions[]');
   });
 
+  it("SHOULD include Avatar's restored commonPatterns/troubleshooting text (CTORNDSD-634), not just compositionTips", () => {
+    const prompt = buildA2UISystemPrompt();
+
+    expect(prompt).toContain('Icon Fallback');
+    expect(prompt).toContain('Troubleshooting — Icon fallback not showing');
+  });
+
+  it('SHOULD include full per-prop "Prop details" for a non-Widgets category component (CTORNDSD-634 detailedPropCategories gate removal)', () => {
+    const prompt = buildA2UISystemPrompt();
+    const avatarIdx = prompt.indexOf('"avatar":');
+    const avatarSection = prompt.slice(avatarIdx, avatarIdx + 2000);
+
+    expect(avatarSection).toContain('Prop details:');
+  });
+
   it('SHOULD include avatar-user guidance for subtitle text and trailing actions', () => {
     const prompt = buildA2UISystemPrompt();
 

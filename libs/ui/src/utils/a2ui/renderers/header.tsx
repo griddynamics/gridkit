@@ -57,6 +57,8 @@ export const headerRenderers = {
           ? (_event, item) => dispatchComponentActions(component, dispatchAction, { trigger: 'menu-item', item })
           : undefined
       }
+      aria-label={component.ariaLabel}
+      className={component.className}
       styles={getComponentStyles(component.styling)}
     >
       {renderChildren(component.children)}

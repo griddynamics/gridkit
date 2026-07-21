@@ -31,6 +31,8 @@ export const radioGroupRenderers = {
       itemWidth={(component as A2UIComponent & { itemWidth?: string }).itemWidth}
       itemHeight={(component as A2UIComponent & { itemHeight?: string }).itemHeight}
       name={component.name}
+      aria-label={component.ariaLabel}
+      className={component.className}
       styles={getMergedComponentStyles(component)}
       onChange={
         dispatchAction && component.actions?.length
