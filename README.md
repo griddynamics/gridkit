@@ -70,7 +70,7 @@ npm run verify:ui:ci       # CI gate (non-zero exit on failure)
 ## Publishing
 
 ```bash
-# gd-design-library — via GitHub Actions (publish.yaml) or:
+# gd-design-library
 npm run build:ui && npm run publish:ui
 
 # form-configurator — via GitHub Actions (publish-form-configurator.yaml) or:
