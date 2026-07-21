@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { A2UI_COMPONENT_MAP } from './component-map';
 
-describe('A2UI_COMPONENT_MAP — CTORNDSD-634 notes restoration', () => {
+describe('A2UI_COMPONENT_MAP — notes restoration', () => {
   it("SHOULD include Avatar's restored commonPatterns, examples, and troubleshooting content, not just compositionTips", () => {
     const notes = A2UI_COMPONENT_MAP['avatar']?.notes ?? [];
 
