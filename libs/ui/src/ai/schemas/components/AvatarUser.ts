@@ -2,7 +2,7 @@ const component = {
   name: 'AvatarUser',
   import: "import { AvatarUser } from 'gd-design-library'",
   description:
-    'Composite avatar component that displays a user with avatar image, name, optional subtitle, and optional badge. Supports card and profile layout variants.',
+    'Composite avatar component that displays a user with avatar image, name, optional subtitle, and optional badge. Supports card and profile layout variants. Real React props (AvatarUserProps): name (required), variant, subtitle, src, alt, fallbackComponent, sizeVariant, withBadge, badgeColor, backgroundColor, action, onClick, plus standard CSS props (styles, className). A2UI JSON adds renderer-only field aliases (description, icon, fill, fillSvg, actionChildren, actions, size, styling) that get mapped onto those real props — see individual prop descriptions below for which is which.',
   a2uiName: 'avatar-user',
   category: 'Display & Content',
   complexity: 'Low',
@@ -20,82 +20,97 @@ const component = {
       name: 'name',
       type: 'string',
       description:
-        'Primary user display name shown next to or below the avatar. When src is omitted, the A2UI renderer derives initials from this name.',
+        'Real AvatarUser React prop, required. Primary user display name shown next to or below the avatar. When src is omitted, the renderer derives initials from this name for the avatar fallback.',
       required: true,
     },
     {
       name: 'variant',
       type: 'string',
-      description: 'Layout variant of the component',
+      description: 'Real AvatarUser React prop. Layout variant of the component.',
       enum: ['card', 'profile'] as const,
       default: 'card',
     },
     {
       name: 'subtitle',
       type: 'string',
-      description: 'Secondary line of text beneath the name, such as a role, team, or email address',
+      description:
+        'Real AvatarUser React prop. Secondary line of text beneath the name, such as a role, team, or email address.',
     },
     {
       name: 'description',
       type: 'string',
       description:
-        'Fallback subtitle text. Used when subtitle is absent — the renderer promotes description to the subtitle slot automatically.',
+        'A2UI JSON field only — not a real AvatarUser React prop. Fallback subtitle text used when subtitle is absent — the renderer promotes description into the real subtitle prop automatically.',
     },
-    { name: 'src', type: 'string', description: 'URL of the avatar image' },
-    { name: 'alt', type: 'string', description: 'Alt text for the avatar image' },
+    { name: 'src', type: 'string', description: 'Real AvatarUser React prop. URL of the avatar image.' },
+    { name: 'alt', type: 'string', description: 'Real AvatarUser React prop. Alt text for the avatar image.' },
     {
       name: 'size',
       type: 'string',
       description:
-        'Avatar size. Preferred A2UI field — use this over sizeVariant for consistency with the Avatar component.',
-      enum: ['xs', 'sm', 'md', 'lg', 'xl'] as const,
+        'A2UI JSON field only — not a real AvatarUser React prop; the real prop is sizeVariant. Preferred A2UI field name for consistency with the Avatar component. Note: the withBadge dot does not have dedicated xxl token sizing yet — at size="xxl" it renders at the same size as the default (md) tier.',
+      enum: ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'] as const,
     },
     {
       name: 'sizeVariant',
       type: 'string',
-      description: 'Avatar size variant. Alias for size — both are accepted; size is preferred in A2UI specs.',
-      enum: ['xs', 'sm', 'md', 'lg', 'xl'] as const,
+      description:
+        'Real AvatarUser React prop (AvatarUserProps.sizeVariant). Also accepted as a top-level A2UI field — size is preferred in new A2UI specs.',
+      enum: ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'] as const,
     },
-    { name: 'withBadge', type: 'boolean', description: 'Whether to show a presence/status badge dot' },
+    {
+      name: 'withBadge',
+      type: 'boolean',
+      description: 'Real AvatarUser React prop. Whether to show a presence/status badge dot.',
+    },
     {
       name: 'badgeColor',
       type: 'string',
       description:
-        'Badge dot color. Prefer theme color token paths (for example "bg.fill.success.primary.default") before raw CSS/hex colors.',
+        'Real AvatarUser React prop. Badge dot color. Prefer theme color token paths (for example "bg.fill.success.primary.default") before raw CSS/hex colors.',
     },
     {
       name: 'backgroundColor',
       type: 'string',
       description:
-        'Background color for the avatar\'s initials/icon fallback area. Accepts theme color token paths (e.g. "primary.default", "bg.fill.secondary", "bg.fill.info.primary.default") or raw CSS/hex. Token paths — including Material-style aliases such as "theme.primary.main" or "primary.main" — are resolved through the theme at render time.',
+        'Real AvatarUser React prop. Background color for the avatar\'s initials/icon fallback area. Accepts theme color token paths (e.g. "primary.default", "bg.fill.secondary", "bg.fill.info.primary.default") or raw CSS/hex. Token paths — including Material-style aliases such as "theme.primary.main" or "primary.main" — are resolved through the theme at render time.',
     },
     {
       name: 'icon',
       type: 'string',
       description:
-        'Optional icon name used as avatar fallback content when src is omitted. If not provided, the renderer falls back to initials derived from name.',
+        'A2UI JSON field only — not a real AvatarUser React prop. Optional icon name used as avatar fallback content when src is omitted. The renderer maps this into the real fallbackComponent prop. If not provided, the renderer falls back to initials derived from name.',
     },
     {
       name: 'fill',
       type: 'string',
-      description: 'Fill color for the fallback icon when icon is provided',
+      description:
+        'A2UI JSON field only — not a real AvatarUser React prop. Fill color for the fallback icon when icon is provided.',
     },
     {
       name: 'fillSvg',
       type: 'string',
-      description: 'Optional uniform SVG fill color for the fallback icon. Overrides fill when both are set.',
+      description:
+        'A2UI JSON field only — not a real AvatarUser React prop. Optional uniform SVG fill color for the fallback icon. Overrides fill when both are set.',
     },
     {
       name: 'actionChildren',
       type: 'A2UIComponent[]',
-      description: 'Nested components rendered in the trailing action area. Only visible in the "profile" variant.',
+      description:
+        'A2UI JSON field only — not a real AvatarUser React prop; the real prop is action (ReactNode, TSX-only). Nested components rendered in the trailing action area. Only visible in the "profile" variant.',
     },
     {
       name: 'actions',
       type: 'string[]',
-      description: 'Action IDs from ui.actions to trigger when the avatar-user wrapper is clicked.',
+      description:
+        'A2UI JSON field only — not a real AvatarUser React prop. Action IDs from ui.actions to trigger when the avatar-user wrapper is clicked. The renderer wires this into the real onClick prop.',
     },
-    { name: 'styling', type: 'object', description: 'CSS style overrides for the avatar-user wrapper' },
+    {
+      name: 'styling',
+      type: 'object',
+      description:
+        'A2UI JSON field only — not a real AvatarUser React prop; the real prop is styles (CSSObject). CSS style overrides for the avatar-user wrapper, merged by the renderer into the real styles prop.',
+    },
   ],
   examples: [
     '<AvatarUser name="John Doe" />',
@@ -111,7 +126,7 @@ const compositionTips: string[] = [
   'Provide subtitle for secondary user info like role, email, or status text.',
   'Set withBadge and badgeColor to show online/offline or presence indicators, preferring theme tokens for badgeColor.',
   'When src is not provided, the avatar falls back to initials derived from name.',
-  'Use sizeVariant to scale the avatar to match the surrounding layout context.',
+  'Use sizeVariant to scale the avatar to match the surrounding layout context. Sizes range from xs to xxl; the withBadge dot shares the default (md) token size at xxl since no dedicated xxl badge token exists yet.',
   'Wrap AvatarUser in a Row with align="center" for horizontal user list entries.',
   'Combine AvatarUser with Card for user profile cards in grids or sidebars.',
   'Use backgroundColor to tint the avatar fallback area — pass any theme token path (e.g. "primary.default", "bg.fill.secondary", "theme.primary.main") or a raw hex; token paths including Material-style aliases are resolved to actual colors at render time.',

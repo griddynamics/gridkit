@@ -151,7 +151,7 @@ const meta: Meta<typeof Avatar> = {
   <li>
   <b>Size Variations</b>
   <ul>
-  <li>XS to XL predefined sizes</li>
+  <li>XS to XXL predefined sizes</li>
   <li>Consistent scaling</li>
   </ul>
   </li>
@@ -192,11 +192,12 @@ const Template: StoryFn<PropsWithChildren<AvatarProps>> = (args) => <Avatar {...
 
 const AllSizeTemplate: StoryFn<PropsWithChildren<AvatarProps>> = (args) => (
   <div style={{ display: 'flex', gap: '20px', justifyItems: 'center', alignItems: 'center' }}>
-    <Avatar sizeVariant={SizeVariant.Xs} fallbackComponent="XS" {...args} />
-    <Avatar sizeVariant={SizeVariant.Sm} fallbackComponent="SM" {...args} />
-    <Avatar sizeVariant={SizeVariant.Md} fallbackComponent="MD" {...args} />
-    <Avatar sizeVariant={SizeVariant.Lg} fallbackComponent="LG" {...args} />
-    <Avatar sizeVariant={SizeVariant.Xl} fallbackComponent="XL" {...args} />
+    <Avatar sizeVariant="xs" fallbackComponent="XS" {...args} />
+    <Avatar sizeVariant="sm" fallbackComponent="SM" {...args} />
+    <Avatar sizeVariant="md" fallbackComponent="MD" {...args} />
+    <Avatar sizeVariant="lg" fallbackComponent="LG" {...args} />
+    <Avatar sizeVariant="xl" fallbackComponent="XL" {...args} />
+    <Avatar sizeVariant="xxl" fallbackComponent="XXL" {...args} />
   </div>
 );
 
@@ -267,78 +268,6 @@ WithAccessibility.parameters = {
   },
 };
 WithAccessibility.tags = ['a11y'];
-
-export const UserCardVariant: StoryFn = () => (
-  <Column gutter={20}>
-    <Avatar.User
-      variant="card"
-      name="John Doe"
-      subtitle="Software Engineer"
-      src="https://picsum.photos/200?random=10"
-    />
-    <Avatar.User
-      variant="card"
-      name="Jane Smith"
-      subtitle="Product Designer"
-      src="https://picsum.photos/200?random=11"
-      withBadge
-      badgeColor="#34A853"
-    />
-    <Avatar.User variant="card" name="Bob Wilson" fallbackComponent="BW" />
-  </Column>
-);
-UserCardVariant.parameters = {
-  docs: {
-    description: {
-      story:
-        'The `Avatar.User` with `variant="card"` displays a compact horizontal layout with avatar, name, and optional subtitle. Ideal for lists, comments, and compact user references.',
-    },
-    source: {
-      code: `<Avatar.User
-  variant="card"
-  name="John Doe"
-  subtitle="Software Engineer"
-  src="https://picsum.photos/200?random=10"
-/>`,
-    },
-  },
-};
-
-export const UserProfileVariant: StoryFn = () => (
-  <Row gutter={40} align="start">
-    <Avatar.User
-      variant="profile"
-      name="John Doe"
-      subtitle="Software Engineer"
-      src="https://picsum.photos/200?random=12"
-    />
-    <Avatar.User
-      variant="profile"
-      name="Jane Smith"
-      subtitle="Product Designer"
-      src="https://picsum.photos/200?random=13"
-      withBadge
-      action={<Button>Follow</Button>}
-    />
-  </Row>
-);
-UserProfileVariant.parameters = {
-  docs: {
-    description: {
-      story:
-        'The `Avatar.User` with `variant="profile"` displays a centered vertical layout with a larger avatar, name, subtitle, and optional action slot. Ideal for profile cards and user detail views.',
-    },
-    source: {
-      code: `<Avatar.User
-  variant="profile"
-  name="John Doe"
-  subtitle="Software Engineer"
-  src="/avatar.jpg"
-  action={<Button>Follow</Button>}
-/>`,
-    },
-  },
-};
 
 export const DefaultTokens: StoryFn = () => <TokenViewer tokens={{ avatar: defaultTheme.avatar }} />;
 DefaultTokens.parameters = {
