@@ -5,7 +5,7 @@ describe('A2UI_COMPONENT_MAP — CTORNDSD-634 notes restoration', () => {
   it("SHOULD include Avatar's restored commonPatterns, examples, and troubleshooting content, not just compositionTips", () => {
     const notes = A2UI_COMPONENT_MAP['avatar']?.notes ?? [];
 
-    expect(notes.length).toBe(22);
+    expect(notes.length).toBe(24);
     expect(notes.some((n) => n.includes('Icon Fallback'))).toBe(true);
     expect(
       notes.some((n) => n.includes('<Avatar icon="star" fill="#646464" backgroundColor="#E0E0E0" size="xl" />'))
