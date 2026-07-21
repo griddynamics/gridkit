@@ -1,5 +1,5 @@
-import { Fragment, type ReactNode } from 'react';
-import { Carousel, ContentCarousel } from '@components';
+import type { ReactNode } from 'react';
+import { Box, Carousel, ContentCarousel } from '@components';
 import type { A2UIComponent } from '../../../ai';
 import { getComponentStyles, getAttributeObject } from '../helpers';
 import { getImageSrc, getImageAlt, getImageWidth, getImageHeight, getImageObjectFit, getImageStyles } from './image';
@@ -98,6 +98,8 @@ export const carouselRenderers = {
     );
   },
   'carousel-slide': (component: A2UIComponent, renderChildren: (children?: A2UIComponent[]) => ReactNode[]) => (
-    <Fragment key={component.id}>{renderChildren(component.children)}</Fragment>
+    <Box key={component.id} styles={getComponentStyles(component.styling)}>
+      {renderChildren(component.children)}
+    </Box>
   ),
 };

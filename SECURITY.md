@@ -3,7 +3,7 @@
 ## Reporting a Vulnerability
 
 If you discover a security vulnerability, please report it privately
-to the security team at security@griddynamics.com. Do not create
+to the security team at <security@griddynamics.com>. Do not create
 a public issue.
 
 ## Best Practices

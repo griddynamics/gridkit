@@ -15,6 +15,8 @@ export const loaderRenderers = {
       withWrapper={
         (component.withWrapper as boolean | undefined) ?? getAttributeBoolean(component, 'withWrapper') ?? true
       }
+      aria-label={component.ariaLabel}
+      className={component.className}
       styles={getComponentStyles(component.styling)}
     />
   ),

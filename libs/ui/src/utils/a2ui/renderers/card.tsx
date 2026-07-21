@@ -29,6 +29,7 @@ export const cardRenderers = {
       isHighlighted={component.isHighlighted}
       withShadowHover={component.withShadowHover}
       padding={component.padding}
+      className={component.className}
       styles={{
         gap: component.gutter,
         ...getComponentStyles(component.styling),
@@ -44,6 +45,7 @@ export const cardRenderers = {
       align={component.align as never}
       justify={component.justify as never}
       isWrap={component.isWrap}
+      className={component.className}
       styles={{
         padding: component.padding,
         gap: component.gap,
@@ -60,6 +62,7 @@ export const cardRenderers = {
       align={component.align as never}
       justify={component.justify as never}
       isWrap={component.isWrap}
+      className={component.className}
       styles={{
         padding: component.padding,
         ...getComponentStyles(component.styling),

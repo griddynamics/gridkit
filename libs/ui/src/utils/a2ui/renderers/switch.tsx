@@ -38,6 +38,8 @@ export const switchRenderers = {
         isLoading={component.isLoading}
         name={component.name}
         label={labelPos}
+        aria-label={component.ariaLabel}
+        className={component.className}
         styles={getMergedComponentStyles(component)}
         onValueChange={
           dispatchAction && component.actions?.length

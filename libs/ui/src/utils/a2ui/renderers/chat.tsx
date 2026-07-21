@@ -43,6 +43,8 @@ export const chatRenderers = {
           ? renderChildren(getComponentArrayField(component, 'actionChildren'))
           : undefined
       }
+      aria-label={component.ariaLabel}
+      className={component.className}
       styles={getComponentStyles(component.styling)}
     >
       {getComponentText(component) ? <Typography>{getComponentText(component)}</Typography> : null}
@@ -71,6 +73,8 @@ export const chatRenderers = {
                 })
             : undefined
         }
+        aria-label={component.ariaLabel}
+        className={component.className}
         styles={getComponentStyles(component.styling)}
       />
     );
@@ -93,6 +97,7 @@ export const chatRenderers = {
         component.sidebarHeaderContent?.length ? renderChildren(component.sidebarHeaderContent) : undefined
       }
       headerContent={component.headerContent?.length ? renderChildren(component.headerContent) : undefined}
+      aria-label={component.ariaLabel}
       className={component.className}
       styles={getMergedComponentStyles(component)}
     >

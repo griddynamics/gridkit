@@ -45,6 +45,8 @@ export const skeletonRenderers = {
       backgroundColor={getSkeletonBackgroundColor(component)}
       animationName={component.animationName}
       animationProps={component.animationProps}
+      aria-label={component.ariaLabel}
+      className={component.className}
       styles={getSkeletonStyleOverrides(component)}
       {...(component.attributes ?? {})}
     >

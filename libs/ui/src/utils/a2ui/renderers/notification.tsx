@@ -27,6 +27,8 @@ export const notificationRenderers = {
     <InlineNotification
       key={component.id}
       variant={component.variant as never}
+      aria-label={component.ariaLabel}
+      className={component.className}
       styles={getMergedComponentStyles(component)}
     >
       <>
@@ -48,6 +50,8 @@ export const notificationRenderers = {
         colored={(component as A2UIComponent & { colored?: boolean }).colored}
         isAnimated={(component as A2UIComponent & { isAnimated?: boolean }).isAnimated ?? true}
         icon={renderNamedIcon(component.icon)}
+        aria-label={component.ariaLabel}
+        className={component.className}
         styles={getComponentStyles(component.styling)}
       />
     );

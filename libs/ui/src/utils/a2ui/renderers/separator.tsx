@@ -58,6 +58,8 @@ export const separatorRenderers = {
       color={component.color}
       labelColor={component.labelColor}
       labelPosition={component.labelPosition as never}
+      aria-label={component.ariaLabel}
+      className={component.className}
       styles={getComponentStyles(component.styling)}
     />
   ),

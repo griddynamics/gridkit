@@ -371,7 +371,9 @@ export const chartRenderers = {
         loadingText={component.loadingText}
         emptyText={component.emptyText}
         errorText={component.errorText}
+        className={component.className}
         styles={getComponentStyles(component.styling)}
+        {...(component.ariaLabel ? { 'aria-label': component.ariaLabel } : {})}
       />
     );
   },

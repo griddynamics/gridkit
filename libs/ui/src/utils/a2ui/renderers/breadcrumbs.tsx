@@ -33,7 +33,7 @@ export const breadcrumbsRenderers = {
       ariaLabel={component.ariaLabel}
       items={getOptionLikeItems(component).map((option) =>
         option.href ? (
-          <Link key={`${component.id}-${option.label}`} href={option.href}>
+          <Link key={`${component.id}-${option.label}`} href={option.href} disabled={option.disabled}>
             {option.label}
           </Link>
         ) : (
