@@ -84,7 +84,7 @@ Pre-built indexes for quick discovery:
 > Run `yarn build:ui` to regenerate. Do not edit the block between the markers manually.
 
 <!-- AUTO-GENERATED:COMPONENTS:START -->
-66 components total — generated from libs/ui/src/ai/schemas/ on 2026-07-01.
+66 components total — generated from libs/ui/src/ai/schemas/ on 2026-07-20.
 
 ## Other
 
@@ -1137,7 +1137,7 @@ Badge component for displaying small pieces of information, status indicators, c
 
 Import: `import { AvatarUser } from 'gd-design-library'`
 
-Composite avatar component that displays a user with avatar image, name, optional subtitle, and optional badge. Supports card and profile layout variants.
+Composite avatar component that displays a user with avatar image, name, optional subtitle, and optional badge. Supports card and profile layout variants. Real React props (AvatarUserProps): name (required), variant, subtitle, src, alt, fallbackComponent, sizeVariant, withBadge, badgeColor, backgroundColor, action, onClick, plus standard CSS props (styles, className). A2UI JSON adds renderer-only field aliases (description, icon, fill, fillSvg, actionChildren, actions, size, styling) that get mapped onto those real props — see individual prop descriptions below for which is which.
 
 **Props:** `name`: string, `variant`: "card"|"profile", `subtitle`: string, `description`: string, `src`: string, `alt`: string *(+11 more)*
 
@@ -1701,23 +1701,23 @@ Responsive image component with loading states, fallback support, and optional c
 
 Import: `import { Avatar } from 'gd-design-library'`
 
-User avatar component for displaying profile pictures, initials, or icons with support for badges, fallback content, and various size options. A2UI SPEC: all props are top-level fields — do NOT use "attributes" or "fallbackComponent". Use "label" or "value" for initials text. Use "size" or "sizeVariant" for size. For an icon inside the avatar, set top-level "icon" plus optional "fill" or "fillSvg"; the renderer maps that to Avatar fallback content internally. For a status badge ON the avatar use withBadge + badgeColor directly on this component — do NOT place a separate "badge" or sibling "icon" next to the avatar. Prefer theme color tokens before raw CSS/hex. Example: {"type":"avatar","icon":"star","size":"xl","backgroundColor":"#cfaaa7","fill":"#646464"}.
+User avatar component for displaying profile pictures, initials, or icons with support for badges, fallback content, and various size options. Real React props (AvatarProps): src, alt, sizeVariant, withBadge, badgeColor, backgroundColor, fallbackComponent, placeholder, onClick, plus standard CSS props (styles, className). A2UI SPEC: the A2UI JSON spec does not support the fallbackComponent (ReactNode) or placeholder (ReactNode) props directly — do NOT emit "attributes" or "fallbackComponent" in A2UI JSON. Use "label" or "value" for initials text instead. Use "size" or "sizeVariant" for size (size is the A2UI-only alias; sizeVariant is the real prop and is also accepted as a top-level A2UI field). For an icon inside the avatar, set top-level "icon" plus optional "fill" or "fillSvg"; the renderer maps those A2UI-only fields to the real fallbackComponent prop internally. For a status badge ON the avatar use withBadge + badgeColor directly on this component — do NOT place a separate "badge" or sibling "icon" next to the avatar. Prefer theme color tokens before raw CSS/hex. Example: {"type":"avatar","icon":"star","size":"xl","backgroundColor":"#cfaaa7","fill":"#646464"}.
 
-**Props:** `label`: string, `value`: string, `src`: string, `alt`: string, `size`: "xs"|"sm"|"md"|"lg"|"xl", `sizeVariant`: "xs"|"sm"|"md"|"lg"|"xl" *(+8 more)*
+**Props:** `label`: string, `value`: string, `src`: string, `alt`: string, `size`: "xs"|"sm"|"md"|"lg"|"xl"|"xxl", `sizeVariant`: "xs"|"sm"|"md"|"lg"|"xl"|"xxl" *(+8 more)*
 
 **Quick Start:**
   - basic: `<Avatar src="/user-photo.jpg" alt="John Doe" />`
-  - initials: `<Avatar label="JD" backgroundColor="bg.fill.info.primary.default" />`
+  - initials: `<Avatar fallbackComponent="JD" backgroundColor="bg.fill.info.primary.default" />`
   - withBadge: `<Avatar src={userImage} alt={userName} withBadge badgeColor="bg.fill.success.primary.default" />`
-  - icon: `<Avatar icon="star" fill="#646464" backgroundColor="#E0E0E0" />`
+  - icon: `<Avatar fallbackComponent={<Icon name="star" fill="#646464" />} backgroundColor="#E0E0E0" />`
   - online: `<Avatar src="/avatar.png" alt="User" withBadge={isOnline} badgeColor={isOnline ? "bg.fill.success.primary.default" : "bg.fill.error.primary.default"} />`
 
 **Common Patterns:**
   - **User Profile** (User profile pages and account settings): `<Avatar src={user.photo} alt={user.name} sizeVariant="lg" onClick={handleProfileClick} />`
   - **Comment Author** (Comment sections and discussion threads): `<Avatar src={comment.author.photo} alt={comment.author.name} sizeVariant="sm" />`
   - **Online Status** (Chat interfaces and user lists with online status): `<Avatar src={user.photo} alt={user.name} withBadge badgeColor={user.isOnline ? "bg.fill.success.primary.default" : "bg.fill.error.primary.default"} />`
-  - **Icon Fallback** (Profile placeholders or branded avatars that use an icon inside the avatar itself): `<Avatar icon="star" fill="#646464" backgroundColor="#E0E0E0" size="xl" />`
-  - **Team Member** (Team directories and member listings): `<Avatar label={user.initials} backgroundColor={user.color} size="md" />`
+  - **Icon Fallback** (Profile placeholders or branded avatars that use an icon inside the avatar itself): `<Avatar fallbackComponent={<Icon name="star" fill="#646464" />} backgroundColor="#E0E0E0" sizeVariant="xl" />`
+  - **Team Member** (Team directories and member listings): `<Avatar fallbackComponent={user.initials} backgroundColor={user.color} sizeVariant="md" />`
 
 **Best Practices:**
   - Always provide meaningful alt text for accessibility
@@ -1734,18 +1734,19 @@ User avatar component for displaying profile pictures, initials, or icons with s
 **Troubleshooting:**
   - **Image not loading:** Check src URL and provide fallbackComponent for graceful degradation
   - **Badge not showing:** Ensure withBadge prop is set to true and badgeColor is provided
-  - **Icon fallback not showing:** Set icon to a valid name in A2UI, or provide fallbackComponent directly when using Avatar in React code
-  - **Size not applying:** Use sizeVariant prop instead of width/height for consistent sizing
+  - **Icon fallback not showing:** In TSX, pass fallbackComponent={<Icon name="..." />} directly — Avatar has no icon/fill props of its own. In A2UI JSON, set the icon field (plus optional fill/fillSvg) and the renderer builds the Icon element for you.
+  - **Size not applying:** Use sizeVariant (React prop) or size (A2UI JSON field) instead of width/height for consistent sizing.
   - **Accessibility issues:** Always provide meaningful alt text for screen readers
   - **Fallback not working:** Check fallbackComponent prop and backgroundColor for visibility
 
 **Examples:**
   `<Avatar src="/user-photo.jpg" alt="John Doe" sizeVariant="lg" />`
-  `<Avatar label="JD" backgroundColor="bg.fill.info.primary.default" size="md" />`
+  `<Avatar fallbackComponent="JD" backgroundColor="bg.fill.info.primary.default" sizeVariant="md" />`
   `<Avatar src={userImage} alt={userName} withBadge badgeColor="bg.fill.success.primary.default" sizeVariant="sm" />`
-  `<Avatar icon="star" fill="#646464" backgroundColor="#E0E0E0" size="xl" />`
-  `<Avatar icon="user" backgroundColor="primary.default" size="xl" />`
+  `<Avatar fallbackComponent={<Icon name="star" fill="#646464" />} backgroundColor="#E0E0E0" sizeVariant="xl" />`
+  `<Avatar fallbackComponent={<Icon name="user" />} backgroundColor="primary.default" sizeVariant="xl" />`
   `<Avatar src="/avatar.png" alt="User" withBadge={isOnline} badgeColor={isOnline ? "bg.fill.success.primary.default" : "bg.fill.error.primary.default"} />`
+  `A2UI JSON (not TSX): {"type":"avatar","icon":"star","size":"xl","backgroundColor":"#cfaaa7","fill":"#646464"} — the renderer maps icon/fill/size into the real fallbackComponent/sizeVariant props.`
 
 ### Price
 

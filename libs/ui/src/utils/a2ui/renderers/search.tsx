@@ -128,6 +128,7 @@ export const searchRenderers = {
               })
           : undefined
       }
+      styles={getComponentStyles(component.styling)}
     />
   ),
   'search-modal': (

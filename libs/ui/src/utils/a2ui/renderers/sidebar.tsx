@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Sidebar } from '@components';
 import type { A2UIComponent } from '../../../ai';
+import { isSafeA2UIUrl } from '../../../ai';
 import {
   getComponentStyles,
   getObjectArrayField,
@@ -43,7 +44,7 @@ function normalizeSidebarItem(
     id,
     label,
     icon: typeof rawItem['icon'] === 'string' ? renderNamedIcon(rawItem['icon']) : undefined,
-    href: typeof rawItem['href'] === 'string' ? rawItem['href'] : undefined,
+    href: typeof rawItem['href'] === 'string' && isSafeA2UIUrl(rawItem['href']) ? rawItem['href'] : undefined,
     disabled: typeof rawItem['disabled'] === 'boolean' ? rawItem['disabled'] : undefined,
     children,
   };

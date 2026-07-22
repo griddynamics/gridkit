@@ -24,7 +24,9 @@ export const badgeRenderers = {
         disabled={component.disabled}
         iconStart={renderNamedIcon(getLeadingIconName(component))}
         iconEnd={renderNamedIcon(iconEndName)}
+        className={component.className}
         styles={getMergedComponentStyles(component)}
+        aria-label={component.ariaLabel}
       >
         {getComponentText(component)}
       </Badge>

@@ -2555,4 +2555,1152 @@ describe('renderA2UISpec', () => {
       expect(screen.queryByTestId('custom-button-override')).toBeNull();
     });
   });
+
+  describe('schema prop utilization regression tests', () => {
+    // NOTE: `card-row`/`card-column` are intentionally NOT covered here. Rendering an A2UI
+    // `card-row` (or `card-column`) child under this repo's Vitest/jsdom environment throws
+    // `Error: Element type is invalid ... at card.tsx` — a pre-existing circular-import bug
+    // between Card.tsx and the Row/Column re-exports that only manifests under Vitest's module
+    // transform (Storybook/Vite builds are unaffected). See
+    // plans/ctorndsd-634-a2ui-schema-props-utilization.md's "Related Finding" section. The
+    // `card-row`/`card-column` `className` renderer fixes themselves were verified via code
+    // review only.
+
+    it('SHOULD let an explicit avatar ariaLabel override the alt-based default, and preserve the default alt when ariaLabel is omitted', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            {
+              id: 'avatar_with_explicit_label',
+              type: 'avatar',
+              icon: 'star',
+              alt: 'Jane Doe avatar',
+              ariaLabel: 'Custom avatar label',
+            },
+            {
+              id: 'avatar_with_default_label',
+              type: 'avatar',
+              icon: 'star',
+              alt: 'John Roe avatar',
+            },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      const avatars = screen.getAllByTestId('Avatar');
+
+      expect(avatars[0]).toHaveAttribute('aria-label', 'Custom avatar label');
+      expect(avatars[1]).toHaveAttribute('aria-label', 'John Roe avatar');
+    });
+
+    it('SHOULD forward avatar-user className and ariaLabel unconditionally', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            {
+              id: 'profile_card_a11y',
+              type: 'avatar-user',
+              name: 'Alex Kim',
+              className: 'avatar-user-custom',
+              ariaLabel: 'Alex Kim profile',
+            },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      const avatarUser = screen.getByTestId('AvatarUser');
+
+      expect(avatarUser).toHaveClass('avatar-user-custom');
+      expect(avatarUser).toHaveAttribute('aria-label', 'Alex Kim profile');
+    });
+
+    it('SHOULD forward badge ariaLabel and className', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            {
+              id: 'badge_a11y',
+              type: 'badge',
+              label: 'New',
+              ariaLabel: 'New item badge',
+              className: 'badge-custom',
+            },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      const badge = screen.getByTestId('Badge');
+
+      expect(badge).toHaveAttribute('aria-label', 'New item badge');
+      expect(badge).toHaveClass('badge-custom');
+    });
+
+    it('SHOULD forward box ariaLabel', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [{ id: 'box_a11y', type: 'box', label: 'Box content', ariaLabel: 'Highlighted box' }],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      expect(screen.getByTestId('Box')).toHaveAttribute('aria-label', 'Highlighted box');
+    });
+
+    it('SHOULD forward button className', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [{ id: 'submit_button_a11y', type: 'button', label: 'Submit', className: 'button-custom' }],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      expect(screen.getByTestId('Button')).toHaveClass('button-custom');
+    });
+
+    it('SHOULD forward card className', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            {
+              id: 'product_card_a11y',
+              type: 'card',
+              className: 'card-custom',
+              children: [{ id: 'product_card_a11y_title', type: 'typography', value: 'Card body' }],
+            },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      expect(screen.getByTestId('Card')).toHaveClass('card-custom');
+    });
+
+    it('SHOULD forward chart className unconditionally and only override the default chart ariaLabel when explicitly provided', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            {
+              id: 'sales_chart',
+              type: 'chart',
+              variant: 'bar',
+              className: 'sales-chart-custom',
+              ariaLabel: 'Quarterly sales chart',
+              data: [
+                { quarter: 'Q1', revenue: 100 },
+                { quarter: 'Q2', revenue: 150 },
+              ],
+              xKey: 'quarter',
+              series: [{ dataKey: 'revenue', label: 'Revenue' }],
+            },
+            {
+              id: 'default_chart',
+              type: 'chart',
+              variant: 'line',
+              data: [
+                { month: 'Jan', total: 10 },
+                { month: 'Feb', total: 20 },
+              ],
+              xKey: 'month',
+              series: [{ dataKey: 'total', label: 'Total' }],
+            },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      const charts = screen.getAllByTestId('Chart');
+
+      expect(charts[0]).toHaveClass('sales-chart-custom');
+      expect(charts[0]).toHaveAttribute('aria-label', 'Quarterly sales chart');
+      expect(charts[1]).toHaveAttribute('aria-label', 'line chart');
+    });
+
+    it('SHOULD forward chat-bubble ariaLabel and className', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '0' },
+          components: [
+            {
+              id: 'chat_bubble_a11y',
+              type: 'chat-bubble',
+              variant: 'answer',
+              ariaLabel: 'Assistant message',
+              className: 'chat-bubble-custom',
+              children: [{ id: 'chat_bubble_a11y_text', type: 'typography', value: 'Hi there' }],
+            },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      const chatBubble = screen.getByTestId('ChatBubble');
+
+      expect(chatBubble).toHaveAttribute('aria-label', 'Assistant message');
+      expect(chatBubble).toHaveClass('chat-bubble-custom');
+    });
+
+    it('SHOULD forward chat-image-gallery ariaLabel and className', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '0' },
+          components: [
+            {
+              id: 'gallery_msg',
+              type: 'chat-bubble',
+              variant: 'answer',
+              children: [
+                {
+                  id: 'gallery_a11y',
+                  type: 'chat-image-gallery',
+                  ariaLabel: 'Photo gallery',
+                  className: 'gallery-custom',
+                  images: [{ src: 'https://example.com/a.png', alt: 'Image A' }],
+                },
+              ],
+            },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      const gallery = screen.getByTestId('ChatImageGallery');
+
+      expect(gallery).toHaveAttribute('aria-label', 'Photo gallery');
+      expect(gallery).toHaveClass('gallery-custom');
+    });
+
+    it('SHOULD forward chat-container ariaLabel', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '0' },
+          components: [{ id: 'support_chat', type: 'chat-container', ariaLabel: 'Support chat panel' }],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      expect(screen.getByTestId('ChatContainer-main-wrapper')).toHaveAttribute('aria-label', 'Support chat panel');
+    });
+
+    it('SHOULD forward counter ariaLabel and className', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            {
+              id: 'qty_counter_a11y',
+              type: 'counter',
+              initial: 1,
+              ariaLabel: 'Quantity selector',
+              className: 'counter-custom',
+            },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      const counter = screen.getByTestId('Counter');
+
+      expect(counter).toHaveAttribute('aria-label', 'Quantity selector');
+      expect(counter).toHaveClass('counter-custom');
+    });
+
+    it('SHOULD forward dropdown ariaLabel/className and dropdown-item className', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            {
+              id: 'options_dropdown_a11y',
+              type: 'dropdown',
+              ariaLabel: 'Options menu',
+              className: 'dropdown-custom',
+              children: [
+                {
+                  id: 'options_dropdown_item_a11y',
+                  type: 'dropdown-item',
+                  label: 'Option 1',
+                  className: 'dropdown-item-custom',
+                },
+              ],
+            },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      const dropdown = screen.getByTestId('Dropdown');
+      const dropdownItem = screen.getByTestId('DropdownItem');
+
+      expect(dropdown).toHaveAttribute('aria-label', 'Options menu');
+      expect(dropdown).toHaveClass('dropdown-custom');
+      expect(dropdownItem).toHaveClass('dropdown-item-custom');
+    });
+
+    it('SHOULD forward header ariaLabel and className', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            { id: 'site_header_a11y', type: 'header', ariaLabel: 'Site header', className: 'header-custom' },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      const header = screen.getByTestId('Header');
+
+      expect(header).toHaveAttribute('aria-label', 'Site header');
+      expect(header).toHaveClass('header-custom');
+    });
+
+    it('SHOULD forward image ariaLabel and className to the image wrapper', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            {
+              id: 'hero_image_a11y',
+              type: 'image',
+              src: 'https://example.com/hero.jpg',
+              alt: 'Hero shot',
+              ariaLabel: 'Hero banner image',
+              className: 'image-custom',
+            },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      const imageWrapper = screen.getByTestId('Image-wrapper');
+
+      expect(imageWrapper).toHaveAttribute('aria-label', 'Hero banner image');
+      expect(imageWrapper).toHaveClass('image-custom');
+    });
+
+    it('SHOULD forward image-preview ariaLabel and className', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            {
+              id: 'gallery_preview_a11y',
+              type: 'image-preview',
+              images: [{ src: 'https://example.com/1.jpg', alt: 'One' }],
+              ariaLabel: 'Image preview gallery',
+              className: 'image-preview-custom',
+            },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      const imagePreview = screen.getByTestId('ImagePreview');
+
+      expect(imagePreview).toHaveAttribute('aria-label', 'Image preview gallery');
+      expect(imagePreview).toHaveClass('image-preview-custom');
+    });
+
+    it('SHOULD forward label className', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [{ id: 'email_label_a11y', type: 'label', label: 'Email address', className: 'label-custom' }],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      expect(screen.getByTestId('Label')).toHaveClass('label-custom');
+    });
+
+    it('SHOULD forward link className', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            { id: 'plain_link_a11y', type: 'link', label: 'Learn more', href: '/learn', className: 'link-custom' },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      expect(screen.getByTestId('Link')).toHaveClass('link-custom');
+    });
+
+    it('SHOULD forward list ariaLabel and className', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            {
+              id: 'todo_list_a11y',
+              type: 'list',
+              options: [{ label: 'Buy milk', value: 'milk' }],
+              ariaLabel: 'Todo list',
+              className: 'list-custom',
+            },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      const list = screen.getByTestId('List');
+
+      expect(list).toHaveAttribute('aria-label', 'Todo list');
+      expect(list).toHaveClass('list-custom');
+    });
+
+    it('SHOULD forward loader ariaLabel and className', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            {
+              id: 'page_loader_a11y',
+              type: 'loader',
+              name: 'dots',
+              ariaLabel: 'Loading content',
+              className: 'loader-custom',
+            },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      const loader = screen.getByTestId('Loader');
+
+      expect(loader).toHaveAttribute('aria-label', 'Loading content');
+      expect(loader).toHaveClass('loader-custom');
+    });
+
+    it('SHOULD forward menu ariaLabel and className', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            {
+              id: 'actions_menu_a11y',
+              type: 'menu',
+              options: [{ label: 'Edit', value: 'edit' }],
+              ariaLabel: 'Row actions',
+              className: 'menu-custom',
+            },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      const menu = screen.getByTestId('Menu');
+
+      expect(menu).toHaveAttribute('aria-label', 'Row actions');
+      expect(menu).toHaveClass('menu-custom');
+    });
+
+    it('SHOULD forward modal ariaLabel and className', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            {
+              id: 'info_modal_a11y',
+              type: 'modal',
+              title: 'Info',
+              ariaLabel: 'Info dialog',
+              className: 'modal-custom',
+              children: [{ id: 'info_modal_a11y_body', type: 'typography', value: 'Modal body copy' }],
+            },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      const modal = screen.getByTestId('Modal');
+
+      expect(modal).toHaveAttribute('aria-label', 'Info dialog');
+      expect(modal).toHaveClass('modal-custom');
+    });
+
+    it('SHOULD forward inline-notification and snackbar ariaLabel and className', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            {
+              id: 'inline_note_a11y',
+              type: 'inline-notification',
+              label: 'Heads up',
+              ariaLabel: 'Inline alert',
+              className: 'inline-notification-custom',
+            },
+            {
+              id: 'toast_msg_a11y',
+              type: 'snackbar',
+              label: 'Saved',
+              ariaLabel: 'Save confirmation toast',
+              className: 'snackbar-custom',
+            },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      const inlineNotification = screen.getByTestId('InlineNotification');
+      const snackbar = screen.getByTestId('Snackbar');
+
+      expect(inlineNotification).toHaveAttribute('aria-label', 'Inline alert');
+      expect(inlineNotification).toHaveClass('inline-notification-custom');
+      expect(snackbar).toHaveAttribute('aria-label', 'Save confirmation toast');
+      expect(snackbar).toHaveClass('snackbar-custom');
+    });
+
+    it('SHOULD forward price ariaLabel', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            {
+              id: 'item_price_a11y',
+              type: 'price',
+              attributes: { currentValue: '$12.00' },
+              ariaLabel: 'Item price',
+            },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      expect(screen.getByTestId('Price')).toHaveAttribute('aria-label', 'Item price');
+    });
+
+    it('SHOULD forward progress-bar className', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            { id: 'upload_progress_a11y', type: 'progress-bar', value: 40, className: 'progress-bar-custom' },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      expect(screen.getByTestId('ProgressBar')).toHaveClass('progress-bar-custom');
+    });
+
+    it('SHOULD forward radio-group className and ariaLabel through to the rendered fieldset', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            {
+              id: 'plan_radio_group_a11y',
+              type: 'radio-group',
+              options: [
+                { label: 'Monthly', value: 'monthly' },
+                { label: 'Yearly', value: 'yearly' },
+              ],
+              className: 'radio-group-custom',
+              ariaLabel: 'Choose billing plan',
+            },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      const radioGroup = screen.getByTestId('RadioGroup');
+
+      expect(radioGroup).toHaveClass('radio-group-custom');
+      expect(radioGroup).toHaveAttribute('aria-label', 'Choose billing plan');
+    });
+
+    it('SHOULD forward rating ariaLabel and className', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            {
+              id: 'product_rating_a11y',
+              type: 'rating',
+              value: 4,
+              ariaLabel: 'Product rating',
+              className: 'rating-custom',
+            },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      const rating = screen.getByTestId('Rating');
+
+      expect(rating).toHaveAttribute('aria-label', 'Product rating');
+      expect(rating).toHaveClass('rating-custom');
+    });
+
+    it('SHOULD forward separator ariaLabel and className', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            {
+              id: 'section_separator_a11y',
+              type: 'separator',
+              ariaLabel: 'Section divider',
+              className: 'separator-custom',
+            },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      const separator = screen.getByTestId('Separator');
+
+      expect(separator).toHaveAttribute('aria-label', 'Section divider');
+      expect(separator).toHaveClass('separator-custom');
+    });
+
+    it('SHOULD forward skeleton ariaLabel and className', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            {
+              id: 'card_skeleton_a11y',
+              type: 'skeleton',
+              variant: 'rectangular',
+              width: '100%',
+              height: '24px',
+              ariaLabel: 'Loading card',
+              className: 'skeleton-custom',
+            },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      const skeleton = screen.getByTestId('Skeleton');
+
+      expect(skeleton).toHaveAttribute('aria-label', 'Loading card');
+      expect(skeleton).toHaveClass('skeleton-custom');
+    });
+
+    it('SHOULD forward slider ariaLabel and className', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            {
+              id: 'volume_slider_a11y',
+              type: 'slider',
+              min: 0,
+              max: 100,
+              value: 60,
+              ariaLabel: 'Volume control',
+              className: 'slider-custom',
+            },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      const slider = screen.getByTestId('Slider');
+
+      expect(slider).toHaveAttribute('aria-label', 'Volume control');
+      expect(slider).toHaveClass('slider-custom');
+    });
+
+    it('SHOULD forward slider-dots ariaLabel and className', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            {
+              id: 'carousel_dots_a11y',
+              type: 'slider-dots',
+              count: 3,
+              activeIndex: 1,
+              ariaLabel: 'Carousel position',
+              className: 'slider-dots-custom',
+            },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      const sliderDots = screen.getByTestId('SliderDots');
+
+      expect(sliderDots).toHaveAttribute('aria-label', 'Carousel position');
+      expect(sliderDots).toHaveClass('slider-dots-custom');
+    });
+
+    it('SHOULD forward stepper ariaLabel and className', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            {
+              id: 'checkout_stepper_a11y',
+              type: 'stepper',
+              options: [
+                { label: 'Cart', value: 'cart' },
+                { label: 'Payment', value: 'payment' },
+              ],
+              ariaLabel: 'Checkout steps',
+              className: 'stepper-custom',
+            },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      const stepper = screen.getByTestId('Stepper');
+
+      expect(stepper).toHaveAttribute('aria-label', 'Checkout steps');
+      expect(stepper).toHaveClass('stepper-custom');
+    });
+
+    it('SHOULD forward switch ariaLabel and className to the switch wrapper', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            {
+              id: 'notifications_switch_a11y',
+              type: 'switch',
+              checked: true,
+              ariaLabel: 'Enable notifications',
+              className: 'switch-custom',
+            },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      const switchWrapper = screen.getByTestId('Switch-wrapper');
+
+      expect(switchWrapper).toHaveAttribute('aria-label', 'Enable notifications');
+      expect(switchWrapper).toHaveClass('switch-custom');
+    });
+
+    it('SHOULD forward table ariaLabel and className', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            {
+              id: 'orders_table_a11y',
+              type: 'table',
+              columns: [{ key: 'name', label: 'Name' }],
+              rows: [{ id: 'row1', name: 'Widget' }],
+              ariaLabel: 'Orders table',
+              className: 'table-custom',
+            },
+          ],
+        },
+      };
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      const table = screen.getByTestId('Table');
+
+      expect(table).toHaveAttribute('aria-label', 'Orders table');
+      expect(table).toHaveClass('table-custom');
+    });
+
+    it('SHOULD forward tooltip className to the rendered tooltip content', async () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            {
+              id: 'help_tooltip_a11y',
+              type: 'tooltip',
+              content: 'Helpful info',
+              label: 'Help',
+              delay: 0,
+              className: 'tooltip-custom',
+            },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      fireEvent.mouseEnter(screen.getByTestId('Tooltip-wrapper'));
+
+      const tooltip = await screen.findByTestId('Tooltip');
+
+      expect(tooltip).toHaveClass('tooltip-custom');
+    });
+
+    it('SHOULD forward truncate ariaLabel and className', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            {
+              id: 'desc_truncate_a11y',
+              type: 'truncate',
+              value: 'A fairly long description that should be clipped nicely across lines',
+              attributes: { maxLines: 2 },
+              ariaLabel: 'Truncated description',
+              className: 'truncate-custom',
+            },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      const truncate = screen.getByTestId('Truncate');
+
+      expect(truncate).toHaveAttribute('aria-label', 'Truncated description');
+      expect(truncate).toHaveClass('truncate-custom');
+    });
+
+    it('SHOULD forward typography ariaLabel and className', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            {
+              id: 'styled_heading_a11y',
+              type: 'typography',
+              value: 'Section heading',
+              ariaLabel: 'Section heading label',
+              className: 'typography-custom',
+            },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      // NOTE: Typography's own COMPONENT_NAME constant (libs/ui/src/components/atoms/Typography/constants.ts)
+      // is the lowercase literal 'typography', not 'Typography' — verified directly against source.
+      const typography = screen.getByTestId('typography');
+
+      expect(typography).toHaveAttribute('aria-label', 'Section heading label');
+      expect(typography).toHaveClass('typography-custom');
+    });
+
+    it('SHOULD forward className on accordion-item, accordion-header, and accordion-content', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            {
+              id: 'accordion_a11y',
+              type: 'accordion',
+              children: [
+                {
+                  id: 'accordion_item_a11y',
+                  type: 'accordion-item',
+                  className: 'accordion-item-custom',
+                  children: [
+                    {
+                      id: 'accordion_header_a11y',
+                      type: 'accordion-header',
+                      label: 'Section title',
+                      className: 'accordion-header-custom',
+                    },
+                    {
+                      id: 'accordion_content_a11y',
+                      type: 'accordion-content',
+                      className: 'accordion-content-custom',
+                      children: [{ id: 'accordion_content_text_a11y', type: 'typography', value: 'Section body' }],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      // NOTE: AccordionItem clones its children with its own `id` (see
+      // libs/ui/src/components/molecules/Accordion/AccordionItem/AccordionItem.tsx), so
+      // AccordionHeader/AccordionContent's rendered testids use the *item's* id, not their own
+      // A2UI component id — verified directly against source, not guessed.
+      expect(screen.getByTestId('AccordionItem-accordion_item_a11y')).toHaveClass('accordion-item-custom');
+      expect(screen.getByTestId('AccordionHeader-accordion_item_a11y')).toHaveClass('accordion-header-custom');
+      expect(screen.getByTestId('AccordionContent-accordion_item_a11y')).toHaveClass('accordion-content-custom');
+    });
+
+    it('SHOULD render a disabled breadcrumbs option without an href, and a sibling option with one', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            {
+              id: 'page_breadcrumbs_a11y',
+              type: 'breadcrumbs',
+              options: [
+                { label: 'Home', value: 'home', href: '/home' },
+                { label: 'Archived', value: 'archived', href: '/archived', disabled: true },
+              ],
+            },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      const links = screen.getAllByTestId('Link');
+
+      expect(links).toHaveLength(2);
+      expect(links[0]).toHaveAttribute('href', '/home');
+      expect(links[1]).not.toHaveAttribute('href');
+      expect(links[1]).toHaveClass('Link--disabled');
+    });
+
+    it('SHOULD apply carousel-slide styling to the rendered slide Box', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            {
+              id: 'promo_carousel_a11y',
+              type: 'content-carousel',
+              showArrows: false,
+              showDots: false,
+              children: [
+                {
+                  id: 'promo_slide_a11y',
+                  type: 'carousel-slide',
+                  styling: { padding: '20px', backgroundColor: 'rgb(240, 240, 240)' },
+                  children: [{ id: 'promo_slide_text_a11y', type: 'typography', value: 'Big Sale' }],
+                },
+              ],
+            },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      expect(screen.getByText('Big Sale')).toBeInTheDocument();
+      expect(screen.getByTestId('Box')).toHaveStyle({ padding: '20px', backgroundColor: 'rgb(240, 240, 240)' });
+    });
+
+    it('SHOULD forward search styling through to the rendered Select', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            {
+              id: 'site_search_a11y',
+              type: 'search',
+              options: [{ label: 'Docs', value: 'docs' }],
+              styling: { backgroundColor: 'rgb(238, 238, 238)' },
+            },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      expect(screen.getByTestId('Select')).toHaveStyle({ backgroundColor: 'rgb(238, 238, 238)' });
+    });
+
+    it('SHOULD forward icon ariaLabel', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [{ id: 'search_icon_a11y', type: 'icon', icon: 'search', ariaLabel: 'Search icon' }],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      expect(screen.getByTestId('Icon-search')).toHaveAttribute('aria-label', 'Search icon');
+    });
+
+    it('SHOULD forward className on form, input, textarea, input-area, and input-file', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            {
+              id: 'settings_form_a11y',
+              type: 'form',
+              className: 'form-custom',
+              children: [
+                { id: 'name_input_a11y', type: 'input', label: 'Name', className: 'input-custom' },
+                { id: 'bio_textarea_a11y', type: 'textarea', value: 'Hi', className: 'textarea-custom' },
+              ],
+            },
+            { id: 'message_input_a11y', type: 'input-area', className: 'input-area-custom' },
+            { id: 'upload_input_file_a11y', type: 'input-file', label: 'Upload file', className: 'input-file-custom' },
+          ],
+        },
+      } as const;
+
+      const { container } = render(<>{renderA2UISpec(spec)}</>);
+
+      expect(screen.getByTestId('Form')).toHaveClass('form-custom');
+      expect(screen.getByTestId('Input').closest('label')).toHaveClass('input-custom');
+      expect(screen.getByTestId('Textarea')).toHaveClass('textarea-custom');
+      expect(screen.getByTestId('InputArea')).toHaveClass('input-area-custom');
+
+      const fileInput = container.querySelector('input[type="file"]');
+
+      expect(fileInput).toHaveClass('input-file-custom');
+    });
+
+    it('SHOULD forward input-area attachmentButtonLabel, showSendButtonTooltip, and maxHeight', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [
+            {
+              id: 'chat_input_a11y',
+              type: 'input-area',
+              value: 'Hello',
+              placeholder: 'Type a message',
+              showAttachmentButton: true,
+              attachmentButtonLabel: 'Attach a file',
+              showSendButton: true,
+              showSendButtonTooltip: true,
+              sendButtonLabel: 'Send now',
+              maxHeight: 10,
+            },
+          ],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      expect(screen.getByTestId('InputArea-attachment')).toHaveAttribute('aria-label', 'Attach a file');
+      expect(screen.getByTestId('InputArea-send').closest('[data-testid="Tooltip-wrapper"]')).not.toBeNull();
+      expect(screen.getByTestId('InputArea-textarea')).toHaveStyle({ height: '10px' });
+
+      // NOTE: `recordButtonLabel` is read and forwarded by the `input-area` renderer
+      // (libs/ui/src/utils/a2ui/renderers/form.tsx), satisfying the CTORNDSD-634 fix, but the
+      // "start recording" mic button it labels (InputArea's `InputArea-record` testid) can never
+      // actually mount through this renderer: `InputArea`'s own `isRecordEnabled` flag
+      // (libs/ui/src/components/organisms/InputArea/InputArea.tsx) is only true when `recordIcon`
+      // or `onRecordClick` is supplied, or `recordingState !== 'idle'` — but the latter also flips
+      // `isRecording` to true, which unconditionally hides that same button. Since the A2UI
+      // renderer never wires `recordIcon`/`onRecordClick`, there is no reachable DOM state to
+      // assert `recordButtonLabel` against without exploiting an out-of-type `recordingState`
+      // value. See this task's final report for details — this is a reachability gap in the
+      // component itself, not something this test suite can fix.
+    });
+
+    it('SHOULD disable the record-confirm button when input-area recordingState is processing', () => {
+      const spec = {
+        ui: {
+          layout: { type: 'vertical', spacing: '12px' },
+          components: [{ id: 'recording_input_a11y', type: 'input-area', recordingState: 'processing' }],
+        },
+      } as const;
+
+      render(<>{renderA2UISpec(spec)}</>);
+
+      expect(screen.getByTestId('InputArea-record-confirm')).toBeDisabled();
+    });
+  });
+
+  describe('memoization', () => {
+    it('SHOULD NOT re-invoke a custom renderer when spec, actions, and customComponents keep the same references', () => {
+      let renderCount = 0;
+      const customComponents: A2UICustomComponentDefinition[] = [
+        {
+          type: 'stable-badge',
+          description: 'Renders a status badge.',
+          renderer: (component) => {
+            renderCount += 1;
+            return <div data-testid="stable-badge">{component.label}</div>;
+          },
+        },
+      ];
+      const actions: A2UIActionDefinition[] = [{ type: 'noop', description: '', handler: vi.fn() }];
+      const spec = {
+        ui: {
+          layout: { type: 'vertical' as const, spacing: '0' },
+          components: [{ id: 'badge', type: 'stable-badge', label: 'Featured' }],
+        },
+      } as Parameters<typeof renderA2UISpec>[0];
+
+      const { rerender } = render(<>{renderA2UISpec(spec, actions, customComponents)}</>);
+
+      expect(renderCount).toBe(1);
+
+      rerender(<>{renderA2UISpec(spec, actions, customComponents)}</>);
+
+      expect(renderCount).toBe(1);
+    });
+
+    it('SHOULD re-invoke a custom renderer when the actions reference changes', () => {
+      let renderCount = 0;
+      const customComponents: A2UICustomComponentDefinition[] = [
+        {
+          type: 'stable-badge',
+          description: 'Renders a status badge.',
+          renderer: (component) => {
+            renderCount += 1;
+            return <div data-testid="stable-badge">{component.label}</div>;
+          },
+        },
+      ];
+      const spec = {
+        ui: {
+          layout: { type: 'vertical' as const, spacing: '0' },
+          components: [{ id: 'badge', type: 'stable-badge', label: 'Featured' }],
+        },
+      } as Parameters<typeof renderA2UISpec>[0];
+      const firstActions: A2UIActionDefinition[] = [{ type: 'noop', description: '', handler: vi.fn() }];
+      const secondActions: A2UIActionDefinition[] = [{ type: 'noop', description: '', handler: vi.fn() }];
+
+      const { rerender } = render(<>{renderA2UISpec(spec, firstActions, customComponents)}</>);
+
+      expect(renderCount).toBe(1);
+
+      rerender(<>{renderA2UISpec(spec, secondActions, customComponents)}</>);
+
+      expect(renderCount).toBe(2);
+    });
+  });
 });

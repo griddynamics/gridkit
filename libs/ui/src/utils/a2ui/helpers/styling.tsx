@@ -31,11 +31,26 @@ export function getInlineStyleProps(component: A2UIComponent, excludedKeys: read
   return Object.keys(inlineStyles).length > 0 ? inlineStyles : undefined;
 }
 
+const EMPTY_EXCLUDED_KEYS: readonly InlineStyleKey[] = [];
+
+type MergedStylesCacheEntry = {
+  extraStyles?: Record<string, StyleValue>;
+  excludedInlineKeys: readonly InlineStyleKey[];
+  result: CSSObject | undefined;
+};
+
+const mergedStylesCache = new WeakMap<A2UIComponent, MergedStylesCacheEntry>();
+
 export function getMergedComponentStyles(
   component: A2UIComponent,
   extraStyles?: Record<string, StyleValue>,
-  excludedInlineKeys: readonly InlineStyleKey[] = []
+  excludedInlineKeys: readonly InlineStyleKey[] = EMPTY_EXCLUDED_KEYS
 ) {
+  const cached = mergedStylesCache.get(component);
+  if (cached && cached.extraStyles === extraStyles && cached.excludedInlineKeys === excludedInlineKeys) {
+    return cached.result;
+  }
+
   const mergedStyles = {
     ...(getInlineStyleProps(component, excludedInlineKeys) ?? {}),
     ...(getLegacyStyles(component) ?? {}),
@@ -43,5 +58,9 @@ export function getMergedComponentStyles(
     ...(extraStyles ?? {}),
   };
 
-  return Object.keys(mergedStyles).length > 0 ? (mergedStyles as unknown as CSSObject) : undefined;
+  const result = Object.keys(mergedStyles).length > 0 ? (mergedStyles as unknown as CSSObject) : undefined;
+
+  mergedStylesCache.set(component, { extraStyles, excludedInlineKeys, result });
+
+  return result;
 }

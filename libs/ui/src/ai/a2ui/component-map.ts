@@ -81,14 +81,9 @@ function propSchemasToRecord(props: PropSchema[]): Record<string, string> {
 function buildCombinedNotes(schema: ComponentSchema, mod: ComponentModule | undefined): string[] | undefined {
   const notes: string[] = [];
   const s = schema as Record<string, unknown>;
-  const isA2UIEnabled = Boolean(schema.a2uiName);
 
   // 1. Composition tips from the component module
   if (mod && mod.compositionTips.length > 0) notes.push(...mod.compositionTips);
-
-  if (isA2UIEnabled) {
-    return notes.length > 0 ? notes : undefined;
-  }
 
   // 2. Common patterns — include use-case description + code as a single string
   const commonPatterns = s['commonPatterns'] as Record<string, { code?: string; useCase?: string }> | undefined;
@@ -129,6 +124,7 @@ function buildA2UIComponentMap(): Record<string, A2UIComponentEntry> {
     if (!schema.a2uiName) continue;
 
     const mod = componentModulesByName.get(schema.name);
+    const combinedNotes = buildCombinedNotes(schema, mod);
 
     // Main component entry
     result[schema.a2uiName] = {
@@ -136,7 +132,7 @@ function buildA2UIComponentMap(): Record<string, A2UIComponentEntry> {
       import: schema.import,
       description: schema.description,
       props: propSchemasToRecord(schema.props),
-      notes: buildCombinedNotes(schema, mod),
+      notes: combinedNotes,
       category: schema.category,
       complexity: schema.complexity,
     };
@@ -153,7 +149,7 @@ function buildA2UIComponentMap(): Record<string, A2UIComponentEntry> {
           import: schema.import,
           description: subDesc,
           props: propSchemasToRecord(sub.props),
-          notes: mod && mod.compositionTips.length > 0 ? mod.compositionTips : undefined,
+          notes: combinedNotes,
           category: schema.category ? `${schema.category} Subcomponents` : 'Card Subcomponents',
           complexity: schema.complexity,
         };

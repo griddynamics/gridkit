@@ -42,6 +42,7 @@ const config: StorybookConfig = {
       if (!p || typeof p !== 'object' || !('name' in p)) return true;
       return (p as Plugin).name !== 'nx-copy-assets-plugin';
     });
+
     return config;
   },
 };

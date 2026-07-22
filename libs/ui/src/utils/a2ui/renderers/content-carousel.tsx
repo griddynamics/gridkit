@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { ContentCarousel } from '@components';
 import type { A2UIComponent } from '../../../ai';
+import { isSafeA2UIUrl } from '../../../ai';
 import { getComponentStyles, getAttributeNumber, getAttributeString, isRecord } from '../helpers';
 
 type LegacyContentCarouselItem = Partial<A2UIComponent> & {
@@ -19,7 +20,7 @@ function normalizeLegacyContentCarouselItem(
     return item as A2UIComponent;
   }
 
-  if (typeof item.src === 'string') {
+  if (typeof item.src === 'string' && isSafeA2UIUrl(item.src)) {
     return {
       id: item.id || `${parentId}_item_${index + 1}`,
       type: 'image',

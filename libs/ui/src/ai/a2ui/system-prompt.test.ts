@@ -1,7 +1,21 @@
 import { describe, expect, it } from 'vitest';
 import { buildA2UISystemPrompt } from './system-prompt';
+import { A2UI_SECURITY_LIMITS, A2UI_ALWAYS_BLOCKED_URL_SCHEMES } from './security';
 
 describe('A2UI system prompt', () => {
+  it('SHOULD include the security rules section with the enforced scheme and limit values', () => {
+    const prompt = buildA2UISystemPrompt();
+
+    expect(prompt).toContain('## SECURITY RULES — STRICTLY ENFORCED');
+    for (const scheme of A2UI_ALWAYS_BLOCKED_URL_SCHEMES) {
+      expect(prompt).toContain(scheme);
+    }
+    expect(prompt).toContain('dangerouslySetInnerHTML');
+    expect(prompt).toContain(`${A2UI_SECURITY_LIMITS.maxTreeDepth} nesting levels`);
+    expect(prompt).toContain(`${A2UI_SECURITY_LIMITS.maxNodeCount} total component nodes`);
+    expect(prompt).toContain(`${A2UI_SECURITY_LIMITS.maxPayloadBytes} bytes`);
+  });
+
   it('SHOULD include custom components in the prompt and group them by category', () => {
     const prompt = buildA2UISystemPrompt({
       customComponents: [
@@ -157,6 +171,21 @@ describe('A2UI system prompt', () => {
     expect(prompt).toContain('animationProps');
     expect(prompt).toContain('iconStart');
     expect(prompt).toContain('interactive icon, link, slider, and slider-dots components use actions[]');
+  });
+
+  it("SHOULD include Avatar's restored commonPatterns/troubleshooting text (CTORNDSD-634), not just compositionTips", () => {
+    const prompt = buildA2UISystemPrompt();
+
+    expect(prompt).toContain('Icon Fallback');
+    expect(prompt).toContain('Troubleshooting — Icon fallback not showing');
+  });
+
+  it('SHOULD include full per-prop "Prop details" for a non-Widgets category component (CTORNDSD-634 detailedPropCategories gate removal)', () => {
+    const prompt = buildA2UISystemPrompt();
+    const avatarIdx = prompt.indexOf('"avatar":');
+    const avatarSection = prompt.slice(avatarIdx, avatarIdx + 2000);
+
+    expect(avatarSection).toContain('Prop details:');
   });
 
   it('SHOULD include avatar-user guidance for subtitle text and trailing actions', () => {
