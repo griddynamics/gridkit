@@ -68,7 +68,7 @@ function resolveSelectTokens(theme: DesignCoreTheme, color: InputColorVariantNam
 }
 
 /**
- * CTORNDSD-581 Select port (per the implementation plan's Migration Example) — reduced-scope PoC:
+ * Select port (per the implementation plan's Migration Example) — reduced-scope PoC:
  * single-select only, no search, fixed-below positioning. Explicitly deferred from this
  * PoC: multi-select, search filtering, full keyboard navigation parity (see FINDINGS.md
  * for what a full-parity port would additionally require).
@@ -100,6 +100,7 @@ export class GdSelect extends LitElement {
       display: inline-block;
     }
     .trigger {
+      position: relative;
       display: inline-flex;
       align-items: center;
       justify-content: space-between;
@@ -114,6 +115,22 @@ export class GdSelect extends LitElement {
          disabled-selector rule sets cursor to 'default', not 'not-allowed' — Select's own
          button tokens never override cursor, so 'default' is what actually renders. */
       cursor: default;
+    }
+    /* The real trigger IS a <Button> (SelectStyled.tsx's DropdownButtonStyled), so its focus
+       ring is button.default['&:focus-visible'] — getFocusStyles' ::after ring (inset -4px,
+       2px border, colors.border.focus), same mechanism gd-button.ts/gd-input.ts already use.
+       Corners are always square here (Select's real tokens have no radius at all), so
+       border-radius is a static 0px, not a resolved value like gd-button's 'rounded' prop. */
+    .trigger:focus-visible {
+      outline: none;
+    }
+    .trigger:focus-visible::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border: 2px solid var(--gd-select-focus-color, #0069b4);
+      border-radius: 0px;
+      pointer-events: none;
     }
     .dropdown {
       /* The popover UA stylesheet applies a default solid border (black, via currentColor)
@@ -234,6 +251,9 @@ export class GdSelect extends LitElement {
     const state = this._store.getState();
     const resolved = resolveSelectTokens(this.theme, this.color);
     const selected = Array.isArray(state.internalValue) ? null : state.internalValue;
+    // Same expression gd-input.ts uses for its own focus ring — the real button.default
+    // `'&:focus-visible'` color path (`colors.border.focus`).
+    const focusColor = (this.theme.colors as { border?: { focus?: string } } | undefined)?.border?.focus ?? '#0069B4';
 
     // Sizing itself (`width`/`maxWidth`/`minWidth`) is applied directly to the host in
     // `willUpdate` — this just fills the now-definite host content box.
@@ -248,6 +268,7 @@ export class GdSelect extends LitElement {
       borderRadius: '0px',
       padding: `${resolved.triggerPadding}`,
       background: resolved.surfaceColor,
+      '--gd-select-focus-color': focusColor,
     };
 
     const dropdownStyle = {

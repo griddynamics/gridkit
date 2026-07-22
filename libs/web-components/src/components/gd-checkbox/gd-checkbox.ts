@@ -43,7 +43,7 @@ function resolveCheckboxTokens(theme: DesignCoreTheme, size: CheckboxSizeName): 
 }
 
 /**
- * CTORNDSD-581 Checkbox port (per the implementation plan's Migration Example). Delegates all
+ * Checkbox port (per the implementation plan's Migration Example). Delegates all
  * controlled/uncontrolled + indeterminate state to gd-design-core's `createCheckboxStore`
  * (subscribed in `connectedCallback`) instead of re-deriving it here — the store already
  * collapses `Checkbox.tsx`'s `isControlled` branch into one always-owned `checked` value;

@@ -85,7 +85,7 @@ function resolveInputTokens(theme: DesignCoreTheme, color: InputColorVariantName
 }
 
 /**
- * CTORNDSD-581 Input port (per the implementation plan's Migration Example) — the highest-risk
+ * Input port (per the implementation plan's Migration Example) — the highest-risk
  * small atom: a controlled `value` over a custom-element boundary has no reconciliation
  * layer protecting cursor position the way React's controlled-input diffing does.
  *

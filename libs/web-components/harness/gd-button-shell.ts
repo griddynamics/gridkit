@@ -8,7 +8,7 @@ import { Button } from '../../ui/src/components/atoms/Button/Button';
 import { ThemeProvider } from '../../ui/src/hooks/useTheme/useTheme';
 
 /**
- * "Lit wraps React (shell only)" — Option A from the CTORNDSD-581 doc's comparison. A
+ * "Lit wraps React (shell only)" — Option A from the investigation's comparison. A
  * Lit-authored custom element (real Shadow DOM via Lit's default `createRenderRoot`) whose
  * entire job is to mount the REAL `Button` from `libs/ui/src/components/atoms/Button/Button.tsx`
  * — same React + Emotion internals, no template rewrite — inside itself via `ReactDOM.createRoot`.

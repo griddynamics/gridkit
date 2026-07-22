@@ -5,9 +5,9 @@ import '../src/components/gd-typography/gd-typography';
  * Companion script for ssr-dsd-hydrated.html — checks what actually happens once Lit's
  * client JS loads on top of server-rendered Declarative Shadow DOM: does Lit reuse the
  * existing shadow-root DOM nodes (true hydration), or does it discard and fully
- * client-re-render into the already-attached shadow root? Either outcome can be a pass
- * for CTORNDSD-581's purposes (the plan only requires confirmed hydration behavior, not a
- * specific mechanism) — record whichever one actually happens, don't assume.
+ * client-re-render into the already-attached shadow root? Either outcome is acceptable —
+ * only confirmed hydration behavior matters, not a specific mechanism — record whichever
+ * one actually happens, don't assume.
  */
 function log(message: string) {
   const el = document.createElement('pre');

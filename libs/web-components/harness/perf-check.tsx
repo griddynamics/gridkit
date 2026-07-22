@@ -16,7 +16,7 @@ import '../src/components/gd-button/gd-button';
 import './gd-button-shell';
 
 /**
- * CTORNDSD-581 — raw, honest render-speed check (not part of the original spike scope; the
+ * Raw, honest render-speed check (not part of the original spike scope; the
  * spike measured bundle size only, see FINDINGS.md Section 3). This harness answers a narrower,
  * different question: how long does it take to mount/update N real instances of each Button,
  * in a real browser, batched the same way on both sides?

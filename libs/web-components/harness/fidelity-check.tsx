@@ -20,7 +20,7 @@ import { GdInput } from './GdInputReact';
 import { GdSelect } from './GdSelectReact';
 
 /**
- * CTORNDSD-581 visual-fidelity verification harness — renders each of the 5 ported atoms with
+ * Visual-fidelity verification harness — renders each of the 5 ported atoms with
  * props matching the real Storybook stories being compared against.
  *
  * All 5 components now resolve their REAL `libs/ui/src/tokens/*.ts` object directly (see each

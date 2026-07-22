@@ -16,13 +16,12 @@ declare global {
 }
 
 /**
- * Re-runs the CTORNDSD-286 reproduction (see `ctorndsd-286-repro.tsx`'s original methodology,
- * FINDINGS.md Section 1) with a THIRD probe added: `gd-button-shell`, the "Lit wraps React
- * (shell only)" hybrid (harness/gd-button-shell.ts). Question this answers, empirically rather
- * than by reasoning about it: does mounting the real React+Emotion Button inside a Lit custom
- * element's (real) Shadow Root actually isolate it from a page-level Emotion/global-CSS
- * collision, the same way the native Lit rebuild does — with NO extra shadow-scoped Emotion
- * cache plumbing?
+ * Re-runs the original Shadow DOM style-isolation reproduction (see FINDINGS.md Section 1) with
+ * a THIRD probe added: `gd-button-shell`, the "Lit wraps React (shell only)" hybrid
+ * (harness/gd-button-shell.ts). Question this answers, empirically rather than by reasoning
+ * about it: does mounting the real React+Emotion Button inside a Lit custom element's (real)
+ * Shadow Root actually isolate it from a page-level Emotion/global-CSS collision, the same way
+ * the native Lit rebuild does — with NO extra shadow-scoped Emotion cache plumbing?
  */
 
 function GlobalHostAppStyles() {
@@ -70,7 +69,7 @@ function App() {
   return (
     <div style={{ fontFamily: 'sans-serif', padding: 24 }}>
       <GlobalHostAppStyles />
-      <h1>Shell isolation check — "Lit wraps React" vs. the CTORNDSD-286 collision</h1>
+      <h1>Shell isolation check — "Lit wraps React" vs. the Shadow DOM style-isolation collision</h1>
 
       <section>
         <h2>1. Plain React+Emotion button (2nd Emotion instance, no Shadow DOM) — control</h2>

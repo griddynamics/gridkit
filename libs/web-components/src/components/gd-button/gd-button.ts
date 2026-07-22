@@ -23,7 +23,7 @@ export type ButtonType = 'button' | 'submit' | 'reset';
 export type ButtonRoleName = 'button' | 'link' | 'checkbox' | 'switch' | 'tab';
 
 /**
- * CTORNDSD-581 Button port — DOM structure, class names, and CSS-composition layering mirror
+ * Button port — DOM structure, class names, and CSS-composition layering mirror
  * `ButtonStyled.tsx` directly:
  *
  * ```
