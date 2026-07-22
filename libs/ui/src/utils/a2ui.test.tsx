@@ -2561,7 +2561,7 @@ describe('renderA2UISpec', () => {
     // `card-row` (or `card-column`) child under this repo's Vitest/jsdom environment throws
     // `Error: Element type is invalid ... at card.tsx` — a pre-existing circular-import bug
     // between Card.tsx and the Row/Column re-exports that only manifests under Vitest's module
-    // transform (Storybook/Vite builds are unaffected). The
+    // transform (Storybook/Vite builds are unaffected).
     // `card-row`/`card-column` `className` renderer fixes themselves were verified via code
     // review only.
 
