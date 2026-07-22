@@ -29,7 +29,7 @@ export interface CreateCheckboxStoreOptions {
 
 /**
  * Extracted from `libs/ui/src/components/atoms/Checkbox/Checkbox.tsx`'s controlled/uncontrolled
- * resolution — the one piece of Checkbox's behavior CTORNDSD-580 calls out as cleanly portable.
+ * resolution — the one piece of Checkbox's behavior calls out as cleanly portable.
  * `inputRef.current.indeterminate = ...` (a direct DOM-API write) stays in each adapter, since it's
  * inherently a rendering concern; this store only tracks the `indeterminate` value itself.
  */

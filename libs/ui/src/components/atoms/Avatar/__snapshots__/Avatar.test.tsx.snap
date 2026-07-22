@@ -3,7 +3,7 @@
 exports[`Avatar > SHOULD match snapshot 1`] = `
 <div>
   <div
-    class="css-1m9q9nx"
+    class="css-1h8xukk"
     data-testid="Avatar"
     role="img"
   >

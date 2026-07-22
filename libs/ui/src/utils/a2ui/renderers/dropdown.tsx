@@ -10,6 +10,8 @@ export const dropdownRenderers = {
   dropdown: (component: A2UIComponent, renderChildren: (children?: A2UIComponent[]) => ReactNode[]) => (
     <SelectContext.Provider key={component.id} value={DROPDOWN_SELECT_CONTEXT}>
       <Dropdown
+        aria-label={component.ariaLabel}
+        className={component.className}
         styles={{
           width: component.width,
           maxHeight: component.maxHeight,
@@ -30,6 +32,7 @@ export const dropdownRenderers = {
       name={component.label || String(component.value ?? '')}
       value={component.value}
       disabled={component.disabled}
+      className={component.className}
       styles={getMergedComponentStyles(component)}
       onSelect={
         dispatchAction && component.actions?.length

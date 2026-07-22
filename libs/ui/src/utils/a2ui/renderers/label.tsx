@@ -9,6 +9,7 @@ export const labelRenderers = {
       key={component.id}
       htmlFor={component.htmlFor || getAttributeString(component, 'for') || getAttributeString(component, 'htmlFor')}
       ariaLabel={component.ariaLabel}
+      className={component.className}
       styles={getMergedComponentStyles(component)}
     >
       {component.children?.length ? renderChildren(component.children) : null}

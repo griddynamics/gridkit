@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { ChatBubble, ChatContainer, Typography } from '@components';
 import type { A2UIComponent } from '../../../ai';
+import { isSafeA2UIUrl } from '../../../ai';
 import type { ChatImageGalleryImage } from '../../../components/organisms/ChatBubble/ChatBubble.types';
 import {
   getMergedComponentStyles,
@@ -18,7 +19,7 @@ function getChatImageGalleryImages(component: A2UIComponent): ChatImageGalleryIm
   const result: ChatImageGalleryImage[] = [];
 
   for (const item of getObjectArrayField(component, 'images')) {
-    if (typeof item['src'] !== 'string') continue;
+    if (typeof item['src'] !== 'string' || !isSafeA2UIUrl(item['src'])) continue;
     const image: ChatImageGalleryImage = { src: item['src'] };
     if (typeof item['alt'] === 'string') image.alt = item['alt'];
     result.push(image);
@@ -43,6 +44,8 @@ export const chatRenderers = {
           ? renderChildren(getComponentArrayField(component, 'actionChildren'))
           : undefined
       }
+      aria-label={component.ariaLabel}
+      className={component.className}
       styles={getComponentStyles(component.styling)}
     >
       {getComponentText(component) ? <Typography>{getComponentText(component)}</Typography> : null}
@@ -71,6 +74,8 @@ export const chatRenderers = {
                 })
             : undefined
         }
+        aria-label={component.ariaLabel}
+        className={component.className}
         styles={getComponentStyles(component.styling)}
       />
     );
@@ -93,6 +98,7 @@ export const chatRenderers = {
         component.sidebarHeaderContent?.length ? renderChildren(component.sidebarHeaderContent) : undefined
       }
       headerContent={component.headerContent?.length ? renderChildren(component.headerContent) : undefined}
+      aria-label={component.ariaLabel}
       className={component.className}
       styles={getMergedComponentStyles(component)}
     >

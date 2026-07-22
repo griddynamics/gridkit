@@ -4,7 +4,7 @@ import { GdButton } from './src/components/GdButton/GdButton';
 
 /**
  * Smoke-test harness proving spike-react-native's platform works end-to-end: renders `GdButton`
- * (ported per CTORNDSD-590's Migration Example) driven by gd-design-core's `resolveButtonVariantStyle`.
+ * driven by gd-design-core's `resolveButtonVariantStyle`.
  * The remaining 4 atoms and the full spike Ordered Work are this ticket's own execution, not seeded here.
  */
 export default function App() {

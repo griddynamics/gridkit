@@ -49,7 +49,7 @@ function normalizeValue(value: SelectValue | undefined, multiple: boolean): Sele
 /**
  * Extracted from `libs/ui/src/components/atoms/Select/Select.tsx`'s open/close, single/multi
  * selection, and search-filter state — the highest shared-core-feasibility atom per
- * CTORNDSD-580's comparison table. Deliberately excludes dropdown viewport positioning
+ * Deliberately excludes dropdown viewport positioning
  * (`computePlacement`), portal/outside-click DOM listeners, and keyboard-arrow focus
  * traversal (`getClosestFocusable`) — those differ per platform (web overlay positioning
  * vs. RN `Modal` chrome) and stay in each adapter.

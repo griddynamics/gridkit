@@ -2,7 +2,7 @@
   "name": "spike-react-native",
   "version": "0.0.0",
   "private": true,
-  "description": "CTORNDSD-590 spike: disposable React Native PoC for gd-design-library's atoms. Not published, not an npm workspace member. See plans/ctorndsd-590-react-native-integration-spike.md.",
+  "description": "Disposable React Native PoC for gd-design-library's atoms. Not published, not an npm workspace member. See plans/ctorndsd-590-react-native-integration-spike.md.",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",

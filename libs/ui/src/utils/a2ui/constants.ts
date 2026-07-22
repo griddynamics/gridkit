@@ -1,4 +1,5 @@
 export const ROOT_TEST_ID = 'a2ui-layout-root';
+export const SECURITY_FALLBACK_TEST_ID = 'a2ui-security-fallback';
 export const DROPDOWN_SELECT_CONTEXT = {
   onSelect: () => {
     /* empty */

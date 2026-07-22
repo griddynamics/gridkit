@@ -33,6 +33,6 @@ export type TypographyStyleVariantName =
  * directly with `resolveThemeTree` (from this package's `utils/resolveThemeTree`), so any edit
  * to `libs/ui/src/tokens/typography.ts` is picked up automatically. See `gd-typography.ts` for
  * the variant/styleVariant merge logic (mirroring `Typography.tsx`'s own prop behavior, minus
- * the DOM-tag polymorphism, which per CTORNDSD-580's finding has no portable equivalent across
+ * the DOM-tag polymorphism,  has no portable equivalent across
  * Lit or React Native).
  */

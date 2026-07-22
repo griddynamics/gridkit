@@ -1,7 +1,7 @@
 {
   "name": "gd-design-core",
   "version": "0.0.1",
-  "description": "Framework-agnostic core for GridKit: pure token-resolution functions and zustand/vanilla state stores shared by every rendering adapter (React web, Lit/web-components, React Native). See plans/ctorndsd-580-cross-platform-architecture-strategy.md.",
+  "description": "Framework-agnostic core for GridKit: pure token-resolution functions and zustand/vanilla state stores shared by every rendering adapter (React web, Lit/web-components, React Native).",
   "license": "MIT",
   "type": "module",
   "main": "./index.js",

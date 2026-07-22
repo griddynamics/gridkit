@@ -50,6 +50,8 @@ export const menuRenderers = {
           ))}
         </>
       }
+      aria-label={component.ariaLabel}
+      className={component.className}
       styles={getMergedComponentStyles(component)}
     >
       <Button

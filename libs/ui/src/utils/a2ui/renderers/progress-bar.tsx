@@ -14,6 +14,7 @@ export const progressBarRenderers = {
         fillColor={(component as A2UIComponent & { fillColor?: string }).fillColor}
         backgroundColor={component.backgroundColor}
         aria-label={component.ariaLabel}
+        className={component.className}
         styles={getComponentStyles(component.styling)}
       />
     );

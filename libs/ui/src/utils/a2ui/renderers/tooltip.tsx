@@ -14,6 +14,7 @@ export const tooltipRenderers = {
       gap={getNumberLikeValue((component as A2UIComponent & { gap?: string | number }).gap)}
       as={component.as as never}
       ariaLabel={component.ariaLabel}
+      className={component.className}
       styles={getMergedComponentStyles(component)}
     >
       {renderChildren(component.children)[0] || <Button variant="text">{component.label || 'Info'}</Button>}
