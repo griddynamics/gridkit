@@ -2561,8 +2561,7 @@ describe('renderA2UISpec', () => {
     // `card-row` (or `card-column`) child under this repo's Vitest/jsdom environment throws
     // `Error: Element type is invalid ... at card.tsx` — a pre-existing circular-import bug
     // between Card.tsx and the Row/Column re-exports that only manifests under Vitest's module
-    // transform (Storybook/Vite builds are unaffected). See
-    // plans/ctorndsd-634-a2ui-schema-props-utilization.md's "Related Finding" section. The
+    // transform (Storybook/Vite builds are unaffected). The
     // `card-row`/`card-column` `className` renderer fixes themselves were verified via code
     // review only.
 
@@ -3617,7 +3616,7 @@ describe('renderA2UISpec', () => {
       expect(screen.getByTestId('InputArea-textarea')).toHaveStyle({ height: '10px' });
 
       // NOTE: `recordButtonLabel` is read and forwarded by the `input-area` renderer
-      // (libs/ui/src/utils/a2ui/renderers/form.tsx), satisfying the CTORNDSD-634 fix, but the
+      // (libs/ui/src/utils/a2ui/renderers/form.tsx), but the
       // "start recording" mic button it labels (InputArea's `InputArea-record` testid) can never
       // actually mount through this renderer: `InputArea`'s own `isRecordEnabled` flag
       // (libs/ui/src/components/organisms/InputArea/InputArea.tsx) is only true when `recordIcon`

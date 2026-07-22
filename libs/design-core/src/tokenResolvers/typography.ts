@@ -46,7 +46,7 @@ const MONOSPACE_VARIANTS: ReadonlySet<TypographyVariantName> = new Set(['code', 
  * (libs/ui/src/tokens/typography.ts): a variant resolves the base font metrics, an
  * optional styleVariant (or list of them) overlays weight/transform/decoration on top —
  * mirroring `Typography.tsx`'s `variant`/`styleVariant` props, minus the DOM-tag
- * polymorphism (`as`), which per CTORNDSD-580's Typography finding has no portable
+ * polymorphism (`as`), Typography finding has no portable
  * equivalent across Lit (fixed outer custom-element tag) or React Native (`Text` only).
  */
 export function resolveTypographyStyle(

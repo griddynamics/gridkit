@@ -3,7 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/spike-web-components/src",
   "projectType": "library",
-  "tags": ["spike", "scope:ctorndsd-581"],
+  "tags": ["spike"],
   "targets": {
     "build": {
       "executor": "@nx/vite:build",

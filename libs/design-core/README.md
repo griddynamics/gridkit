@@ -1,17 +1,16 @@
 # gd-design-core
 
-Framework-agnostic core for GridKit's cross-platform architecture strategy
-(`plans/ctorndsd-580-cross-platform-architecture-strategy.md`, Option 2: "Framework-Agnostic Core + Thin
+Framework-agnostic core for GridKit's cross-platform architecture strategy , Option 2: "Framework-Agnostic Core + Thin
 Per-Platform Adapters"). This package holds each of the 5 atom-tier components' actual behavior — token
 resolution, controlled/uncontrolled state, debounce timers, open/close/selection state — with **zero
 React-DOM, Emotion, Shadow-DOM, or React Native assumptions**.
 
 It is the base platform intended to be consumed by:
 
-- **CTORNDSD-581** (`plans/ctorndsd-581-lit-webcomponents-spike.md`) — a Lit component subscribes via
+- Lit component subscribes via
   `store.subscribe()` / `store.getState()` inside `connectedCallback()`. No hook, no adapter package
   required on the Lit side beyond the subscription call itself.
-- **CTORNDSD-590** (`plans/ctorndsd-590-react-native-integration-spike.md`) — React and React Native
+- React and React Native
   consume identically via `useStore(vanillaStore, selector)` (from `zustand`), since RN is still React,
   just a different renderer.
 - The existing React web implementation (`libs/ui`) — not modified by this package; adopting it there is a
@@ -78,9 +77,3 @@ Resolvers accept a loosely-typed `DesignCoreTheme` (see `src/types.ts`) — a st
 (`colors.*`, `font.*`, `spacing.*`, `radius.*`, `values.*`). This package does not import
 `gd-design-library` at runtime, so it stays buildable and testable independently of `libs/ui`; any
 object shaped like `gd-design-library`'s `defaultTheme` (or a per-platform equivalent) satisfies it.
-
-## Status
-
-Additive, non-breaking scaffolding only. Neither CTORNDSD-581 nor CTORNDSD-590 has started spike code yet
-(both still "Not started" per their plans) — this package exists so that when either spike starts, the
-shared core is already in place rather than something each spike would otherwise reinvent independently.

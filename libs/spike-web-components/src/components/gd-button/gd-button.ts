@@ -1,10 +1,11 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
-import { resolveButtonVariantStyle, type ButtonVariantName, type DesignCoreTheme } from 'gd-design-core';
+import { resolveButtonVariantStyle, ButtonVariantName } from '../../../../design-core/src/tokenResolvers/button';
+import { DesignCoreTheme } from '../../../../design-core/src/types';
 
 /**
- * CTORNDSD-581 Button port (per the spike plan's Migration Example) — the platform's smoke test.
+ * Button port (per the spike plan's Migration Example) — the platform's smoke test.
  * Consumes gd-design-core's `resolveButtonVariantStyle` for the same token-resolved values the
  * React and React Native adapters use, mapping its state-keyed style objects (`container`,
  * `containerHover`, `containerActive`, `containerDisabled`) onto host `@state` flags instead of

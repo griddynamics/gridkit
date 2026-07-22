@@ -43,7 +43,7 @@ export interface GdButtonProps {
 }
 
 /**
- * CTORNDSD-590 Button port (per the spike plan's Migration Example) — the platform's smoke test.
+ * Button port (per the spike plan's Migration Example) — the platform's smoke test.
  * Consumes gd-design-core's `resolveButtonVariantStyle`, the same token-resolved values the React
  * web and Lit adapters use, mapping its state-keyed style objects onto `Pressable`'s `pressed` state
  * function instead of a CSS pseudo-class — exactly the state mechanism the resolver was designed to
