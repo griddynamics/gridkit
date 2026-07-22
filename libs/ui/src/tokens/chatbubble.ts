@@ -1,13 +1,11 @@
 import { get } from '@utils';
-import { FlexDirection } from '@types';
 
-import { display, flexAlignItems } from './display';
 import { hexToRgba } from './utils';
 
 export const chatbubble = {
   default: {
-    display: display.flex,
-    flexDirection: FlexDirection.Column,
+    display: 'flex',
+    flexDirection: 'column',
     gap: (theme: Record<symbol, unknown>) => get(theme, 'spacing.sm', 'theme.spacing.sm'),
     clear: 'both',
     margin: (theme: Record<symbol, unknown>) => {
@@ -63,18 +61,18 @@ export const chatbubble = {
   content: {
     default: {
       gap: (theme: Record<symbol, unknown>) => get(theme, 'spacing.sm', 'theme.spacing.sm'),
-      display: display.flex,
-      flexDirection: FlexDirection.Column,
+      display: 'flex',
+      flexDirection: 'column',
     },
     pending: {
-      alignItems: flexAlignItems.start,
+      alignItems: 'flex-start',
     },
     fulfilled: {},
     rejected: {},
   },
   actions: {
-    display: display.flex,
-    flexDirection: FlexDirection.Row,
+    display: 'flex',
+    flexDirection: 'row',
   },
   loader: {
     attrs: {
@@ -106,8 +104,8 @@ export const chatbubble = {
     overlay: {
       position: 'absolute',
       inset: 0,
-      display: display.flex,
-      alignItems: flexAlignItems.center,
+      display: 'flex',
+      alignItems: 'center',
       justifyContent: 'center',
       backgroundColor: (theme: Record<symbol, unknown>) =>
         hexToRgba(get(theme, 'colors.neutral.black', 'theme.colors.neutral.black'), 0.5),
@@ -124,8 +122,8 @@ export const chatbubble = {
 
   linkPreview: {
     default: {
-      display: display.flex,
-      flexDirection: FlexDirection.Column,
+      display: 'flex',
+      flexDirection: 'column',
       borderRadius: (theme: Record<symbol, unknown>) => get(theme, 'radius.default', 'theme.radius.default'),
       overflow: 'hidden',
       border: (theme: Record<symbol, unknown>) => {
@@ -147,8 +145,8 @@ export const chatbubble = {
     },
     content: {
       padding: (theme: Record<symbol, unknown>) => get(theme, 'spacing.sm', 'theme.spacing.sm'),
-      display: display.flex,
-      flexDirection: FlexDirection.Column,
+      display: 'flex',
+      flexDirection: 'column',
       gap: (theme: Record<symbol, unknown>) => get(theme, 'spacing.xs', 'theme.spacing.xs'),
     },
     title: {

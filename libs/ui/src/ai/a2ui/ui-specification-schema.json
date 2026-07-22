@@ -437,9 +437,9 @@
         },
         "size": {
           "type": "string",
-          "enum": ["xs", "sm", "md", "lg", "xl", "xxl"],
+          "enum": [],
           "default": "md",
-          "description": "Size token. For icon: resolves to fixed px dimensions (xs=14px, sm=16px, md=18px, lg=24px, xl=32px, xxl=40px). For other components: semantic size (xs–xxl)."
+          "description": "Size token. For icon: resolves to fixed px dimensions (). For other components: semantic size (xs–xxl)."
         },
         "styleVariant": {
           "type": ["string", "array"],

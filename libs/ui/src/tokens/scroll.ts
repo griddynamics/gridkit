@@ -1,5 +1,4 @@
 import { get } from '@utils';
-import { display } from './display';
 
 const scrollbarSize = 8;
 
@@ -7,7 +6,7 @@ export const scroll = {
   container: {
     default: {
       position: 'relative',
-      display: display.flex,
+      display: 'flex',
       overflow: 'auto',
       isolation: 'isolate',
       maxBlockSize: '100%',

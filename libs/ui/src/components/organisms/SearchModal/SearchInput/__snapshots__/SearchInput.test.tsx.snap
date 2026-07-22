@@ -3,7 +3,7 @@
 exports[`SearchInput > SHOULD match snapshot 1`] = `
 <div>
   <label
-    class="css-196sv9g"
+    class="css-34dk1l"
     data-testid="InputWrapper"
   >
     <span
@@ -35,9 +35,9 @@ exports[`SearchInput > SHOULD match snapshot 1`] = `
             class="css-1u8qly9"
             data-testid="Icon-cross"
             fill="none"
-            height="12"
+            height="18"
             viewBox="0 0 24 24"
-            width="12"
+            width="18"
             xmlns="http://www.w3.org/2000/svg"
           >
             <path

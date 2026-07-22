@@ -75,9 +75,9 @@ exports[`TablePagination > SHOULD match snapshot 1`] = `
             class="css-1u8qly9"
             data-testid="Icon-arrowLeft"
             fill="none"
-            height="14"
+            height="16"
             viewBox="0 0 24 24"
-            width="14"
+            width="16"
             xmlns="http://www.w3.org/2000/svg"
           >
             <path
@@ -146,9 +146,9 @@ exports[`TablePagination > SHOULD match snapshot 1`] = `
             class="css-1u8qly9"
             data-testid="Icon-arrowRight"
             fill="none"
-            height="14"
+            height="16"
             viewBox="0 0 24 24"
-            width="14"
+            width="16"
             xmlns="http://www.w3.org/2000/svg"
           >
             <path

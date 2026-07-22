@@ -16,7 +16,7 @@ exports[`Carousel > SHOULD match snapshot 1`] = `
         data-testid="Carousel-controls"
       >
         <button
-          class="css-1vq2wi8"
+          class="css-1j0sjdr"
           data-testid="Carousel-control-previous"
           disabled=""
           role="button"
@@ -31,9 +31,9 @@ exports[`Carousel > SHOULD match snapshot 1`] = `
               class="css-1u8qly9"
               data-testid="Icon-arrowLeft"
               fill="none"
-              height="9"
+              height="24"
               viewBox="0 0 24 24"
-              width="9"
+              width="24"
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
@@ -58,9 +58,9 @@ exports[`Carousel > SHOULD match snapshot 1`] = `
               class="css-1u8qly9"
               data-testid="Icon-arrowLeft"
               fill="none"
-              height="9"
+              height="24"
               viewBox="0 0 24 24"
-              width="9"
+              width="24"
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
@@ -132,9 +132,9 @@ exports[`Carousel > SHOULD match snapshot 1`] = `
             class="css-1u8qly9"
             data-testid="Icon-arrowLeft"
             fill="none"
-            height="9"
+            height="24"
             viewBox="0 0 24 24"
-            width="9"
+            width="24"
             xmlns="http://www.w3.org/2000/svg"
           >
             <path
@@ -201,9 +201,9 @@ exports[`Carousel > SHOULD match snapshot 1`] = `
             class="css-1u8qly9"
             data-testid="Icon-arrowRight"
             fill="none"
-            height="9"
+            height="24"
             viewBox="0 0 24 24"
-            width="9"
+            width="24"
             xmlns="http://www.w3.org/2000/svg"
           >
             <path

@@ -1,9 +1,6 @@
 import { get, calculateJustify } from '@utils';
-import { ButtonVariant, FlexDirection, SizeVariant } from '@types';
 
 import { icon } from './icon';
-import { display, flexAlignItems } from './display';
-import { cursors } from './cursors';
 
 export const searchModal = {
   default: {},
@@ -32,10 +29,13 @@ export const searchModal = {
             get(theme, 'colors.neutral.grey.60', 'theme.colors.neutral.grey.60'),
         },
         '&::-webkit-search-cancel-button': {
-          appearance: display.none,
+          appearance: 'none',
         },
         '&::-ms-clear': {
-          display: display.none,
+          display: 'none',
+        },
+        '& + .Input__border': {
+          borderWidth: '0 0 1px 0',
         },
       },
     },
@@ -46,27 +46,26 @@ export const searchModal = {
         return '0 theme.spacing.lg 0 0';
       },
       padding: (theme: Record<symbol, unknown>) => get(theme, 'spacing.sm', 'theme.spacing.sm'),
-      cursor: cursors.pointer,
+      cursor: 'pointer',
     },
     icons: {
       close: {
         name: 'cross',
-        width: 12,
-        height: 12,
+        size: 'md',
       },
     },
   },
   loader: {
     default: {
-      display: display.flex,
-      flexDirection: FlexDirection.Column,
+      display: 'flex',
+      flexDirection: 'column',
       gap: (theme: Record<symbol, unknown>) => get(theme, 'spacing.sm', 'theme.spacing.sm'),
     },
   },
   items: {
     default: {
-      display: display.flex,
-      flexDirection: FlexDirection.Column,
+      display: 'flex',
+      flexDirection: 'column',
     },
     newSearchBtn: {
       styles: {
@@ -84,17 +83,17 @@ export const searchModal = {
           get(theme, 'font.line.height.small', 'theme.font.line.height.small'),
 
         '.gd-button__content': {
-          justifyContent: flexAlignItems.start,
+          justifyContent: 'flex-start',
         },
       },
       attrs: {
-        variant: ButtonVariant.Text,
+        variant: 'text',
       },
     },
     noResult: {
-      display: display.flex,
-      flexDirection: FlexDirection.Row,
-      alignItems: flexAlignItems.center,
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
       gap: (theme: Record<symbol, unknown>) => get(theme, 'spacing.sm', 'theme.spacing.sm'),
       padding: (theme: Record<symbol, unknown>) => {
         const sm = get(theme, 'spacing.sm', 'theme.spacing.sm');
@@ -134,7 +133,7 @@ export const searchModal = {
         },
         color: (theme: Record<symbol, unknown>) => get(theme, 'colors.text.default', 'theme.colors.text.default'),
         '.gd-button__content': {
-          display: display.block,
+          display: 'block',
         },
         fontSize: (theme: Record<symbol, unknown>) => get(theme, 'font.size.small', 'font.size.small'),
         fontWeight: (theme: Record<symbol, unknown>) => get(theme, 'font.weight.normal', 'theme.font.weight.normal'),
@@ -142,11 +141,11 @@ export const searchModal = {
           get(theme, 'font.line.height.small', 'theme.font.line.height.small'),
       },
       attrs: {
-        variant: ButtonVariant.Text,
+        variant: 'text',
       },
     },
     itemRow: {
-      alignItems: flexAlignItems.center,
+      alignItems: 'center',
       justifyContent: calculateJustify('between'),
       gap: (theme: Record<symbol, unknown>) => get(theme, 'spacing.sm', 'theme.spacing.sm'),
       flexWrap: 'noWrap',
@@ -182,14 +181,14 @@ export const searchModal = {
     icons: {
       newChat: {
         name: 'edit',
-        ...icon.size[SizeVariant.Sm],
+        ...icon.size.sm,
       },
       noResults: {
         name: 'search',
-        ...icon.size[SizeVariant.Sm],
+        ...icon.size.sm,
       },
       item: {
-        ...icon.size[SizeVariant.Sm],
+        ...icon.size.sm,
       },
     },
   },

@@ -243,7 +243,7 @@ export const AllowMultipleExpandWithIcon: StoryObj<typeof Accordion> = {
     <Accordion allowMultipleExpand>
       {ACCORDION_ITEMS.map((item) => (
         <AccordionItem key={item.id} id={item.id}>
-          <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" size="xs" />}>{item.title}</AccordionHeader>
+          <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" size="md" />}>{item.title}</AccordionHeader>
           <AccordionContent>{item.content}</AccordionContent>
         </AccordionItem>
       ))}
@@ -266,7 +266,7 @@ const accordionItems = [
 <Accordion allowMultipleExpand>
   {accordionItems.map((item) => (
     <AccordionItem key={item.id} id={item.id}>
-      <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" size="xs" />}>
+      <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" size="md" />}>
         {item.title}
       </AccordionHeader>
       <AccordionContent>{item.content}</AccordionContent>
@@ -360,7 +360,7 @@ export const AsInline: StoryObj<typeof Accordion> = {
   render: () => (
     <Accordion isInline>
       <AccordionItem id="item1">
-        <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" size="xs" />}>Title 1</AccordionHeader>
+        <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" size="md" />}>Title 1</AccordionHeader>
         <AccordionContent>Content 1</AccordionContent>
       </AccordionItem>
     </Accordion>
@@ -373,7 +373,7 @@ export const AsInline: StoryObj<typeof Accordion> = {
       source: {
         code: `<Accordion isInline>
   <AccordionItem id="item1">
-    <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" size="xs" />}>Title 1</AccordionHeader>
+    <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" size="md" />}>Title 1</AccordionHeader>
     <AccordionContent>Content 1</AccordionContent>
   </AccordionItem>
 </Accordion>`,
@@ -388,7 +388,7 @@ export const WithBoxStyles: StoryObj<typeof Accordion> = {
     <Accordion allowMultipleExpand>
       {ACCORDION_ITEMS.map((item) => (
         <AccordionItem key={item.id} id={item.id} margin="8px 0" padding="12px">
-          <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" size="xs" />} padding="12px 16px">
+          <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" size="md" />} padding="12px 16px">
             {item.title}
           </AccordionHeader>
           <AccordionContent marginTop="8px">{item.content}</AccordionContent>
@@ -420,7 +420,7 @@ const accordionItems = [
       padding="12px"
     >
       <AccordionHeader
-        expandIcon={<Icon name="keyboardArrowDown" size="xs" />}
+        expandIcon={<Icon name="keyboardArrowDown" size="md" />}
         padding="12px 16px"
       >
         {item.title}
@@ -529,7 +529,7 @@ export const Controlled: StoryObj<typeof Accordion> = {
         <Accordion value={openedItems} onChange={handleChange} allowMultipleExpand>
           {ACCORDION_ITEMS.map((item) => (
             <AccordionItem key={item.id} id={item.id}>
-              <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" size="xs" />}>{item.title}</AccordionHeader>
+              <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" size="md" />}>{item.title}</AccordionHeader>
               <AccordionContent>{item.content}</AccordionContent>
             </AccordionItem>
           ))}
@@ -581,7 +581,7 @@ const ControlledAccordionExample = () => {
       >
         {accordionItems.map((item) => (
           <AccordionItem key={item.id} id={item.id}>
-            <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" size="xs" />}>
+            <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" size="md" />}>
               {item.title}
             </AccordionHeader>
             <AccordionContent>{item.content}</AccordionContent>

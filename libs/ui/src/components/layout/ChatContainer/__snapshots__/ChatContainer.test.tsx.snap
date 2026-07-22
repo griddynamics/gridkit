@@ -21,7 +21,7 @@ exports[`ChatContainer > SHOULD match snapshot 1`] = `
         >
           <button
             aria-label="Toggle sidebar - close"
-            class="css-j0nb1"
+            class="css-1ea2g5q"
             data-testid="Button"
             role="button"
             tabindex="0"
@@ -33,7 +33,7 @@ exports[`ChatContainer > SHOULD match snapshot 1`] = `
             >
               <svg
                 class="css-1u8qly9"
-                data-testid="Icon-arrowDown"
+                data-testid="Icon-arrowRight"
                 fill="none"
                 height="24"
                 viewBox="0 0 24 24"
@@ -41,7 +41,7 @@ exports[`ChatContainer > SHOULD match snapshot 1`] = `
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  d="M20 12L18.59 10.59L13 16.17V4H11V16.17L5.42 10.58L4 12L12 20L20 12Z"
+                  d="M10 6L8.59003 7.41L13.17 12L8.59003 16.59L10 18L16 12L10 6Z"
                   fill="#000000"
                 />
               </svg>
@@ -74,7 +74,7 @@ exports[`ChatContainer > SHOULD match snapshot 1`] = `
       >
         <button
           aria-label="Toggle sidebar - open"
-          class="css-j0nb1"
+          class="css-1ea2g5q"
           data-testid="Button"
           role="button"
           tabindex="0"
@@ -86,7 +86,7 @@ exports[`ChatContainer > SHOULD match snapshot 1`] = `
           >
             <svg
               class="css-1u8qly9"
-              data-testid="Icon-arrowDown"
+              data-testid="Icon-arrowRight"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -94,7 +94,7 @@ exports[`ChatContainer > SHOULD match snapshot 1`] = `
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
-                d="M20 12L18.59 10.59L13 16.17V4H11V16.17L5.42 10.58L4 12L12 20L20 12Z"
+                d="M10 6L8.59003 7.41L13.17 12L8.59003 16.59L10 18L16 12L10 6Z"
                 fill="#000000"
               />
             </svg>

@@ -1,7 +1,6 @@
 import { get } from '@utils';
 
 import { hexToRgba, getSpacing } from './utils';
-import { display } from './display';
 import { borders } from './borders';
 
 export const modal = {
@@ -47,7 +46,7 @@ export const modal = {
       borderRadius: (theme: Record<symbol, unknown>) => get(theme, 'radius.md', 'theme.radius.md'),
       boxShadow: (theme: Record<symbol, unknown>) => get(theme, 'shadows.modal.default', 'theme.shadows.modal.default'),
       position: 'relative',
-      display: display.flex,
+      display: 'flex',
       flexDirection: 'column',
       width: '100%',
       maxWidth: '654px',
@@ -63,7 +62,7 @@ export const modal = {
 
   footer: {
     default: {
-      display: display.flex,
+      display: 'flex',
       justifyContent: 'flex-end',
       gap: (theme: Record<symbol, unknown>) => `calc(${get(theme, `spacing.xs`, `theme.spacing.xs`)} * 3)`,
       padding: (theme: Record<symbol, unknown>) =>
@@ -101,8 +100,7 @@ export const modal = {
     close: {
       name: 'cross',
       fill: 'icon.black',
-      width: 14,
-      height: 14,
+      size: 'lg',
     },
   },
 };
