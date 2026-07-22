@@ -1,8 +1,7 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
-import { resolveButtonVariantStyle, ButtonVariantName } from '../../../../design-core/src/tokenResolvers/button';
-import { DesignCoreTheme } from '../../../../design-core/src/types';
+import { resolveButtonVariantStyle, type ButtonVariantName, type DesignCoreTheme } from 'gd-design-core';
 
 /**
  * Button port (per the spike plan's Migration Example) — the platform's smoke test.
