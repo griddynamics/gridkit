@@ -1,7 +1,21 @@
 import { describe, expect, it } from 'vitest';
 import { buildA2UISystemPrompt } from './system-prompt';
+import { A2UI_SECURITY_LIMITS, A2UI_ALWAYS_BLOCKED_URL_SCHEMES } from './security';
 
 describe('A2UI system prompt', () => {
+  it('SHOULD include the security rules section with the enforced scheme and limit values', () => {
+    const prompt = buildA2UISystemPrompt();
+
+    expect(prompt).toContain('## SECURITY RULES — STRICTLY ENFORCED');
+    for (const scheme of A2UI_ALWAYS_BLOCKED_URL_SCHEMES) {
+      expect(prompt).toContain(scheme);
+    }
+    expect(prompt).toContain('dangerouslySetInnerHTML');
+    expect(prompt).toContain(`${A2UI_SECURITY_LIMITS.maxTreeDepth} nesting levels`);
+    expect(prompt).toContain(`${A2UI_SECURITY_LIMITS.maxNodeCount} total component nodes`);
+    expect(prompt).toContain(`${A2UI_SECURITY_LIMITS.maxPayloadBytes} bytes`);
+  });
+
   it('SHOULD include custom components in the prompt and group them by category', () => {
     const prompt = buildA2UISystemPrompt({
       customComponents: [

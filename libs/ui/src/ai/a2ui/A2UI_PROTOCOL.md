@@ -347,6 +347,60 @@ A2UI responses are validated with AJV against [`./ui-specification-schema.json`]
 
 ---
 
+## Security
+
+[`./security.ts`](./security.ts) is the canonical, dependency-free hardening module for the A2UI pipeline. It is exported from the `gd-design-library/ai` subpath so it can be imported by both:
+
+- **Spec ingest** (e.g. Cerebra or any other external consumer that accepts an A2UI spec before it reaches a browser) — call these functions to reject or repair a spec before trusting it.
+- **Spec render** (`renderA2UISpec`, `gd-design-library/renderer`) — the renderer calls `checkA2UISpecLimits` itself before walking the tree, and every built-in renderer that reads a navigation/media URL calls `isSafeA2UIUrl` before using it.
+
+Ingest-side consumers should call the same three functions the renderer uses, so a spec that would be rejected at render time is also rejected (or sanitized) before it is ever accepted:
+
+```typescript
+import { checkA2UISpecLimits, isSafeA2UIUrl, sanitizeA2UIAttributes } from 'gd-design-library/ai';
+```
+
+### Resource limits — `checkA2UISpecLimits(spec, limits?)`
+
+Bounds the component tree before it is rendered, to prevent denial-of-service via deeply nested trees, wide trees, or oversized payloads.
+
+| Limit             | Default               | Counts                                                                                                                                                                                                                                                                                                                                                                                       |
+| ----------------- | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `maxTreeDepth`    | `24`                  | Deepest nesting level across `children` and every other component-array slot (`footer`, `actionChildren`, `logoChildren`, `menuChildren`, `bannerChildren`, `advChildren`, `headerChildren`, `footerChildren`, `headerContent`, `sidebarContent`, `sidebarMinifiedContent`, `sidebarHeaderContent`, `dragOverContent`, `loadingOverlay`, `dragOverChildren`). Root components are depth `1`. |
+| `maxNodeCount`    | `1000`                | Total number of component nodes across the same set of array slots.                                                                                                                                                                                                                                                                                                                          |
+| `maxPayloadBytes` | `300 * 1024` (300 KB) | `JSON.stringify(spec).length` — UTF-16 code units, used as a conservative proxy for byte length.                                                                                                                                                                                                                                                                                             |
+
+Data-only arrays — `options`, `columns`, `rows`, `data`, `items`, `images`, `files`, `errors` — are **not** counted toward tree depth or node count (they hold plain data, not component nodes), only toward payload size. This means a large data table (many rows/columns) does not trip the depth/node-count limits, only the payload-size limit if the data itself is excessive.
+
+Every limit is overridable: `renderA2UISpec(spec, actions, customComponents, { limits: { maxNodeCount: 2000 } })`. When a spec fails this check, `renderA2UISpec` renders a generic `InlineNotification` (never the attacker-influenced spec content) instead of throwing, and calls `securityOptions.onSecurityViolation(violations)` if provided.
+
+### URL scheme validation — `isSafeA2UIUrl(url, allowedSchemes?)`
+
+Every built-in renderer that reads a navigation or media URL (`link.href`, `image`/`avatar`/`card-image` `src`, `chat-image-gallery` image `src`, `content-carousel` item `src`, `sidebar`/`header` nav item `href`/`path`, `breadcrumbs`/option `href`) calls `isSafeA2UIUrl` before using the value. An unsafe URL resolves to `undefined`, so the affected component falls back to its normal "missing value" behavior (e.g. `Image`'s `fallbackComponent`, an unlinked breadcrumb label) instead of navigating or loading the unsafe URL.
+
+Resolution order:
+
+1. Non-string input is never safe.
+2. `javascript:`, `vbscript:`, `data:`, and `file:` (`A2UI_ALWAYS_BLOCKED_URL_SCHEMES`) are always unsafe, regardless of any allowlist. `data:` is blocked here — not just left out of the default allowlist — because it is also an unbounded-size payload vector, not only a script-injection vector.
+3. A scheme-less value (relative path, `#fragment`, `?query`, or a protocol-relative `//host/path`) is safe.
+4. Otherwise, the URL is safe only if its scheme is in `allowedSchemes` (default: `A2UI_DEFAULT_ALLOWED_URL_SCHEMES` — `http:`, `https:`, `mailto:`, `tel:`).
+
+At render time, built-in renderers always use the default allowlist as a fixed, defense-in-depth floor — it is not configurable through `renderA2UISpec`. A host or ingest-side consumer that needs a different policy (a stricter or looser scheme allowlist, or a host-level allowlist) should call `isSafeA2UIUrl(url, customSchemes)` directly against the spec's URLs before rendering or accepting it. Host-level allowlisting for navigation links (beyond scheme checking) is not implemented — see Open Questions in the implementation plan for this ticket.
+
+### Attribute sanitization — `sanitizeA2UIAttributes(attributes?)`
+
+Strips dangerous keys/values from a spec component's free-form `attributes` object before it is spread onto a DOM-forwarding component (currently `skeleton`, the only renderer that spreads `attributes` directly):
+
+- `dangerouslySetInnerHTML` — removed (this is the "no untrusted HTML rendering paths" enforcement point).
+- `children` — removed (would otherwise silently override the renderer's own children).
+- Any key matching `/^on[A-Z]/` (e.g. `onClick`, `onError`) — removed.
+- Any value with `typeof value === 'function'` — removed.
+- Everything else — including `data-*`, `aria-*`, `className`, `style` — passes through unchanged.
+
+There is no `dangerouslySetInnerHTML`, `innerHTML`, `eval(`, or `new Function(` anywhere else in the renderer (`libs/ui/src/utils/a2ui/`); component text (`label`/`value`) is always rendered as a React text child, which React escapes by default.
+
+---
+
 ## `buildA2UISystemPrompt` Options
 
 ```typescript

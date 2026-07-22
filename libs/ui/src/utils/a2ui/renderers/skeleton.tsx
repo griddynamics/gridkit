@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Skeleton } from '@components';
 import type { A2UIComponent } from '../../../ai';
+import { sanitizeA2UIAttributes } from '../../../ai';
 import { getComponentStyles, getLegacyStyles } from '../helpers';
 
 function getSkeletonStyleOverrides(component: A2UIComponent) {
@@ -48,7 +49,7 @@ export const skeletonRenderers = {
       aria-label={component.ariaLabel}
       className={component.className}
       styles={getSkeletonStyleOverrides(component)}
-      {...(component.attributes ?? {})}
+      {...sanitizeA2UIAttributes(component.attributes)}
     >
       {renderChildren(component.children)}
     </Skeleton>

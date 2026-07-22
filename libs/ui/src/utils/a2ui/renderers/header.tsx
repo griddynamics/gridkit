@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Header } from '@components';
 import type { A2UIComponent } from '../../../ai';
+import { isSafeA2UIUrl } from '../../../ai';
 import {
   getComponentStyles,
   getObjectArrayField,
@@ -26,7 +27,7 @@ function getHeaderMobileMenuList(component: A2UIComponent) {
     result.push({
       id: typeof item['id'] === 'string' ? item['id'] : `${component.id}_mobile_item_${index + 1}`,
       title,
-      path: typeof item['path'] === 'string' ? item['path'] : undefined,
+      path: typeof item['path'] === 'string' && isSafeA2UIUrl(item['path']) ? item['path'] : undefined,
       icon: typeof item['icon'] === 'string' ? item['icon'] : undefined,
     });
 

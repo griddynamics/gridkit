@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Avatar, AvatarUser, Icon } from '@components';
 import type { A2UIComponent } from '../../../ai';
+import { isSafeA2UIUrl } from '../../../ai';
 import {
   getMergedComponentStyles,
   getComponentText,
@@ -8,6 +9,11 @@ import {
   renderComponentSlot,
   getComponentArrayField,
 } from '../helpers';
+
+function getSafeAvatarSrc(component: A2UIComponent) {
+  const src = (component.src as string | undefined) || getAttributeString(component, 'src');
+  return isSafeA2UIUrl(src) ? src : undefined;
+}
 
 function getAvatarIconSize(sizeVariant?: string) {
   switch (sizeVariant) {
@@ -91,7 +97,7 @@ export const avatarRenderers = {
     <Avatar
       key={component.id}
       id={component.id}
-      src={(component.src as string | undefined) || getAttributeString(component, 'src')}
+      src={getSafeAvatarSrc(component)}
       alt={
         (component.alt as string | undefined) || getAttributeString(component, 'alt') || component.label || component.id
       }
@@ -124,7 +130,7 @@ export const avatarRenderers = {
         variant={component.variant as never}
         name={name}
         subtitle={getAvatarUserSubtitle(component)}
-        src={(component.src as string | undefined) || getAttributeString(component, 'src')}
+        src={getSafeAvatarSrc(component)}
         alt={(component.alt as string | undefined) || getAttributeString(component, 'alt') || name}
         fallbackComponent={
           iconName ? getAvatarFallback(component) : getInitials(name) || component.id.slice(0, 2).toUpperCase()

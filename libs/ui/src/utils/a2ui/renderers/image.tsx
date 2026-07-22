@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Image, ImagePreview, InlineNotification } from '@components';
 import type { A2UIComponent } from '../../../ai';
+import { isSafeA2UIUrl } from '../../../ai';
 import {
   getComponentStyles,
   getAttributeString,
@@ -10,7 +11,8 @@ import {
 } from '../helpers';
 
 export function getImageSrc(component: A2UIComponent) {
-  return component.src || getAttributeString(component, 'src');
+  const src = component.src || getAttributeString(component, 'src');
+  return isSafeA2UIUrl(src) ? src : undefined;
 }
 
 export function getImageAlt(component: A2UIComponent) {
@@ -56,7 +58,7 @@ type ImagePreviewItemSpec = {
 };
 
 function normalizeImagePreviewItem(rawItem: Record<string, unknown>): ImagePreviewItemSpec | null {
-  if (typeof rawItem['src'] !== 'string') {
+  if (typeof rawItem['src'] !== 'string' || !isSafeA2UIUrl(rawItem['src'])) {
     return null;
   }
 
