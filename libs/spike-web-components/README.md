@@ -13,8 +13,8 @@ targets directly (`nx build spike-web-components`, `nx lint spike-web-components
 
 ## Parallel-safety with CTORNDSD-590
 
-This package is the **only** one of the two spike platforms that touches shared root config (one line in
-`package.json`'s `workspaces` array). `spike-react-native` (CTORNDSD-590) is deliberately kept fully
+This package (and the shared `gd-design-core` workspace package) touch shared root config (e.g. lines in
+`package.json`'s `workspaces` array / root scripts). `spike-react-native` (CTORNDSD-590) is deliberately kept fully
 standalone, outside npm workspaces — see its own README — so the two spikes never edit the same shared
 file and can be executed independently (parallel branches/worktrees, or two engineers) with no merge
 conflicts between them.
