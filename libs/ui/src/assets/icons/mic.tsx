@@ -1,9 +1,11 @@
 'use client';
 
 export const MicIcon = ({ fillSvg = 'none', fill = 'currentColor', ...rest }) => (
-  <svg fill={fillSvg} viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" {...rest}>
+  <svg viewBox="0 0 24 24" fill={fillSvg} xmlns="http://www.w3.org/2000/svg" {...rest}>
     <path
-      d="M8 10.5C9.10457 10.5 10 9.60457 10 8.5V3.5C10 2.39543 9.10457 1.5 8 1.5C6.89543 1.5 6 2.39543 6 3.5V8.5C6 9.60457 6.89543 10.5 8 10.5ZM12 8.5C12 10.71 10.21 12.5 8 12.5C5.79 12.5 4 10.71 4 8.5H2.5C2.5 11.2 4.59 13.41 7.25 13.74V15.5H8.75V13.74C11.41 13.41 13.5 11.2 13.5 8.5H12Z"
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M15 11C15 12.66 13.66 14 12 14C10.34 14 9 12.66 9 11V5C9 3.34 10.34 2 12 2C13.66 2 15 3.34 15 5V11ZM12 16C14.76 16 17 13.76 17 11H19C19 14.53 16.39 17.43 13 17.92V21H11V17.92C7.61 17.43 5 14.53 5 11H7C7 13.76 9.24 16 12 16Z"
       fill={fill}
     />
   </svg>

@@ -1,9 +1,6 @@
-import { Cursors, FlexDirection, TextAlign, ButtonVariant } from '@types';
-
 import { get } from '@utils';
 import { getSpacing } from '@tokens/utils';
 import { borders } from '@tokens/borders';
-import { display, flexAlignItems } from './display';
 
 export const select = {
   default: {
@@ -47,14 +44,14 @@ export const select = {
 
       padding: (theme: Record<symbol, unknown>) => get(theme, 'spacing.sm', 'theme.spacing.sm'),
       width: '100%',
-      display: display?.flex,
+      display: 'flex',
       flexDirection: 'row',
       justifyContent: 'space-between',
-      alignItems: flexAlignItems?.center,
-      textAlign: TextAlign.Left,
+      alignItems: 'center',
+      textAlign: 'left',
 
       '.gd-button__content': {
-        justifyContent: flexAlignItems.start,
+        justifyContent: 'flex-start',
       },
     },
     primary: {
@@ -86,12 +83,12 @@ export const select = {
         }),
     },
     attrs: {
-      variant: ButtonVariant.Inherit,
+      variant: 'inherit',
     },
   },
   item: {
     default: {
-      cursor: Cursors.Pointer,
+      cursor: 'pointer',
       padding: getSpacing(2),
       '&:hover, &.active': {
         backgroundColor: (theme: Record<symbol, unknown>) =>
@@ -100,7 +97,7 @@ export const select = {
     },
     disabled: {
       opacity: 0.5,
-      cursor: Cursors.NotAllowed,
+      cursor: 'not-allowed',
       pointerEvents: 'none',
     },
   },
@@ -116,7 +113,7 @@ export const select = {
   },
   icons: {
     arrowIcon: {
-      name: 'arrowDown',
+      name: 'keyboardArrowDown',
       fill: 'icon.default',
       width: 18,
       height: 18,
@@ -125,9 +122,9 @@ export const select = {
 
   adornment: {
     default: {
-      display: display.flex,
-      alignItems: flexAlignItems.center,
-      flexDirection: FlexDirection.Row,
+      display: 'flex',
+      alignItems: 'center',
+      flexDirection: 'row',
       position: 'relative',
       zIndex: (theme: Record<symbol, unknown>) => get(theme, 'zIndex.first', 'theme.zIndex.first'),
     },

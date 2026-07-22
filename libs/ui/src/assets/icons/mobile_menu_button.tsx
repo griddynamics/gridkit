@@ -1,10 +1,7 @@
 'use client';
 
 export const MobileMenuIcon = ({ fillSvg = 'none', fill = 'currentColor', ...rest }) => (
-  <svg viewBox="0 0 40 40" fill={fillSvg} xmlns="http://www.w3.org/2000/svg" {...rest}>
-    <path
-      d="M12 26H28C28.55 26 29 25.55 29 25C29 24.45 28.55 24 28 24H12C11.45 24 11 24.45 11 25C11 25.55 11.45 26 12 26ZM12 21H28C28.55 21 29 20.55 29 20C29 19.45 28.55 19 28 19H12C11.45 19 11 19.45 11 20C11 20.55 11.45 21 12 21ZM11 15C11 15.55 11.45 16 12 16H28C28.55 16 29 15.55 29 15C29 14.45 28.55 14 28 14H12C11.45 14 11 14.45 11 15Z"
-      fill={fill}
-    />
+  <svg viewBox="0 0 24 24" fill={fillSvg} xmlns="http://www.w3.org/2000/svg" {...rest}>
+    <path d="M3 18H21V16H3V18ZM3 13H21V11H3V13ZM3 6V8H21V6H3Z" fill={fill} />
   </svg>
 );
