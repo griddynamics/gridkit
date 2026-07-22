@@ -17,7 +17,7 @@
       "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["libs/spike-web-components/**/*.ts"]
+        "lintFilePatterns": ["libs/spike-web-components/**/*.{ts,tsx}"]
       }
     }
   }
