@@ -148,7 +148,7 @@ export const searchModal = {
       alignItems: 'center',
       justifyContent: calculateJustify('between'),
       gap: (theme: Record<symbol, unknown>) => get(theme, 'spacing.sm', 'theme.spacing.sm'),
-      flexWrap: 'noWrap',
+      flexWrap: 'nowrap',
     },
     itemColumn: {
       gap: (theme: Record<symbol, unknown>) => get(theme, 'spacing.xs', 'theme.spacing.xs'),
