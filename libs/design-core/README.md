@@ -1,7 +1,6 @@
 # gd-design-core
 
-Framework-agnostic core for GridKit's cross-platform architecture strategy , Option 2: "Framework-Agnostic Core + Thin
-Per-Platform Adapters"). This package holds each of the 5 atom-tier components' actual behavior — token
+Framework-agnostic core for GridKit's cross-platform architecture strategy, Option 2: "Framework-Agnostic Core + Thin Per-Platform Adapters". This package holds each of the 5 atom-tier components' actual behavior — token
 resolution, controlled/uncontrolled state, debounce timers, open/close/selection state — with **zero
 React-DOM, Emotion, Shadow-DOM, or React Native assumptions**.
 
