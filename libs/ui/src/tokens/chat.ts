@@ -144,7 +144,7 @@ export const chat = {
       height: '24px',
       backgroundColor: (theme: Record<symbol, unknown>) => get(theme, 'colors.transparent', 'theme.colors.transparent'),
       padding: (theme: Record<symbol, unknown>) => get(theme, 'spacing.none', 'theme.spacing.none'),
-      transform: 'rotate(270deg)',
+      transform: 'rotate(0deg)',
       '&:hover': {
         backgroundColor: (theme: Record<symbol, unknown>) =>
           get(theme, 'colors.transparent', 'theme.colors.transparent'),
@@ -153,12 +153,11 @@ export const chat = {
     attrs: {
       variant: 'text',
     },
-    open: { transform: 'rotate(90deg)' },
+    open: { transform: 'rotate(180deg)' },
   },
   toggleIcon: {
-    name: 'arrowDown',
+    name: 'arrowRight',
     fill: 'icon.black',
-    width: 24,
-    height: 24,
+    size: 'lg',
   },
 };

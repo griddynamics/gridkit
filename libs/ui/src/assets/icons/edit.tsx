@@ -1,9 +1,9 @@
 'use client';
 
 export const EditIcon = ({ fillSvg = 'none', fill = 'currentColor', ...rest }) => (
-  <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill={fillSvg} {...rest}>
+  <svg viewBox="0 0 24 24" fill={fillSvg} xmlns="http://www.w3.org/2000/svg" {...rest}>
     <path
-      d="M2 11.4999V13.9999H4.5L11.8733 6.62656L9.37333 4.12656L2 11.4999ZM14.2733 4.22656L11.7733 1.72656L10.0867 3.4199L12.5867 5.9199L14.2733 4.22656Z"
+      d="M3 17.2501V21.0001H6.75L17.81 9.94009L14.06 6.19009L3 17.2501ZM21.41 6.34009L17.66 2.59009L15.13 5.13009L18.88 8.88009L21.41 6.34009Z"
       fill={fill}
     />
   </svg>

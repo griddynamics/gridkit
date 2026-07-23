@@ -401,6 +401,9 @@
           },
           "&::-ms-clear": {
             "display": "none"
+          },
+          "& + .Input__border": {
+            "borderWidth": "0 0 1px 0"
           }
         }
       },
@@ -410,8 +413,7 @@
       "icons": {
         "close": {
           "name": "cross",
-          "width": 12,
-          "height": 12
+          "size": "md"
         }
       }
     },
@@ -800,8 +802,7 @@
     },
     "icons": {
       "base": {
-        "width": 9,
-        "height": 9
+        "size": "lg"
       },
       "controlLeft": {
         "name": "arrowLeft"
@@ -1723,32 +1724,6 @@
       }
     }
   },
-  "display": {
-    "flex": "flex",
-    "inlineFlex": "inline-flex",
-    "grid": "grid",
-    "block": "block",
-    "inline": "inline",
-    "inlineBlock": "inline-block",
-    "none": "none"
-  },
-  "cursors": {
-    "default": "default",
-    "pointer": "pointer",
-    "text": "text",
-    "move": "move",
-    "wait": "wait",
-    "crosshair": "crosshair",
-    "notAllowed": "not-allowed",
-    "grab": "grab",
-    "grabbing": "grabbing",
-    "help": "help",
-    "progress": "progress",
-    "alias": "alias",
-    "zoomIn": "zoom-in",
-    "zoomOut": "zoom-out",
-    "inherit": "inherit"
-  },
   "values": {
     "borderThin": "1px",
     "borderMedium": "2px",
@@ -1842,13 +1817,6 @@
         "xxl": "5px"
       }
     }
-  },
-  "flexAlignItems": {
-    "start": "flex-start",
-    "center": "center",
-    "end": "flex-end",
-    "baseline": "baseline",
-    "stretch": "stretch"
   },
   "textarea": {
     "default": {
@@ -2140,8 +2108,7 @@
       "close": {
         "name": "cross",
         "fill": "icon.black",
-        "width": 14,
-        "height": 14
+        "size": "lg"
       }
     }
   },
@@ -2439,7 +2406,7 @@
     },
     "icons": {
       "arrowIcon": {
-        "name": "arrowDown",
+        "name": "keyboardArrowDown",
         "fill": "icon.default",
         "width": 18,
         "height": 18
@@ -3205,11 +3172,11 @@
         "icons": {
           "prev": {
             "name": "arrowLeft",
-            "size": "xs"
+            "size": "sm"
           },
           "next": {
             "name": "arrowRight",
-            "size": "xs"
+            "size": "sm"
           }
         }
       },
@@ -3745,21 +3712,20 @@
     "toggleButton": {
       "default": {
         "height": "24px",
-        "transform": "rotate(270deg)",
+        "transform": "rotate(0deg)",
         "&:hover": {}
       },
       "attrs": {
         "variant": "text"
       },
       "open": {
-        "transform": "rotate(90deg)"
+        "transform": "rotate(180deg)"
       }
     },
     "toggleIcon": {
-      "name": "arrowDown",
+      "name": "arrowRight",
       "fill": "icon.black",
-      "width": 24,
-      "height": 24
+      "size": "lg"
     }
   },
   "slider": {
@@ -4136,8 +4102,7 @@
     "expandIcon": {
       "icon": {
         "name": "arrowRight",
-        "width": 14,
-        "height": 14
+        "size": "lg"
       },
       "expanded": {
         "transform": "rotate(90deg)"

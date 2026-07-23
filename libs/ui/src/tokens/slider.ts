@@ -1,5 +1,4 @@
 import { get } from '@utils';
-import { cursors } from './cursors';
 
 const thumbStyles = (theme: Record<symbol, unknown>) => ({
   isolation: 'isolate',
@@ -29,7 +28,7 @@ export const slider = {
     display: 'block',
     inlineSize: '100%',
     color: (theme: Record<symbol, unknown>) => get(theme, 'colors.text.title', 'theme.colors.text.title'),
-    cursor: cursors.pointer,
+    cursor: 'pointer',
     WebkitAppearance: 'none',
     appearance: 'none',
     padding: '0.4375rem 0',
@@ -37,7 +36,7 @@ export const slider = {
     outline: 'none',
     '&[disabled]': {
       opacity: '50%',
-      cursor: cursors.default,
+      cursor: 'default',
     },
     '&::-webkit-slider-thumb': thumbStyles,
     '&::-webkit-slider-runnable-track': trackStyles,

@@ -1,5 +1,4 @@
 import { get } from '@utils';
-import { display, flexAlignItems } from './display';
 
 export const loader = {
   default: {
@@ -66,9 +65,9 @@ export const loader = {
   },
   dots: {
     default: {
-      display: display.flex,
-      justifyContent: flexAlignItems.center,
-      alignItems: flexAlignItems.center,
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
     },
 
     xs: {

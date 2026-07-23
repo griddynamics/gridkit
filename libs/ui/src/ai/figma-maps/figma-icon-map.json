@@ -12,7 +12,7 @@
     "criticalRules": [
       "Always use the GridKit key (e.g. 'cross') in generated code, never the Figma snake_case name ('close').",
       "8 custom icons have no Figma equivalent: success, error, warning, info, dot, slash, ruler, processing.",
-      "54 total icons; 46 map to Figma Material icons. figmaNameIndex has 48 forward-lookup entries."
+      "55 total icons; 47 map to Figma Material icons (45 resolved and reproduced from Figma as of CTORNDSD-655; thumbUp/thumbDown remain unresolved — see their entries). figmaNameIndex has 47 forward-lookup entries."
     ]
   },
   "icons": {
@@ -235,14 +235,14 @@
       "figmaCategory": "Action",
       "figmaPath": "Action/thumb_up_off_alt",
       "componentImport": "ThumbUpIcon",
-      "note": "Outlined/off variant — use thumb_up_off_alt for outlined, thumb_up for filled"
+      "note": "Outlined/off variant — use thumb_up_off_alt for outlined, thumb_up for filled. UNRESOLVED (CTORNDSD-655): no component named thumb_up_off_alt exists on the Figma \"Icons\" node (file bCDJhVLlAFSIZtPFbEwDRO, node 142:188) — only thumb_up and thumb_up_alt are present. Left un-replaced pending design confirmation; do not substitute thumb_up_alt without checking with design."
     },
     "thumbDown": {
       "figmaName": "thumb_down_off_alt",
       "figmaCategory": "Action",
       "figmaPath": "Action/thumb_down_off_alt",
       "componentImport": "ThumbDownIcon",
-      "note": "Outlined/off variant"
+      "note": "Outlined/off variant. UNRESOLVED (CTORNDSD-655): no component named thumb_down_off_alt exists on the Figma \"Icons\" node (file bCDJhVLlAFSIZtPFbEwDRO, node 142:188) — only thumb_down and thumb_down_alt are present. Left un-replaced pending design confirmation; do not substitute thumb_down_alt without checking with design."
     },
     "thumbUpFilled": {
       "figmaName": "thumb_up",
@@ -396,9 +396,10 @@
     "fullscreen_exit": "fullscreenExit"
   },
   "stats": {
-    "total": 54,
-    "mappedToFigma": 46,
+    "total": 55,
+    "mappedToFigma": 47,
     "customNoFigmaEquivalent": 8,
-    "customIcons": ["success", "error", "warning", "info", "dot", "slash", "ruler", "processing"]
+    "customIcons": ["success", "error", "warning", "info", "dot", "slash", "ruler", "processing"],
+    "unresolvedFigmaMapping": ["thumbUp", "thumbDown"]
   }
 }

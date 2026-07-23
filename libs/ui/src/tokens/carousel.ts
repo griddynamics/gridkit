@@ -1,8 +1,4 @@
-import { ButtonVariant, FlexDirection, SizeVariant } from '@types';
 import { calculateJustify, get } from '@utils';
-
-import { display, flexAlignItems } from './display';
-import { cursors } from './cursors';
 
 const carouselThumbGap = '8px';
 const carouselThumbWidth = '80px';
@@ -17,7 +13,7 @@ export const carousel = {
       position: 'relative',
       overflow: 'hidden',
       width: '100%',
-      display: display.flex,
+      display: 'flex',
       minWidth: 0,
       minHeight: 0,
       zIndex: (theme: Record<symbol, unknown>) => get(theme, 'zIndex.first', 'theme.zIndex.first'),
@@ -49,7 +45,7 @@ export const carousel = {
     width: '100%',
     position: 'absolute',
     justifyContent: calculateJustify('center'),
-    alignItems: flexAlignItems.center,
+    alignItems: 'center',
     zIndex: '100',
   },
   contentTypography: {
@@ -57,7 +53,7 @@ export const carousel = {
     height: '100%',
     position: 'absolute',
     justifyContent: calculateJustify('center'),
-    alignItems: flexAlignItems.center,
+    alignItems: 'center',
     zIndex: '100',
   },
   slideImage: {
@@ -98,15 +94,15 @@ export const carousel = {
   },
   carouselViewportSlideWrapper: {
     default: {
-      display: display.flex,
+      display: 'flex',
       height: '100%',
       minHeight: 0,
     },
     horizontal: {
-      flexDirection: FlexDirection.Row,
+      flexDirection: 'row',
     },
     vertical: {
-      flexDirection: FlexDirection.Column,
+      flexDirection: 'column',
       height: '100%',
     },
   },
@@ -135,15 +131,15 @@ export const carousel = {
     },
   },
   footer: {
-    display: display.flex,
+    display: 'flex',
     justifyContent: calculateJustify('between'),
-    alignItems: flexAlignItems.center,
+    alignItems: 'center',
   },
   footerControls: {
-    display: display.flex,
+    display: 'flex',
   },
   contentSlide: {
-    display: display.block,
+    display: 'block',
     paddingLeft: (theme: Record<symbol, unknown>) => get(theme, 'spacing.sm', 'theme.spacing.sm'),
     '&:first-of-type': {
       paddingLeft: (theme: Record<symbol, unknown>) => get(theme, 'spacing.none', 'theme.spacing.none'),
@@ -152,8 +148,8 @@ export const carousel = {
   carouselControlsWrapper: {
     default: {
       position: 'relative',
-      display: display.flex,
-      flexDirection: FlexDirection.Column,
+      display: 'flex',
+      flexDirection: 'column',
       flex: 1,
       minWidth: 0,
       minHeight: 0,
@@ -164,9 +160,9 @@ export const carousel = {
     },
   },
   carouselControls: {
-    display: display.flex,
+    display: 'flex',
     justifyContent: calculateJustify('between'),
-    alignItems: flexAlignItems.center,
+    alignItems: 'center',
     position: 'absolute',
     top: '50%',
     left: (theme: Record<symbol, unknown>) => get(theme, 'spacing.none', 'theme.spacing.none'),
@@ -176,7 +172,7 @@ export const carousel = {
     zIndex: (theme: Record<symbol, unknown>) => get(theme, 'zIndex.high', 'theme.zIndex.high'),
   },
   carouselDots: {
-    display: display.flex,
+    display: 'flex',
     justifyContent: calculateJustify('center'),
     gap: '0.5rem',
     marginTop: '1rem',
@@ -186,7 +182,7 @@ export const carousel = {
       width: '8px',
       height: '8px',
       border: 'none',
-      cursor: cursors.pointer,
+      cursor: 'pointer',
       transition: 'width 0.3s ease',
     },
     active: {
@@ -204,7 +200,7 @@ export const carousel = {
 
   carouselThumbs: {
     default: {
-      display: display.flex,
+      display: 'flex',
       justifyContent: calculateJustify('center'),
       gap: carouselThumbGap,
       alignSelf: 'center',
@@ -213,10 +209,10 @@ export const carousel = {
     },
 
     vertical: {
-      flexDirection: FlexDirection.Column,
+      flexDirection: 'column',
       flex: '0 0 80px',
       overflow: 'hidden',
-      alignItems: flexAlignItems.center,
+      alignItems: 'center',
     },
     horizontal: {
       overflow: 'hidden',
@@ -249,14 +245,14 @@ export const carousel = {
   carouselThumbsWrapper: {
     default: {},
     vertical: {
-      display: display.flex,
-      flexDirection: FlexDirection.Column,
-      alignItems: flexAlignItems.center,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
       gap: carouselThumbGap,
     },
     horizontal: {
-      display: display.flex,
-      alignItems: flexAlignItems.center,
+      display: 'flex',
+      alignItems: 'center',
       gap: carouselThumbGap,
     },
     centered: {
@@ -281,7 +277,7 @@ export const carousel = {
       overflow: 'hidden',
       padding: (theme: Record<symbol, unknown>) => get(theme, 'spacing.none', 'theme.spacing.none'),
       background: 'none',
-      cursor: cursors.pointer,
+      cursor: 'pointer',
       opacity: 0.4,
       transition: 'opacity 0.3s ease-in-out',
       '&:hover': {
@@ -297,21 +293,15 @@ export const carousel = {
     horizontal: {},
   },
   controlsButton: {
-    default: {
-      width: (theme: Record<symbol, unknown>) =>
-        get(theme, `spacing.${SizeVariant.Xl}`, `theme.spacing.${SizeVariant.Xl}`),
-      height: (theme: Record<symbol, unknown>) =>
-        get(theme, `spacing.${SizeVariant.Xl}`, `theme.spacing.${SizeVariant.Xl}`),
-    },
+    default: {},
     attrs: {
-      variant: ButtonVariant.Text,
+      variant: 'text',
       isIcon: true,
     },
   },
   icons: {
     base: {
-      width: 9,
-      height: 9,
+      size: 'lg',
     },
     controlLeft: {
       name: 'arrowLeft',

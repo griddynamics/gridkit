@@ -1,5 +1,4 @@
 import { get } from '@utils';
-import { SizeVariant } from '@types';
 
 import { hexToRgba } from './utils';
 import { icon } from './icon';
@@ -107,11 +106,11 @@ export const imagePreview = {
     icon: {
       prev: {
         name: 'arrowLeft',
-        ...icon.size[SizeVariant.Md],
+        ...icon.size.md,
       },
       next: {
         name: 'arrowRight',
-        ...icon.size[SizeVariant.Md],
+        ...icon.size.md,
       },
     },
   },
@@ -164,7 +163,7 @@ export const imagePreview = {
     }),
     closeIcon: {
       name: 'cross',
-      ...icon.size[SizeVariant.Md],
+      ...icon.size.md,
     },
     image: {
       maxWidth: '90vw',

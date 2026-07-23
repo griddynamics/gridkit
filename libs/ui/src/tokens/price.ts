@@ -1,13 +1,10 @@
-import { SizeVariant } from '@types';
-
 import { get } from '@utils';
-import { display, flexAlignItems } from './display';
 
 export const price = {
   default: {
-    display: display.flex,
-    alignItems: flexAlignItems.center,
-    gap: (theme: Record<symbol, unknown>) => get(theme, `spacing.${SizeVariant.Sm}`, `theme.spacing.${SizeVariant.Sm}`),
+    display: 'flex',
+    alignItems: 'center',
+    gap: (theme: Record<symbol, unknown>) => get(theme, 'spacing.sm', 'theme.spacing.sm'),
   },
   currentPrice: {
     default: {
