@@ -66,6 +66,11 @@ export function GdInput({
   const isFocusedRef = useRef(false);
   const storeRef = useRef(createInputStore({ debounceCallbackTime }));
   const debouncedDispatchRef = useRef<((next: string) => void) | undefined>(undefined);
+  const onValueChangeRef = useRef(onValueChange);
+
+  useEffect(() => {
+    onValueChangeRef.current = onValueChange;
+  }, [onValueChange]);
 
   useEffect(() => {
     storeRef.current.getState().setDebounceCallbackTime(debounceCallbackTime);
@@ -79,9 +84,9 @@ export function GdInput({
 
   const getDebouncedDispatch = (): ((next: string) => void) => {
     const ms = storeRef.current.getState().debounceCallbackTime;
-    if (typeof ms !== 'number') return (next) => onValueChange?.(next);
+    if (typeof ms !== 'number') return (next) => onValueChangeRef.current?.(next);
     if (!debouncedDispatchRef.current) {
-      debouncedDispatchRef.current = debounce((next: string) => onValueChange?.(next), ms);
+      debouncedDispatchRef.current = debounce((next: string) => onValueChangeRef.current?.(next), ms);
     }
     return debouncedDispatchRef.current;
   };
