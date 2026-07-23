@@ -285,8 +285,8 @@ bodies restored), `libs/design-core/src/tokenResolvers/select.ts` (new),
 
 **Explicitly NOT touched**: `libs/ui` (`gd-design-library`) source, build config, or shipped
 output; `libs/web-components/*` (any file — that spike is already complete and this ticket does
-not reopen it); `libs/design-core/src/stores/*` (all 3 stores consumed unmodified); root
-`package.json`'s `workspaces` array; `tsconfig.base.json`; `nx.json`.
+not reopen it); `libs/design-core/src/stores/*` (all 3 stores consumed unmodified); `tsconfig.base.json`;
+`nx.json`. (Root `package.json` *was* updated to add the `libs/react-native` workspace and a `dev:react-native` script.)
 
 ## Follow-on Tickets (not this ticket's scope)
 
