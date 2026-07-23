@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Modal, Pressable, Text, View, type LayoutRectangle, type ViewStyle } from 'react-native';
 import { Path, Svg } from 'react-native-svg';
 import { useStore } from 'zustand';
