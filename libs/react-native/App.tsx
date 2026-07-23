@@ -41,12 +41,9 @@ const SELECT_ITEMS = [
  * manually-kept-in-sync copy of the same values, the exact duplication risk Decision 1 already
  * accepts once for the resolvers themselves; it should not be paid twice.
  *
- * IMPORTANT — what this harness does NOT do: no iOS Simulator / Android Emulator was available
- * in the environment this was authored in (`xcrun simctl list devices` hangs indefinitely with
- * no responding device), so no on-device/simulator screenshots were captured and no visual
- * comparison against Storybook/the Lit atoms was performed. This file makes that comparison
- * possible for a human running `npm run start` with Expo Go — it does not itself constitute a
- * completed verification pass. See `react-native/FINDINGS.md`.
+ * IMPORTANT — this harness does not provide automated on-device verification: it only renders the
+ * components. See `react-native/FINDINGS.md` for what was and wasn't verified on simulator/device
+ * (including the captured screenshot) and what follow-ups remain.
  */
 export default function App() {
   const [checked, setChecked] = useState(false);
