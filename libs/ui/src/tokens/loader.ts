@@ -1,5 +1,3 @@
-import { SizeVariant } from '@types';
-
 import { get } from '@utils';
 import { display, flexAlignItems } from './display';
 
@@ -22,14 +20,14 @@ export const loader = {
         `3px solid ${get(theme, 'colors.bg.fill.primary', 'theme.colors.bg.fill.primary')}`,
       borderRadius: (theme: Record<symbol, unknown>) => get(theme, 'radius.round', 'theme.radius.round'),
     },
-    [SizeVariant.Xs]: {
+    xs: {
       borderWidth: '1px',
       width: '16px',
       height: '16px',
       minWidth: '16px',
       minHeight: '16px',
     },
-    [SizeVariant.Sm]: {
+    sm: {
       borderWidth: '2px',
       width: '24px',
       height: '24px',
@@ -38,7 +36,7 @@ export const loader = {
       maxWidth: '24px',
       maxHeight: '24px',
     },
-    [SizeVariant.Md]: {
+    md: {
       borderWidth: '3px',
       width: '32px',
       height: '32px',
@@ -47,7 +45,7 @@ export const loader = {
       maxWidth: '32px',
       maxHeight: '32px',
     },
-    [SizeVariant.Lg]: {
+    lg: {
       borderWidth: '4px',
       width: '48px',
       height: '48px',
@@ -56,7 +54,7 @@ export const loader = {
       maxWidth: '48px',
       maxHeight: '48px',
     },
-    [SizeVariant.Xl]: {
+    xl: {
       borderWidth: '5px',
       width: '54px',
       height: '54px',
@@ -73,7 +71,7 @@ export const loader = {
       alignItems: flexAlignItems.center,
     },
 
-    [SizeVariant.Xs]: {
+    xs: {
       gap: (theme: Record<symbol, unknown>) => get(theme, 'spacing.xs', 'theme.spacing.xs'),
       '.dot': {
         background: (theme: Record<symbol, unknown>) =>
@@ -88,7 +86,7 @@ export const loader = {
         },
       },
     },
-    [SizeVariant.Sm]: {
+    sm: {
       gap: (theme: Record<symbol, unknown>) => get(theme, 'spacing.sm', 'theme.spacing.sm'),
       '.dot': {
         background: (theme: Record<symbol, unknown>) =>
@@ -103,7 +101,7 @@ export const loader = {
         },
       },
     },
-    [SizeVariant.Md]: {
+    md: {
       gap: (theme: Record<symbol, unknown>) => get(theme, 'spacing.sm', 'theme.spacing.sm'),
       '.dot': {
         background: (theme: Record<symbol, unknown>) =>
@@ -118,7 +116,7 @@ export const loader = {
         },
       },
     },
-    [SizeVariant.Lg]: {
+    lg: {
       gap: (theme: Record<symbol, unknown>) => get(theme, 'spacing.sm', 'theme.spacing.sm'),
       '.dot': {
         background: (theme: Record<symbol, unknown>) =>
@@ -133,7 +131,7 @@ export const loader = {
         },
       },
     },
-    [SizeVariant.Xl]: {
+    xl: {
       gap: (theme: Record<symbol, unknown>) => get(theme, 'spacing.sm', 'theme.spacing.sm'),
       '.dot': {
         background: (theme: Record<symbol, unknown>) =>
