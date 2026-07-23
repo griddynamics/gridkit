@@ -1,12 +1,10 @@
 import { calculateJustify, get } from '@utils';
 
-import { display, flexAlignItems } from './display';
-
 export const progressbar = {
   styledProgressBar: {
     default: {
       width: '100%',
-      display: display.block,
+      display: 'block',
     },
   },
   styledTrack: {
@@ -20,8 +18,8 @@ export const progressbar = {
   },
   styledDeterminateFill: {
     default: {
-      display: display.flex,
-      alignItems: flexAlignItems.center,
+      display: 'flex',
+      alignItems: 'center',
       justifyContent: calculateJustify('end'),
       paddingRight: (theme: Record<symbol, unknown>) => get(theme, 'spacing.none', 'theme.spacing.none'),
       whiteSpace: 'nowrap',
@@ -50,8 +48,8 @@ export const progressbar = {
   },
   styledPercentLabel: {
     default: {
-      display: display.flex,
-      alignItems: flexAlignItems.center,
+      display: 'flex',
+      alignItems: 'center',
       color: (theme: Record<symbol, unknown>) => get(theme, 'colors.neutral.black', 'theme.colors.neutral.black'),
       fontSize: (theme: Record<symbol, unknown>) => get(theme, 'font.size.caption', 'theme.font.size.caption'),
       fontWeight: (theme: Record<symbol, unknown>) => get(theme, 'font.weight.normal', 'theme.font.weight.normal'),

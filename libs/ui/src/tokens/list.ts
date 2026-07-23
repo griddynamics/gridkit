@@ -1,4 +1,4 @@
-import { ListVariant, SizeVariant } from '@types';
+import { ListVariant } from '@types';
 
 import { get } from '@utils';
 import { radius } from './radius';
@@ -10,20 +10,20 @@ const COMMON_ORDERED_BEFORE_STYLES = (theme: Record<symbol, unknown>) => ({
   fontFamily: get(theme, 'font.family', 'theme.font.family'),
   fontSize: get(theme, 'font.size.small', 'theme.font.size.small'),
   fontWeight: get(theme, 'font.weight.medium', 'theme.font.weight.medium'),
-  width: get(theme, `spacing.${SizeVariant.Lg}`, `theme.spacing.${SizeVariant.Lg}`),
-  height: get(theme, `spacing.${SizeVariant.Lg}`, `theme.spacing.${SizeVariant.Lg}`),
+  width: get(theme, 'spacing.lg', 'theme.spacing.lg'),
+  height: get(theme, 'spacing.lg', 'theme.spacing.lg'),
   color: get(theme, 'colors.text.default', 'theme.colors.text.default'),
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  marginRight: get(theme, `spacing.${SizeVariant.Sm}`, `theme.spacing.${SizeVariant.Sm}`),
+  marginRight: get(theme, 'spacing.sm', 'theme.spacing.sm'),
 });
 const COMMON_UNORDERED_STYLES = (theme: Record<symbol, unknown>) => ({
   counterReset: 'list-counter',
   paddingLeft: get(theme, 'spacing.none', 'theme.spacing.none'),
 
   [`& .List__bulletPoint`]: {
-    marginRight: get(theme, `spacing.${SizeVariant.Sm}`, `theme.spacing.${SizeVariant.Sm}`),
+    marginRight: get(theme, 'spacing.sm', 'theme.spacing.sm'),
     color: get(theme, 'colors.primary.default', 'theme.colors.primary.default'),
   },
 });
@@ -49,12 +49,10 @@ export const list = {
       display: 'flex',
       alignItems: 'center',
       flexDirection: 'row',
-      margin: (theme: Record<symbol, unknown>) =>
-        `${get(theme, `spacing.${SizeVariant.Sm}`, `theme.spacing.${SizeVariant.Sm}`)} 0`,
+      margin: (theme: Record<symbol, unknown>) => `${get(theme, 'spacing.sm', 'theme.spacing.sm')} 0`,
       '&:first-of-type': {
         // reset first item top margin to align with other blocks by start
-        margin: (theme: Record<symbol, unknown>) =>
-          `0 0 ${get(theme, `spacing.${SizeVariant.Sm}`, `theme.spacing.${SizeVariant.Sm}`)}`,
+        margin: (theme: Record<symbol, unknown>) => `0 0 ${get(theme, 'spacing.sm', 'theme.spacing.sm')}`,
       },
     },
     [ListVariant.OrderedCircle]: {
@@ -74,8 +72,7 @@ export const list = {
       fontSize: (theme: Record<symbol, unknown>) => get(theme, 'font.size.small', 'theme.font.size.small'),
       lineHeight: (theme: Record<symbol, unknown>) =>
         get(theme, 'font.line.height.small', 'theme.font.line.height.small'),
-      margin: (theme: Record<symbol, unknown>) =>
-        `${get(theme, `spacing.${SizeVariant.Xs}`, `theme.spacing.${SizeVariant.Xs}`)} 0`,
+      margin: (theme: Record<symbol, unknown>) => `${get(theme, 'spacing.xs', 'theme.spacing.xs')} 0`,
     },
     md: {},
   },

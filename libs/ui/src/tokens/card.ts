@@ -1,5 +1,4 @@
 import { get } from '@utils';
-import { SizeVariant } from '@types';
 
 import { hexToRgba } from './utils';
 import { icon } from './icon';
@@ -143,11 +142,11 @@ export const card = {
     icon: {
       active: {
         name: 'favorite',
-        ...icon.size[SizeVariant.Md],
+        ...icon.size.md,
       },
       inactive: {
         name: 'favoriteOutlined',
-        ...icon.size[SizeVariant.Md],
+        ...icon.size.md,
       },
     },
     vertical: {

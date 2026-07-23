@@ -1,12 +1,11 @@
 import { get } from '@utils';
-import { display, flexAlignItems } from './display';
 import { borders } from './borders';
 
 export const inlineNotification = {
   default: {
     wrapper: {
-      display: display.inlineFlex,
-      alignItems: flexAlignItems.center,
+      display: 'inline-flex',
+      alignItems: 'center',
       gap: (theme: Record<symbol, unknown>) => get(theme, 'spacing.xs', 'theme.spacing.xs'),
       width: 'max-content',
     },

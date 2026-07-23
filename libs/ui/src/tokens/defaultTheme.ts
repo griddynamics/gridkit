@@ -19,8 +19,6 @@ import { link } from './link';
 import { form } from './form';
 import { wrapper } from './wrapper';
 import { loader } from './loader';
-import { display, flexAlignItems } from './display';
-import { cursors } from './cursors';
 import { values } from './values';
 import { textarea } from './textarea';
 import { flexContainer } from './flexContainer';
@@ -96,10 +94,7 @@ export const defaultTheme = {
   form,
   wrapper,
   loader,
-  display,
-  cursors,
   values,
-  flexAlignItems,
   textarea,
   image,
   row,

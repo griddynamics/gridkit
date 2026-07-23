@@ -1,28 +1,26 @@
-import { SizeVariant } from '@types';
-
 export const icon = {
   size: {
-    [SizeVariant.Xs]: {
+    xs: {
       width: 14,
       height: 14,
     },
-    [SizeVariant.Sm]: {
+    sm: {
       width: 16,
       height: 16,
     },
-    [SizeVariant.Md]: {
+    md: {
       width: 18,
       height: 18,
     },
-    [SizeVariant.Lg]: {
+    lg: {
       width: 24,
       height: 24,
     },
-    [SizeVariant.Xl]: {
+    xl: {
       width: 32,
       height: 32,
     },
-    [SizeVariant.Xxl]: {
+    xxl: {
       width: 40,
       height: 40,
     },

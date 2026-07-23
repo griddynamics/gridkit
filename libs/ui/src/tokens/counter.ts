@@ -1,12 +1,11 @@
-import { TextAlign, ButtonVariant } from '@types';
+import { TextAlign } from '@types';
 import { get } from '@utils';
 
 import { getSpacing } from './utils';
-import { display } from './display';
 
 export const counter = {
   default: {
-    display: display.flex,
+    display: 'flex',
     width: '140px',
     '& input': {
       width: '100%',
@@ -24,7 +23,7 @@ export const counter = {
       },
     },
     attrs: {
-      variant: ButtonVariant.Outlined,
+      variant: 'outlined',
       isIcon: true,
     },
   },

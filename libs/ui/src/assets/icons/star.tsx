@@ -1,9 +1,9 @@
 'use client';
 
 export const StarIcon = ({ fillSvg = 'none', fill = 'currentColor', ...rest }) => (
-  <svg viewBox="0 0 20 19" fill={fillSvg} {...rest} xmlns="http://www.w3.org/2000/svg">
+  <svg viewBox="0 0 24 24" fill={fillSvg} xmlns="http://www.w3.org/2000/svg" {...rest}>
     <path
-      d="M10 15.27L16.18 19L14.54 11.97L20 7.24L12.81 6.63L10 0L7.19 6.63L0 7.24L5.46 11.97L3.82 19L10 15.27Z"
+      d="M12 17.27L18.18 21L16.54 13.97L22 9.24L14.81 8.63L12 2L9.19 8.63L2 9.24L7.46 13.97L5.82 21L12 17.27Z"
       fill={fill}
     />
   </svg>

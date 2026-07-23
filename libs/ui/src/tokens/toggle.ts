@@ -1,10 +1,9 @@
 import { get } from '@utils';
-import { display } from './display';
 import { borders } from './borders';
 
 export const switchToggle = {
   default: {
-    display: display.inlineFlex,
+    display: 'inline-flex',
     position: 'relative',
     padding: (theme: Record<symbol, unknown>) => get(theme, 'spacing.xs', 'theme.spacing.xs'),
     border: (theme: Record<symbol, unknown>) =>
