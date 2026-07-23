@@ -2,10 +2,7 @@ import { LitElement, html, css, nothing, type PropertyValues } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { checkbox } from 'gd-design-library/tokens';
-import { resolveThemeTree } from '../../../../design-core/src/utils/resolveThemeTree';
-import { createCheckboxStore } from '../../../../design-core/src/stores/createCheckboxStore';
-import { CheckboxSizeName } from '../../../../design-core/src/tokenResolvers/checkbox';
-import { DesignCoreTheme } from '../../../../design-core/src/types';
+import { resolveThemeTree, createCheckboxStore, CheckboxSizeName, DesignCoreTheme } from 'gd-design-core';
 
 interface ResolvedCheckboxTokens {
   indicatorSize: number;

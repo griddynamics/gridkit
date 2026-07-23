@@ -7,10 +7,10 @@ import {
   ButtonVariantName,
   ButtonRoundedName,
   ButtonTokenTree,
-} from '../../../../design-core/src/tokenResolvers/button';
-import { resolveThemeTree } from '../../../../design-core/src/utils/resolveThemeTree';
-import { get } from '../../../../design-core/src/utils/get';
-import { DesignCoreTheme } from '../../../../design-core/src/types';
+  resolveThemeTree,
+  get,
+  DesignCoreTheme,
+} from 'gd-design-core';
 
 /** Mirrors `Button.types.ts`'s `ButtonStyledProps['$rounded']`. Button's own default is
  *  `rounded="none"` (`button.ts`'s `attrs.rounded: 'none'`), i.e. square corners. */

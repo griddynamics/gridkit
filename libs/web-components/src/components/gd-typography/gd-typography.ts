@@ -3,13 +3,13 @@ import { customElement, property } from 'lit/decorators.js';
 import { literal, html as staticHtml, type StaticValue } from 'lit/static-html.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { typography } from 'gd-design-library/tokens';
-import { resolveThemeTree } from '../../../../design-core/src/utils/resolveThemeTree';
-import { get } from '../../../../design-core/src/utils/get';
 import {
+  resolveThemeTree,
+  get,
   TypographyVariantName,
   TypographyStyleVariantName,
-} from '../../../../design-core/src/tokenResolvers/typography';
-import { DesignCoreTheme } from '../../../../design-core/src/types';
+  DesignCoreTheme,
+} from 'gd-design-core';
 
 const MONOSPACE_VARIANTS: ReadonlySet<TypographyVariantName> = new Set(['code', 'kbd']);
 

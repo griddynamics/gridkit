@@ -2,10 +2,13 @@ import { LitElement, html, css, type PropertyValues } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { select } from 'gd-design-library/tokens';
-import { resolveThemeTree } from '../../../../design-core/src/utils/resolveThemeTree';
-import { createSelectStore, SelectOption } from '../../../../design-core/src/stores/createSelectStore';
-import { InputColorVariantName } from '../../../../design-core/src/tokenResolvers/input';
-import { DesignCoreTheme } from '../../../../design-core/src/types';
+import {
+  resolveThemeTree,
+  createSelectStore,
+  SelectOption,
+  InputColorVariantName,
+  DesignCoreTheme,
+} from 'gd-design-core';
 
 interface ResolvedSelectTokens {
   fontFamily: string | number;

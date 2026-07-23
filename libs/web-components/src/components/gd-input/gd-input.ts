@@ -2,11 +2,14 @@ import { LitElement, html, css, nothing, type PropertyValues } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { input } from 'gd-design-library/tokens';
-import { resolveThemeTree } from '../../../../design-core/src/utils/resolveThemeTree';
-import { get } from '../../../../design-core/src/utils/get';
-import { createInputStore, debounce } from '../../../../design-core/src/stores/createInputStore';
-import { InputColorVariantName } from '../../../../design-core/src/tokenResolvers/input';
-import { DesignCoreTheme } from '../../../../design-core/src/types';
+import {
+  resolveThemeTree,
+  get,
+  createInputStore,
+  debounce,
+  InputColorVariantName,
+  DesignCoreTheme,
+} from 'gd-design-core';
 
 interface ResolvedInputTokens {
   fontFamily: string | number;
