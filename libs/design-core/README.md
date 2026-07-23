@@ -1,14 +1,12 @@
 # gd-design-core
 
-Framework-agnostic core for GridKit's cross-platform architecture strategy
-(`plans/ctorndsd-580-cross-platform-architecture-strategy.md`, Option 2: "Framework-Agnostic Core + Thin
-Per-Platform Adapters"). This package holds each of the 5 atom-tier components' actual behavior — token
+Framework-agnostic core for GridKit's cross-platform architecture strategy, Option 2: "Framework-Agnostic Core + Thin Per-Platform Adapters". This package holds each of the 5 atom-tier components' actual behavior — token
 resolution, controlled/uncontrolled state, debounce timers, open/close/selection state — with **zero
 React-DOM, Emotion, Shadow-DOM, or React Native assumptions**.
 
 It is the base platform intended to be consumed by:
 
-- **CTORNDSD-581** (`plans/ctorndsd-581-lit-webcomponents-spike.md`) — a Lit component subscribes via
+- Lit component subscribes via
   `store.subscribe()` / `store.getState()` inside `connectedCallback()`. No hook, no adapter package
   required on the Lit side beyond the subscription call itself.
 - **CTORNDSD-590** (`react-native/`, see its own `FINDINGS.md`) — React and React Native
@@ -92,8 +90,8 @@ object shaped like `gd-design-library`'s `defaultTheme` (or a per-platform equiv
 
 ## Status
 
-Both consuming spikes are now underway. CTORNDSD-581 (Lit/Web-Components) reports "GO (conditional)" in
-`libs/web-components/FINDINGS.md`, with all 5 atoms ported. CTORNDSD-590 (React Native) reports "GO
+Both consuming spikes are now underway. Lit/Web-Components reports "GO (conditional)" in
+`libs/web-components/FINDINGS.md`, with all 5 atoms ported. React Native reports "GO
 (conditional)" in `react-native/FINDINGS.md`, also with all 5 atoms ported, using the recreated
 `tokenResolvers` described above. `stores/` (`createCheckboxStore`, `createInputStore`,
 `createSelectStore`) required zero changes for either adapter — they were RN/Lit-ready from the start.

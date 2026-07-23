@@ -90,8 +90,7 @@ const VARIANT_MARGIN: Partial<Record<TypographyVariantName, string>> = {
 };
 
 /**
- * CTORNDSD-590: recreated from this file's own pre-CTORNDSD-581-deletion shape (commit
- * `74c1ea6`, deleted in `7e47cec`) because `react-native` has no DOM/CSS runtime to
+ * Recreated from this file's own pre-deletion shape  because `react-native` has no DOM/CSS runtime to
  * resolve `gd-design-library/tokens` + `resolveThemeTree` the way `gd-typography.ts` (Lit) does
  * — see this package's README "Status"/"Theme parameter" sections for the accepted duplication
  * trade-off. Any edit to `libs/ui/src/tokens/typography.ts` will NOT automatically propagate

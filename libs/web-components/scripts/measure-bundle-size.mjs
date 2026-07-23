@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * CTORNDSD-581 exit artifact: bundle-size comparison of the 5 Lit-ported atoms against
- * their React+Emotion equivalents already tracked by libs/ui/.size-limit.budgets.json.
+ * Bundle-size comparison of the 5 Lit-ported atoms against their React+Emotion equivalents
+ * already tracked by libs/ui/.size-limit.budgets.json.
  *
  * Both sides are measured the same way (gzip, per-export/per-chunk, shared runtime
  * externalized) so the numbers are comparable:
@@ -119,9 +119,9 @@ const { results: litAtoms, sharedHelperGzip } = measureLitAtoms();
 const reactAtoms = measureReactAtoms();
 const litRuntimeCost = measureLitRuntimeCost();
 
-console.log('\n╔══════════════════════════════════════════════════════════════════╗');
-console.log('║  CTORNDSD-581 — Lit vs. React+Emotion bundle size (gzip, per atom) ║');
-console.log('╚══════════════════════════════════════════════════════════════════╝\n');
+console.log('\n╔═════════════════════════════════════════════════════╗');
+console.log('║  Lit vs. React+Emotion bundle size (gzip, per atom) ║');
+console.log('╚═════════════════════════════════════════════════════╝\n');
 
 const rows = [];
 for (const name of Object.keys(COMPONENT_SNIFFERS)) {

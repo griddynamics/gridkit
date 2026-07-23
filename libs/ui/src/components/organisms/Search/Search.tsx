@@ -28,6 +28,7 @@ export const Search = forwardRef((props: SearchProps, forwardedRef: Ref<SelectRe
     value,
     width = DEFAULT_SEARCH_WIDTH,
     items,
+    styles,
   } = props;
   const ariaControls = get(props, 'aria-controls');
   const selectRef = useRef<SelectRef>(null);
@@ -57,6 +58,7 @@ export const Search = forwardRef((props: SearchProps, forwardedRef: Ref<SelectRe
       emptyItemsResult={emptyItemsResult}
       renderOption={renderOption}
       items={items}
+      styles={styles}
       initiator={
         <SearchInputStyled
           value={value}

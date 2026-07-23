@@ -2,14 +2,14 @@ import { LitElement, css, type PropertyValues } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { literal, html as staticHtml, type StaticValue } from 'lit/static-html.js';
 import { styleMap } from 'lit/directives/style-map.js';
-import {
-  resolveThemeTree,
-  get,
-  type TypographyVariantName,
-  type TypographyStyleVariantName,
-  type DesignCoreTheme,
-} from 'gd-design-core';
 import { typography } from 'gd-design-library/tokens';
+import { resolveThemeTree } from '../../../../design-core/src/utils/resolveThemeTree';
+import { get } from '../../../../design-core/src/utils/get';
+import {
+  TypographyVariantName,
+  TypographyStyleVariantName,
+} from '../../../../design-core/src/tokenResolvers/typography';
+import { DesignCoreTheme } from '../../../../design-core/src/types';
 
 const MONOSPACE_VARIANTS: ReadonlySet<TypographyVariantName> = new Set(['code', 'kbd']);
 
@@ -57,7 +57,7 @@ function resolveTypographyTokens(
 }
 
 /**
- * CTORNDSD-581 Typography port (per the implementation plan's Migration Example). Uses
+ * Typography port (per the implementation plan's Migration Example). Uses
  * `lit/static-html.js` because standard Lit `html` cannot parameterize a tag name — the
  * closest equivalent to React's `Component = $as || $variant || 'span'` polymorphism
  * renders a variable *internal* tag inside the shadow root, which is a materially
@@ -70,8 +70,8 @@ function resolveTypographyTokens(
  * by light-DOM tag name (host app, browser extension, older assistive tech, testing-library
  * selectors like `getByRole` traversal shortcuts, `document.querySelector`) will not find it
  * the way it would a real `<h1>`. This is structural, not cosmetic — the same conclusion
- * CTORNDSD-590's independent React Native research reached for the same component (RN's
- * `Text` has no tag concept at all).
+ * the independent React Native research reached for the same component (RN's `Text` has no
+ * tag concept at all).
  */
 @customElement('gd-typography')
 export class GdTypography extends LitElement {

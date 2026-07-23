@@ -10,6 +10,8 @@ export const truncateRenderers = {
       lines={
         component.lines || getAttributeNumber(component, 'maxLines') || getAttributeNumber(component, 'lines') || 1
       }
+      aria-label={component.ariaLabel}
+      className={component.className}
       styles={getMergedComponentStyles(component)}
     >
       {getComponentText(component)}

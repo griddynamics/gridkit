@@ -1,7 +1,6 @@
 /**
- * CTORNDSD-581 exit artifact — SSR / Declarative Shadow DOM (DSD) smoke check for
- * `gd-button` and `gd-typography`. Uses Lit's own SSR tooling (`@lit-labs/ssr`), added only
- * to this package's own package.json.
+ * SSR / Declarative Shadow DOM (DSD) smoke check for `gd-button` and `gd-typography`. Uses
+ * Lit's own SSR tooling (`@lit-labs/ssr`), added only to this package's own package.json.
  *
  * Loaded via Vite's `ssrLoadModule` (see run-ssr-dsd-check.mjs) rather than run directly
  * under a generic Node/TS runner, so the `gd-design-core` bare-specifier import resolves
@@ -10,6 +9,7 @@
  * doesn't understand the Nx workspace's TS path mappings.
  */
 import '@lit-labs/ssr/lib/install-global-dom-shim.js';
+import './patch-emotion-ssr-shim';
 import { render } from '@lit-labs/ssr';
 import { html } from 'lit';
 import { writeFileSync } from 'fs';
@@ -40,7 +40,7 @@ export async function runSsrDsdCheck() {
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>SSR/DSD static reproduction (CTORNDSD-581) — NO client JS on this page</title>
+    <title>SSR/DSD static reproduction — NO client JS on this page</title>
   </head>
   <body>
     <p>This page has <strong>zero</strong> client-side JavaScript. If the button below is
@@ -59,7 +59,7 @@ export async function runSsrDsdCheck() {
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>SSR/DSD hydration reproduction (CTORNDSD-581)</title>
+    <title>SSR/DSD hydration reproduction</title>
   </head>
   <body>
     <p>Same server-rendered DSD markup as ssr-dsd-static.html, but this page DOES load Lit's

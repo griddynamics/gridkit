@@ -29,7 +29,12 @@ export const accordionRenderers = {
     </Accordion>
   ),
   'accordion-item': (component: A2UIComponent, renderChildren: (children?: A2UIComponent[]) => ReactNode[]) => (
-    <AccordionItem key={component.id} id={component.id} styles={getMergedComponentStyles(component)}>
+    <AccordionItem
+      key={component.id}
+      id={component.id}
+      className={component.className}
+      styles={getMergedComponentStyles(component)}
+    >
       {renderChildren(component.children)}
     </AccordionItem>
   ),
@@ -37,13 +42,14 @@ export const accordionRenderers = {
     <AccordionHeader
       key={component.id}
       expandIcon={renderNamedIcon(component.icon)}
+      className={component.className}
       styles={getMergedComponentStyles(component)}
     >
       {getComponentText(component) || component.id}
     </AccordionHeader>
   ),
   'accordion-content': (component: A2UIComponent, renderChildren: (children?: A2UIComponent[]) => ReactNode[]) => (
-    <AccordionContent key={component.id} styles={getMergedComponentStyles(component)}>
+    <AccordionContent key={component.id} className={component.className} styles={getMergedComponentStyles(component)}>
       {component.label ? <Typography>{component.label}</Typography> : null}
       {typeof component.value === 'string' || typeof component.value === 'number' ? (
         <Typography>{String(component.value)}</Typography>

@@ -1,15 +1,12 @@
 import { LitElement, html, css, nothing, type PropertyValues } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
-import {
-  resolveThemeTree,
-  get,
-  createInputStore,
-  debounce,
-  type InputColorVariantName,
-  type DesignCoreTheme,
-} from 'gd-design-core';
 import { input } from 'gd-design-library/tokens';
+import { resolveThemeTree } from '../../../../design-core/src/utils/resolveThemeTree';
+import { get } from '../../../../design-core/src/utils/get';
+import { createInputStore, debounce } from '../../../../design-core/src/stores/createInputStore';
+import { InputColorVariantName } from '../../../../design-core/src/tokenResolvers/input';
+import { DesignCoreTheme } from '../../../../design-core/src/types';
 
 interface ResolvedInputTokens {
   fontFamily: string | number;
@@ -85,7 +82,7 @@ function resolveInputTokens(theme: DesignCoreTheme, color: InputColorVariantName
 }
 
 /**
- * CTORNDSD-581 Input port (per the implementation plan's Migration Example) — the highest-risk
+ * Input port (per the implementation plan's Migration Example) — the highest-risk
  * small atom: a controlled `value` over a custom-element boundary has no reconciliation
  * layer protecting cursor position the way React's controlled-input diffing does.
  *

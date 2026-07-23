@@ -171,6 +171,8 @@ export const tableRenderers = {
         rowHeight={(component as A2UIComponent & { rowHeight?: number }).rowHeight}
         minVisibleRange={(component as A2UIComponent & { minVisibleRange?: number }).minVisibleRange}
         loading={component.isLoading}
+        aria-label={component.ariaLabel}
+        className={component.className}
         styles={mergedStyles}
       />
     );

@@ -1,16 +1,16 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import { button } from 'gd-design-library/tokens';
 import {
   resolveButtonRadius,
-  resolveThemeTree,
   buttonCssBlockToText,
-  get,
-  type ButtonVariantName,
-  type ButtonRoundedName,
-  type ButtonTokenTree,
-  type DesignCoreTheme,
-} from 'gd-design-core';
-import { button } from 'gd-design-library/tokens';
+  ButtonVariantName,
+  ButtonRoundedName,
+  ButtonTokenTree,
+} from '../../../../design-core/src/tokenResolvers/button';
+import { resolveThemeTree } from '../../../../design-core/src/utils/resolveThemeTree';
+import { get } from '../../../../design-core/src/utils/get';
+import { DesignCoreTheme } from '../../../../design-core/src/types';
 
 /** Mirrors `Button.types.ts`'s `ButtonStyledProps['$rounded']`. Button's own default is
  *  `rounded="none"` (`button.ts`'s `attrs.rounded: 'none'`), i.e. square corners. */
@@ -23,7 +23,7 @@ export type ButtonType = 'button' | 'submit' | 'reset';
 export type ButtonRoleName = 'button' | 'link' | 'checkbox' | 'switch' | 'tab';
 
 /**
- * CTORNDSD-581 Button port — DOM structure, class names, and CSS-composition layering mirror
+ * Button port — DOM structure, class names, and CSS-composition layering mirror
  * `ButtonStyled.tsx` directly:
  *
  * ```

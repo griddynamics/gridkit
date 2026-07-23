@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { FlexContainer, Icon, Typography } from '@components';
 import type { A2UIComponent } from '../../../ai';
+import { isSafeA2UIUrl } from '../../../ai';
 import { isRecord } from './misc';
 import { getAttributeBoolean } from './attributes';
 
@@ -28,7 +29,7 @@ export function getOptionLikeItems(component: A2UIComponent) {
         label: typeof labelSource === 'string' ? labelSource : String(labelSource ?? `Option ${index + 1}`),
         disabled: typeof item['disabled'] === 'boolean' ? item['disabled'] : undefined,
         icon: typeof item['icon'] === 'string' ? item['icon'] : undefined,
-        href: typeof item['href'] === 'string' ? item['href'] : undefined,
+        href: typeof item['href'] === 'string' && isSafeA2UIUrl(item['href']) ? item['href'] : undefined,
         noticeCounter:
           typeof item['noticeCounter'] === 'string' || typeof item['noticeCounter'] === 'number'
             ? item['noticeCounter']

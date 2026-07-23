@@ -18,7 +18,7 @@ declare global {
 }
 
 /**
- * CTORNDSD-581 exit artifact — empirical repro harness for the three named sub-findings
+ * Empirical repro harness for the three named sub-findings
  * that must not be assumed: Typography's light-DOM discoverability gap, Input's
  * cursor-jump risk under an async round-trip, and Select's popover-based interaction
  * (open/list/select/light-dismiss). Driven by chrome-devtools-mcp, not a unit test, since
@@ -101,7 +101,7 @@ function SelectPopoverProbe() {
 function App() {
   return (
     <div style={{ fontFamily: 'sans-serif', padding: 24 }}>
-      <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>Remaining findings repro — CTORNDSD-581</div>
+      <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>Remaining findings repro</div>
       <TypographyDiscoverabilityProbe />
       <InputCursorJumpProbe />
       <SelectPopoverProbe />

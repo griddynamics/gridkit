@@ -1,8 +1,11 @@
 import { LitElement, html, css, nothing, type PropertyValues } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
-import { resolveThemeTree, createCheckboxStore, type CheckboxSizeName, type DesignCoreTheme } from 'gd-design-core';
 import { checkbox } from 'gd-design-library/tokens';
+import { resolveThemeTree } from '../../../../design-core/src/utils/resolveThemeTree';
+import { createCheckboxStore } from '../../../../design-core/src/stores/createCheckboxStore';
+import { CheckboxSizeName } from '../../../../design-core/src/tokenResolvers/checkbox';
+import { DesignCoreTheme } from '../../../../design-core/src/types';
 
 interface ResolvedCheckboxTokens {
   indicatorSize: number;
@@ -43,7 +46,7 @@ function resolveCheckboxTokens(theme: DesignCoreTheme, size: CheckboxSizeName): 
 }
 
 /**
- * CTORNDSD-581 Checkbox port (per the implementation plan's Migration Example). Delegates all
+ * Checkbox port (per the implementation plan's Migration Example). Delegates all
  * controlled/uncontrolled + indeterminate state to gd-design-core's `createCheckboxStore`
  * (subscribed in `connectedCallback`) instead of re-deriving it here — the store already
  * collapses `Checkbox.tsx`'s `isControlled` branch into one always-owned `checked` value;

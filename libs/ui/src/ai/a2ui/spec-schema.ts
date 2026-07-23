@@ -314,8 +314,9 @@ export const A2UI_SPEC_SCHEMA = {
               },
               size: {
                 type: 'string',
-                enum: ['xs', 'sm', 'md', 'lg', 'xl'],
+                enum: ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'],
                 default: 'md',
+                description: '"xxl" is Avatar-only — no other component type using this field supports the xxl tier.',
               },
               styleVariant: {
                 type: ['string', 'array'],
@@ -932,7 +933,7 @@ export const A2UI_SPEC_SCHEMA = {
               alt: { type: 'string', description: 'Alternative text for image/avatar/carousel media.' },
               sizeVariant: {
                 type: 'string',
-                enum: ['xs', 'sm', 'md', 'lg', 'xl'],
+                enum: ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'],
                 description: 'Avatar size variant — alias for "size" on avatar components.',
               },
               orientation: {

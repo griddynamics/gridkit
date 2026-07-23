@@ -25,7 +25,7 @@ export interface CreateInputStoreOptions {
  * `isMouseInteraction` tracking. Deliberately does not wrap `onChange`/`onKeyDown`
  * callbacks itself (the real hook's `debounce(handleKeyDown, ...)` / `debounce(onChange, ...)`
  * calls) since those callback *shapes* are the one confirmed permanent per-platform fork
- * (web's `onChange(event)` vs. RN's `onChangeText(text: string)`, per CTORNDSD-590) —
+ * (web's `onChange(event)` vs. RN's `onChangeText(text: string)`) —
  * each adapter wraps its own callback with the `debounce` utility below.
  */
 export function createInputStore(options: CreateInputStoreOptions = {}) {

@@ -320,4 +320,4 @@ if (WRITE_JSON) {
 console.log('\n' + (allPassed ? '✓ Install check passed.' : '✗ Install check failed.') + '\n');
 
 cleanup();
-if (CHECK_MODE && !allPassed) process.exit(1);
+process.exit(CHECK_MODE && !allPassed ? 1 : 0);

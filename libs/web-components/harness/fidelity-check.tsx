@@ -7,7 +7,7 @@
 // (font/reset CSS for visual-fidelity comparison), not a source-code dependency on
 // gd-design-library internals — the boundary rule below exists to stop internal path coupling
 // in shipped code, which this isn't.
-// eslint-disable-next-line @nx/enforce-module-boundaries
+
 import '../../../dist/libs/ui/styles.css';
 import * as React from 'react';
 import { useState } from 'react';
@@ -20,7 +20,7 @@ import { GdInput } from './GdInputReact';
 import { GdSelect } from './GdSelectReact';
 
 /**
- * CTORNDSD-581 visual-fidelity verification harness — renders each of the 5 ported atoms with
+ * Visual-fidelity verification harness — renders each of the 5 ported atoms with
  * props matching the real Storybook stories being compared against.
  *
  * All 5 components now resolve their REAL `libs/ui/src/tokens/*.ts` object directly (see each

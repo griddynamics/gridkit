@@ -25,6 +25,8 @@ export const ratingRenderers = {
         groupName={component.name}
         size={size}
         readOnly={readOnly}
+        aria-label={component.ariaLabel}
+        className={component.className}
         styles={getMergedComponentStyles(component)}
         onChange={
           dispatchAction && component.actions?.length

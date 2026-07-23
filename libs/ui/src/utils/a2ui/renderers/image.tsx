@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Image, ImagePreview, InlineNotification } from '@components';
 import type { A2UIComponent } from '../../../ai';
+import { isSafeA2UIUrl } from '../../../ai';
 import {
   getComponentStyles,
   getAttributeString,
@@ -10,7 +11,8 @@ import {
 } from '../helpers';
 
 export function getImageSrc(component: A2UIComponent) {
-  return component.src || getAttributeString(component, 'src');
+  const src = component.src || getAttributeString(component, 'src');
+  return isSafeA2UIUrl(src) ? src : undefined;
 }
 
 export function getImageAlt(component: A2UIComponent) {
@@ -56,7 +58,7 @@ type ImagePreviewItemSpec = {
 };
 
 function normalizeImagePreviewItem(rawItem: Record<string, unknown>): ImagePreviewItemSpec | null {
-  if (typeof rawItem['src'] !== 'string') {
+  if (typeof rawItem['src'] !== 'string' || !isSafeA2UIUrl(rawItem['src'])) {
     return null;
   }
 
@@ -95,6 +97,8 @@ export const imageRenderers = {
           {`Image unavailable${component.label ? `: ${component.label}` : ''}`}
         </InlineNotification>
       }
+      aria-label={component.ariaLabel}
+      className={component.className}
       styles={getImageStyles(component) as never}
       onClick={component.actions?.length ? () => component.actions!.forEach((id) => dispatchAction?.(id)) : undefined}
     />
@@ -112,6 +116,8 @@ export const imageRenderers = {
       showCounter={component.showCounter}
       showArrows={component.showArrows}
       thumbnailPosition={component.thumbnailPosition}
+      aria-label={component.ariaLabel}
+      className={component.className}
       styles={getComponentStyles(component.styling)}
       onImageChange={
         dispatchAction && component.actions?.length

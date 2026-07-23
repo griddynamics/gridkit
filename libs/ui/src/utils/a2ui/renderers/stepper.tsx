@@ -20,6 +20,8 @@ export const stepperRenderers = {
           validationStatus: option.validationStatus as never,
           customView: option.icon ? <Icon name={option.icon as never} /> : undefined,
         }))}
+        aria-label={component.ariaLabel}
+        className={component.className}
         styles={getMergedComponentStyles(component)}
         onStepClick={
           dispatchAction && component.actions?.length
