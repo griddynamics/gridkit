@@ -4,12 +4,12 @@ import { button } from 'gd-design-library/tokens';
 import {
   resolveButtonRadius,
   buttonCssBlockToText,
-  ButtonVariantName,
-  ButtonRoundedName,
-  ButtonTokenTree,
+  type ButtonVariantName,
+  type ButtonRoundedName,
+  type ButtonTokenTree,
   resolveThemeTree,
   get,
-  DesignCoreTheme,
+  type DesignCoreTheme,
 } from 'gd-design-core';
 
 /** Mirrors `Button.types.ts`'s `ButtonStyledProps['$rounded']`. Button's own default is

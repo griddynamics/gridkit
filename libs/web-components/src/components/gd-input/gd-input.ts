@@ -7,8 +7,8 @@ import {
   get,
   createInputStore,
   debounce,
-  InputColorVariantName,
-  DesignCoreTheme,
+  type InputColorVariantName,
+  type DesignCoreTheme,
 } from 'gd-design-core';
 
 interface ResolvedInputTokens {

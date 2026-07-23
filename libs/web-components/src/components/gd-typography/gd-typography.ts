@@ -6,9 +6,9 @@ import { typography } from 'gd-design-library/tokens';
 import {
   resolveThemeTree,
   get,
-  TypographyVariantName,
-  TypographyStyleVariantName,
-  DesignCoreTheme,
+  type TypographyVariantName,
+  type TypographyStyleVariantName,
+  type DesignCoreTheme,
 } from 'gd-design-core';
 
 const MONOSPACE_VARIANTS: ReadonlySet<TypographyVariantName> = new Set(['code', 'kbd']);

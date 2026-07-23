@@ -5,9 +5,9 @@ import { select } from 'gd-design-library/tokens';
 import {
   resolveThemeTree,
   createSelectStore,
-  SelectOption,
-  InputColorVariantName,
-  DesignCoreTheme,
+  type SelectOption,
+  type InputColorVariantName,
+  type DesignCoreTheme,
 } from 'gd-design-core';
 
 interface ResolvedSelectTokens {
