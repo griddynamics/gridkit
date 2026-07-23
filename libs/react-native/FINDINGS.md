@@ -29,25 +29,18 @@ been created yet. After creating and booting an iOS 26.0 "iPhone 15" simulator:
 - `npx expo start --ios --localhost` fixed the connection (iOS Simulators share the host's network
   stack directly, unlike physical devices, so `localhost` works where the LAN IP doesn't).
 - Metro then failed to bundle: `Unable to resolve "gd-design-core"`. Fixed by adding
-  `react-native/metro.config.js` with `unstable_enableSymlinks` and
-  `unstable_enablePackageExports` (Metro's SDK 51 defaults follow neither, and `gd-design-core` is
-  consumed via a `file:../dist/libs/design-core` symlink + `exports`-map package.json).
-- Bundling then failed again: Metro also refuses to _read_ files outside `projectRoot` unless
-  they're under an explicit `watchFolders` entry, even once the resolver is willing to point
-  there. Fixed by adding `dist/libs/design-core` (narrowly, not the whole monorepo root — see the
-  config file's own comment for why) to `config.watchFolders`.
-- Bundling then failed a third time: `Unable to resolve "@babel/runtime/helpers/interopRequireDefault"`
-  from inside `dist/libs/design-core`'s transformed output. Fixed by adding the project's own
-  `node_modules` to `config.resolver.nodeModulesPaths` explicitly — Metro's hierarchical
-  node_modules lookup doesn't reliably climb back into `projectRoot/node_modules` from a file
-  under a `watchFolders` entry outside `projectRoot`.
-- After all three fixes, `iOS Bundled` succeeded and the app loaded on the simulator, all 5 atoms
-  visible and interactive-looking (see the screenshot).
+  `react-native/metro.config.js` to alias `gd-design-core` to `../design-core/src` (via
+  `resolver.extraNodeModules`) and add that folder to `watchFolders` (Metro otherwise refuses to
+  read files outside `projectRoot`).
+- Runtime then hit "Invalid hook call" / hooks dispatcher `null` due to two React copies
+  (root-hoisted `react` vs this package's pinned `react@18.2.0`). Fixed by forcing all `react`
+  imports (including subpaths like `react/jsx-runtime`) to resolve to this package's local React
+  via `resolver.resolveRequest`.
 
 **This is a real, concrete instance of the "Cascading tooling gap" the Lit spike's own
-`FINDINGS.md` (Section 13) predicted for Metro specifically** — a monorepo `file:` dependency with
-an `exports` map needs three separate, non-default Metro config options before it bundles at all.
-The fixed `metro.config.js` is committed; a future contributor should not need to rediscover this.
+`FINDINGS.md` (Section 13) predicted for Metro specifically** — monorepo cross-project source
+consumption requires explicit Metro resolver/watch-folder configuration; the fixed `metro.config.js`
+is committed so a future contributor should not need to rediscover this.
 
 ## Per-Atom Findings
 
