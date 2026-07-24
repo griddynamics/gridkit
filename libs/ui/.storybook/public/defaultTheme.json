@@ -1194,6 +1194,9 @@
       "whiteSpace": "nowrap"
     },
     "size": {
+      "xs": {
+        "height": "16px"
+      },
       "sm": {
         "height": "28px"
       },

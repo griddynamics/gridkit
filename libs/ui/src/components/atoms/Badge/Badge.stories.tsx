@@ -49,9 +49,9 @@ const meta: Meta<typeof Badge> = {
       },
     },
     size: {
-      description: 'Size of the badge (sm, md, lg)',
+      description: 'Size of the badge (xs, sm, md, lg)',
       control: { type: 'select' },
-      options: ['sm', 'md', 'lg'],
+      options: ['xs', 'sm', 'md', 'lg'],
       table: {
         category: 'Visual Style',
         defaultValue: { summary: 'md' },
@@ -404,7 +404,7 @@ The \`Badge\` component is used to display small pieces of information, such as 
 <ul>
 <li><b>Variants:</b> Primary, Secondary, Tertiary, Quaternary, Quinary</li>
 <li><b>Appearances:</b> Filled, FilledLight, Outline, OutlineFilledLight</li>
-<li><b>Sizes:</b> Small (sm), Medium (md), Large (lg)</li>
+<li><b>Sizes:</b> Extra Small (xs), Small (sm), Medium (md), Large (lg)</li>
 <li><b>Icons:</b> Support for start and end icons</li>
 <li><b>Disabled:</b> Support for disabled state</li>
 <li><b>Flexible:</b> Consumes Box styles for full layout control</li>
@@ -434,6 +434,7 @@ export const Default: Story = {
 export const Sizes: Story = {
   render: () => (
     <Row gap="16px" alignItems="center">
+      <Badge size="xs">Extra Small</Badge>
       <Badge size="sm">Small</Badge>
       <Badge size="md">Medium</Badge>
       <Badge size="lg">Large</Badge>
@@ -442,10 +443,11 @@ export const Sizes: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'Badge component in all available sizes: small, medium, and large.',
+        story: 'Badge component in all available sizes: extra small, small, medium, and large.',
       },
       source: {
         code: `<Row gap="16px" alignItems="center">
+  <Badge size="xs">Extra Small</Badge>
   <Badge size="sm">Small</Badge>
   <Badge size="md">Medium</Badge>
   <Badge size="lg">Large</Badge>
@@ -709,6 +711,9 @@ export const Disabled: Story = {
       </Row>
       <Row gap="16px" alignItems="center">
         <Typography>Sizes Disabled:</Typography>
+        <Badge variant="primary" appearance="filled" size="xs" disabled>
+          Extra Small
+        </Badge>
         <Badge variant="primary" appearance="filled" size="sm" disabled>
           Small
         </Badge>
@@ -748,6 +753,7 @@ export const Disabled: Story = {
   </Row>
   <Row gap="16px" alignItems="center">
     <Typography>Sizes Disabled:</Typography>
+    <Badge variant="primary" appearance="filled" size="xs" disabled>Extra Small</Badge>
     <Badge variant="primary" appearance="filled" size="sm" disabled>Small</Badge>
     <Badge variant="primary" appearance="filled" size="md" disabled>Medium</Badge>
     <Badge variant="primary" appearance="filled" disabled iconStart={<Icon name="check" size="md" />}>

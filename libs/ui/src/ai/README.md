@@ -594,7 +594,7 @@ yarn test:ai:watch
 
 <!-- AUTO-GENERATED:COMPONENTS:START -->
 
-_66 components total — generated from `libs/ui/src/ai/schemas/` on 2026-07-23._
+_66 components total — generated from `libs/ui/src/ai/schemas/` on 2026-07-24._
 
 ### Other
 
@@ -1379,7 +1379,7 @@ Badge component for displaying small pieces of information, status indicators, c
 | ------------ | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `label`      | `string`                                                                      | Badge text or count to display (maps to children)                                                                                                                             |
 | `variant`    | `"primary"` \| `"secondary"` \| `"tertiary"` \| `"quaternary"` \| `"quinary"` | Visual style variant of the badge                                                                                                                                             |
-| `size`       | `"sm"` \| `"md"` \| `"lg"`                                                    | Size of the badge                                                                                                                                                             |
+| `size`       | `"xs"` \| `"sm"` \| `"md"` \| `"lg"`                                          | Size of the badge                                                                                                                                                             |
 | `appearance` | `"filled"` \| `"filledLight"` \| `"outline"` \| `"outlineFilledLight"`        | Visual fill style of the badge                                                                                                                                                |
 | `disabled`   | `boolean`                                                                     | Whether the badge is disabled                                                                                                                                                 |
 | `iconStart`  | `string`                                                                      | Leading icon name from the shared A2UI icon catalog. The renderer converts this to the underlying Badge `iconStart?: ReactNode` prop. Preferred over the legacy `icon` alias. |
