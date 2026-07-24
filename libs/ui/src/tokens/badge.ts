@@ -8,6 +8,16 @@ export const badge = {
     whiteSpace: 'nowrap',
   },
   size: {
+    xs: {
+      height: '16px',
+      borderRadius: (theme: Record<symbol, unknown>) => get(theme, 'radius.default', 'theme.radius.default'),
+      padding: (theme: Record<symbol, unknown>) => `0 ${get(theme, 'spacing.sm', 'theme.spacing.sm')}`,
+      fontSize: (theme: Record<symbol, unknown>) => get(theme, 'font.size.caption', 'theme.font.size.caption'),
+      lineHeight: (theme: Record<symbol, unknown>) =>
+        get(theme, 'font.line.height.caption', 'theme.font.line.height.caption'),
+      fontWeight: (theme: Record<symbol, unknown>) => get(theme, 'font.weight.normal', 'theme.font.weight.normal'),
+      gap: (theme: Record<symbol, unknown>) => get(theme, 'spacing.xs', 'theme.spacing.xs'),
+    },
     sm: {
       height: '28px',
       borderRadius: (theme: Record<symbol, unknown>) => get(theme, 'radius.default', 'theme.radius.default'),

@@ -5,7 +5,7 @@ import type { BoxCssComponentProps, BoxCssComponentStyledProps } from '@componen
 
 export type BadgeVariant = 'primary' | 'secondary' | 'tertiary' | 'quaternary' | 'quinary';
 export type BadgeAppearance = 'outline' | 'outlineFilledLight' | 'filled' | 'filledLight';
-export type BadgeSize = 'sm' | 'md' | 'lg';
+export type BadgeSize = 'xs' | 'sm' | 'md' | 'lg';
 
 export interface BadgeProps extends BoxCssComponentProps<HTMLSpanElement>, PropsWithChildren {
   variant?: EnumOrPrimitive<BadgeVariant>;
