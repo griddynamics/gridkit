@@ -461,7 +461,7 @@
       "itemRow": {
         "alignItems": "center",
         "justifyContent": "space-between",
-        "flexWrap": "noWrap"
+        "flexWrap": "nowrap"
       },
       "itemColumn": {
         "minWidth": 0,
