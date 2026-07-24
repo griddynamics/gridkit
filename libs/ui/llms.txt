@@ -84,7 +84,7 @@ Pre-built indexes for quick discovery:
 > Run `yarn build:ui` to regenerate. Do not edit the block between the markers manually.
 
 <!-- AUTO-GENERATED:COMPONENTS:START -->
-66 components total — generated from libs/ui/src/ai/schemas/ on 2026-07-22.
+66 components total — generated from libs/ui/src/ai/schemas/ on 2026-07-23.
 
 ## Other
 

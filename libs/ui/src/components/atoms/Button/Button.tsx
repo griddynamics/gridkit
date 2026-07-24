@@ -73,7 +73,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>((props, forward
             {iconEnd}
           </EndIconStyled>
         ) : null}
-        {isLoading ? <Loader {...get(theme, 'button.loader.attrs', { withWrapper: false, size: 'md' })} /> : null}
+        {isLoading ? <Loader {...get(theme, 'button.loader.attrs', { withWrapper: false, size: 'sm' })} /> : null}
       </>
     </ButtonStyled>
   );
