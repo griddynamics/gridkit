@@ -279,7 +279,7 @@ exports[`AttachmentFile > isLoading > SHOULD match snapshot when isLoading 1`] =
       type="button"
     >
       <span
-        class="css-hf7z1t"
+        class="css-7rcsk"
         data-testid="Loader"
       />
     </button>
