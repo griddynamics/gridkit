@@ -1,9 +1,7 @@
-import { FlexDirection, TextAlign } from '@types';
+import { TextAlign } from '@types';
 
 import { get } from '@utils';
 import { borders } from './borders';
-import { display } from './display';
-import { cursors } from './cursors';
 
 export const radiogroup = {
   input: {
@@ -18,12 +16,12 @@ export const radiogroup = {
   },
   label: {
     default: {
-      display: display.block,
+      display: 'block',
       padding: (theme: Record<symbol, unknown>) =>
         `${get(theme, 'spacing.sm', 'theme.spacing.sm')} ${get(theme, 'spacing.md', 'theme.spacing.md')}`,
       fontSize: (theme: Record<symbol, unknown>) => get(theme, 'font.size.p', 'theme.font.size.p'),
       fontWeight: (theme: Record<symbol, unknown>) => get(theme, 'font.weight.medium', 'theme.font.weight.medium'),
-      cursor: cursors.inherit,
+      cursor: 'inherit',
       color: (theme: Record<symbol, unknown>) => get(theme, 'colors.text.caption', 'theme.colors.text.caption'),
       width: '100%',
       height: '100%',
@@ -41,7 +39,7 @@ export const radiogroup = {
   item: {
     default: {
       position: 'relative',
-      cursor: cursors.pointer,
+      cursor: 'pointer',
       border: (theme: Record<symbol, unknown>) =>
         borders.generic({
           width: '1px',
@@ -55,7 +53,7 @@ export const radiogroup = {
       },
     },
     disabled: {
-      cursor: cursors.notAllowed,
+      cursor: 'not-allowed',
       backgroundColor: (theme: Record<symbol, unknown>) => get(theme, 'colors.bg.default', 'theme.colors.bg.default'),
       '&::after': {
         content: '""',
@@ -115,9 +113,9 @@ export const radiogroup = {
   layouts: {
     column: {
       display: 'flex',
-      flexDirection: FlexDirection.Column,
+      flexDirection: 'column',
     },
-    row: { display: 'flex', flexDirection: FlexDirection.Row },
+    row: { display: 'flex', flexDirection: 'row' },
     grid: {
       display: 'grid',
     },

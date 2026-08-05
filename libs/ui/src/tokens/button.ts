@@ -158,7 +158,7 @@ export const button = {
   loader: {
     attrs: {
       withWrapper: false,
-      size: 'md',
+      size: 'sm',
     },
   },
 };

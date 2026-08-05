@@ -1,7 +1,6 @@
-import { FlexDirection, SizeVariant, TextAlign, TypographyVariant } from '@types';
+import { TextAlign, TypographyVariant } from '@types';
 
 import { get } from '@utils';
-import { display, flexAlignItems } from './display';
 
 export const image = {
   default: {
@@ -11,9 +10,9 @@ export const image = {
   },
   wrapper: {
     position: 'relative' as const,
-    display: display.flex,
-    flexDirection: FlexDirection.Column,
-    alignItems: flexAlignItems.center,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
   },
   placeholder: {
     position: 'absolute',
@@ -21,14 +20,13 @@ export const image = {
     left: 0,
     width: '100%',
     height: '100%',
-    display: display.flex,
-    alignItems: flexAlignItems.center,
-    justifyContent: flexAlignItems.center,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     background: (theme: Record<symbol, unknown>) => get(theme, 'colors.bg.default', 'theme.colors.bg.default'),
   },
   caption: {
-    marginTop: (theme: Record<symbol, unknown>) =>
-      get(theme, `spacing.${SizeVariant.Xs}`, `theme.spacing.${SizeVariant.Xs}`),
+    marginTop: (theme: Record<symbol, unknown>) => get(theme, 'spacing.xs', 'theme.spacing.xs'),
     fontSize: (theme: Record<symbol, unknown>) =>
       get(theme, `font.size.${TypographyVariant.Body2}`, `theme.font.size.${TypographyVariant.Body2}`),
     color: (theme: Record<symbol, unknown>) => get(theme, 'colors.text.caption', 'theme.colors.text.caption'),

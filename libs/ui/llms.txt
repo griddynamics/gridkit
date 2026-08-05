@@ -84,7 +84,7 @@ Pre-built indexes for quick discovery:
 > Run `yarn build:ui` to regenerate. Do not edit the block between the markers manually.
 
 <!-- AUTO-GENERATED:COMPONENTS:START -->
-66 components total — generated from libs/ui/src/ai/schemas/ on 2026-07-20.
+66 components total — generated from libs/ui/src/ai/schemas/ on 2026-07-24.
 
 ## Other
 
@@ -1118,7 +1118,7 @@ Import: `import { Badge } from 'gd-design-library'`
 
 Badge component for displaying small pieces of information, status indicators, counts, or labels. Supports multiple variants and visual options with icon support. A2UI SPEC: use top-level "label" for badge text, top-level "iconStart" for the leading badge icon, and top-level "iconEnd" for the trailing badge icon. Legacy top-level "icon" is still accepted as a fallback alias for "iconStart". The renderer maps those icon names to the underlying Badge `iconStart?: ReactNode` and `iconEnd?: ReactNode` props internally, so do not pass raw React nodes in the A2UI payload.
 
-**Props:** `label`: string, `variant`: "primary"|"secondary"|"tertiary"|"quaternary"|"quinary", `size`: "sm"|"md"|"lg", `appearance`: "filled"|"filledLight"|"outline"|"outlineFilledLight", `disabled`: boolean, `iconStart`: string *(+2 more)*
+**Props:** `label`: string, `variant`: "primary"|"secondary"|"tertiary"|"quaternary"|"quinary", `size`: "xs"|"sm"|"md"|"lg", `appearance`: "filled"|"filledLight"|"outline"|"outlineFilledLight", `disabled`: boolean, `iconStart`: string *(+2 more)*
 
 **Examples:**
   `<Badge>New</Badge>`
@@ -1127,6 +1127,7 @@ Badge component for displaying small pieces of information, status indicators, c
   `<Badge variant="tertiary" appearance="filled">Tertiary Badge</Badge>`
   `<Badge variant="quaternary" appearance="filled">Quaternary Badge</Badge>`
   `<Badge variant="quinary" appearance="filled">Quinary Badge</Badge>`
+  `<Badge variant="primary" appearance="filled" size="xs">Extra Small Badge</Badge>`
   `<Badge variant="primary" appearance="filled" size="sm">Small Badge</Badge>`
   `<Badge variant="primary" appearance="filled" size="md">Medium Badge</Badge>`
   `<Badge variant="primary" appearance="filled" iconStart={<Icon name="check" size="xs" />}>With Icon</Badge>`

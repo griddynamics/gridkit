@@ -1,12 +1,8 @@
 import { get } from '@utils';
-import { SizeVariant } from '@types';
-
-import { cursors } from './cursors';
-import { display } from './display';
 
 export const rating = {
   default: {
-    display: display.inlineFlex,
+    display: 'inline-flex',
     alignItems: 'center',
     gap: 0,
     position: 'relative',
@@ -16,7 +12,7 @@ export const rating = {
   progress: {
     default: {
       position: 'absolute',
-      display: display.flex,
+      display: 'flex',
       overflow: 'hidden',
       left: 0,
       svg: {
@@ -27,12 +23,12 @@ export const rating = {
   },
   radioInput: {
     default: {
-      display: display.none,
+      display: 'none',
     },
   },
   label: {
     default: {
-      cursor: cursors.pointer,
+      cursor: 'pointer',
     },
     active: {
       '&:hover': {
@@ -42,14 +38,14 @@ export const rating = {
       },
     },
     readOnly: {
-      cursor: cursors.default,
+      cursor: 'default',
     },
   },
   size: {
-    [SizeVariant.Sm]: { width: 12, height: 12 },
-    [SizeVariant.Md]: { width: 24, height: 24 },
-    [SizeVariant.Lg]: { width: 48, height: 48 },
-    [SizeVariant.Xl]: { width: 60, height: 60 },
+    sm: { width: 12, height: 12 },
+    md: { width: 24, height: 24 },
+    lg: { width: 48, height: 48 },
+    xl: { width: 60, height: 60 },
   },
   icons: {
     rateActive: {

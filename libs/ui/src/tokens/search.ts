@@ -1,5 +1,4 @@
 import { get } from '@utils';
-import { display, flexAlignItems } from './display';
 
 export const search = {
   default: {},
@@ -24,8 +23,8 @@ export const search = {
         `${get(theme, 'spacing.md', 'theme.spacing.md')} ${get(theme, 'spacing.md', 'theme.spacing.md')} 0`,
     },
     link: {
-      display: display.flex,
-      alignItems: flexAlignItems.center,
+      display: 'flex',
+      alignItems: 'center',
       '&:after': {
         borderBottom: 'none',
       },

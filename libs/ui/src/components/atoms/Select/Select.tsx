@@ -469,7 +469,7 @@ export const Select = forwardRef<SelectRef, SelectProps>((props, forwardedRef) =
                 <SelectAdornmentStyled theme={theme}>
                   {adornmentEnd && <SelectAdornmentStyled theme={theme}>{adornmentEnd}</SelectAdornmentStyled>}
                   <ArrowIconWrapperStyled theme={theme} $isOpen={isOpen}>
-                    <Icon {...get(theme, 'select.icons.arrowIcon', { name: 'arrowDown' })} />
+                    <Icon {...get(theme, 'select.icons.arrowIcon', { name: 'keyboardArrowDown' })} />
                   </ArrowIconWrapperStyled>
                 </SelectAdornmentStyled>
               }

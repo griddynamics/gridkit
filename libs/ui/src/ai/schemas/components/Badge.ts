@@ -27,7 +27,7 @@ const component = {
       name: 'size',
       type: 'string',
       description: 'Size of the badge',
-      enum: ['sm', 'md', 'lg'] as const,
+      enum: ['xs', 'sm', 'md', 'lg'] as const,
     },
     {
       name: 'appearance',
@@ -57,6 +57,7 @@ const component = {
     '<Badge variant="tertiary" appearance="filled">Tertiary Badge</Badge>',
     '<Badge variant="quaternary" appearance="filled">Quaternary Badge</Badge>',
     '<Badge variant="quinary" appearance="filled">Quinary Badge</Badge>',
+    '<Badge variant="primary" appearance="filled" size="xs">Extra Small Badge</Badge>',
     '<Badge variant="primary" appearance="filled" size="sm">Small Badge</Badge>',
     '<Badge variant="primary" appearance="filled" size="md">Medium Badge</Badge>',
     '<Badge variant="primary" appearance="filled" iconStart={<Icon name="check" size="xs" />}>With Icon</Badge>',
