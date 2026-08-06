@@ -164,6 +164,13 @@ export class GdInput extends LitElement {
     }
   `;
 
+  /**
+   * Form participation (CTORNDSD-646b). Opting in makes `<gd-input>` a form-associated custom
+   * element: it appears in `form.elements`, contributes to `FormData` under `name`, participates
+   * in constraint validation, and receives `formResetCallback`/`formDisabledCallback`.
+   */
+  static formAssociated = true;
+
   @property({ type: String }) value = '';
   @property({ type: String }) placeholder = '';
   @property({ type: String }) label = '';
@@ -172,6 +179,9 @@ export class GdInput extends LitElement {
   @property({ type: String }) color: InputColorVariantName = 'primary';
   @property({ type: Number, attribute: 'debounce-callback-time' }) debounceCallbackTime?: number;
   @property({ attribute: false }) theme: DesignCoreTheme = {};
+  /** Submitted under this key in `FormData`. No `name` means no form submission, same as native. */
+  @property({ type: String }) name = '';
+  @property({ type: Boolean, reflect: true }) required = false;
 
   @query('input') private _input!: HTMLInputElement;
 
@@ -181,10 +191,84 @@ export class GdInput extends LitElement {
    *  internal echo (safe, already live in the DOM) from an external prop write (guarded). */
   private _lastInternalValue = this.value;
   private _debouncedDispatch?: (value: string) => void;
+  private readonly _internals: ElementInternals;
+  /**
+   * The value `formResetCallback` restores. Unlike native `<input>`, which reads its reset value
+   * from the `value` *attribute* at reset time, a custom element's property may have been written
+   * imperatively with no attribute present — so the default is captured once, on first connect,
+   * from whatever the initial property/attribute produced.
+   */
+  private _defaultValue?: string;
+
+  constructor() {
+    super();
+    // Must be called in the constructor — attachInternals() throws if called later.
+    this._internals = this.attachInternals();
+  }
+
+  /** The owning `<form>`, or null. Mirrors `HTMLInputElement.form`. */
+  get form(): HTMLFormElement | null {
+    return this._internals.form;
+  }
+
+  get validity(): ValidityState {
+    return this._internals.validity;
+  }
+
+  get validationMessage(): string {
+    return this._internals.validationMessage;
+  }
+
+  get willValidate(): boolean {
+    return this._internals.willValidate;
+  }
+
+  checkValidity(): boolean {
+    return this._internals.checkValidity();
+  }
+
+  reportValidity(): boolean {
+    return this._internals.reportValidity();
+  }
+
+  /** Fired by the browser on `form.reset()` / `<button type="reset">`. */
+  formResetCallback() {
+    this.value = this._defaultValue ?? '';
+    this._lastInternalValue = this.value;
+    if (this._input) this._input.value = this.value;
+    this._syncFormState();
+  }
+
+  /** Fired when an ancestor `<fieldset disabled>` toggles. */
+  formDisabledCallback(disabled: boolean) {
+    this.disabled = disabled;
+  }
+
+  /** Fired on session restore / autofill. */
+  formStateRestoreCallback(state: string | File | FormData | null) {
+    if (typeof state === 'string') {
+      this.value = state;
+      this._lastInternalValue = state;
+      if (this._input) this._input.value = state;
+      this._syncFormState();
+    }
+  }
+
+  /** Pushes the current value into the form and recomputes constraint validity. */
+  private _syncFormState() {
+    this._internals.setFormValue(this.value);
+
+    if (this.required && this.value === '') {
+      this._internals.setValidity({ valueMissing: true }, 'Please fill out this field.', this._input ?? undefined);
+    } else {
+      this._internals.setValidity({});
+    }
+  }
 
   connectedCallback() {
     super.connectedCallback();
     this._unsubscribe = this._store.subscribe(() => this.requestUpdate());
+    if (this._defaultValue === undefined) this._defaultValue = this.value;
   }
 
   disconnectedCallback() {
@@ -194,6 +278,7 @@ export class GdInput extends LitElement {
 
   firstUpdated() {
     this._input.value = this.value;
+    this._syncFormState();
   }
 
   willUpdate(changed: PropertyValues<this>) {
@@ -204,6 +289,10 @@ export class GdInput extends LitElement {
   }
 
   updated(changed: PropertyValues<this>) {
+    // Form state tracks `value` and `required` regardless of the cursor guard below: the guard
+    // exists to protect the *DOM input's* cursor, not to withhold the value from the form.
+    if (changed.has('value') || changed.has('required')) this._syncFormState();
+
     if (!changed.has('value') || !this._input) return;
 
     if (this.value === this._lastInternalValue) return; // already live in the DOM from the keystroke itself
@@ -287,12 +376,22 @@ export class GdInput extends LitElement {
       lineHeight: `${resolved.helperLineHeight}`,
     };
 
+    // `part` attributes (CTORNDSD-646b) expose these internals to consumer CSS via
+    // `gd-input::part(input)` etc. This is the only sanctioned way to style inside a shadow root
+    // from outside it; without it, a consumer's only escape hatch is the `theme` property.
     return html`
-      <div class="outer" style=${styleMap(outerStyle)}>
-        ${this.label ? html`<span class="label" style=${styleMap(labelStyle)}>${this.label}</span>` : nothing}
-        <div class="row" style=${styleMap(rowStyle)}>
+      <div class="outer" part="outer" style=${styleMap(outerStyle)}>
+        ${this.label
+          ? html`<label class="label" part="label" for="control" style=${styleMap(labelStyle)}>${this.label}</label>`
+          : nothing}
+        <div class="row" part="row" style=${styleMap(rowStyle)}>
           <slot name="adornment-start"></slot>
           <input
+            part="input"
+            id="control"
+            aria-label=${this.label ? nothing : this.placeholder || nothing}
+            name=${this.name || nothing}
+            ?required=${this.required}
             placeholder=${this.placeholder}
             ?disabled=${this.disabled}
             @input=${this._onInput}
@@ -300,12 +399,12 @@ export class GdInput extends LitElement {
             @keydown=${this._onKeyDown}
             @blur=${this._onBlur}
           />
-          <span class="border" style=${styleMap(borderStyle)}></span>
-          <span class="outline" style=${styleMap(outlineStyle)}></span>
+          <span class="border" part="border" style=${styleMap(borderStyle)}></span>
+          <span class="outline" part="outline" style=${styleMap(outlineStyle)}></span>
           <slot name="adornment-end"></slot>
         </div>
         ${this.helperText
-          ? html`<span class="helper" style=${styleMap(helperStyle)}>${this.helperText}</span>`
+          ? html`<span class="helper" part="helper" style=${styleMap(helperStyle)}>${this.helperText}</span>`
           : nothing}
       </div>
     `;

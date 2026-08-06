@@ -68,4 +68,41 @@ describe('createCheckboxStore', () => {
     store.getState().setDisabled(true);
     expect(store.getState().disabled).toBe(true);
   });
+
+  describe('resetTo (form-reset semantics, CTORNDSD-646b)', () => {
+    it('resets checked to false for an undefined default, where syncControlledValue(undefined) preserves it', () => {
+      const store = createCheckboxStore();
+      store.getState().handleChange(true);
+      expect(store.getState().checked).toBe(true);
+
+      // The documented contrast: syncControlledValue deliberately keeps the current value.
+      store.getState().syncControlledValue(undefined);
+      expect(store.getState().checked).toBe(true);
+
+      // resetTo is the action form reset needs.
+      store.getState().resetTo(undefined);
+      expect(store.getState().checked).toBe(false);
+      expect(store.getState().isControlled).toBe(false);
+    });
+
+    it('restores an explicit boolean default and marks the store controlled', () => {
+      const store = createCheckboxStore({ checked: true });
+      store.getState().syncControlledValue(false);
+      expect(store.getState().checked).toBe(false);
+
+      store.getState().resetTo(true);
+      expect(store.getState().checked).toBe(true);
+      expect(store.getState().isControlled).toBe(true);
+    });
+
+    it('does not invoke onValueChange — native checkboxes fire no change event on form reset', () => {
+      const onValueChange = vi.fn();
+      const store = createCheckboxStore({ onValueChange });
+      store.getState().handleChange(true);
+      onValueChange.mockClear();
+
+      store.getState().resetTo(undefined);
+      expect(onValueChange).not.toHaveBeenCalled();
+    });
+  });
 });

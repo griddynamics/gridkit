@@ -55,7 +55,16 @@
     "crc": "node ./bin/create-component.js",
     "export-theme": "nx build ui && node ./bin/export-theme.js",
     "generate-ai-docs": "npx tsx ./bin/generate-ai-docs.mjs",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test:web-components": "vitest --config=libs/web-components/vitest.config.ts --run",
+    "check:web-components-size": "npm run measure:web-components-size && node libs/web-components/scripts/check-bundle-size.mjs",
+    "demo:setup": "npm run build:ui && npm run build:design-core && npm run build:web-components && npm run demo:install-fixtures",
+    "demo:install-fixtures": "npm --prefix fixtures/react19-check install --no-audit --no-fund && npm --prefix fixtures/next-ssr-check install --no-audit --no-fund",
+    "demo:index": "node libs/web-components/scripts/demo-index.mjs",
+    "demo:harness": "npm run demo:index && vite --config libs/web-components/vite.config.ts --port 5173",
+    "demo:react19": "npm --prefix fixtures/react19-check run dev",
+    "demo:next": "npm --prefix fixtures/next-ssr-check run dev",
+    "verify:web-components": "npm run type-check:web-components && nx lint web-components && npm run test:design-core && npm run test:web-components && npm run check:web-components-ssr && npm run check:web-components-size"
   },
   "overrides": {
     "@types/react": "^18.3.18"

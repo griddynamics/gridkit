@@ -8,21 +8,28 @@ writeup, including the Shadow DOM style-isolation reproduction, the SSR/Declarat
 check, the bundle-size comparison against the React+Emotion originals, and a visual-fidelity
 verification pass against real Storybook stories.
 
-Never published — `private: true`. Not part of any `build:*`/`publish:*` root script; run its
-own Nx targets and npm scripts directly (all documented below).
+Never published — `private: true`, and deliberately absent from `publish:*`. It **does** have root
+scripts for building, testing, and demoing (see [Running locally](#running-locally)); start with
+`npm run demo:index`.
 
 ## What's here
 
-- `src/components/gd-*/` — the 5 ported atoms, one Lit `LitElement` class per component.
-- `src/index.ts` — barrel export.
-- `harness/` — plain HTML + TSX pages for manual/browser-driven verification (no test
-  runner): React consumption wrappers (`Gd*React.tsx`), the Shadow DOM style-isolation
-  reproduction, the SSR/DSD reproductions, the visual-fidelity check page, the raw render-speed check
-  (`perf-check.tsx`/`.html`, see `FINDINGS.md` Section 14), the "Lit wraps React" shell
-  (`gd-button-shell.ts`) and its own speed/isolation checks (`perf-check.tsx`'s shell scenario,
-  `shell-isolation-check.tsx`/`.html`, see `FINDINGS.md` Section 15).
-- `scripts/` — Node scripts for bundle-size measurement and the SSR/DSD check (see below).
-- `FINDINGS.md` — the investigation write-up.
+- `src/components/gd-*/` — the 5 ported atoms, one Lit `LitElement` class per component, each with a
+  `*.spec.ts` beside it.
+- `src/index.ts` — barrel export. Note this registers **all** elements on import; per-component
+  registration is an open design item (`docs/webcomponents-migration/03-monorepo-structure.md` §3).
+- `test/a11y.spec.ts` — axe coverage plus the Shadow DOM discoverability assertions.
+- `vitest.config.ts` — browser-mode test project. **Real Chromium, not jsdom** — see the note at the
+  end of this file for why that is a constraint rather than a preference.
+- `harness/` — plain HTML + TSX pages for manual and browser-driven verification: React consumption
+  wrappers (`Gd*React.tsx`), the Shadow DOM style-isolation reproduction, the SSR/DSD reproductions,
+  the visual-fidelity page, the render-speed check (`perf-check`), the form-participation and CSS-Parts
+  check, and the "Lit wraps React" shell (`gd-button-shell.ts`) with its own speed/isolation checks.
+- `scripts/` — `demo-index.mjs` (the demo map), `measure-bundle-size.mjs`, `check-bundle-size.mjs`
+  (the regression gate), and `run-ssr-dsd-check.mjs`.
+- `bundle-size-baseline.json` — committed baseline for the size gate.
+- `FINDINGS.md` — the chronological investigation log. The decision-oriented write-up is in
+  `docs/webcomponents-migration/`.
 
 ## How to use
 
@@ -84,10 +91,15 @@ export const GdCheckbox = createComponent({
 </GdCheckbox>;
 ```
 
-React 19 also assigns primitive/object/array properties natively without a wrapper (documented
-guidance, not independently re-verified in this repo's React-18-only environment — `FINDINGS.md`
-Section 7) — but custom-event-to-callback translation always needs the wrapper (or a manual
-`addEventListener`) regardless of React version.
+React 19 also assigns primitive/object/array properties natively without a wrapper — **now measured,
+not inherited guidance** (`FINDINGS.md` Section 17, verified against React 19.2.8 in
+`fixtures/react19-check`). An object prop reaches the property by reference and is not stringified
+into an attribute.
+
+Custom-event-to-callback translation still needs the wrapper (or a manual `addEventListener`) on
+React 19: an `onGdChange` JSX prop fires **zero** times and is silently dropped — not stringified
+into an attribute, and no warning. That silence is the reason to generate wrappers rather than
+hand-maintain them.
 
 ### Per-component quick reference
 
@@ -99,38 +111,120 @@ Section 7) — but custom-event-to-callback translation always needs the wrapper
 | `gd-select`     | `items` (array), `value`, `disabled`, `color`, `width`, `min-width`, `max-width`                                                                                                                         | `gd-change` — `detail: { value }`                           | `placeholder`, `empty`                      |
 | `gd-typography` | `variant` (`span`\|`h1`–`h6`\|`p`\|`small`\|`caption`\|`header`\|`code`\|`kbd`), `as` (DOM tag), `style-variant` (single value or array)                                                                 | —                                                           | default (content)                           |
 
-**Not yet supported by any component** (named gaps, not silently assumed): native `<form>`
-participation (`ElementInternals`), CSS Parts (`::part()`) for styling internals from outside the
-shadow root, and imperative public methods (e.g. `.focus()`).
+### Form participation (`gd-input`, `gd-checkbox`)
+
+Both are **form-associated custom elements** (`static formAssociated = true`, CTORNDSD-646b). They
+appear in `form.elements`, contribute to `FormData` under `name`, participate in constraint
+validation, and match `:valid` / `:invalid`. Verified in a real browser — see `FINDINGS.md`
+Section 17.
+
+| Prop / member                                           | Notes                                                                                               |
+| ------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `name`                                                  | Submission key. Absent `name` means no submission, same as native                                   |
+| `required`                                              | Sets `valueMissing`; blocks submit with a native validation bubble                                  |
+| `value`                                                 | On `gd-checkbox` this is the value submitted **when checked** (defaults to `'on'`, matching native) |
+| `form`, `validity`, `validationMessage`, `willValidate` | Read-only, mirroring `HTMLInputElement`                                                             |
+| `checkValidity()`, `reportValidity()`                   | Standard methods                                                                                    |
+
+An unchecked `gd-checkbox` submits **nothing** (the key is absent from `FormData`), matching native
+rather than submitting an empty string.
+
+**Two divergences from native to know about:**
+
+- `gd-checkbox.checked` reads `undefined` for an uncontrolled checkbox **even when it is checked** —
+  a consequence of the `attribute: false` design above. Read `FormData`, listen for `gd-change`, or
+  assign `.checked` to control it; do not treat `.checked` as a native boolean mirror.
+- `form.reset()` restores the `checked` value captured at first connect, not a `checked` attribute
+  (there isn't one). Assigning `.checked` after mount changes the current state but **not** what
+  reset restores.
+
+### CSS Parts
+
+Consumer CSS can style internals from outside the shadow root:
+
+| Component     | Parts                                                           |
+| ------------- | --------------------------------------------------------------- |
+| `gd-button`   | `button`, `content`, `icon-start`, `icon-end`, `spinner`        |
+| `gd-input`    | `outer`, `label`, `row`, `input`, `border`, `outline`, `helper` |
+| `gd-checkbox` | `label`, `input`, `indicator`                                   |
+
+```css
+gd-button::part(button) {
+  border-radius: 12px;
+}
+gd-input::part(label) {
+  text-transform: uppercase;
+}
+```
+
+Part names are the short semantic role, not the internal class names — `::part(content)`, not
+`.gd-button__content`. The classes are an implementation detail; part names are public API.
+
+**Not yet supported by any component** (named gaps, not silently assumed): imperative public methods
+beyond the form-validation ones listed above (e.g. `.focus()`), and `::part()` on `gd-select` /
+`gd-typography`.
 
 ## Running locally
 
-From the repo root (after `npm install`):
+**Everything runs from the repo root.** You never need to `cd` into this package.
 
 ```bash
-# Type-check, lint, and build the library
-npm run type-check:web-components
-npx nx lint web-components
-npm run build:web-components          # runs type-check + lint + build together
-
-# Start a dev server to view/interact with the harness pages in a browser
-npm run dev:web-components
-# then open, e.g.:
-#   http://localhost:5173/harness/fidelity-check.html          (all 5 atoms, side-by-side with Storybook)
-#   http://localhost:5173/harness/shell-isolation-check.html    (Shadow DOM style-isolation repro)
-#   http://localhost:5173/harness/remaining-findings-repro.html (cursor-jump / discoverability / popover repros)
-# Vite prints the actual port on startup (defaults to 5173, or the next free port).
-
-# Compare this package's bundle size against the React+Emotion originals (builds first)
-npm run measure:web-components-size
-
-# Server-render gd-button/gd-typography and write Declarative Shadow DOM reproduction pages
-npm run check:web-components-ssr
-# writes harness/ssr-dsd-static.html (zero client JS) and harness/ssr-dsd-hydrated.html
+npm run demo:setup    # once: builds dist/ + installs the fixtures (~2-3 min)
+npm run demo:index    # lists every demo, its URL, what it proves, and what it needs
+npm run demo:harness  # prints the demo map, then serves the harness pages on :5173
 ```
 
-To compare against the real components while the dev server is running, also start Storybook
-in a second terminal from the repo root: `npm run storybook` (serves at `http://localhost:6006`).
+`demo:index` is the authoritative list — it reads the actual harness directory and checks build
+prerequisites, so it cannot drift out of date the way a hand-written list would. Run it rather than
+trusting the summary below.
+
+### Demo pages
+
+| Page                                     | Proves                                                                     | Findings     |
+| ---------------------------------------- | -------------------------------------------------------------------------- | ------------ |
+| `form-participation-check.html`          | Native `<form>` participation + `::part()` crossing the shadow boundary    | §17.1, §17.2 |
+| `shell-isolation-check.html`             | The CTORNDSD-286 collision, and that Shadow DOM blocks it both directions  | §1, §15      |
+| `remaining-findings-repro.html`          | Input cursor stability · Typography discoverability gap · Select `popover` | §4, §5, §6   |
+| `fidelity-check.html`                    | All 5 atoms with the real theme, for comparison with Storybook             | §9, §16      |
+| `perf-check.html`                        | Mount/update speed: React vs native Lit vs shell (auto-runs, ~30s)         | §14, §18.1   |
+| `ssr-dsd-static.html` / `-hydrated.html` | Server-rendered DSD with zero client JS, then hydration                    | §2           |
+
+`fidelity-check` and `perf-check` need `dist/libs/ui/styles.css` (`npm run build:ui`). The two
+`ssr-dsd-*` pages are **generated** by `npm run check:web-components-ssr` — they do not exist until you
+run it.
+
+Start Storybook in a second terminal (`npm run storybook`, port 6006) to compare against the real React
+components.
+
+### Checks
+
+```bash
+npm run test:web-components        # 35 browser tests, real Chromium (jsdom cannot host these)
+npm run check:web-components-ssr   # server-render + write the DSD reproduction pages
+npm run check:web-components-size  # bundle size + regression gate vs the committed baseline
+npm run verify:web-components      # type-check + lint + both test suites + size gate — the CI gate
+```
+
+Individually: `npm run type-check:web-components`, `npx nx lint web-components`,
+`npm run build:web-components`.
+
+### Framework fixtures
+
+```bash
+npm run demo:react19   # :5273 — React 19 interop
+npm run demo:next      # :5373 — Next.js SSR
+```
+
+Both live outside npm workspaces because they need React 19 while this repo is pinned to 18.3.1. See
+[`fixtures/README.md`](../../fixtures/README.md).
+
+### Tests must use a real browser
+
+`vitest.config.ts` defines a browser-mode project with the Playwright provider. This is a technical
+constraint, not a preference: jsdom does not reliably implement Constructable StyleSheets, the `popover`
+attribute, or Declarative Shadow DOM — the three mechanisms these components depend on. Browser mode
+also supplies **trusted** input, which matters because §6 documents a concrete false negative from
+synthetic `element.click()`.
 
 ## Parallel-safety
 

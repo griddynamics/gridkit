@@ -102,6 +102,45 @@ export type ButtonRoleName = 'button' | 'link' | 'checkbox' | 'switch' | 'tab';
  * from outside via ordinary host page CSS, since Shadow DOM never encapsulates a host element's
  * own box-model properties.
  */
+/**
+ * Content-keyed Constructable StyleSheet cache (CTORNDSD-646c).
+ *
+ * Before this existed, every instance owned its own `CSSStyleSheet` and called `replaceSync` on it,
+ * so 300 buttons with identical props paid 300 sheet constructions and 300 CSS parses. Emotion, by
+ * contrast, caches a generated class per unique style combination and reuses it. `FINDINGS.md`
+ * Section 14 named that asymmetry as the hypothesis for Lit's slower mount and left it untested.
+ *
+ * This is the test: one shared, immutable sheet per unique CSS text, adopted by every instance that
+ * resolves to that text. Buttons with different props/themes get different sheets, so correctness is
+ * unchanged — only the duplicate work is removed.
+ *
+ * **Memory tradeoff, stated rather than hidden.** The map is keyed by full CSS text and never
+ * evicted. For a design system this is bounded in practice: distinct texts = variants × states ×
+ * themes actually in use, a few dozen at most. It is *not* bounded if a consumer assigns a fresh
+ * per-instance theme object with different values to every element — that is the pathological case
+ * where this cache is pure overhead, and it grows unboundedly. No real consumer does this (a theme
+ * is an app- or brand-level object), but a bounded LRU would be the fix if one ever did.
+ *
+ * The sheets are never mutated after construction, which is what makes sharing safe: a `replaceSync`
+ * on a shared sheet would affect every adopter.
+ */
+const SHARED_SHEETS = new Map<string, CSSStyleSheet>();
+
+function sharedSheetFor(cssText: string): CSSStyleSheet {
+  let sheet = SHARED_SHEETS.get(cssText);
+  if (sheet === undefined) {
+    sheet = new CSSStyleSheet();
+    sheet.replaceSync(cssText);
+    SHARED_SHEETS.set(cssText, sheet);
+  }
+  return sheet;
+}
+
+/** Test/diagnostic hook — how many distinct CSS texts have been constructed this session. */
+export function __sharedSheetCacheSize(): number {
+  return SHARED_SHEETS.size;
+}
+
 @customElement('gd-button')
 export class GdButton extends LitElement {
   static styles = css`
@@ -164,15 +203,13 @@ export class GdButton extends LitElement {
   @state() private _hasContent = false;
   @state() private _hasIconEnd = false;
 
-  private readonly _dynamicSheet = new CSSStyleSheet();
+  private _adoptedSheet?: CSSStyleSheet;
   private _lastCssText = '';
 
   connectedCallback() {
     super.connectedCallback();
-    const sheets = this.shadowRoot!.adoptedStyleSheets;
-    if (!sheets.includes(this._dynamicSheet)) {
-      this.shadowRoot!.adoptedStyleSheets = [...sheets, this._dynamicSheet];
-    }
+    // The dynamic sheet is adopted in render(), once its CSS text is known — see
+    // `sharedSheetFor`. Nothing to do here; `static styles` is adopted by Lit itself.
   }
 
   private _onSlotChange(event: Event) {
@@ -227,13 +264,33 @@ export class GdButton extends LitElement {
     const isDisabled = this.disabled || this.isLoading;
 
     const cssText = this._buildCssText(tokens, radius);
-    if (cssText !== this._lastCssText) {
+    // `shadowRoot` is null during server-side rendering (@lit-labs/ssr calls render() without ever
+    // attaching one) and Constructable StyleSheets do not exist in Node at all — so this whole block
+    // is client-only. Guarding it here rather than in connectedCallback because that is what SSR
+    // skips: an unguarded `this.shadowRoot!` throws
+    // "Cannot read properties of null (reading 'adoptedStyleSheets')" and takes the SSR render down
+    // with it. Regression found by `npm run check:web-components-ssr`; see FINDINGS.md §18.7.
+    const root = this.shadowRoot;
+    if (root && (cssText !== this._lastCssText || this._adoptedSheet === undefined)) {
       this._lastCssText = cssText;
-      this._dynamicSheet.replaceSync(cssText);
+      const next = sharedSheetFor(cssText);
+      if (next !== this._adoptedSheet) {
+        // Swap which shared sheet this instance adopts. Never mutate the sheet itself — it is
+        // shared with every other instance resolving to the same CSS text.
+        const kept = root.adoptedStyleSheets.filter((s) => s !== this._adoptedSheet);
+        root.adoptedStyleSheets = [...kept, next];
+        this._adoptedSheet = next;
+      }
     }
 
+    // `part` attributes (CTORNDSD-646b) expose these internals to consumer CSS via
+    // `gd-button::part(button)` etc. Note the part names are intentionally the short semantic role
+    // (`content`, `icon-start`) rather than the internal class names (`gd-button__content`): the
+    // classes are an implementation detail the dynamic stylesheet targets, while part names are a
+    // public API and must stay stable even if the internal class naming changes.
     return html`
       <button
+        part="button"
         type=${this.type}
         role=${this.role}
         tabindex=${this.tabIndex}
@@ -243,19 +300,19 @@ export class GdButton extends LitElement {
         aria-pressed=${this.ariaPressed ?? nothing}
       >
         ${this._hasIconStart
-          ? html`<span class="gd-button__icon-start"
+          ? html`<span class="gd-button__icon-start" part="icon-start"
               ><slot name="icon-start" @slotchange=${this._onSlotChange}></slot
             ></span>`
           : html`<slot name="icon-start" @slotchange=${this._onSlotChange}></slot>`}
         ${this._hasContent
-          ? html`<span class="gd-button__content"><slot @slotchange=${this._onSlotChange}></slot></span>`
+          ? html`<span class="gd-button__content" part="content"><slot @slotchange=${this._onSlotChange}></slot></span>`
           : html`<slot @slotchange=${this._onSlotChange}></slot>`}
         ${this._hasIconEnd
-          ? html`<span class="gd-button__icon-end"
+          ? html`<span class="gd-button__icon-end" part="icon-end"
               ><slot name="icon-end" @slotchange=${this._onSlotChange}></slot
             ></span>`
           : html`<slot name="icon-end" @slotchange=${this._onSlotChange}></slot>`}
-        ${this.isLoading ? html`<span class="spinner" aria-hidden="true"></span>` : nothing}
+        ${this.isLoading ? html`<span class="spinner" part="spinner" aria-hidden="true"></span>` : nothing}
       </button>
     `;
   }
