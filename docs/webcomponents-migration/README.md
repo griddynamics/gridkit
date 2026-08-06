@@ -1,7 +1,7 @@
 # GridKit → Lit Web Components: Migration Decision Document
 
 **Ticket:** CTORNDSD-646 "[Spike] Webcomponents" · **Epic:** CTORNDSD-580 "Add webcomponents support"
-· **Branch:** `feature/CTORNDSD-580`
+· **Branch:** `feature/CTORNDSD-646`
 
 ## Reading this document
 
@@ -76,8 +76,9 @@ The case rests on three measured results and is weakened by one:
 **For.** Shadow DOM concretely prevents the CTORNDSD-286 style-collision failure mode — the control
 condition reproduces the bug and a second Emotion cache provides zero isolation, while the Lit
 components are unaffected in both directions (**measured**, Section 1). Per-atom bundle size is
-10–20× smaller than the React+Emotion equivalents; the 5-atom total is 9.11 kB gzip, or 16.38 kB
-including the one-time 6.88 kB `lit` runtime, against 113.18 kB (**measured**, Section 3). SSR via
+7–16× smaller than the React+Emotion equivalents; the 5-atom total is 11.06 kB gzip, or 17.94 kB
+including the one-time 6.88 kB `lit` runtime, against 105.72 kB (**measured**,
+`10-performance-report.md`, which supersedes `FINDINGS.md` §3's pre-646b figures). SSR via
 Declarative Shadow DOM works, including with zero client JavaScript, and Lit's hydration reuses the
 server-rendered DOM node rather than discarding it (**measured**, Section 2).
 

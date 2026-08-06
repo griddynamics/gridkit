@@ -113,7 +113,7 @@ evaluates all 5 modules and registers all 5 elements.
 `sideEffects` field** (`libs/ui` declares `["**/*.css","**/*.scss"]`). Consequences:
 
 - Bundlers conservatively assume every module has side effects, so **nothing tree-shakes**. A consumer
-  who wants one element ships all five. Small today (9.11 kB for 5 atoms); linear in catalog size.
+  who wants one element ships all five. Small today (11.06 kB for 5 atoms); linear in catalog size.
 - **The naive fix breaks it silently.** Adding `"sideEffects": false` lets a bundler drop the
   `customElements.define` calls as unused. The classes still export, the build still succeeds, and the
   elements never register at runtime — `<gd-button>` renders as an unknown element. This is the exact
