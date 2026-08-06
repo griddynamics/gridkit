@@ -8,7 +8,7 @@ import { validateA2uiSpecCommand } from './src/utils/commands/vitest-a2ui-schema
 import { judgeA2uiSpecCommand } from './src/utils/commands/vitest-a2ui-judge-command';
 import { checkA11yCommand } from './src/utils/commands/vitest-a11y-command';
 
-const a2uiLlmConfigured = Boolean(process.env.ANTHROPIC_API_KEY?.trim());
+const a2uiLlmConfigured = Boolean(process.env.OPENAI_API_KEY?.trim());
 
 export default defineConfig({
   test: {

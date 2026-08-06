@@ -84,7 +84,7 @@ export function registerA11yAfterEach(): void {
  *
  * Hard failures (score < threshold with failureMode: 'hard') fail the test.
  * Soft failures (score < threshold with failureMode: 'soft') emit a console.warn.
- * Skips silently when ANTHROPIC_API_KEY is absent.
+g * Skips silently when OPENAI_API_KEY is absent.
  *
  * @param userPrompt  The original prompt describing the UI intent.
  * @param config      Optional metric config override. Defaults to DEFAULT_JUDGE_CONFIG.

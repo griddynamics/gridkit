@@ -136,7 +136,7 @@
         ]
       },
       "metadata": {
-        "description": "Browser integration: LLM → A2UI JSON → renderA2UISpec. Requires Playwright browsers (npx playwright install), ANTHROPIC_API_KEY in workspace root .env or env. Optional: A2UI_LLM_MODEL."
+        "description": "Browser integration: LLM → A2UI JSON → renderA2UISpec. Requires Playwright browsers (npx playwright install), OPENAI_API_KEY in workspace root .env or env. Optional: A2UI_LLM_MODEL."
       }
     }
   }

@@ -1,12 +1,12 @@
 /**
- * Vitest browser command (runs on Node): LLM-as-a-judge using Claude SDK.
- * Sends the original user prompt + a PNG screenshot to Claude and evaluates
+ * Vitest browser command (runs on Node): LLM-as-a-judge using the OpenAI SDK.
+ * Sends the original user prompt + a PNG screenshot to OpenAI and evaluates
  * four DeepEval-inspired metrics in a single call using Function Calling.
  */
 import type { BrowserCommand } from 'vitest/node';
-import Anthropic from '@anthropic-ai/sdk';
+import OpenAI from 'openai';
 
-const DEFAULT_MODEL = 'claude-haiku-4-5-20251001';
+const DEFAULT_MODEL = 'gpt-4o-mini';
 
 export type MetricName = 'taskCompletion' | 'promptAlignment' | 'imageCoherence' | 'hallucination';
 
@@ -47,47 +47,49 @@ Metrics:
 3. imageCoherence: Visual stability (no clipping, overlap, broken layout).
 4. hallucination: Score 1.0 if ONLY requested elements appear. Deduct for unrequested additions.`;
 
-const EVALUATION_TOOL: Anthropic.Tool = {
-  name: 'submit_evaluation',
-  description: 'Submit the final evaluation metrics and summary for the UI.',
-  input_schema: {
-    type: 'object',
-    properties: {
-      metrics: {
-        type: 'object',
-        properties: {
-          taskCompletion: {
-            type: 'object',
-            properties: { score: { type: 'number' }, reasoning: { type: 'string' } },
-            required: ['score', 'reasoning'],
+const EVALUATION_TOOL: OpenAI.Chat.Completions.ChatCompletionTool = {
+  type: 'function',
+  function: {
+    name: 'submit_evaluation',
+    description: 'Submit the final evaluation metrics and summary for the UI.',
+    parameters: {
+      type: 'object',
+      properties: {
+        metrics: {
+          type: 'object',
+          properties: {
+            taskCompletion: {
+              type: 'object',
+              properties: { score: { type: 'number' }, reasoning: { type: 'string' } },
+              required: ['score', 'reasoning'],
+            },
+            promptAlignment: {
+              type: 'object',
+              properties: { score: { type: 'number' }, reasoning: { type: 'string' } },
+              required: ['score', 'reasoning'],
+            },
+            imageCoherence: {
+              type: 'object',
+              properties: { score: { type: 'number' }, reasoning: { type: 'string' } },
+              required: ['score', 'reasoning'],
+            },
+            hallucination: {
+              type: 'object',
+              properties: { score: { type: 'number' }, reasoning: { type: 'string' } },
+              required: ['score', 'reasoning'],
+            },
           },
-          promptAlignment: {
-            type: 'object',
-            properties: { score: { type: 'number' }, reasoning: { type: 'string' } },
-            required: ['score', 'reasoning'],
-          },
-          imageCoherence: {
-            type: 'object',
-            properties: { score: { type: 'number' }, reasoning: { type: 'string' } },
-            required: ['score', 'reasoning'],
-          },
-          hallucination: {
-            type: 'object',
-            properties: { score: { type: 'number' }, reasoning: { type: 'string' } },
-            required: ['score', 'reasoning'],
-          },
+          required: ['taskCompletion', 'promptAlignment', 'imageCoherence', 'hallucination'],
         },
-        required: ['taskCompletion', 'promptAlignment', 'imageCoherence', 'hallucination'],
+        summary: { type: 'string' },
       },
-      summary: { type: 'string' },
+      required: ['metrics', 'summary'],
     },
-    required: ['metrics', 'summary'],
   },
 };
 
-function stripDataUrlPrefix(dataUrl: string): string {
-  const comma = dataUrl.indexOf(',');
-  return comma >= 0 ? dataUrl.slice(comma + 1) : dataUrl;
+function ensureDataUrl(screenshot: string): string {
+  return screenshot.startsWith('data:') ? screenshot : `data:image/png;base64,${screenshot}`;
 }
 
 function buildErrorVerdict(msg: string): JudgeA2uiSpecVerdict {
@@ -108,40 +110,40 @@ export const judgeA2uiSpecCommand: BrowserCommand<
   [userPrompt: string, screenshotDataUrl: string],
   JudgeA2uiSpecResult
 > = async (_context, userPrompt, screenshotDataUrl) => {
-  const apiKey = process.env['ANTHROPIC_API_KEY']?.trim();
+  const apiKey = process.env['OPENAI_API_KEY']?.trim();
   if (!apiKey) return { skipped: true };
 
   try {
     const model = process.env['A2UI_JUDGE_MODEL']?.trim() || DEFAULT_MODEL;
-    const client = new Anthropic({ apiKey });
-    const rawBase64 = stripDataUrlPrefix(screenshotDataUrl);
+    const client = new OpenAI({ apiKey });
+    const imageUrl = ensureDataUrl(screenshotDataUrl);
 
-    const response = await client.messages.create({
+    const response = await client.chat.completions.create({
       model,
       max_tokens: 512,
-      system: JUDGE_SYSTEM_PROMPT,
       tools: [EVALUATION_TOOL],
-      tool_choice: { type: 'tool', name: 'submit_evaluation' },
+      tool_choice: { type: 'function', function: { name: 'submit_evaluation' } },
       messages: [
+        { role: 'system', content: JUDGE_SYSTEM_PROMPT },
         {
           role: 'user',
           content: [
-            {
-              type: 'image',
-              source: { type: 'base64', media_type: 'image/png', data: rawBase64 },
-            },
+            { type: 'image_url', image_url: { url: imageUrl } },
             { type: 'text', text: `User intent: ${userPrompt}` },
           ],
         },
       ],
     });
 
-    const toolBlock = response.content.find((b) => b.type === 'tool_use');
-    if (!toolBlock || toolBlock.type !== 'tool_use') {
-      return buildErrorVerdict('No tool_use block in Claude response');
+    const toolCall = response.choices[0]?.message?.tool_calls?.[0];
+    if (!toolCall || toolCall.type !== 'function') {
+      return buildErrorVerdict('No tool call in OpenAI response');
     }
 
-    const parsed = toolBlock.input as unknown as { metrics: Record<MetricName, MetricScore>; summary: string };
+    const parsed = JSON.parse(toolCall.function.arguments) as {
+      metrics: Record<MetricName, MetricScore>;
+      summary: string;
+    };
 
     return { metrics: parsed.metrics, summary: parsed.summary, passed: true };
   } catch (err) {

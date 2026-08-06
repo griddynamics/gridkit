@@ -1,15 +1,15 @@
 /**
- * Vitest browser command (runs on Node): fetch A2UI JSON from Anthropic Claude.
- * Requires ANTHROPIC_API_KEY; optional A2UI_LLM_MODEL.
+ * Vitest browser command (runs on Node): fetch A2UI JSON from OpenAI (ChatGPT).
+ * Requires OPENAI_API_KEY; optional A2UI_LLM_MODEL.
  */
 import type { BrowserCommand } from 'vitest/node';
-import Anthropic from '@anthropic-ai/sdk';
+import OpenAI from 'openai';
 import { buildA2UISystemPrompt } from '../../ai';
 
 const AGENT_ID = 'a2ui-agent';
 const AGENT_NAME = 'Grid Dynamics Assistant';
 
-const DEFAULT_MODEL = 'claude-haiku-4-5-20251001';
+const DEFAULT_MODEL = 'gpt-4o-mini';
 
 export type FetchA2uiSpecResult = { spec: unknown };
 
@@ -21,39 +21,35 @@ export const fetchA2uiSpecCommand: BrowserCommand<[userPrompt: string], FetchA2u
   _context,
   userPrompt
 ) => {
-  const apiKey = process.env['ANTHROPIC_API_KEY']?.trim();
+  const apiKey = process.env['OPENAI_API_KEY']?.trim();
 
   if (!apiKey) {
     throw new Error(
-      'ANTHROPIC_API_KEY is not set. Add it to the workspace root .env or export it before running test-a2ui-integration.'
+      'OPENAI_API_KEY is not set. Add it to the workspace root .env or export it before running test-a2ui-integration.'
     );
   }
 
   const model = getModelId();
-  const client = new Anthropic({ apiKey });
+  const client = new OpenAI({ apiKey });
 
   const systemPrompt = buildA2UISystemPrompt({ agentId: AGENT_ID, agentName: AGENT_NAME });
 
-  const response = await client.messages.create({
+  const response = await client.chat.completions.create({
     model,
     max_tokens: 4096,
     temperature: 0.7,
-    system: systemPrompt,
     messages: [
-      {
-        role: 'user',
-        content: userPrompt,
-      },
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userPrompt },
     ],
   });
 
-  const textBlock = response.content.find((b) => b.type === 'text');
-  if (!textBlock || textBlock.type !== 'text') {
-    throw new Error('No text block in Anthropic response');
+  const text = response.choices[0]?.message?.content;
+  if (!text) {
+    throw new Error('No text content in OpenAI response');
   }
 
   let spec: unknown;
-  const text = textBlock.text;
 
   // 1. Try to extract from a code fence (handles preamble + ```json ... ```)
   const codeFenceMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
