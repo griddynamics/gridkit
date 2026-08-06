@@ -79,8 +79,13 @@ components are unaffected in both directions (**measured**, Section 1). Per-atom
 7–16× smaller than the React+Emotion equivalents; the 5-atom total is 11.06 kB gzip, or 17.94 kB
 including the one-time 6.88 kB `lit` runtime, against 105.72 kB (**measured**,
 `10-performance-report.md`, which supersedes `FINDINGS.md` §3's pre-646b figures). SSR via
-Declarative Shadow DOM works, including with zero client JavaScript, and Lit's hydration reuses the
-server-rendered DOM node rather than discarding it (**measured**, Section 2).
+Declarative Shadow DOM works with zero client JavaScript, and Lit's hydration reuses the
+server-rendered DOM node rather than discarding it (**measured**, Section 2) — with one qualification
+added after re-verification: **zero-JS _styling_ carries only for components styled inline.**
+`gd-button` applies its theme through a runtime Constructable StyleSheet, which cannot be serialized
+into a `<template shadowrootmode>`, so it server-renders structurally correct but visually unstyled.
+1 of the 5 atoms today; the mechanism is the same one credited for the render-speed fix, so the choice
+generalizes (**measured**, `FINDINGS.md` §20 and `09-ssr-hydration.md`).
 
 **Against — now measured, and it did not resolve in Lit's favour.** React mounts faster. The
 hypothesis that a per-content-hash stylesheet cache would close the gap was tested: the cache made
@@ -148,15 +153,17 @@ document, and it is materially smaller than a naive reading of the catalog sugge
 ## If you are approving or rejecting, read this
 
 **What is proven.** Shadow DOM fixes a real production bug that was already experienced. Bundle size
-improves by an order of magnitude. SSR with zero JavaScript works via `@lit-labs/ssr`. Form
-participation, CSS Parts, theme switching, and React 19 interop are all measured working. The
-single-source-of-truth token binding is real.
+improves by an order of magnitude. SSR with zero JavaScript works via `@lit-labs/ssr`, and renders
+fully styled for the four inline-styled atoms. Form participation, CSS Parts, theme switching, and
+React 19 interop are all measured working. The single-source-of-truth token binding is real.
 
 **What is not.** Runtime mount stays 2.3–3.4× slower than React. Nested theming has no equivalent —
 a genuine capability regression. The compound-component pattern has no Web Components analogue and
 gates 5+ components. Next.js emits no Declarative Shadow DOM, so there is no no-JS rendering in the
-framework consumers actually use. 35 of 63 estimates are extrapolated, with **zero** evidence for the
-9 overlay components.
+framework consumers actually use. Even standalone, zero-JS _styling_ does not carry for a component
+using a runtime Constructable StyleSheet — `gd-button` today, and the same mechanism the render-speed
+fix depends on. 35 of 63 estimates are extrapolated, with **zero** evidence for the 9 overlay
+components.
 
 **The two questions that should decide it:**
 

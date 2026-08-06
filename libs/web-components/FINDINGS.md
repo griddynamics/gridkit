@@ -85,6 +85,14 @@ Tooling: `@lit-labs/ssr` (added as a devDependency of this package only), driven
   server with zero `<script>` tags — confirmed 0 scripts on the page): both `gd-button` and
   `gd-typography` arrive with populated, correctly styled shadow roots purely from the
   browser's native Declarative Shadow DOM parsing. No JavaScript executed at all.
+
+  > **Superseded in part — see Section 20.** The "correctly styled" half of that sentence was
+  > true when written and is **no longer true for `gd-button`**. Section 12's rewrite moved its
+  > theme CSS from inline styles to a runtime Constructable StyleSheet, which cannot be
+  > serialized into a `<template shadowrootmode>`. `gd-button` now arrives structurally correct
+  > but visually unstyled with zero JS. `gd-typography` and the other three atoms are
+  > unaffected. The DSD-parsing half of the claim still holds for both.
+
 - **Hydration check** (`harness/ssr-dsd-hydrated.html` + `ssr-dsd-hydrate-check.ts`, same SSR
   markup but Lit's client JS loads afterward): result —
 
@@ -1563,3 +1571,63 @@ gd-button: true`, `gd-typography: true`, static page has **0** `<script>` tags a
 2. **A green browser-test suite is not evidence of SSR safety**, and the two failure surfaces are
    genuinely disjoint. Any future change to a component's `render()` should run the SSR check
    specifically, not just the test suite.
+
+## 20. Section 2's "correctly styled" claim regressed — Constructable StyleSheets cannot cross into DSD
+
+Found while executing every step of `DEMO.md` end-to-end rather than reading it. Two separate
+problems were tangled together on the SSR pages; only one was a harness bug.
+
+**Problem 1 — the harness rendered without a theme (fixed).** `scripts/ssr-dsd-render.ts` rendered
+`<gd-button>` and `<gd-typography>` with no `.theme` bound. Every real token file's
+`get(theme, path, fallback)` fallback is a Storybook-facing placeholder that happens to be the token
+path itself, so a themeless render emitted literally
+`font-family:theme.font.family;font-size:font.size.h1;…` — invalid CSS the browser discards, leaving
+the heading in Times. That is the real components' own themeless behavior (Sections 13, 16), not an
+SSR defect, but it made the page contradict its own instruction. Fixed by binding
+`.theme=${defaultTheme}`, matching `fidelity-check.tsx` and `form-participation-check.ts`.
+`gd-typography` now server-renders `font-family:"Fira Sans", sans-serif;font-size:48px;line-height:56px`
+with **zero** unresolved token literals (**measured**).
+
+**Problem 2 — a real, previously unrecorded regression (not fixed; architectural).** Binding the theme
+did **not** style `gd-button`. Section 12's rewrite moved its theme CSS out of inline styles and into a
+per-instance Constructable StyleSheet. Only `static styles` and inline `style` attributes can be
+serialized into a `<template shadowrootmode>`; `adoptedStyleSheets` cannot, and with zero JS nothing
+ever runs to adopt one. Section 18.7 came within one sentence of this — it noted "the server-rendered
+output never carried it either way" — but read that as harmless and never revisited Section 2's
+"correctly styled" claim.
+
+Measured on the static page, zero JS: `adoptedStyleSheets.length` is `0`, the shadow root holds exactly
+one `<style>` (the `static styles` base), and the inner `<button>` computes to
+`background-color: rgb(239, 239, 239)`, `border-radius: 0px` — the browser default.
+
+`ssr-dsd-hydrated.html` now records both sides of the same element:
+
+```json
+{
+  "gd-button background from SSR alone (expect browser default)": "rgb(239, 239, 239)",
+  "gd-button background after client theme (expect the real token colour)": "rgb(255, 184, 0)",
+  "gd-button adoptedStyleSheets after hydration (expect > 0)": 2
+}
+```
+
+The reading is measured after `element.getAnimations()` settles — `tokens.default.transition` animates
+`background-color`, and an immediate read returns a mid-transition `rgb(241, 232, 208)`.
+
+**Scope: 1 of 5 atoms.** Only `gd-button` uses `adoptedStyleSheets`; `gd-checkbox`, `gd-input`,
+`gd-select`, and `gd-typography` use `styleMap` and serialize into DSD correctly.
+
+**Why this matters beyond one component.** The mechanism that breaks DSD styling is the same one
+Section 18.1 credits for the render-speed fix — the shared per-content-hash stylesheet cache that made
+mount 50% faster and update 57% faster. There is a real tension: the caching strategy that closes half
+the performance gap is the strategy that forfeits no-JS styling. Any decision to spread the
+Constructable StyleSheet pattern to the remaining 35 ports should be taken with that trade-off explicit.
+
+**Consequence for the SSR claim.** "Zero-JS server rendering works" remains true for DSD parsing,
+hydration, and DOM-node reuse, and true end-to-end for inline-styled components. It is **not** true for
+`gd-button` as currently written. `docs/webcomponents-migration/09-ssr-hydration.md` and the
+`README.md` recommendation paragraph both state the unqualified version and should be narrowed.
+
+**Follow-on options, none attempted:** emit the themed CSS as a `<style>` in the template during SSR
+only (risks a hydration structure mismatch); always emit it and keep the adopted sheet (duplicate CSS);
+or move theme CSS to CSS custom properties on the host, which serialize into DSD and preserve the
+shared-sheet cache. The third looks most promising and is the cheapest to prototype.

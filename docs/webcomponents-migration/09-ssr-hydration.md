@@ -6,16 +6,36 @@
 
 Two results that look contradictory until you see what separates them:
 
-| Environment                | Declarative Shadow DOM emitted?                                         | No-JS rendering?                                              |
-| -------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------- |
-| `@lit-labs/ssr` standalone | **Yes** (**measured**, `FINDINGS.md` §2)                                | **Yes** — fully styled with zero `<script>` tags              |
-| **Next.js App Router**     | **No** — `<template shadowrootmode>` count is `0` (**measured**, §17.4) | **No** — bare tags, unstyled text, and **no headings at all** |
+| Environment                | Declarative Shadow DOM emitted?                                         | No-JS rendering?                                                       |
+| -------------------------- | ----------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `@lit-labs/ssr` standalone | **Yes** (**measured**, `FINDINGS.md` §2)                                | **Partly** — styled for inline-styled atoms only; see the caveat below |
+| **Next.js App Router**     | **No** — `<template shadowrootmode>` count is `0` (**measured**, §17.4) | **No** — bare tags, unstyled text, and **no headings at all**          |
 
-Section 2's result is real and stands. It is also **`@lit-labs/ssr`-specific**. It does not happen
-automatically in the framework the consuming applications actually use, and nothing in the original
-spike claimed otherwise — the gap simply had not been tested until now.
+Section 2's DSD-parsing result is real and stands. It is also **`@lit-labs/ssr`-specific**. It does not
+happen automatically in the framework the consuming applications actually use, and nothing in the
+original spike claimed otherwise — the gap simply had not been tested until now.
 
 This is the single most consequential correction 646b makes to the spike's SSR story.
+
+### Caveat added after re-verification — no-JS styling is per-component, not universal
+
+Section 2 originally read "fully styled". That was true when written and is **no longer true for
+`gd-button`** (**measured**, `FINDINGS.md` §20). Section 12's rewrite moved its theme CSS from inline
+styles into a runtime Constructable StyleSheet. Only `static styles` and inline `style` attributes can
+be serialized into a `<template shadowrootmode>`; `adoptedStyleSheets` cannot, and with zero JS nothing
+ever runs to adopt one. On the no-JS page `gd-button` computes to `background-color: rgb(239, 239, 239)`
+and `border-radius: 0px` — the browser default — while `gd-typography` renders correctly at
+`"Fira Sans", 48px`.
+
+**Scope: 1 of 5 atoms.** `gd-checkbox`, `gd-input`, `gd-select`, and `gd-typography` use `styleMap` and
+serialize correctly.
+
+**The tension this creates.** The Constructable StyleSheet cache is the same mechanism
+`10-performance-report.md` credits for the 50% mount / 57% update improvement. The strategy that closes
+half the runtime-performance gap is the strategy that forfeits no-JS styling. Deciding whether to
+spread that pattern across the remaining 35 ports is therefore an SSR decision as much as a performance
+one. A likely resolution — moving theme values to CSS custom properties on the host, which serialize
+into DSD _and_ keep the shared-sheet cache — is **not attempted**.
 
 ## What the Next.js server HTML actually contains
 
@@ -43,7 +63,7 @@ slotted rather than lost, and a real theme colour renders.
 | Option                               | Verdict                                                                                                                                                       | Basis                                               |
 | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
 | Client-only custom element rendering | **What Next gives you today.** Works, but no no-JS content and a flash of unstyled text                                                                       | **measured**, §17.4                                 |
-| Declarative Shadow DOM               | **The goal.** Fully styled with zero JS                                                                                                                       | **measured**, §2                                    |
+| Declarative Shadow DOM               | **The goal.** Zero-JS rendering works; styling carries only for inline-styled components, not `adoptedStyleSheets` ones                                       | **measured**, §2 and §20                            |
 | Lit SSR (`@lit-labs/ssr`)            | Produces DSD correctly, standalone                                                                                                                            | **measured**, §2                                    |
 | Lit hydration                        | Reuses the server-rendered DOM node rather than discarding it — verified via a pre-hydration `data-` marker that survived, and the element stayed interactive | **measured**, §2                                    |
 | React SSR with Web Component islands | The fixture's working pattern: server component renders tags, client island registers                                                                         | **measured**, §17.4 and `08-react-and-nextjs.md` §4 |
