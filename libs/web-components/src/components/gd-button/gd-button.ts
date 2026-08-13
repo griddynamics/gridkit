@@ -94,7 +94,11 @@ export type ButtonRoleName = 'button' | 'link' | 'checkbox' | 'switch' | 'tab';
  * `iconStart`/`iconEnd` are named slots (`icon-start`/`icon-end`) instead of `ReactNode` props;
  * `onClick` has no property equivalent — consumers use the native `click` event
  * (`el.addEventListener('click', ...)` or `el.onclick = ...`), which already bubbles out of the
- * shadow root unmodified, same as any standard DOM element. `BoxCssComponentProps`'s generic
+ * shadow root unmodified, same as any standard DOM element. `type="submit"`/`type="reset"` cannot
+ * be a pure passthrough the way the React component's is, because the inner `<button>` sits in a
+ * shadow tree that owns no `<form>`; `_onClick` reproduces that activation behaviour explicitly —
+ * see its own doc comment for the mechanism and the one documented deviation.
+ * `BoxCssComponentProps`'s generic
  * layout escape hatches (`margin`/`width`/`flex*`/etc, the real component's `boxStyles`/`styles`
  * array entries) are intentionally not reproduced as properties — that whole mechanism is
  * inline-style-based in the real component (`convertToInlineBoxStyles`), which would violate
@@ -221,6 +225,68 @@ export class GdButton extends LitElement {
   }
 
   /**
+   * `type="submit"` / `type="reset"` activation behaviour, reproduced in JS because the platform
+   * cannot do it here (CTORNDSD-646b).
+   *
+   * A submit/reset button's form owner is "the nearest ancestor `form` element **in its tree**".
+   * The real `<button>` lives in this component's shadow root, and that tree contains no `<form>`
+   * — so `innerButton.form` is `null` and a click, even a fully trusted one, submits nothing.
+   * The React `Button` renders into the light DOM and gets all of this from the browser for free;
+   * this method is what keeps the port's `type` prop from being decorative. Confirmed against a
+   * trusted CDP click in `harness/form-participation-check.ts`, not a synthetic one — FINDINGS.md
+   * Section 6 documents a false negative from exactly that shortcut.
+   *
+   * `this.closest('form')` is the faithful lookup precisely *because* it does not pierce shadow
+   * boundaries: it walks this element's own tree, which is the same scoping rule the platform's
+   * form-owner algorithm uses. A native `<button>` slotted into a component whose shadow root
+   * holds the `<form>` has no form owner either.
+   *
+   * **Deferred to a task, and a microtask is NOT sufficient — measured, not assumed.** Native
+   * activation behaviour runs *after* the click event finishes dispatching, which is what lets a
+   * consumer's `preventDefault()` cancel the submission. This listener sits on the inner button —
+   * the innermost node in the propagation path — so it always runs FIRST, and a synchronous read
+   * of `event.defaultPrevented` would be `false` even when a host listener is about to set it.
+   *
+   * `queueMicrotask` looks like the fix and is a trap. Under a TRUSTED click the browser initiates
+   * dispatch from native code, so the JS stack empties after each listener callback and a microtask
+   * checkpoint runs *between* listeners — the microtask fires before the host listener and still
+   * reads `false`. Under a synthetic `el.click()` the whole dispatch sits inside one JS stack frame,
+   * no checkpoint occurs mid-dispatch, and the microtask correctly reads `true`. So a microtask
+   * implementation passes a synthetic test and breaks for real users: the inverse of FINDINGS.md
+   * Section 6's false negative, and the reason the spec for this uses `userEvent`. Verified
+   * ordering, trusted click: `inner-listener → microtask(false) → host-listener → timeout(true)`.
+   *
+   * A task-queue deferral is therefore the smallest correct option — it resumes after the entire
+   * dispatch, so `preventDefault()` from anywhere in the path (host, or any light-DOM ancestor)
+   * cancels the submission, matching the React component. Form submission needs no transient user
+   * activation, and one task is well inside the activation window regardless.
+   *
+   * `requestSubmit()` (not `submit()`) then runs interactive validation and fires a cancelable
+   * `submit` event, matching a real submit button rather than bypassing the form's constraints.
+   *
+   * Known deviation: `event.submitter` is `null`, because `requestSubmit(submitter)` demands a
+   * submit button already associated with the form and this one — by the very problem above —
+   * is not. Nothing is lost in FormData terms: `ButtonProps` exposes no `name`/`value`, so a real
+   * `<Button type="submit">` contributes no entry either.
+   */
+  private _onClick(event: MouseEvent) {
+    if (this.type === 'button') return;
+    // Defensive only: the browser does not dispatch click on a disabled button, and `isLoading`
+    // sets `?disabled` too (see `isDisabled` in render()).
+    if (this.disabled || this.isLoading) return;
+
+    const form = this.closest('form');
+    if (form === null) return;
+
+    const type = this.type;
+    setTimeout(() => {
+      if (event.defaultPrevented) return;
+      if (type === 'submit') form.requestSubmit();
+      else form.reset();
+    }, 0);
+  }
+
+  /**
    * `[get(themeButton,'default',{}), get(themeButton,$variant,{}), boxStyles, icon?,
    * fullWidth?, {borderRadius, focus-visible}, styles]`, reproduced block-for-block: each
    * `tokens.*` lookup below is the same path a real consumer would read, compiled to CSS text
@@ -295,6 +361,7 @@ export class GdButton extends LitElement {
         role=${this.role}
         tabindex=${this.tabIndex}
         ?disabled=${isDisabled}
+        @click=${this._onClick}
         aria-busy=${this.isLoading || nothing}
         aria-label=${this.ariaLabel ?? nothing}
         aria-pressed=${this.ariaPressed ?? nothing}

@@ -1387,6 +1387,70 @@ fixture. Both are real token colours, so this is most likely a stale `dist` rath
 bug — but it was **not** run to ground, and is recorded as an open question rather than explained
 away. Anyone re-running the Next fixture should `npm run build:ui` first.
 
+### 17.6 `gd-button type="submit"` submitted nothing — found by swapping the harness's native buttons
+
+The form-participation harness originally used native `<button type="submit">` / `type="reset"`, so
+it never exercised `gd-button` on the submit path. Replacing them with `<gd-button type="submit"
+variant="primary">` / `<gd-button type="reset" variant="tertiary">` broke both actions outright.
+
+A trusted CDP click produced `lastSubmit: null`. The cause is structural, not a bug in the port's
+wiring: a submit button's form owner is the nearest ancestor `form` **in its own tree**, and the real
+`<button>` lives in a shadow root containing no form.
+
+```json
+{
+  "inner submit <button>.form": null,
+  "inner reset <button>.form": null,
+  "gd-button host in form.elements": false
+}
+```
+
+`type` was still forwarded to the inner button and the a11y tree still reported a button, so the
+`type` prop looked implemented while doing nothing — invisible to a DOM or a11y snapshot, and
+invisible to the pre-existing tests. `gd-button` is also not form-associated (no `ElementInternals`),
+unlike `gd-input` / `gd-checkbox`, so 17.1's mechanism does not cover it.
+
+**Fixed in `gd-button._onClick`:** resolve the form with `closest('form')` — which correctly does not
+pierce shadow boundaries, matching the platform's own scoping — then call `requestSubmit()` (so
+interactive validation still runs and the `submit` event stays cancelable) or `reset()`. Consumers
+write nothing; the harness bridge that first proved this out was removed again.
+
+**The interesting part — `queueMicrotask` is a trap here, and only a trusted click reveals it.**
+Native activation behaviour runs _after_ the click finishes dispatching, which is what lets a
+consumer's `preventDefault()` cancel submission. The listener sits on the inner button, the innermost
+node in the path, so it always runs first and a synchronous `defaultPrevented` read is always
+`false`. Deferring to a microtask looks like the fix and is not. Measured ordering:
+
+| Dispatch                 | Observed order                                                            |
+| ------------------------ | ------------------------------------------------------------------------- |
+| **Trusted** (CDP click)  | `inner-listener` → `microtask(false)` → `host-listener` → `timeout(true)` |
+| Synthetic (`el.click()`) | `inner-listener` → `host-listener` → `microtask(true)` → `timeout(true)`  |
+
+Under a trusted click the browser initiates dispatch from native code, so the JS stack empties after
+each listener callback and a microtask checkpoint runs _between_ listeners. Under `el.click()` the
+whole dispatch sits in one stack frame and no checkpoint occurs mid-dispatch. A microtask
+implementation therefore **passes a synthetic test and breaks for real users** — the inverse of
+Section 6's false negative, and a second, independent reason this package's tests use `userEvent`
+rather than `el.click()`. A task-queue deferral (`setTimeout(…, 0)`) reads the final value and lets
+any listener in the path cancel, including light-DOM ancestors.
+
+One documented deviation remains: `event.submitter` is `null`, because `requestSubmit(submitter)`
+demands a submit button already associated with the form. Nothing is lost in `FormData` terms —
+`ButtonProps` exposes no `name` / `value`, so a real `<Button type="submit">` contributes no entry
+either.
+
+Covered by 10 tests in `gd-button.spec.ts`, including the null-form-owner premise, interactive
+validation, cancellation from both host and ancestor, `disabled`, no-ancestor-form, and the
+slotted-into-a-shadow-form case. Two incidental notes from writing them:
+
+- The trusted clicks leave the real cursor parked where they landed, **outliving the test**. That
+  made a later colour assertion sample `:hover` tokens (`rgb(246, 156, 0)` instead of
+  `rgb(255, 184, 0)`) — a cross-test failure with no logical connection to its cause. The click tests
+  now park the pointer in an `afterEach`.
+- Button gzip went 1979 → 2095 B (+5.9%), inside the 10% gate. Baseline updated deliberately rather
+  than left to absorb tolerance headroom. Input moved 2558 → 2593 B untouched, which is the
+  shared-helper redistribution §13 and §17.5 already describe.
+
 ## 18. CTORNDSD-646c — the stylesheet-cache experiment, and the first tests
 
 ### 18.1 GO condition 5: hypothesis confirmed, gap narrowed, gap NOT closed

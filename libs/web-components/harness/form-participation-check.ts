@@ -31,8 +31,8 @@ root.innerHTML = `
       <br /><br />
       <gd-checkbox id="optin" name="optin" value="yes">Opt in (value="yes")</gd-checkbox>
       <br /><br />
-      <button type="submit">Submit</button>
-      <button type="reset">Reset</button>
+      <gd-button id="submit-btn" type="submit" variant="primary">Submit</gd-button>
+      <gd-button id="reset-btn" type="reset" variant="tertiary">Reset</gd-button>
     </fieldset>
   </form>
 
@@ -72,6 +72,18 @@ const nested = document.getElementById('nested') as GdInput;
 const partsButton = document.getElementById('parts-button')!;
 const partsInput = document.getElementById('parts-input')!;
 const partsCheckbox = document.getElementById('parts-checkbox')!;
+
+const submitButton = document.getElementById('submit-btn')!;
+const resetButton = document.getElementById('reset-btn')!;
+
+/**
+ * NOTE — no light-DOM bridge here, on purpose. `<gd-button type="submit">` renders its real
+ * `<button>` inside a shadow root, whose tree owns no `<form>`, so `innerButton.form` is `null`
+ * and the platform will never submit on its own. `gd-button._onClick` reproduces that activation
+ * behaviour itself (CTORNDSD-646b), so a consumer writes nothing. The probe below asserts the
+ * component is doing it — if it regresses, `lastSubmit` stays `null` under a trusted click and
+ * `submitButtonParticipation` shows a null form owner with no bridge compensating for it.
+ */
 
 let lastSubmit: Record<string, string> | null = null;
 form.addEventListener('submit', (event) => {
@@ -150,7 +162,26 @@ async function collect() {
     'email.validity.valueMissing back to true — expect true': email.validity.valueMissing,
   };
 
-  // ---- 7. CSS Parts ---------------------------------------------------------------------
+  // ---- 7. Submit/reset via gd-button, with NO consumer-side bridge -----------------------
+  const submitInner = submitButton.shadowRoot!.querySelector('button')!;
+  const resetInner = resetButton.shadowRoot!.querySelector('button')!;
+  const submitButtonParticipation = {
+    'submit gd-button forwards type to inner button — expect submit': submitInner.type,
+    'reset gd-button forwards type to inner button — expect reset': resetInner.type,
+    // Both null: the shadow tree owns no <form>, so the PLATFORM cannot submit. That is why
+    // gd-button._onClick exists — these two staying null is the normal, expected state.
+    'inner submit <button>.form is null — expect true': submitInner.form === null,
+    'inner reset <button>.form is null — expect true': resetInner.form === null,
+    'gd-button host appears in form.elements — expect false (not form-associated)': Array.from(form.elements).includes(
+      submitButton
+    ),
+    'gd-button resolves the form itself via closest() — expect true': submitButton.closest('form') === form,
+    // Trusted-click outcomes are NOT asserted here: `lastSubmit` below is the evidence, and only a
+    // real CDP/userEvent click can produce it (FINDINGS.md Section 6).
+    'no consumer-side submit/reset bridge is installed — expect true': true,
+  };
+
+  // ---- 8. CSS Parts ---------------------------------------------------------------------
   const innerButton = partsButton.shadowRoot!.querySelector('button')!;
   const innerContent = partsButton.shadowRoot!.querySelector('.gd-button__content');
   const innerInput = partsInput.shadowRoot!.querySelector('input')!;
@@ -178,6 +209,7 @@ async function collect() {
     afterFill,
     disabledPropagation,
     afterReset,
+    submitButtonParticipation,
     cssParts,
     lastSubmit,
   };

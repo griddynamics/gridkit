@@ -138,6 +138,41 @@ rather than submitting an empty string.
   (there isn't one). Assigning `.checked` after mount changes the current state but **not** what
   reset restores.
 
+### Submit and reset buttons (`gd-button`)
+
+`<gd-button type="submit">` and `type="reset"` drive the surrounding `<form>`, so this works with no
+consumer wiring:
+
+```html
+<form>
+  <gd-input name="email" label="Email" required></gd-input>
+  <gd-button type="submit" variant="primary">Submit</gd-button>
+  <gd-button type="reset" variant="tertiary">Reset</gd-button>
+</form>
+```
+
+Unlike `gd-input` / `gd-checkbox`, `gd-button` is **not** a form-associated custom element and does
+not appear in `form.elements` — it has no value to submit. It also cannot rely on the platform: a
+submit button's form owner is the nearest ancestor `form` **in its own tree**, and the real
+`<button>` lives in a shadow root that contains no form, so `innerButton.form` is `null` and a click
+would otherwise do nothing at all. `gd-button` therefore resolves the form itself via
+`closest('form')` and calls `requestSubmit()` / `reset()`.
+
+What follows from that:
+
+- **`closest('form')` does not pierce shadow boundaries**, deliberately — that is the same scoping
+  the platform's form-owner algorithm uses. A `gd-button` slotted into a component whose shadow root
+  holds the `<form>` will not submit it, exactly as a native `<button>` would not.
+- **`requestSubmit()`, not `submit()`** — interactive validation still runs, `required` still blocks
+  submission with a native validation bubble, and the `submit` event stays cancelable.
+- **`preventDefault()` on the click cancels the submission**, from the host or any light-DOM
+  ancestor, matching the React `Button`. The form action is deferred one task to make that possible;
+  see the `_onClick` doc comment for why a microtask is not sufficient.
+- **`event.submitter` is `null`** — the one deviation. `requestSubmit(submitter)` requires a submit
+  button already associated with the form, which by the above this one is not. No `FormData` entry is
+  lost: `ButtonProps` exposes no `name` / `value`, so the React `Button` contributes none either.
+- A `disabled` (or `isLoading`) `gd-button` submits nothing.
+
 ### CSS Parts
 
 Consumer CSS can style internals from outside the shadow root:
