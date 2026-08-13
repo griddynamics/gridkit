@@ -200,7 +200,7 @@ export type A2UIIconCatalog = typeof A2UI_ICON_CATALOG;
  *
  * @example
  * getA2UIPropEnum('button', 'variant')  // ['primary', 'secondary', ...]
- * getA2UIPropEnum('badge', 'size')      // ['sm', 'md', 'lg']
+ * getA2UIPropEnum('badge', 'size')      // ['xs', 'sm', 'md', 'lg']
  */
 export function getA2UIPropEnum(a2uiType: string, propName: string): readonly string[] {
   const schema = aiComponentsSchema.components.find((c) => (c as ExtendedComponentSchema).a2uiName === a2uiType);

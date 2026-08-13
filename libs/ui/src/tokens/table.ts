@@ -132,11 +132,11 @@ export const table = {
       icons: {
         prev: {
           name: 'arrowLeft',
-          size: 'xs',
+          size: 'sm',
         },
         next: {
           name: 'arrowRight',
-          size: 'xs',
+          size: 'sm',
         },
       },
     },

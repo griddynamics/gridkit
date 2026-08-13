@@ -112,8 +112,7 @@ export const sidebar = {
   expandIcon: {
     icon: {
       name: 'arrowRight',
-      width: 14,
-      height: 14,
+      size: 'lg',
     },
     default: (theme: Record<symbol, unknown>) => ({
       transition: get(theme, 'values.transitions.sidebar.expandIcon', 'theme.values.transitions.sidebar.expandIcon'),

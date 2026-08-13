@@ -1,7 +1,5 @@
 import { get } from '@utils';
 import { borders } from './borders';
-import { cursors } from './cursors';
-import { display, flexAlignItems } from './display';
 import { icon } from './icon';
 
 export const draganddrop = {
@@ -37,7 +35,7 @@ export const draganddrop = {
     },
     disabled: {
       '&, &:hover': {
-        cursor: cursors.notAllowed,
+        cursor: 'not-allowed',
         backgroundColor: (theme: Record<symbol, unknown>) =>
           get(theme, 'colors.bg.fill.input.disabled', 'theme.colors.bg.fill.input.disabled'),
       },
@@ -53,7 +51,7 @@ export const draganddrop = {
     loading: {
       backgroundColor: (theme: Record<symbol, unknown>) =>
         get(theme, 'colors.bg.fill.hover', 'theme.colors.bg.fill.hover'),
-      cursor: cursors.notAllowed,
+      cursor: 'not-allowed',
     },
   },
   dragOverContent: {
@@ -62,9 +60,9 @@ export const draganddrop = {
         get(theme, 'colors.bg.fill.hover', 'theme.colors.bg.fill.hover'),
       width: '100%',
       height: '100%',
-      display: display.flex,
-      justifyContent: flexAlignItems.center,
-      alignItems: flexAlignItems.center,
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
       border: (theme: Record<symbol, unknown>) =>
         borders.generic({
           width: '1px',

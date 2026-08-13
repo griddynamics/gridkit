@@ -1,4 +1,4 @@
-import { SizeVariant, SkeletonVariant } from '@types';
+import { SkeletonVariant } from '@types';
 
 import { get } from '@utils';
 import { hexToRgba } from './utils';
@@ -20,8 +20,7 @@ export const skeleton = {
   },
 
   [SkeletonVariant.Rounded]: {
-    borderRadius: (theme: Record<symbol, unknown>) =>
-      get(theme, `radius.${SizeVariant.Sm}`, `theme.radius.${SizeVariant.Sm}`),
+    borderRadius: (theme: Record<symbol, unknown>) => get(theme, 'radius.sm', 'theme.radius.sm'),
   },
   [SkeletonVariant.Rectangular]: {
     borderRadius: (theme: Record<symbol, unknown>) => get(theme, 'radius.none', 'theme.radius.none'),
@@ -63,14 +62,12 @@ export const skeleton = {
         },
         description: {
           width: '100%',
-          height: (theme: Record<symbol, unknown>) =>
-            get(theme, `spacing.${SizeVariant.Lg}`, `theme.spacing.${SizeVariant.Lg}`),
+          height: (theme: Record<symbol, unknown>) => get(theme, 'spacing.lg', 'theme.spacing.lg'),
           marginBottom: (theme: Record<symbol, unknown>) => get(theme, 'spacing.sm', 'theme.spacing.sm'),
         },
         price: {
           width: '50%',
-          height: (theme: Record<symbol, unknown>) =>
-            get(theme, `spacing.${SizeVariant.Lg}`, `theme.spacing.${SizeVariant.Lg}`),
+          height: (theme: Record<symbol, unknown>) => get(theme, 'spacing.lg', 'theme.spacing.lg'),
           marginBottom: (theme: Record<symbol, unknown>) => get(theme, 'spacing.sm', 'theme.spacing.sm'),
         },
       },

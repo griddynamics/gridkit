@@ -1,0 +1,22 @@
+{
+  "name": "next-ssr-check",
+  "version": "0.0.0",
+  "private": true,
+  "description": "CTORNDSD-646b fixture. Next.js App Router harness answering CTORNDSD-646 acceptance criteria 9 and 10: does Next server-render the Lit custom elements, does it emit Declarative Shadow DOM, where must the client boundary sit, and what happens with JavaScript disabled? Outside npm workspaces so its React 19 never mixes with the repo's pinned 18.3.1.",
+  "scripts": {
+    "dev": "next dev --port 5373",
+    "build": "next build",
+    "start": "next start --port 5373"
+  },
+  "dependencies": {
+    "next": "^16.3.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@lit-labs/ssr-react": "^0.3.0",
+    "@lit/react": "^1.0.7",
+    "lit": "^3.2.1",
+    "zustand": "^5.0.6"
+  }
+}

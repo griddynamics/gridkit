@@ -1,13 +1,12 @@
 import { get } from '@utils';
 
 import { borders } from './borders';
-import { display, flexAlignItems } from './display';
 
 const stepWidth = 104;
 
 export const stepper = {
   default: {
-    display: display.flex,
+    display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
@@ -37,9 +36,9 @@ export const stepper = {
   },
   step: {
     default: {
-      display: display.flex,
+      display: 'flex',
       flexDirection: 'column',
-      alignItems: flexAlignItems.center,
+      alignItems: 'center',
       justifyContent: 'space-between',
       minWidth: `${stepWidth}px`,
     },
@@ -51,8 +50,8 @@ export const stepper = {
   },
   stepIcon: {
     default: {
-      display: display.flex,
-      alignItems: flexAlignItems.center,
+      display: 'flex',
+      alignItems: 'center',
       position: 'relative',
       zIndex: (theme: Record<symbol, unknown>) => get(theme, 'zIndex.first', 'theme.zIndex.zero'),
       justifyContent: 'center',

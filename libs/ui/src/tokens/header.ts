@@ -1,12 +1,10 @@
 import { get } from '@utils';
-import { display, flexAlignItems } from './display';
 import { borders } from './borders';
-import { cursors } from './cursors';
 
 export const header = {
   container: {
     fontFamily: (theme: Record<symbol, unknown>) => get(theme, 'font.family', 'theme.font.family'),
-    alignItems: flexAlignItems.center,
+    alignItems: 'center',
     backgroundColor: (theme: Record<symbol, unknown>) => get(theme, 'colors.bg.surface', 'theme.colors.bg.surface'),
     maxWidth: '100%',
   },
@@ -19,7 +17,7 @@ export const header = {
   searchColumn: {
     default: {
       flexDirection: 'row',
-      justifyContent: flexAlignItems.center,
+      justifyContent: 'center',
       '& a': {
         margin: (theme: Record<symbol, unknown>) =>
           `${get(theme, 'spacing.none', 'theme.spacing.none')} ${get(theme, 'spacing.md', 'theme.spacing.md')}`,
@@ -31,7 +29,7 @@ export const header = {
       width: '100%',
       padding: (theme: Record<symbol, unknown>) =>
         `${get(theme, 'spacing.md', 'theme.spacing.md')} ${get(theme, 'spacing.lg', 'theme.spacing.lg')}`,
-      alignItems: flexAlignItems.center,
+      alignItems: 'center',
     },
   },
   actionsColumn: {
@@ -46,7 +44,7 @@ export const header = {
   menuRow: {
     default: {
       width: '100%',
-      justifyContent: flexAlignItems.center,
+      justifyContent: 'center',
     },
     column: {
       flexDirection: 'row',
@@ -82,16 +80,16 @@ export const header = {
     closeMenuIconWrapper: {
       width: '40px',
       height: '40px',
-      display: display.flex,
+      display: 'flex',
       justifyContent: 'center',
-      alignItems: flexAlignItems.center,
+      alignItems: 'center',
     },
     openMenuIconWrapper: {
       width: '40px',
       height: '40px',
-      display: display.flex,
+      display: 'flex',
       justifyContent: 'center',
-      alignItems: flexAlignItems.center,
+      alignItems: 'center',
     },
     menuWrapper: {
       margin: (theme: Record<symbol, unknown>) =>
@@ -104,7 +102,7 @@ export const header = {
         `calc(${get(theme, 'spacing.xs', 'theme.spacing.xs')}*3) ${get(theme, 'spacing.none', 'theme.spacing.none')}`,
       borderBottom: (theme: Record<symbol, unknown>) =>
         borders.generic({ width: '1px', color: get(theme, 'colors.border.default', 'theme.colors.border.default') }),
-      cursor: cursors.pointer,
+      cursor: 'pointer',
     },
   },
   icons: {

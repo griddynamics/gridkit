@@ -56,8 +56,7 @@ export const Sidebar = forwardRef<HTMLElement, SidebarProps>((props, forwardedRe
             >
               <Icon
                 name="arrowRight"
-                width={16}
-                height={16}
+                size="lg"
                 styles={{ transform: collapsed ? 'rotate(0deg)' : 'rotate(180deg)', transition: 'transform 0.2s ease' }}
               />
             </button>

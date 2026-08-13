@@ -179,7 +179,16 @@ It serves as the foundation for all text rendering, offering comprehensive contr
 <li>Use \`display\` variant with size control for impactful hero text and headlines</li>
 <li>Leverage theme color tokens through the \`color\` prop for consistent brand colors</li>
 </ul>
-        `,
+        
+
+  <br/>
+  <br/>
+
+<h3>🧩 Web Components track (CTORNDSD-646)</h3>
+<b>Verdict — Native element + shared token CSS.</b> The clearest verdict in the analysis, and the only one with direct measured support. Zero behavior — its whole job is mapping a variant to token-driven CSS. As a custom element it hides a real &lt;h1&gt; from every light-DOM query (confirmed: document.querySelector(&#39;h1&#39;) finds nothing), while a shared stylesheet delivers the same byte saving and keeps the heading discoverable.
+<br/>
+Decision rule and full rationale: <code>docs/webcomponents-migration/05-native-html-guidelines.md</code>.
+`,
       },
     },
   },

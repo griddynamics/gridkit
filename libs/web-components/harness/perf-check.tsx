@@ -34,6 +34,25 @@ import './gd-button-shell';
 const N = 300;
 const TRIALS = 5;
 
+/**
+ * CTORNDSD-646c additions to the original Section 14 harness.
+ *
+ * Section 14 measured one scenario (300 identical buttons) and explicitly flagged two gaps: it
+ * never measured a single-instance mount, and its stylesheet-cache explanation for the Lit/React
+ * mount gap was a hypothesis, not a result. Both are addressed here.
+ *
+ * `SINGLE_REPS` mounts one button at a time, repeatedly, because a single mount is sub-millisecond
+ * and a single `performance.now()` delta is mostly noise. The reported figure is total time / reps.
+ *
+ * The MIXED scenario matters for honesty about the cache: 300 *identical* buttons is the
+ * best possible case for a content-keyed stylesheet cache. A real page renders several variants, so
+ * mixed measures the cache with 5 distinct CSS texts instead of 1. A per-instance-unique theme would
+ * be the worst case, where the cache is pure overhead — noted in the report rather than measured,
+ * since no real consumer themes every button differently.
+ */
+const SINGLE_REPS = 50;
+const VARIANTS = ['primary', 'secondary', 'tertiary', 'outlined', 'text'] as const;
+
 function median(nums: number[]): number {
   const sorted = [...nums].sort((a, b) => a - b);
   return sorted[Math.floor(sorted.length / 2)];
@@ -87,6 +106,77 @@ async function measureLitUpdate(): Promise<number> {
   });
   await Promise.all(els.map((el) => el.updateComplete));
   const elapsed = performance.now() - t0;
+
+  document.body.removeChild(container);
+  return elapsed;
+}
+
+/** 300 buttons cycling through 5 variants — 5 distinct CSS texts, not 1. */
+async function measureLitMountMixed(): Promise<number> {
+  const container = document.createElement('div');
+  container.style.display = 'none';
+  document.body.appendChild(container);
+
+  const t0 = performance.now();
+  const frag = document.createDocumentFragment();
+  const els: GdButtonEl[] = [];
+  for (let i = 0; i < N; i++) {
+    const el = document.createElement('gd-button') as unknown as GdButtonEl;
+    el.variant = VARIANTS[i % VARIANTS.length];
+    el.theme = defaultTheme;
+    el.textContent = `Button ${i}`;
+    els.push(el);
+    frag.appendChild(el);
+  }
+  container.appendChild(frag);
+  await Promise.all(els.map((el) => el.updateComplete));
+  const elapsed = performance.now() - t0;
+
+  document.body.removeChild(container);
+  return elapsed;
+}
+
+/** One button at a time, SINGLE_REPS times. Returns ms per single mount. */
+async function measureLitMountSingle(): Promise<number> {
+  const container = document.createElement('div');
+  container.style.display = 'none';
+  document.body.appendChild(container);
+
+  const t0 = performance.now();
+  for (let i = 0; i < SINGLE_REPS; i++) {
+    const el = document.createElement('gd-button') as unknown as GdButtonEl;
+    el.variant = 'primary';
+    el.theme = defaultTheme;
+    el.textContent = 'Button';
+    container.appendChild(el);
+    await el.updateComplete;
+  }
+  const elapsed = (performance.now() - t0) / SINGLE_REPS;
+
+  document.body.removeChild(container);
+  return elapsed;
+}
+
+function measureReactMountSingle(): number {
+  const container = document.createElement('div');
+  container.style.display = 'none';
+  document.body.appendChild(container);
+
+  const t0 = performance.now();
+  for (let i = 0; i < SINGLE_REPS; i++) {
+    const host = document.createElement('div');
+    container.appendChild(host);
+    const root = createRoot(host);
+    flushSync(() => {
+      root.render(
+        <ThemeProvider isDefault>
+          <Button variant="primary">Button</Button>
+        </ThemeProvider>
+      );
+    });
+    root.unmount();
+  }
+  const elapsed = (performance.now() - t0) / SINGLE_REPS;
 
   document.body.removeChild(container);
   return elapsed;
@@ -210,6 +300,9 @@ async function run() {
   const reactUpdate: number[] = [];
   const shellMount: number[] = [];
   const shellUpdate: number[] = [];
+  const litMountMixed: number[] = [];
+  const litMountSingle: number[] = [];
+  const reactMountSingle: number[] = [];
 
   for (let i = 0; i < TRIALS; i++) {
     reactMount.push(measureReactMount());
@@ -218,23 +311,34 @@ async function run() {
     reactUpdate.push(measureReactUpdate());
     litUpdate.push(await measureLitUpdate());
     shellUpdate.push(await measureShellUpdate());
+    litMountMixed.push(await measureLitMountMixed());
+    litMountSingle.push(await measureLitMountSingle());
+    reactMountSingle.push(measureReactMountSingle());
   }
 
   const results = {
     n: N,
     trials: TRIALS,
+    singleReps: SINGLE_REPS,
     litMountMsMedian: median(litMount),
     reactMountMsMedian: median(reactMount),
     shellMountMsMedian: median(shellMount),
     litUpdateMsMedian: median(litUpdate),
     reactUpdateMsMedian: median(reactUpdate),
     shellUpdateMsMedian: median(shellUpdate),
+    // CTORNDSD-646c additions
+    litMountMixedMsMedian: median(litMountMixed),
+    litMountSingleMsMedian: median(litMountSingle),
+    reactMountSingleMsMedian: median(reactMountSingle),
     litMountRawMs: litMount,
     reactMountRawMs: reactMount,
     shellMountRawMs: shellMount,
     litUpdateRawMs: litUpdate,
     reactUpdateRawMs: reactUpdate,
     shellUpdateRawMs: shellUpdate,
+    litMountMixedRawMs: litMountMixed,
+    litMountSingleRawMs: litMountSingle,
+    reactMountSingleRawMs: reactMountSingle,
   };
 
   (window as unknown as { __PERF_RESULTS__: unknown }).__PERF_RESULTS__ = results;
