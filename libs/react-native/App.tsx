@@ -10,7 +10,8 @@
 import '../../dist/libs/ui/styles.css';
 import { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
+import { useGdFonts } from './src/fonts';
 import { GdButton } from './src/components/GdButton/GdButton';
 import { GdCheckbox } from './src/components/GdCheckbox/GdCheckbox';
 import { GdTypography } from './src/components/GdTypography/GdTypography';
@@ -49,6 +50,19 @@ export default function App() {
   const [checked, setChecked] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [selected, setSelected] = useState<{ name: string } | null>(null);
+  const [fontsLoaded] = useGdFonts();
+
+  // Held deliberately rather than rendering with the fallback face: RN does not re-measure text
+  // that already laid out in a different font, so painting before the faces register produces a
+  // visible reflow — and on a visual-fidelity harness specifically, a first frame in the *wrong
+  // typeface* is the exact failure this whole change exists to remove.
+  if (!fontsLoaded) {
+    return (
+      <View style={styles.loading}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -86,6 +100,12 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
+  loading: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+  },
   container: {
     flexGrow: 1,
     backgroundColor: '#fff',

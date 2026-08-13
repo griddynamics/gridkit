@@ -6,6 +6,7 @@ import {
   type TypographyVariantName,
 } from 'gd-design-core';
 import { pxToNumber } from '../../utils/pxToNumber';
+import { toFontFamily } from '../../utils/toFontFamily';
 import { toFontWeight } from '../../utils/toFontWeight';
 
 export interface GdTypographyProps {
@@ -32,7 +33,11 @@ export function GdTypography({ variant = 'span', styleVariant, theme = {}, child
   const resolved = resolveTypographyStyle(theme, variant, styleVariant);
 
   const style: TextStyle = {
-    fontFamily: resolved.fontFamily === 'inherit' ? undefined : (resolved.fontFamily as string),
+    // The resolver hands back a CSS font stack, which RN cannot look up — `toFontFamily` parses
+    // it and selects the concrete loaded face for this weight/style. `fontWeight` below stays as
+    // the resolver reported it: it is still the correct semantic value, and on the platforms that
+    // do synthesize (react-native-web) it is what actually applies the weight.
+    fontFamily: toFontFamily(resolved.fontFamily, resolved.fontWeight, resolved.fontStyle),
     fontSize: resolved.fontSize === 'inherit' ? undefined : pxToNumber(resolved.fontSize),
     fontWeight: resolved.fontWeight === 'inherit' ? undefined : toFontWeight(resolved.fontWeight),
     lineHeight: resolved.lineHeight === 'inherit' ? undefined : pxToNumber(resolved.lineHeight),

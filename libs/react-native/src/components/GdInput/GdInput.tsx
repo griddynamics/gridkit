@@ -8,6 +8,7 @@ import {
   type InputColorVariantName,
 } from 'gd-design-core';
 import { pxToNumber } from '../../utils/pxToNumber';
+import { toFontFamily } from '../../utils/toFontFamily';
 
 export interface GdInputProps {
   value?: string;
@@ -110,6 +111,8 @@ export function GdInput({
 
   const resolved = resolveInputStyle(theme, color);
   const textColor = disabled ? resolved.disabledColor : resolved.color;
+  // `resolveInputStyle` exposes no `fontWeight`, so this resolves to the family's regular face.
+  const fontFamily = toFontFamily(resolved.fontFamily);
 
   return (
     <View style={{ gap: pxToNumber(resolved.wrapperGap), alignItems: 'flex-start' }}>
@@ -117,7 +120,7 @@ export function GdInput({
         <Text
           style={{
             color: resolved.labelColor,
-            fontFamily: resolved.fontFamily as string,
+            fontFamily,
             fontSize: pxToNumber(resolved.labelFontSize),
             lineHeight: pxToNumber(resolved.labelLineHeight),
           }}
@@ -144,7 +147,7 @@ export function GdInput({
           placeholderTextColor={resolved.disabledColor}
           style={[
             {
-              fontFamily: resolved.fontFamily as string,
+              fontFamily,
               fontSize: pxToNumber(resolved.fontSize),
               color: textColor,
               height: 40,
@@ -186,7 +189,7 @@ export function GdInput({
         <Text
           style={{
             color: resolved.helperTextColor,
-            fontFamily: resolved.fontFamily as string,
+            fontFamily,
             fontSize: pxToNumber(resolved.helperFontSize),
             lineHeight: pxToNumber(resolved.helperLineHeight),
           }}

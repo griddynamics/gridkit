@@ -7,6 +7,7 @@ import {
   type DesignCoreTheme,
 } from 'gd-design-core';
 import { pxToNumber } from '../../utils/pxToNumber';
+import { toFontFamily } from '../../utils/toFontFamily';
 import { toFontWeight } from '../../utils/toFontWeight';
 
 /** Picks only the ViewStyle-compatible fields — gd-design-core's `color` field is for text, not
@@ -83,7 +84,7 @@ export function GdButton({ variant = 'primary', disabled, isLoading, onPress, th
         ) : (
           <Text
             style={{
-              fontFamily: resolved.fontFamily as string,
+              fontFamily: toFontFamily(resolved.fontFamily, resolved.label.fontWeight),
               fontSize: pxToNumber(resolved.fontSize),
               color: resolved.label.color,
               fontWeight: toFontWeight(resolved.label.fontWeight),

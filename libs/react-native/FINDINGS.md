@@ -6,9 +6,17 @@ All 5 GridKit atoms (Button, Checkbox, Typography, Input, Select) are ported to 
 (Expo SDK 51) inside `react-native/`, consuming `gd-design-core`'s shared token resolvers
 and `zustand/vanilla` stores exactly as `libs/web-components`'s Lit port does for the same atoms
 under sibling ticket CTORNDSD-581. The RN track reaches the same "5/5 atoms ported" completion
-state, with 137 automated tests passing (114 `gd-design-core` resolver/store tests + 23 RN
-interaction tests) and one real, verified screenshot of all 5 atoms rendering correctly on a
-booted iOS Simulator (`screenshots/ios-simulator-all-5-atoms.png`).
+state, with 175 automated tests passing (121 `gd-design-core` resolver/store tests + 54 RN
+interaction/adapter tests) and verified screenshots of all 5 atoms rendering on a booted iOS
+Simulator.
+
+> **Update 2026-08-13.** Re-verifying this spike found and fixed a real rendering defect: every atom
+> passed gd-design-core's **CSS font stack** into RN's `fontFamily`, which matches nothing on
+> iOS/Android, so all five silently rendered in the system face. See _CSS-Shaped Token Values_
+> below. The pre-fix render is kept at `screenshots/ios-simulator-all-5-atoms.png` and the fixed one
+> at `screenshots/ios-after-font-fix.png`. Two counts in the original text were also stale (it
+> claimed 114 + 23 = 137 tests "across all 5 atoms", when Button in fact had none); Button now has
+> 13 and the token adapters have 16.
 
 **Conditional on:** the interaction-level and cross-platform-fidelity claims below that this spike
 could NOT verify empirically on-device — see "What Was NOT Verified" — must be confirmed by a
@@ -148,6 +156,77 @@ pair, not parsed** — writing a CSS box-shadow string parser into per-platform 
 (`shadowColor`/`shadowOffset`/`shadowOpacity`/`shadowRadius` on iOS, `elevation` on Android) is
 deferred as a documented gap, out of scope for a spike.
 
+## CSS-Shaped Token Values (found and fixed 2026-08-13)
+
+`gd-design-core`'s resolvers return **web CSS values** for every style-shaped field. That is
+invisible to a CSS-native consumer like the Lit port and load-bearing for React Native. Four
+instances, in the order they were discovered:
+
+| Token shape                    | Example                      | Status                                                  |
+| ------------------------------ | ---------------------------- | ------------------------------------------------------- |
+| px string                      | `'1px'`, `'16px'`            | **Adapted** — `pxToNumber()` (original spike)           |
+| font weight `string \| number` | `500`                        | **Adapted** — `toFontWeight()` (original spike)         |
+| font stack                     | `'"Fira Sans", sans-serif'`  | **Adapted** — `toFontFamily()` + `fonts.ts` (this pass) |
+| `box-shadow` string            | `'0px 8px 15px 1px rgba(…)'` | **Still approximated** — static shadow/elevation pair   |
+
+### The font defect
+
+Every text-bearing atom did `fontFamily: resolved.fontFamily as string`. RN's `fontFamily` on
+iOS/Android is a single key into the native font registry, not a CSS stack, so `"Fira Sans",
+sans-serif` matched nothing and the platform fell back silently — no warning, no error, and a
+green test suite. `react-native-web` masked it completely, because there the value is real CSS and
+`dist/libs/ui/styles.css` had already pulled Fira Sans from Google Fonts. The `as string` cast was
+the tell: it suppressed exactly the type mismatch that would have surfaced this.
+
+Underneath that sat a second layer — the typeface had never been bundled. There was no `expo-font`
+usage, no `useFonts`, and no font assets, so even the correct bare name `Fira Sans` would have
+failed.
+
+**The fix is two files, deliberately split so the pure half is testable without asset resolution:**
+
+- `src/utils/toFontFamily.ts` — parses the stack to a family, then resolves family + weight +
+  italic to a concrete face name. RN does not synthesize weights from one family the way CSS does;
+  each weight and italic is a separately registered face, so the weight has to be part of the
+  lookup. Unregistered weights snap to the nearest registered one (ties round down), so the family
+  stays correct even where the weight is approximated.
+- `src/fonts.ts` — registers those faces via `expo-font`; `useGdFonts()` is consumed by `App.tsx`,
+  which holds first paint until the faces load (RN does not re-measure text already laid out in the
+  fallback face).
+
+The two files share their face tables, and two tests assert they never drift in either direction — a
+face that can be selected but is never loaded reproduces this bug exactly, one weight at a time.
+
+Weight coverage is intentionally partial (Fira Sans 300/400/500/700 + 400/700 italic, Fira Code
+400): those are the only weights gd-design-core emits, and each TTF is ~430 kB. Cost of the fix is
+**7 TTFs / 2.9 MB** added to the iOS bundle.
+
+**Verified:** web resolves every text node to a loaded face with no stack remaining
+(`document.fonts` confirms all 7 registered); the iOS bundle exports all 7 TTFs; and the fixed
+render was confirmed on a booted iPhone 16 Simulator — Fira Sans throughout, with a true italic face
+on the caption and the 500 face on the button label. **Not verified:** anything preventing
+regression, since that check was a human looking at a simulator rather than a harness. Android
+remains unbooted.
+
+### Why this matters beyond the bug
+
+The token values assume a CSS consumer. Three per-platform adapters now exist purely to undo that
+assumption, and a fourth case (`box-shadow`) is still unhandled. Whether that adapter layer is the
+intended architecture or an accumulating tax is a design-token decision, not a React Native one —
+and it is the question this spike most wants answered.
+
+## Tooling Defect: root `dev:react-native` swallowed its flags (fixed 2026-08-13)
+
+`"dev:react-native": "npm run start --workspace=libs/react-native"` did not forward arguments.
+`npm run dev:react-native -- --ios --localhost` appended the flags to the _inner_ `npm run`
+invocation, which parsed them as npm config and warned `Unknown cli config "--ios"`; Expo then
+started in default LAN mode. Since this README documented that exact command as the fix for the
+"Could not connect to the server" failure recorded in the Environment Note above, the documented
+workaround silently did nothing.
+
+Fixed by terminating the root script with `--` so appended args reach `expo start`. Verified:
+`npm run dev:react-native -- --web --port 5475` now runs `expo start --web --port 5475` with no
+config warnings.
+
 ## Select Approach Evaluation (Decision 2)
 
 RN has no `popover`/CSS-anchor-positioning equivalent, so the Lit port's `popover="auto"` +
@@ -247,11 +326,18 @@ at all:
    async lag.
 3. **The Select approach comparison's actual dismiss/rotation/flicker behavior** — both options
    were built and reasoned about, neither was tapped through on a real device.
-4. **Cross-platform visual-parity comparison** — the screenshot proves the RN atoms render
+4. **Cross-platform visual-parity comparison** — the screenshots prove the RN atoms render
    plausibly and match the intended tokens' values (verified: yellow primary button fill,
    correct checkbox border color, correct heading/body/caption type scale, bordered input with
    label/helper text, bordered select trigger with chevron), but no pixel-level or side-by-side
    comparison against the real Storybook components or the Lit atoms was performed.
+
+   **This item is how the font defect survived.** The original pass checked the type _scale_ and
+   recorded it as correct, which it was — while the _typeface_ was silently wrong in the same
+   screenshot. A parity check that compares metrics but not rendered glyphs cannot catch a font
+   fallback. Fixed and re-verified on device (see _CSS-Shaped Token Values_), but the general point
+   stands: "looks plausible" is not parity, and this list's own wording proved it.
+
 5. **Android** — only an iOS Simulator was exercised; nothing here has been checked on the Android
    emulator, despite one being present in this environment (`~/Library/Android/sdk/tools/emulator`)
    — booting and provisioning an AVD, then repeating the above, was out of time budget for this
@@ -276,6 +362,15 @@ bodies restored), `libs/design-core/src/tokenResolvers/select.ts` (new),
 (status), `react-native/**` (all 5 atom components, tests, `App.tsx`, `metro.config.js`,
 `package.json`, `README.md`).
 
+**Touched in the 2026-08-13 pass** (font fix + test gap): `react-native/src/utils/toFontFamily.ts`
+and its test (new), `react-native/src/fonts.ts` (new), `react-native/src/types/assets.d.ts` (new),
+`react-native/src/components/GdButton/GdButton.test.tsx` (new — the atom that had no tests),
+`react-native/src/components/{GdButton,GdInput,GdSelect,GdTypography}/*.tsx` (route `fontFamily`
+through the adapter), `react-native/App.tsx` (gate first paint on `useGdFonts()`),
+`react-native/package.json` (`@expo-google-fonts/*`), and the root `package.json`
+(`dev:react-native` flag forwarding). `gd-design-core` was **not** modified — the CSS-shaped values
+are adapted on the RN side, deliberately leaving the token-architecture decision open.
+
 **Explicitly NOT touched**: `libs/ui` (`gd-design-library`) source, build config, or shipped
 output; `libs/web-components/*` (any file — that spike is already complete and this ticket does
 not reopen it); `libs/design-core/src/stores/*` (all 3 stores consumed unmodified); `tsconfig.base.json`;
@@ -287,7 +382,14 @@ not reopen it); `libs/design-core/src/stores/*` (all 3 stores consumed unmodifie
   driver) so future spikes/PRs on this track get the same "verified live" rigor the Lit spike had
   via `chrome-devtools-mcp` — this is the single biggest gap this spike's own verification hit.
 - Implement a CSS `boxShadow`-string → per-platform shadow-prop parser (shared utility, would also
-  benefit any future RN atom with a shadow token).
+  benefit any future RN atom with a shadow token). This is the last unhandled CSS-shaped token value
+  — see _CSS-Shaped Token Values_ for the other three and why the category matters more than the
+  instances.
+- Decide the design-token question the font defect exposed: do token values become
+  platform-neutral, or are per-platform adapters (`pxToNumber`, `toFontWeight`, `toFontFamily`, and
+  a future shadow parser) the accepted permanent architecture?
+- Trim the font bundle. The fix adds 2.9 MB of TTFs for 7 faces. Subsetting, or dropping the
+  weights nothing currently requests, is a real saving nobody has measured.
 - Full `GdSelect` parity (multi-select, search filtering, full keyboard/focus-traversal) — the
   underlying `createSelectStore` already supports multi-select and search; only the two adapters'
   own reduced implementation scope is the limiter.

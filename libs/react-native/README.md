@@ -30,11 +30,16 @@ uses for `gd-design-library`. No build step in between; editing a token resolver
 immediately.
 
 ```bash
-npm install                 # from the repo root (npm workspaces)
+npm install                 # from the repo root (npm workspaces) — REQUIRED, see note below
 cd libs/react-native
 npm run type-check
-npm test                    # 23 interaction tests across all 5 atoms (jest-expo + RNTL)
+npm test                    # 54 tests across all 5 atoms + token adapters (jest-expo + RNTL)
 ```
+
+`npm install` at the **repo root** is not optional. On a stale `node_modules`, `tsc` emits hundreds
+of errors (`Cannot use JSX unless the '--jsx' flag is provided`, `Cannot find module
+'react-native'`) that all cascade from one cause: `expo/tsconfig.base` is unresolvable because
+`expo` is not installed.
 
 Workspace hoisting gives `react-test-renderer` and `@testing-library/react-native` (no version
 conflict, so npm hoists them to the repo root) a _different_ `react` module instance than this
@@ -43,9 +48,30 @@ package's own pinned `react@18.2.0` (kept local because it conflicts with the ro
 inside `act()`. Fixed with a Jest `moduleNameMapper` forcing every `react` import back to this
 package's own `node_modules/react` (see `package.json`'s `jest` config).
 
-This package also depends on `zustand` (required by `gd-design-core` at runtime) and
+This package also depends on `zustand` (required by `gd-design-core` at runtime),
 `react-native-svg` (Checkbox's check/indeterminate icons, Select's chevron — see `FINDINGS.md`
-Decision 3).
+Decision 3), and `@expo-google-fonts/fira-sans` + `@expo-google-fonts/fira-code` (the actual
+typeface files — see _Fonts_ below).
+
+### Fonts
+
+`gd-design-core` returns `fontFamily` as a **web CSS stack** (`'"Fira Sans", sans-serif'`). RN's
+`fontFamily` on iOS/Android is a single native-registry lookup key, not CSS, so that string matches
+nothing and the platform silently falls back to the system face. Two pieces close this:
+
+- `src/utils/toFontFamily.ts` — parses the stack and resolves family + weight + italic to a
+  concrete face name (`FiraSans_500Medium`), snapping unregistered weights to the nearest
+  registered one. Pure and unit-tested.
+- `src/fonts.ts` — registers those faces with `expo-font`. `useGdFonts()` returns
+  `[loaded, error]`; **hold first paint until `loaded`**, as `App.tsx` does, because RN does not
+  re-measure text that already laid out in the fallback face.
+
+The two files share their face tables, and `toFontFamily.test.ts` asserts they never drift — a face
+that can be _selected_ but is never _loaded_ reproduces the original bug exactly.
+
+Weight coverage is deliberately partial (300/400/500/700 plus 400/700 italic, and Fira Code 400):
+gd-design-core emits only those weights, and each TTF is ~430 kB. Adding a weight means adding it to
+both files.
 
 ### Metro config is required, not optional
 
@@ -70,6 +96,12 @@ If the simulator reports "Could not connect to the server" using the default LAN
 `npm run dev:react-native -- --ios --localhost` — iOS Simulators share the host's network stack
 directly, so `localhost` works in environments where the LAN-visible IP doesn't (see
 `FINDINGS.md`).
+
+Flag forwarding through the root script only works because `dev:react-native` ends in `--`. Without
+it, npm parses `--ios`/`--localhost` as its own config, warns `Unknown cli config "--ios"`, and
+starts Expo in default LAN mode — i.e. the documented workaround silently did nothing. If you see
+that warning, your checkout predates the fix; use
+`cd libs/react-native && npx expo start --ios --localhost`.
 
 ## Workspace membership
 

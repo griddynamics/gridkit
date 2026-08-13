@@ -10,6 +10,7 @@ import {
   type SelectOption,
 } from 'gd-design-core';
 import { pxToNumber } from '../../utils/pxToNumber';
+import { toFontFamily } from '../../utils/toFontFamily';
 
 export interface GdSelectAnchoredPrototypeProps {
   items: SelectOption[];
@@ -83,7 +84,7 @@ export function GdSelectAnchoredPrototype({
   };
 
   const resolved = resolveSelectStyle(theme, color);
-  const fontFamily = resolved.fontFamily as string;
+  const fontFamily = toFontFamily(resolved.fontFamily, resolved.fontWeight);
 
   return (
     <View style={{ position: 'relative' }}>
