@@ -557,7 +557,16 @@ The Button component offers six distinct visual styles to accommodate different 
 
 <h3>🔧 Technical Implementation</h3>
 Built with React's \`forwardRef\` for proper ref handling, the component integrates seamlessly with the theme system via \`useTheme\` hook. It extends Box component props for flexible layout control and uses styled-components for dynamic theming.
-        `,
+        
+
+  <br/>
+  <br/>
+
+<h3>🧩 Web Components track (CTORNDSD-646)</h3>
+<b>Verdict — Lit custom element.</b> Owns variant, loading and focus-ring state, and CTORNDSD-286 was a button style-collision bug — Shadow DOM isolation is the reason. Ported as &lt;gd-button&gt;: 1.87 kB gzip vs 19.07 kB.
+<br/>
+Decision rule and full rationale: <code>docs/webcomponents-migration/05-native-html-guidelines.md</code>.
+`,
       },
     },
   },

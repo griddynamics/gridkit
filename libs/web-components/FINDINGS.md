@@ -1,10 +1,30 @@
 # CTORNDSD-581 Findings — Lit Components as a Wrapper for GridKit
 
 **Status:** Spike complete — 5/5 atoms ported, all named validations executed with real
-browser-level reproductions (not assumed). See `plans/ctorndsd-581-lit-webcomponents-spike.md`
-for the original scope and Acceptance Criteria this document answers against. A subsequent
-visual-fidelity pass (Section 9) found and fixed a systemic root cause in `gd-design-core`'s
-resolver defaults, plus per-atom structural CSS gaps — verified against real Storybook stories.
+browser-level reproductions (not assumed). A subsequent visual-fidelity pass (Section 9) found and
+fixed a systemic root cause in `gd-design-core`'s resolver defaults, plus per-atom structural CSS
+gaps — verified against real Storybook stories.
+
+**Scope baseline this document answers against.** The original spike plan
+(`plans/ctorndsd-581-lit-webcomponents-spike.md`) is **not tracked** — `plans/` is gitignored — and
+Jira CTORNDSD-581 carries no description or acceptance criteria of its own. So that the document is
+self-contained and reviewable without it, the go/no-go questions it answers are stated here
+directly:
+
+1. Does Shadow DOM concretely prevent the CTORNDSD-286 style-collision failure mode? (Section 1)
+2. Do the components server-render and hydrate, including with JavaScript disabled? (Section 2)
+3. How does per-atom bundle size compare to the React+Emotion originals? (Section 3)
+4. Do the two riskiest small-atom bets hold — Input's cursor stability under late external writes,
+   and Select replacing hand-rolled outside-click logic with the native `popover` attribute?
+   (Sections 4, 6)
+5. What does Shadow DOM cost in DOM discoverability? (Section 5)
+6. Can React consumers use the components, and what does that require? (Section 7)
+7. Do the ports reproduce the real components' appearance and theme reactivity faithfully?
+   (Sections 9–13, 16)
+
+Broader architecture, monorepo, migration-roadmap, and full-benchmark questions are **out of scope
+for this document** — they belong to CTORNDSD-646 and are answered in
+`docs/webcomponents-migration/`.
 
 ## Overall Verdict: **GO** (conditional — see Conditions below)
 
@@ -20,8 +40,16 @@ blockers.
 
 ## 1. CTORNDSD-286 reproduction — **CONFIRMED: Shadow DOM prevents the collision**
 
-Harness: `harness/ctorndsd-286-repro.html` / `.tsx`. Loaded in a real Chromium instance (not a
-unit test) via `chrome-devtools-mcp`. Screenshot: `screenshots/ctorndsd-286-repro.png`.
+Harness: `harness/shell-isolation-check.html` / `.tsx` — this probe was originally authored as
+`harness/ctorndsd-286-repro.*` and was later folded into the shell-isolation harness (Section 15),
+which runs the same plain-Emotion control and the same `gd-button`/`gd-checkbox` leak checks
+alongside the added `gd-button-shell` probe. Loaded in a real Chromium instance (not a unit test)
+via `chrome-devtools-mcp`.
+
+**Evidence is the inline JSON verdict object below, not a screenshot.** The screenshot captured
+during the session is not tracked — `/libs/web-components/screenshots/` is gitignored. Recapturing
+and committing it is follow-up work under CTORNDSD-646c; this finding is the spike's primary
+go/no-go signal, so its visual evidence should not stay untracked.
 
 Setup: a host-app-style global Emotion reset (simulating a Next.js app / a second
 Emotion-based library such as Material UI's `CssBaseline`) is injected via `<Global>`,
@@ -57,6 +85,14 @@ Tooling: `@lit-labs/ssr` (added as a devDependency of this package only), driven
   server with zero `<script>` tags — confirmed 0 scripts on the page): both `gd-button` and
   `gd-typography` arrive with populated, correctly styled shadow roots purely from the
   browser's native Declarative Shadow DOM parsing. No JavaScript executed at all.
+
+  > **Superseded in part — see Section 20.** The "correctly styled" half of that sentence was
+  > true when written and is **no longer true for `gd-button`**. Section 12's rewrite moved its
+  > theme CSS from inline styles to a runtime Constructable StyleSheet, which cannot be
+  > serialized into a `<template shadowrootmode>`. `gd-button` now arrives structurally correct
+  > but visually unstyled with zero JS. `gd-typography` and the other three atoms are
+  > unaffected. The DSD-parsing half of the claim still holds for both.
+
 - **Hydration check** (`harness/ssr-dsd-hydrated.html` + `ssr-dsd-hydrate-check.ts`, same SSR
   markup but Lit's client JS loads afterward): result —
 
@@ -298,7 +334,10 @@ icon; Input shows the label above / helper text below with a thin square-cornere
 matching the reported story almost exactly; Typography renders the correct descending
 h1–h6 scale; Select's trigger and open dropdown both show square corners, the rotating
 chevron, the real drop shadow, and the pale-amber (`#FFF7E5`) hover/selected highlight matching
-the real dropdown pixel-for-pixel. Screenshots: `screenshots/fidelity-check-after-fix.png`.
+the real dropdown pixel-for-pixel. (The `screenshots/fidelity-check-after-fix.png` capture from
+that session is not tracked — `/libs/web-components/screenshots/` is gitignored; recapturing and
+committing it is follow-up work under CTORNDSD-646c. The computed-style values quoted above are
+the durable evidence.)
 
 **Vocabulary mismatch — since fixed:** `gd-design-core`'s `InputColorVariantName` originally
 read `default | success | primary | error`, which did not line up 1:1 with the real
@@ -820,8 +859,18 @@ package rather than only `gd-design-core`.
 
 ## Extrapolated full-catalog migration cost
 
+**Superseded by CTORNDSD-646d's complexity matrix** (`docs/webcomponents-migration/12-complexity-matrix.md`),
+which is built from the real component list rather than extrapolated from 5 samples. The paragraph
+below is retained as the original spike's own estimate; where the two disagree, the matrix wins.
+
+Corrected catalog figures: the real catalog is **63** components across **5** tiers — 23 atoms
+(excluding `types/`), 20 molecules, 13 organisms, 6 layout (`Portal`, `Scroll`, `Column`, `Row`,
+`ChatContainer`, `FlexContainer`), and 1 widget. With 5 ported, **58 remain**. Earlier drafts of
+this section said "the remaining ~63" (63 is the total, not the remainder) and "~68-component
+list" (wrong), and both omitted the `layout` tier entirely.
+
 Porting 5 atoms (chosen to stress 5 distinct risk axes) took the equivalent of the plan's
-~8.5 day budget (Setup through Select) plus the reproductions above. The remaining ~63
+~8.5 day budget (Setup through Select) plus the reproductions above. The remaining 58
 components in the catalog skew toward molecules/organisms with materially more internal
 composition (nested components, more complex slotting, more state) than any of these 5 atoms
 except Select. A reasonable extrapolation: atoms remaining in the catalog are likely
@@ -833,12 +882,12 @@ follow-on scoping pass across the actual component list, not an extrapolation fr
 
 ## Follow-on tickets / open questions (carried forward regardless of outcome)
 
-- Fix or scope around the `tsconfig.harness.json` JSX pollution documented in Section 14 —
-  `perf-check.tsx`'s relative import of the real `Button.tsx` pulls `libs/ui` component files
-  into the same TS program as this package's `HTMLElementTagNameMap` augmentations, breaking
-  type-check for `ImageStyled.tsx`/`WrapperStyled.tsx`/`TypographyStyled.tsx`/`ColumnStyled.tsx`/
-  `RowStyled.tsx`/`TooltipStyled.tsx`/`InputWrapperStyled.tsx`. Confirmed pre-existing (predates
-  Sections 13–14), not a regression from this work, and does not affect `tsconfig.lib.json`.
+- ~~Fix or scope around the `tsconfig.harness.json` JSX pollution documented in Section 14~~ —
+  **RESOLVED.** `harness/gd-form-elements-jsx.d.ts` declares the missing
+  `JSX.IntrinsicElements` entries for the `gd-*` tags, which closes the augmentation collision
+  described in Section 16. Verified: both `tsc -p libs/web-components/tsconfig.lib.json --noEmit`
+  and `tsc -p libs/web-components/tsconfig.harness.json` report **0 errors**, so
+  `npm run type-check:web-components` (which runs both) passes clean.
 - Should a design-token-export-to-CSS-custom-properties utility become its own shared
   prerequisite ticket? (No such infrastructure exists in this repo today; this spike's theming
   bridge is hand-rolled and scoped to only the 5 ported atoms' token needs.)
@@ -860,7 +909,8 @@ follow-on scoping pass across the actual component list, not an extrapolation fr
 - Re-verify the React 19 property/attribute-assignment claim (Section 7) directly, rather than
   relying on documented guidance — this spike's environment only had React 18 installed.
 - A full-catalog migration cost estimate (see above) needs a dedicated scoping pass across the
-  real ~68-component list, not an extrapolation from 5 atoms.
+  real 63-component list (58 remaining), not an extrapolation from 5 atoms. **Owned by
+  CTORNDSD-646d.**
 - ~~`gd-design-core`'s `InputColorVariantName`/Select color-variant vocabulary mismatch with the
   real `InputColorVariant`~~ — fixed (Section 9); member names now match exactly.
 - A design system-wide audit of `gd-design-core`'s remaining resolvers (beyond the 5 covered
@@ -1129,8 +1179,9 @@ component's own themeless/partial-theme behavior), not a resolution bug, and it 
 to Select; the same trap would apply to any shorthand-producing field in Checkbox/Input/Button
 under an incomplete test theme.
 
-**Pre-existing, unrelated gap confirmed (not introduced by this change):** `tsconfig.harness.json`
-currently fails type-check with 45 errors (`Property 'gd-<name>' does not exist on type
+**Pre-existing, unrelated gap confirmed (not introduced by this change) — since RESOLVED, see the
+note at the end of this section:** `tsconfig.harness.json`
+failed type-check with 45 errors (`Property 'gd-<name>' does not exist on type
 'JSX.IntrinsicElements'` / `JSX element type 'Component' does not have any construct or call
 signatures`) across several real `libs/ui` component files (`ImageStyled.tsx`,
 `InputWrapperStyled.tsx`, `TypographyStyled.tsx`, `WrapperStyled.tsx`, `ColumnStyled.tsx`,
@@ -1147,8 +1198,500 @@ HTMLElementTagNameMap`, then use it as a JSX tag), it makes TypeScript require a
 these custom elements). **Confirmed via `git stash` that this predates today's change** — reverting
 every file touched in Sections 13 and 16 and re-running `tsconfig.harness.json` reproduces the
 exact same 45 errors, so this is a latent, already-existing gap surfaced by `perf-check.tsx`'s presence,
-not a regression from the single-source-of-truth work. Left unfixed as out of scope for this
-change (`tsconfig.lib.json` — the actual shipped output — remains clean); worth a follow-up
-ticket to either scope `perf-check.tsx`'s Button import differently (e.g. dynamic import, or an
-isolated tsconfig) or to move the `HTMLElementTagNameMap` augmentations somewhere that doesn't
+not a regression from the single-source-of-truth work. Was left unfixed as out of scope for that
+change (`tsconfig.lib.json` — the actual shipped output — remained clean); the follow-up options
+considered at the time were to either scope `perf-check.tsx`'s Button import differently (e.g.
+dynamic import, or an isolated tsconfig) or to move the `HTMLElementTagNameMap` augmentations
+somewhere that doesn't
 merge into `libs/ui`'s own compilation unit.
+
+**Update — RESOLVED after the above was written.** `harness/gd-form-elements-jsx.d.ts` takes a third
+option neither of the two above considered: rather than isolating `perf-check.tsx`'s import or
+relocating the `HTMLElementTagNameMap` augmentations, it simply declares the
+`JSX.IntrinsicElements` entries TypeScript was demanding for the `gd-*` tags. Verified:
+`tsc -p libs/web-components/tsconfig.lib.json --noEmit` and
+`tsc -p libs/web-components/tsconfig.harness.json` both report **0 errors**, so
+`npm run type-check:web-components` (which runs both) passes clean and no follow-up ticket is
+needed.
+
+## 17. CTORNDSD-646b — form participation, CSS Parts, React 19, and Next.js
+
+All four were open items carried out of the original spike. Each is now measured. Harnesses:
+`harness/form-participation-check.{html,ts}` (this package), `fixtures/react19-check/`, and
+`fixtures/next-ssr-check/` (both outside npm workspaces so their React 19 never mixes with the
+repo's pinned 18.3.1). Screenshots are tracked this time, under
+`docs/webcomponents-migration/assets/`.
+
+### 17.1 `ElementInternals` form participation — PASS, with one real bug found and fixed
+
+`gd-input` and `gd-checkbox` are now `formAssociated`. Verified in real Chromium:
+
+```json
+{
+  "gd-input appears in form.elements": true,
+  "gd-checkbox appears in form.elements": true,
+  "email.validity.valueMissing": true,
+  "email.validationMessage": "Please fill out this field.",
+  "terms.validationMessage": "Please check this box if you want to proceed.",
+  "host matches :invalid": true,
+  "unchecked gd-checkbox absent from FormData (native semantics)": true,
+  "FormData after fill": { "email": "user@example.com", "terms": "on", "optin": "yes" },
+  "nested gd-input disabled by ancestor <fieldset disabled>": true
+}
+```
+
+A **trusted** submit click (CDP, not a synthetic event) on an invalid form was correctly blocked —
+the submit handler never ran — and the browser focused the invalid control. Notably the inner
+`<input>` receives focus, not just the host (`shadowRoot.activeElement` is `INPUT`), **without**
+`delegatesFocus`; passing `this._input` as `setValidity`'s anchor is sufficient. A trusted valid-path
+submit then produced `{ "email": "real@user.test", "terms": "on" }`.
+
+**Bug found by measurement, not review.** The first implementation of `formResetCallback` called
+`createCheckboxStore`'s `syncControlledValue(this._defaultChecked)`. Reset appeared to work — the
+`checked` property returned to `undefined` — but the box **stayed checked and kept submitting
+`'on'`**. Root cause: `syncControlledValue(undefined)` deliberately _preserves_ the current
+`checked`, which is faithful to React (controlled → uncontrolled keeps its value) and exactly wrong
+for form reset. Fixed by adding a distinct `resetTo(checked)` action to `gd-design-core` — it writes
+`checked` even for an `undefined` default and fires no `onValueChange`, because a native checkbox
+emits no `change` event on `form.reset()`. 3 unit tests added (73 total, all passing).
+
+**This is the `attribute: false` collision Section 8 predicted, and it is real.** Two divergences from
+native remain, documented rather than hidden:
+
+1. `gd-checkbox.checked` reads `undefined` for an uncontrolled checkbox even when it _is_ checked.
+   Verified: `.checked === undefined` while the inner input's `checked === true` and `FormData`
+   contains `terms=on`.
+2. `form.reset()` restores the value captured at first connect, not a `checked` attribute. Assigning
+   `.checked` after mount changes current state but not what reset restores.
+
+**Testability finding:** `gd-checkbox`'s native input is `0x0` (visually hidden), so a trusted click
+cannot target the checkbox a11y node — it times out. Click the label or indicator instead. Any E2E
+suite against this component must know that.
+
+A11y bonus, unprompted: the accessibility tree exposes `invalid="true"` on the host and propagates
+`disabled` from the ancestor fieldset.
+
+### 17.2 CSS Parts — PASS, unambiguous
+
+`part` attributes added to `gd-button` (`button`, `content`, `icon-start`, `icon-end`, `spinner`),
+`gd-input` (`outer`, `label`, `row`, `input`, `border`, `outline`, `helper`), and `gd-checkbox`
+(`label`, `input`, `indicator`). Light-DOM CSS reached every one:
+
+```json
+{
+  "::part(button) border": "rgb(255, 0, 255) / dashed",
+  "::part(content) letter-spacing": "4px",
+  "::part(input) background": "rgb(0, 255, 255)",
+  "::part(label) text-transform": "uppercase",
+  "::part(indicator) outline": "rgb(255, 0, 0) / solid",
+  "CONTROL: `gd-button button { border-width: 99px }` did NOT cross the boundary": "4px"
+}
+```
+
+The control matters: a plain descendant selector cannot pierce the shadow root, so `::part()` is
+genuinely the mechanism doing the work, not an ambient-inheritance artifact.
+
+Part names are deliberately the short semantic role rather than the internal class names
+(`::part(content)`, not `.gd-button__content`) — the classes are what the dynamic stylesheet targets
+and may change; part names are public API.
+
+### 17.3 React 19 — closes Section 7 and GO condition 3
+
+Measured against **React 19.2.8** in `fixtures/react19-check`:
+
+```json
+{
+  "Q1a. object prop reached the PROPERTY by reference (theme === defaultTheme)": true,
+  "Q1b. object prop stringified into an attribute?": null,
+  "Q1c. boolean prop reached the property": true,
+  "Q1d. string prop reached the property": "typed-by-react",
+  "Q1e. theme actually rendered — indicator background": "rgb(255, 184, 0)",
+  "Q2a. addEventListener('gd-change') fired (control)": 1,
+  "Q2b. onGdChange JSX prop fired": 0,
+  "Q2c. onGdChange stringified into an attribute?": null,
+  "VERDICT": "@lit/react STILL needed for events"
+}
+```
+
+Section 7's documented guidance is confirmed exactly: React 19's native heuristic covers
+property/attribute **assignment** and does not extend to custom **events**. The `onGdChange` prop is
+**silently dropped** — no attribute, no warning, no error. That silent failure mode is the strongest
+argument for generating the React wrapper layer rather than hand-maintaining it.
+
+### 17.4 Next.js — the two findings that change how this ships
+
+Next.js 16.3.0, App Router, Turbopack, React 19.2.8 (`fixtures/next-ssr-check`).
+
+**Finding A — Turbopack compiling the Lit _source_ silently breaks all reactivity.** Pointing the
+fixture at `libs/web-components/src` produced empty shadow roots on every element. The cause:
+
+```text
+Error: The following properties on element gd-typography will not trigger updates as expected
+because they are set using class fields: variant, as, styleVariant, theme.
+```
+
+`tsconfig.base.json` sets `experimentalDecorators: true` / `target: es2015` and
+`libs/web-components/tsconfig.json` sets `useDefineForClassFields: false` — Vite honors these; **Turbopack
+does not apply the consuming project's tsconfig to source outside its own project root**, so it emits
+native class fields that shadow Lit's `@property` accessors. Components register, attach a shadow
+root, and render nothing. Repointing at the **built** package restored them (shadow content
+0 → 350 and 178 bytes; the class-field error gone).
+
+The lesson generalizes past Turbopack: this package must be consumed as **built output**, never as
+TypeScript source. The `resolve.alias` in `libs/web-components/vite.config.ts` is gated to
+`command === 'serve'` for this repo's own dev ergonomics — it is not a consumption pattern.
+
+**Finding B — Next emits no Declarative Shadow DOM, so there is no no-JS rendering.** Raw
+server HTML (`curl`, zero JS executed) contains the tags and their text:
+
+```html
+<gd-button id="server-button" variant="primary">Server-rendered label</gd-button>
+<gd-typography id="server-typography" variant="h2" as="h2">Server-rendered heading</gd-typography>
+```
+
+but `<template shadowrootmode>` count is **0**, and `<h2>` count is **0**. So without JavaScript a
+consumer gets unstyled text and **no headings at all** — a real SEO consequence, since
+`gd-typography` renders its `h2` inside the shadow root. Section 2's DSD result stands but is
+`@lit-labs/ssr`-specific; it does **not** happen automatically under Next.
+
+After hydration everything upgrades correctly: shadow roots populate, the server-streamed text is
+slotted (not lost — `slot.assignedNodes()` returns it; an earlier reading of `inner.textContent` as
+empty was a measurement error, since that excludes slotted light-DOM nodes), and the rendered
+background is a real theme colour. `document.querySelector('h2')` still returns `null` — Section 5's
+gap holds under Next.
+
+**Finding C — `gd-design-library/tokens` cannot be imported in a React Server Component.** A
+try/catch probe in a server component returned:
+
+```json
+{ "ok": false, "error": "TypeError: ...vendored/rsc/react.js.createContext is not a function" }
+```
+
+Not the expected `HTMLElement is not defined`; it fails _earlier_. The token barrel transitively
+imports `@emotion/react` (via `libs/ui/src/tokens/utils.ts`'s `keyframes`, the same import Section 13
+flagged as a bundle-size risk), and `@emotion/react` calls `React.createContext`, which the RSC React
+build does not provide. So the supposedly framework-agnostic **token** package is not RSC-safe. The
+`'use client'` boundary is therefore mandatory, and a dynamic `import()` inside a try/catch does not
+help — Turbopack still pulls the module into the server graph at resolve time.
+
+**Finding D — placing a Next fixture inside the repo breaks Nx repo-wide.** Next generates
+`fixtures/next-ssr-check/.next/dev/package.json` with no `name`, and Nx then refuses to build the
+project graph at all: _"The projects in the following directories have no name provided"_ — every
+`nx` command fails until excluded. Fixed with a `.nxignore` containing `fixtures/**`.
+
+### 17.5 Caveat on one number
+
+The Next fixture consumes `dist/libs/ui/tokens` from an existing build. A button background measured
+`rgb(252, 194, 43)` there versus `#FFB800` (`rgb(255, 184, 0)`) in the Vite harness and the React 19
+fixture. Both are real token colours, so this is most likely a stale `dist` rather than a resolution
+bug — but it was **not** run to ground, and is recorded as an open question rather than explained
+away. Anyone re-running the Next fixture should `npm run build:ui` first.
+
+### 17.6 `gd-button type="submit"` submitted nothing — found by swapping the harness's native buttons
+
+The form-participation harness originally used native `<button type="submit">` / `type="reset"`, so
+it never exercised `gd-button` on the submit path. Replacing them with `<gd-button type="submit"
+variant="primary">` / `<gd-button type="reset" variant="tertiary">` broke both actions outright.
+
+A trusted CDP click produced `lastSubmit: null`. The cause is structural, not a bug in the port's
+wiring: a submit button's form owner is the nearest ancestor `form` **in its own tree**, and the real
+`<button>` lives in a shadow root containing no form.
+
+```json
+{
+  "inner submit <button>.form": null,
+  "inner reset <button>.form": null,
+  "gd-button host in form.elements": false
+}
+```
+
+`type` was still forwarded to the inner button and the a11y tree still reported a button, so the
+`type` prop looked implemented while doing nothing — invisible to a DOM or a11y snapshot, and
+invisible to the pre-existing tests. `gd-button` is also not form-associated (no `ElementInternals`),
+unlike `gd-input` / `gd-checkbox`, so 17.1's mechanism does not cover it.
+
+**Fixed in `gd-button._onClick`:** resolve the form with `closest('form')` — which correctly does not
+pierce shadow boundaries, matching the platform's own scoping — then call `requestSubmit()` (so
+interactive validation still runs and the `submit` event stays cancelable) or `reset()`. Consumers
+write nothing; the harness bridge that first proved this out was removed again.
+
+**The interesting part — `queueMicrotask` is a trap here, and only a trusted click reveals it.**
+Native activation behaviour runs _after_ the click finishes dispatching, which is what lets a
+consumer's `preventDefault()` cancel submission. The listener sits on the inner button, the innermost
+node in the path, so it always runs first and a synchronous `defaultPrevented` read is always
+`false`. Deferring to a microtask looks like the fix and is not. Measured ordering:
+
+| Dispatch                 | Observed order                                                            |
+| ------------------------ | ------------------------------------------------------------------------- |
+| **Trusted** (CDP click)  | `inner-listener` → `microtask(false)` → `host-listener` → `timeout(true)` |
+| Synthetic (`el.click()`) | `inner-listener` → `host-listener` → `microtask(true)` → `timeout(true)`  |
+
+Under a trusted click the browser initiates dispatch from native code, so the JS stack empties after
+each listener callback and a microtask checkpoint runs _between_ listeners. Under `el.click()` the
+whole dispatch sits in one stack frame and no checkpoint occurs mid-dispatch. A microtask
+implementation therefore **passes a synthetic test and breaks for real users** — the inverse of
+Section 6's false negative, and a second, independent reason this package's tests use `userEvent`
+rather than `el.click()`. A task-queue deferral (`setTimeout(…, 0)`) reads the final value and lets
+any listener in the path cancel, including light-DOM ancestors.
+
+One documented deviation remains: `event.submitter` is `null`, because `requestSubmit(submitter)`
+demands a submit button already associated with the form. Nothing is lost in `FormData` terms —
+`ButtonProps` exposes no `name` / `value`, so a real `<Button type="submit">` contributes no entry
+either.
+
+Covered by 10 tests in `gd-button.spec.ts`, including the null-form-owner premise, interactive
+validation, cancellation from both host and ancestor, `disabled`, no-ancestor-form, and the
+slotted-into-a-shadow-form case. Two incidental notes from writing them:
+
+- The trusted clicks leave the real cursor parked where they landed, **outliving the test**. That
+  made a later colour assertion sample `:hover` tokens (`rgb(246, 156, 0)` instead of
+  `rgb(255, 184, 0)`) — a cross-test failure with no logical connection to its cause. The click tests
+  now park the pointer in an `afterEach`.
+- Button gzip went 1979 → 2095 B (+5.9%), inside the 10% gate. Baseline updated deliberately rather
+  than left to absorb tolerance headroom. Input moved 2558 → 2593 B untouched, which is the
+  shared-helper redistribution §13 and §17.5 already describe.
+
+## 18. CTORNDSD-646c — the stylesheet-cache experiment, and the first tests
+
+### 18.1 GO condition 5: hypothesis confirmed, gap narrowed, gap NOT closed
+
+Section 14 offered an untested explanation for Lit's slower mount: `gd-button` rebuilt its own
+`CSSStyleSheet` per instance where Emotion caches a class per unique style combination. A
+content-keyed Constructable StyleSheet cache — one shared, immutable sheet per unique CSS text — was
+implemented and measured before/after **in the same session on the same machine**. That last part
+matters: this machine is slower than Section 14's, so its absolute numbers are not comparable.
+
+| Measurement (median of 5)     |   Before |        After |         Change | React, same session |
+| ----------------------------- | -------: | -----------: | -------------: | ------------------: |
+| Mount 300 identical           |  48.9 ms |  **24.5 ms** | **50% faster** |             10.6 ms |
+| Mount 300 mixed (5 variants)  |  49.1 ms |  **23.6 ms** | **52% faster** |                   — |
+| Mount 1 (per button, 50 reps) | 0.364 ms | **0.248 ms** | **32% faster** |            0.072 ms |
+| Update 300 (variant swap)     |  20.8 ms |   **9.0 ms** | **57% faster** |             10.0 ms |
+
+Section 14's reasoning was right — the per-instance stylesheet work was roughly **half** the mount
+cost. But Lit is still **2.3×** slower than React at 300 mounts and **3.4×** slower at one, so
+**condition 5 does not clear**. Runtime mount cost stays a named cost of the migration, just a much
+smaller one. Update is now _faster_ than React (9.0 vs 10.0 ms), which is new.
+
+Two honesty checks the result survived:
+
+- **Not just the best case.** 300 identical buttons is the most flattering input a content-keyed cache
+  can get. The mixed scenario (5 distinct CSS texts) improved by **52%**, as much as identical.
+- **Single-instance mount measured**, closing Section 14's own caveat. It speculated the gap might
+  "shrink, hold, or reverse" at low count. It does not shrink — 3.4× at N=1 versus 2.3× at N=300. The
+  residual is fixed per-element cost (custom-element upgrade, shadow-root attachment), which no cache
+  removes.
+
+**Correctness verified, not assumed.** A shared-sheet cache fails by bleeding one instance's styles
+into another. Confirmed in a real browser plus 8 automated tests: identical buttons share one sheet
+object and different variants do not; rethemeing one button leaves a same-variant sibling at
+`rgb(255, 184, 0)` unchanged (sheets are swapped, never mutated); trusted `hover()` still gives
+`rgb(242, 145, 0)` and `:disabled` still gives `rgb(229, 229, 229)` / `rgb(163, 163, 163)` —
+byte-identical to Section 12's pre-cache values; 25 identical buttons add at most 1 cache entry.
+
+**Tradeoff, stated not hidden:** the map is keyed by full CSS text and never evicted. Bounded in
+practice (variants × states × themes in use). _Not_ bounded if a consumer assigns a distinct
+per-instance theme object to every element — the pathological case where the cache is pure overhead.
+A bounded LRU is the fix if that ever happens.
+
+### 18.2 Automated a11y found a real bug on its first run
+
+`gd-input` rendered its label as a bare `<span>` with nothing associating it to the `<input>`, so the
+accessible name silently fell back to the **placeholder**. Section 9 added the label for visual
+fidelity and never wired it up; months of visual comparison against Storybook never caught it, and one
+axe run did. Fixed with a real `<label for>` inside the shadow root's ID scope plus an `aria-label`
+fallback from the placeholder when no visible label exists. Regression-tested.
+
+`button-name` is a **false positive** and is disabled with that reasoning inline: `gd-button` renders
+`<button><slot></slot></button>`, the browser's accessible-name computation walks the flattened tree
+and gets it right (Chromium's own a11y tree reports `button "Primary"`), and axe does not follow slot
+assignment. A separate test asserts the flattened text directly so a genuinely unnamed button would
+still fail. **Generalizable: automated a11y tooling has incomplete Shadow DOM support** — a limitation
+of the test layer, not the components, so some manual screen-reader verification stays necessary.
+
+### 18.3 First tests for a package that had none
+
+`libs/web-components/vitest.config.ts`, `npm run test:web-components` — **35 tests, all passing**, in
+real Chromium. jsdom cannot host them: Constructable StyleSheets, `popover`, and Declarative Shadow DOM
+are all unreliable there, so the repo's existing jsdom `unit` project was not extensible to this.
+Browser mode also supplies **trusted** input, which Section 6 proves is mandatory rather than
+preferable.
+
+Promoted from manual probes to assertions: the Input cursor guard (both the drop-while-focused _and_
+the reconcile-on-blur halves), the `attribute: false` controlled constraint, the 646b form-reset bug
+(asserted on `FormData`, not on `.checked` — the property was the misleading signal), theme reactivity,
+and shared-sheet isolation.
+
+**Two of my own assertions were wrong, and both are traps worth recording:**
+
+1. `structuredClone(defaultTheme)` throws `DataCloneError` — the theme's leaves are frequently
+   `(theme) => value` **functions**, which are not cloneable. Use a spread chain.
+2. Asserting on a shadow node's `textContent` returns **empty** for slotted content; read it via
+   `assignedNodes({ flatten: true })`. Same mistake as Section 17.4 — twice now, hence writing it down.
+
+### 18.4 Bundle-size regression gate
+
+`scripts/check-bundle-size.mjs` + committed baseline, as `npm run check:web-components-size`. `libs/ui`
+has `size-check` among its 10 `verify:ui` phases; this package had none, so a regression here was
+invisible. Verified in **both** directions — green against the baseline, and exit 1 with a clear
+message on an artificial regression. A gate never seen to fail is not a gate.
+
+Tolerance is 10%, deliberately not 0: Rollup redistributes shared-helper bytes whenever any chunk
+changes size, so an untouched component's reported size shifts (observed again in 18.5). A
+zero-tolerance gate would fail on noise and get switched off.
+
+### 18.5 Bundle size after 646b + 646c
+
+| Atom       | Lit gzip | vs Section 3 |
+| ---------- | -------: | -----------: |
+| Button     |  1.93 kB |     +0.06 kB |
+| Checkbox   |  2.11 kB |     +0.48 kB |
+| Typography |  1.09 kB |     +0.21 kB |
+| Input      |  2.50 kB |     +0.67 kB |
+| Select     |  2.91 kB |     +0.47 kB |
+
+5-atom total **11.06 kB** (was 9.11), or **17.94 kB** including the `lit` runtime (was 16.38).
+**`ElementInternals` and `::part()` cost about +1.95 kB, ~+21%** — real bytes for real features.
+Typography and Select were **not modified** yet still moved, the Rollup redistribution artifact from
+Section 13. The React baseline also moved (105.72 kB vs Section 3's 113.18 kB) because `libs/ui` was
+rebuilt this session, so the ratios are not directly comparable to Section 3's.
+
+### 18.6 Still not attempted
+
+The larger half of acceptance criterion 11. Memory, tree-shaking effectiveness, parse/execution time,
+isolated custom-element upgrade cost, hydration cost, isolated Shadow DOM overhead, form-interaction
+latency, CPU-throttled low-end behavior, and the native-WC-without-Lit probe are all unmeasured. Of the
+ticket's 6 named scenarios only two are covered; complex form, product listing, dashboard, and overlay
+interactions were not built, and FCP/TTI/CLS were not measured.
+
+Also outstanding: `gd-select` has **no test file at all** — the largest hole in the new suite, and the
+one component whose correctness depends on a native browser algorithm. Storybook for the Lit atoms is
+unbuilt, blocked on an unresolved question (can one Storybook instance host both the React and
+web-components renderers?). Visual regression, SSR, and hydration tests are unbuilt.
+
+## 19. CTORNDSD-646d — the extrapolation paragraph is superseded
+
+`12-complexity-matrix.md` now rates all **63** components from measured static signals
+(implementation-only LOC, and counts of `useState`, `useEffect`, `createContext`,
+`useImperativeHandle`). It **supersedes** this document's "Extrapolated full-catalog migration cost"
+section; where the two disagree, the matrix wins.
+
+The headline result reshapes the work rather than just sizing it. Applying
+`05-native-html-guidelines.md`'s rule _before_ costing:
+
+| Delivery mode                                                        |                           Count |
+| -------------------------------------------------------------------- | ------------------------------: |
+| CSS conversions (native element + shared tokens, or utility classes) |                          **21** |
+| Lit element ports                                                    | **39** (4 done → **35 remain**) |
+| Dependency decisions before porting                                  |                           **3** |
+
+**So the remaining port is 35 elements, not 58 components.** One of the 5 ported atoms
+(`gd-typography`) lands on the CSS side of the rule — a finding, not wasted effort, since that port is
+what produced the measured discoverability data in the first place.
+
+Two structural risks the matrix surfaced that were not visible from 5 atoms:
+
+- **The compound-component pattern has no Web Components analogue** and gates 5+ components
+  (`Dropdown` + `DropdownItem`, `Accordion`, `RadioGroup`, `Tabs`, `Menu`). `Select` shipped only
+  because it was reduced in scope. The `@lit/context` evaluation that Section 16's theming work implies
+  is the _same_ evaluation that answers this — worth doing once, early.
+- **`Table` (1164 impl LOC) and `Card` (679 LOC across 40 files) both exceed `Select`**, the largest
+  thing actually built — and `Select` was itself incomplete. Both XL estimates are anchored to an
+  incomplete example, which biases them low.
+
+The full risk register (`14-risks.md`) accounts for all 5 GO conditions and all 10 carried-forward open
+questions from this document: 5 closed with evidence, 2 resolved by design, 3 restated as live risks
+with owners. Conditions 2 (browser-support floor — organizational) and 5 (runtime mount cost) remain
+open; condition 4 is closed by the matrix.
+
+### 18.7 The stylesheet cache broke SSR, and only the SSR check caught it
+
+The Section 18.1 cache moved stylesheet adoption from `connectedCallback` into `render()`. That looked
+harmless and passed every other gate — type-check, lint, 35 browser tests, and the bundle-size gate all
+stayed green — but it took server-side rendering down completely:
+
+```text
+TypeError: Cannot read properties of null (reading 'adoptedStyleSheets')
+    at GdButton.render (gd-button.ts:248)
+    at .../@lit-labs/ssr/lib/lit-element-renderer.js:120
+```
+
+`@lit-labs/ssr` calls `render()` in Node without ever attaching a shadow root, so `this.shadowRoot` is
+`null` there — and Constructable StyleSheets do not exist in Node at all. The **previous** code touched
+`shadowRoot` only in `connectedCallback`, which SSR never calls, so it was SSR-safe _by accident_ rather
+than by design.
+
+Fixed by guarding the whole block on `this.shadowRoot` being non-null; the dynamic sheet is client-only
+by nature, and the server-rendered output never carried it either way. Re-verified: `DSD present for
+gd-button: true`, `gd-typography: true`, static page has **0** `<script>` tags and 2
+`<template shadowrootmode>` blocks.
+
+**Two lessons, both about the gate rather than the bug:**
+
+1. **`check:web-components-ssr` was not in `verify:web-components`.** It is now. It is the only check
+   that runs these components in Node, and it is therefore the only one that can catch
+   browser-API assumptions leaking into `render()`. Confirmed it fails loudly: reintroducing the bug
+   makes the gate exit `1`.
+2. **A green browser-test suite is not evidence of SSR safety**, and the two failure surfaces are
+   genuinely disjoint. Any future change to a component's `render()` should run the SSR check
+   specifically, not just the test suite.
+
+## 20. Section 2's "correctly styled" claim regressed — Constructable StyleSheets cannot cross into DSD
+
+Found while executing every step of `DEMO.md` end-to-end rather than reading it. Two separate
+problems were tangled together on the SSR pages; only one was a harness bug.
+
+**Problem 1 — the harness rendered without a theme (fixed).** `scripts/ssr-dsd-render.ts` rendered
+`<gd-button>` and `<gd-typography>` with no `.theme` bound. Every real token file's
+`get(theme, path, fallback)` fallback is a Storybook-facing placeholder that happens to be the token
+path itself, so a themeless render emitted literally
+`font-family:theme.font.family;font-size:font.size.h1;…` — invalid CSS the browser discards, leaving
+the heading in Times. That is the real components' own themeless behavior (Sections 13, 16), not an
+SSR defect, but it made the page contradict its own instruction. Fixed by binding
+`.theme=${defaultTheme}`, matching `fidelity-check.tsx` and `form-participation-check.ts`.
+`gd-typography` now server-renders `font-family:"Fira Sans", sans-serif;font-size:48px;line-height:56px`
+with **zero** unresolved token literals (**measured**).
+
+**Problem 2 — a real, previously unrecorded regression (not fixed; architectural).** Binding the theme
+did **not** style `gd-button`. Section 12's rewrite moved its theme CSS out of inline styles and into a
+per-instance Constructable StyleSheet. Only `static styles` and inline `style` attributes can be
+serialized into a `<template shadowrootmode>`; `adoptedStyleSheets` cannot, and with zero JS nothing
+ever runs to adopt one. Section 18.7 came within one sentence of this — it noted "the server-rendered
+output never carried it either way" — but read that as harmless and never revisited Section 2's
+"correctly styled" claim.
+
+Measured on the static page, zero JS: `adoptedStyleSheets.length` is `0`, the shadow root holds exactly
+one `<style>` (the `static styles` base), and the inner `<button>` computes to
+`background-color: rgb(239, 239, 239)`, `border-radius: 0px` — the browser default.
+
+`ssr-dsd-hydrated.html` now records both sides of the same element:
+
+```json
+{
+  "gd-button background from SSR alone (expect browser default)": "rgb(239, 239, 239)",
+  "gd-button background after client theme (expect the real token colour)": "rgb(255, 184, 0)",
+  "gd-button adoptedStyleSheets after hydration (expect > 0)": 2
+}
+```
+
+The reading is measured after `element.getAnimations()` settles — `tokens.default.transition` animates
+`background-color`, and an immediate read returns a mid-transition `rgb(241, 232, 208)`.
+
+**Scope: 1 of 5 atoms.** Only `gd-button` uses `adoptedStyleSheets`; `gd-checkbox`, `gd-input`,
+`gd-select`, and `gd-typography` use `styleMap` and serialize into DSD correctly.
+
+**Why this matters beyond one component.** The mechanism that breaks DSD styling is the same one
+Section 18.1 credits for the render-speed fix — the shared per-content-hash stylesheet cache that made
+mount 50% faster and update 57% faster. There is a real tension: the caching strategy that closes half
+the performance gap is the strategy that forfeits no-JS styling. Any decision to spread the
+Constructable StyleSheet pattern to the remaining 35 ports should be taken with that trade-off explicit.
+
+**Consequence for the SSR claim.** "Zero-JS server rendering works" remains true for DSD parsing,
+hydration, and DOM-node reuse, and true end-to-end for inline-styled components. It is **not** true for
+`gd-button` as currently written. `docs/webcomponents-migration/09-ssr-hydration.md` and the
+`README.md` recommendation paragraph both state the unqualified version and should be narrowed.
+
+**Follow-on options, none attempted:** emit the themed CSS as a `<style>` in the template during SSR
+only (risks a hydration structure mismatch); always emit it and keep the adopted sheet (duplicate CSS);
+or move theme CSS to CSS custom properties on the host, which serialize into DSD and preserve the
+shared-sheet cache. The third looks most promising and is the cheapest to prototype.

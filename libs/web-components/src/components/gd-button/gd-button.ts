@@ -94,7 +94,11 @@ export type ButtonRoleName = 'button' | 'link' | 'checkbox' | 'switch' | 'tab';
  * `iconStart`/`iconEnd` are named slots (`icon-start`/`icon-end`) instead of `ReactNode` props;
  * `onClick` has no property equivalent — consumers use the native `click` event
  * (`el.addEventListener('click', ...)` or `el.onclick = ...`), which already bubbles out of the
- * shadow root unmodified, same as any standard DOM element. `BoxCssComponentProps`'s generic
+ * shadow root unmodified, same as any standard DOM element. `type="submit"`/`type="reset"` cannot
+ * be a pure passthrough the way the React component's is, because the inner `<button>` sits in a
+ * shadow tree that owns no `<form>`; `_onClick` reproduces that activation behaviour explicitly —
+ * see its own doc comment for the mechanism and the one documented deviation.
+ * `BoxCssComponentProps`'s generic
  * layout escape hatches (`margin`/`width`/`flex*`/etc, the real component's `boxStyles`/`styles`
  * array entries) are intentionally not reproduced as properties — that whole mechanism is
  * inline-style-based in the real component (`convertToInlineBoxStyles`), which would violate
@@ -102,6 +106,45 @@ export type ButtonRoleName = 'button' | 'link' | 'checkbox' | 'switch' | 'tab';
  * from outside via ordinary host page CSS, since Shadow DOM never encapsulates a host element's
  * own box-model properties.
  */
+/**
+ * Content-keyed Constructable StyleSheet cache (CTORNDSD-646c).
+ *
+ * Before this existed, every instance owned its own `CSSStyleSheet` and called `replaceSync` on it,
+ * so 300 buttons with identical props paid 300 sheet constructions and 300 CSS parses. Emotion, by
+ * contrast, caches a generated class per unique style combination and reuses it. `FINDINGS.md`
+ * Section 14 named that asymmetry as the hypothesis for Lit's slower mount and left it untested.
+ *
+ * This is the test: one shared, immutable sheet per unique CSS text, adopted by every instance that
+ * resolves to that text. Buttons with different props/themes get different sheets, so correctness is
+ * unchanged — only the duplicate work is removed.
+ *
+ * **Memory tradeoff, stated rather than hidden.** The map is keyed by full CSS text and never
+ * evicted. For a design system this is bounded in practice: distinct texts = variants × states ×
+ * themes actually in use, a few dozen at most. It is *not* bounded if a consumer assigns a fresh
+ * per-instance theme object with different values to every element — that is the pathological case
+ * where this cache is pure overhead, and it grows unboundedly. No real consumer does this (a theme
+ * is an app- or brand-level object), but a bounded LRU would be the fix if one ever did.
+ *
+ * The sheets are never mutated after construction, which is what makes sharing safe: a `replaceSync`
+ * on a shared sheet would affect every adopter.
+ */
+const SHARED_SHEETS = new Map<string, CSSStyleSheet>();
+
+function sharedSheetFor(cssText: string): CSSStyleSheet {
+  let sheet = SHARED_SHEETS.get(cssText);
+  if (sheet === undefined) {
+    sheet = new CSSStyleSheet();
+    sheet.replaceSync(cssText);
+    SHARED_SHEETS.set(cssText, sheet);
+  }
+  return sheet;
+}
+
+/** Test/diagnostic hook — how many distinct CSS texts have been constructed this session. */
+export function __sharedSheetCacheSize(): number {
+  return SHARED_SHEETS.size;
+}
+
 @customElement('gd-button')
 export class GdButton extends LitElement {
   static styles = css`
@@ -164,15 +207,13 @@ export class GdButton extends LitElement {
   @state() private _hasContent = false;
   @state() private _hasIconEnd = false;
 
-  private readonly _dynamicSheet = new CSSStyleSheet();
+  private _adoptedSheet?: CSSStyleSheet;
   private _lastCssText = '';
 
   connectedCallback() {
     super.connectedCallback();
-    const sheets = this.shadowRoot!.adoptedStyleSheets;
-    if (!sheets.includes(this._dynamicSheet)) {
-      this.shadowRoot!.adoptedStyleSheets = [...sheets, this._dynamicSheet];
-    }
+    // The dynamic sheet is adopted in render(), once its CSS text is known — see
+    // `sharedSheetFor`. Nothing to do here; `static styles` is adopted by Lit itself.
   }
 
   private _onSlotChange(event: Event) {
@@ -181,6 +222,68 @@ export class GdButton extends LitElement {
     if (slot.name === 'icon-start') this._hasIconStart = hasNodes;
     else if (slot.name === 'icon-end') this._hasIconEnd = hasNodes;
     else this._hasContent = hasNodes;
+  }
+
+  /**
+   * `type="submit"` / `type="reset"` activation behaviour, reproduced in JS because the platform
+   * cannot do it here (CTORNDSD-646b).
+   *
+   * A submit/reset button's form owner is "the nearest ancestor `form` element **in its tree**".
+   * The real `<button>` lives in this component's shadow root, and that tree contains no `<form>`
+   * — so `innerButton.form` is `null` and a click, even a fully trusted one, submits nothing.
+   * The React `Button` renders into the light DOM and gets all of this from the browser for free;
+   * this method is what keeps the port's `type` prop from being decorative. Confirmed against a
+   * trusted CDP click in `harness/form-participation-check.ts`, not a synthetic one — FINDINGS.md
+   * Section 6 documents a false negative from exactly that shortcut.
+   *
+   * `this.closest('form')` is the faithful lookup precisely *because* it does not pierce shadow
+   * boundaries: it walks this element's own tree, which is the same scoping rule the platform's
+   * form-owner algorithm uses. A native `<button>` slotted into a component whose shadow root
+   * holds the `<form>` has no form owner either.
+   *
+   * **Deferred to a task, and a microtask is NOT sufficient — measured, not assumed.** Native
+   * activation behaviour runs *after* the click event finishes dispatching, which is what lets a
+   * consumer's `preventDefault()` cancel the submission. This listener sits on the inner button —
+   * the innermost node in the propagation path — so it always runs FIRST, and a synchronous read
+   * of `event.defaultPrevented` would be `false` even when a host listener is about to set it.
+   *
+   * `queueMicrotask` looks like the fix and is a trap. Under a TRUSTED click the browser initiates
+   * dispatch from native code, so the JS stack empties after each listener callback and a microtask
+   * checkpoint runs *between* listeners — the microtask fires before the host listener and still
+   * reads `false`. Under a synthetic `el.click()` the whole dispatch sits inside one JS stack frame,
+   * no checkpoint occurs mid-dispatch, and the microtask correctly reads `true`. So a microtask
+   * implementation passes a synthetic test and breaks for real users: the inverse of FINDINGS.md
+   * Section 6's false negative, and the reason the spec for this uses `userEvent`. Verified
+   * ordering, trusted click: `inner-listener → microtask(false) → host-listener → timeout(true)`.
+   *
+   * A task-queue deferral is therefore the smallest correct option — it resumes after the entire
+   * dispatch, so `preventDefault()` from anywhere in the path (host, or any light-DOM ancestor)
+   * cancels the submission, matching the React component. Form submission needs no transient user
+   * activation, and one task is well inside the activation window regardless.
+   *
+   * `requestSubmit()` (not `submit()`) then runs interactive validation and fires a cancelable
+   * `submit` event, matching a real submit button rather than bypassing the form's constraints.
+   *
+   * Known deviation: `event.submitter` is `null`, because `requestSubmit(submitter)` demands a
+   * submit button already associated with the form and this one — by the very problem above —
+   * is not. Nothing is lost in FormData terms: `ButtonProps` exposes no `name`/`value`, so a real
+   * `<Button type="submit">` contributes no entry either.
+   */
+  private _onClick(event: MouseEvent) {
+    if (this.type === 'button') return;
+    // Defensive only: the browser does not dispatch click on a disabled button, and `isLoading`
+    // sets `?disabled` too (see `isDisabled` in render()).
+    if (this.disabled || this.isLoading) return;
+
+    const form = this.closest('form');
+    if (form === null) return;
+
+    const type = this.type;
+    setTimeout(() => {
+      if (event.defaultPrevented) return;
+      if (type === 'submit') form.requestSubmit();
+      else form.reset();
+    }, 0);
   }
 
   /**
@@ -227,35 +330,56 @@ export class GdButton extends LitElement {
     const isDisabled = this.disabled || this.isLoading;
 
     const cssText = this._buildCssText(tokens, radius);
-    if (cssText !== this._lastCssText) {
+    // `shadowRoot` is null during server-side rendering (@lit-labs/ssr calls render() without ever
+    // attaching one) and Constructable StyleSheets do not exist in Node at all — so this whole block
+    // is client-only. Guarding it here rather than in connectedCallback because that is what SSR
+    // skips: an unguarded `this.shadowRoot!` throws
+    // "Cannot read properties of null (reading 'adoptedStyleSheets')" and takes the SSR render down
+    // with it. Regression found by `npm run check:web-components-ssr`; see FINDINGS.md §18.7.
+    const root = this.shadowRoot;
+    if (root && (cssText !== this._lastCssText || this._adoptedSheet === undefined)) {
       this._lastCssText = cssText;
-      this._dynamicSheet.replaceSync(cssText);
+      const next = sharedSheetFor(cssText);
+      if (next !== this._adoptedSheet) {
+        // Swap which shared sheet this instance adopts. Never mutate the sheet itself — it is
+        // shared with every other instance resolving to the same CSS text.
+        const kept = root.adoptedStyleSheets.filter((s) => s !== this._adoptedSheet);
+        root.adoptedStyleSheets = [...kept, next];
+        this._adoptedSheet = next;
+      }
     }
 
+    // `part` attributes (CTORNDSD-646b) expose these internals to consumer CSS via
+    // `gd-button::part(button)` etc. Note the part names are intentionally the short semantic role
+    // (`content`, `icon-start`) rather than the internal class names (`gd-button__content`): the
+    // classes are an implementation detail the dynamic stylesheet targets, while part names are a
+    // public API and must stay stable even if the internal class naming changes.
     return html`
       <button
+        part="button"
         type=${this.type}
         role=${this.role}
         tabindex=${this.tabIndex}
         ?disabled=${isDisabled}
+        @click=${this._onClick}
         aria-busy=${this.isLoading || nothing}
         aria-label=${this.ariaLabel ?? nothing}
         aria-pressed=${this.ariaPressed ?? nothing}
       >
         ${this._hasIconStart
-          ? html`<span class="gd-button__icon-start"
+          ? html`<span class="gd-button__icon-start" part="icon-start"
               ><slot name="icon-start" @slotchange=${this._onSlotChange}></slot
             ></span>`
           : html`<slot name="icon-start" @slotchange=${this._onSlotChange}></slot>`}
         ${this._hasContent
-          ? html`<span class="gd-button__content"><slot @slotchange=${this._onSlotChange}></slot></span>`
+          ? html`<span class="gd-button__content" part="content"><slot @slotchange=${this._onSlotChange}></slot></span>`
           : html`<slot @slotchange=${this._onSlotChange}></slot>`}
         ${this._hasIconEnd
-          ? html`<span class="gd-button__icon-end"
+          ? html`<span class="gd-button__icon-end" part="icon-end"
               ><slot name="icon-end" @slotchange=${this._onSlotChange}></slot
             ></span>`
           : html`<slot name="icon-end" @slotchange=${this._onSlotChange}></slot>`}
-        ${this.isLoading ? html`<span class="spinner" aria-hidden="true"></span>` : nothing}
+        ${this.isLoading ? html`<span class="spinner" part="spinner" aria-hidden="true"></span>` : nothing}
       </button>
     `;
   }
