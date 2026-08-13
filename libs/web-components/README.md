@@ -263,9 +263,19 @@ synthetic `element.click()`.
 
 ## Parallel-safety
 
-This package is the only one of the two investigation tracks that touches shared root config
-(one line in `package.json`'s `workspaces` array). The sibling React Native track
-(`react-native`) is deliberately kept fully standalone, outside npm workspaces — see its
-own README — so the two tracks never edit the same shared file and can be worked on
-independently (parallel branches/worktrees, or two engineers) with no merge conflicts between
-them.
+Both investigation tracks now touch shared root config, and each keeps its edits to a distinct
+line so the two can still be worked independently (parallel branches/worktrees, or two engineers)
+without colliding:
+
+| Track                       | Root `package.json` footprint                                             |
+| --------------------------- | ------------------------------------------------------------------------- |
+| This package                | `workspaces` entry `libs/web-components` + its `*:web-components` scripts |
+| React Native (CTORNDSD-590) | `workspaces` entry `libs/react-native` + the `dev:react-native` script    |
+
+> **Superseded.** This section previously said the React Native track was "deliberately kept fully
+> standalone, outside npm workspaces." That stopped being true when CTORNDSD-590 moved the spike to
+> `libs/react-native` and added it to the `workspaces` array — see
+> [`libs/react-native/README.md`](../react-native/README.md#workspace-membership), which documents
+> the workspace membership and why the package is named `gd-react-native`. Metro also requires an
+> explicit resolver config to consume `gd-design-core` across the workspace boundary; that is
+> covered in the same README.
