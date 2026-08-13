@@ -1,4 +1,3 @@
-// eslint-disable-next-line @nx/enforce-module-boundaries
 import '../../../dist/libs/ui/styles.css';
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';

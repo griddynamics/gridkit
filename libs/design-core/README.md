@@ -9,7 +9,7 @@ It is the base platform intended to be consumed by:
 - Lit component subscribes via
   `store.subscribe()` / `store.getState()` inside `connectedCallback()`. No hook, no adapter package
   required on the Lit side beyond the subscription call itself.
-- React and React Native
+- **CTORNDSD-590** (`react-native/`, see its own `FINDINGS.md`) — React and React Native
   consume identically via `useStore(vanillaStore, selector)` (from `zustand`), since RN is still React,
   just a different renderer.
 - The existing React web implementation (`libs/ui`) — not modified by this package; adopting it there is a
@@ -23,6 +23,17 @@ Covers the same 5 atoms both spikes port: `Button`, `Checkbox`, `Typography`, `I
 - **`tokenResolvers/`** — pure functions, one per atom, that resolve a theme object plus a variant/size into
   plain, platform-neutral style values (no CSS strings, no Emotion pseudo-selector objects). Every atom gets
   one, since token resolution is the one thing all 5 can share regardless of how much behavior they have.
+  **Not every adapter consumes these the same way.** CTORNDSD-581's Lit adapter imports the REAL
+  `gd-design-library/tokens` objects directly + `resolveThemeTree` instead, for "true single source of
+  truth" — it deleted (or gutted to a stub) this package's own `resolveCheckboxStyle`/`resolveInputStyle`/
+  `resolveTypographyStyle`/`resolveSelectStyle` as part of that move. CTORNDSD-590's React Native adapter
+  cannot do the same (Metro has no equivalent alias/externals mechanism for `gd-design-library`'s DOM/
+  Emotion-oriented dependency tree — see `react-native/FINDINGS.md`), so it recreated all 4 of those
+  resolvers here from their last-known-good pre-deletion shape. **This means an edit to
+  `libs/ui/src/tokens/{checkbox,input,select,typography}.ts` will propagate automatically to the Lit
+  adapter but NOT to the React Native adapter** — a real, accepted duplication, not an oversight. Only
+  `resolveButtonVariantStyle`/`resolveButtonRadius` were never deleted in the first place, since both
+  adapters share them unchanged.
 - **`stores/`** — per-atom state factories built on `zustand/vanilla`'s `createStore`, for the 3 atoms with
   real behavior to extract: `Checkbox` (controlled/uncontrolled resolution + indeterminate), `Input`
   (debounce + mouse/keyboard interaction tracking), `Select` (open/close, single/multi selection, search
@@ -76,3 +87,11 @@ Resolvers accept a loosely-typed `DesignCoreTheme` (see `src/types.ts`) — a st
 (`colors.*`, `font.*`, `spacing.*`, `radius.*`, `values.*`). This package does not import
 `gd-design-library` at runtime, so it stays buildable and testable independently of `libs/ui`; any
 object shaped like `gd-design-library`'s `defaultTheme` (or a per-platform equivalent) satisfies it.
+
+## Status
+
+Both consuming spikes are now underway. Lit/Web-Components reports "GO (conditional)" in
+`libs/web-components/FINDINGS.md`, with all 5 atoms ported. React Native reports "GO
+(conditional)" in `react-native/FINDINGS.md`, also with all 5 atoms ported, using the recreated
+`tokenResolvers` described above. `stores/` (`createCheckboxStore`, `createInputStore`,
+`createSelectStore`) required zero changes for either adapter — they were RN/Lit-ready from the start.

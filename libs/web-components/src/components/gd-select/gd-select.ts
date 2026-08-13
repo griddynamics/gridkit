@@ -1,14 +1,14 @@
 import { LitElement, html, css, type PropertyValues } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
+import { select } from 'gd-design-library/tokens';
 import {
   resolveThemeTree,
   createSelectStore,
-  type InputColorVariantName,
   type SelectOption,
+  type InputColorVariantName,
   type DesignCoreTheme,
 } from 'gd-design-core';
-import { select } from 'gd-design-library/tokens';
 
 interface ResolvedSelectTokens {
   fontFamily: string | number;

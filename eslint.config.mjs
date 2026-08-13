@@ -8,7 +8,15 @@ export default [
   ...nx.configs['flat/typescript'],
   ...nx.configs['flat/javascript'],
   {
-    ignores: ['**/dist', '**/vite.config.*.timestamp*', '**/vitest.config.*.timestamp*', 'libs/ui/scripts/**'],
+    // libs/react-native is a standalone Expo app with its own toolchain (metro/babel/expo)
+    // and tsconfig that extends expo/tsconfig.base — not resolvable by the root workspace.
+    ignores: [
+      '**/dist',
+      '**/vite.config.*.timestamp*',
+      '**/vitest.config.*.timestamp*',
+      'libs/ui/scripts/**',
+      'libs/react-native/**',
+    ],
   },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
@@ -39,7 +47,14 @@ export default [
       'import/resolver': {
         typescript: {
           alwaysTryTypes: true,
-          project: ['./tsconfig.base.json', 'libs/*/tsconfig.json', 'libs/*/tsconfig.*.json'],
+          project: [
+            './tsconfig.base.json',
+            'libs/*/tsconfig.json',
+            'libs/*/tsconfig.*.json',
+            // Exclude the Expo app's tsconfig (extends expo/tsconfig.base, not installed at root)
+            // so its unresolvable `extends` does not break import resolution for every other file.
+            '!libs/react-native/**',
+          ],
         },
       },
     },

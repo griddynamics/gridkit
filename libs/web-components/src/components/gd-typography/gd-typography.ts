@@ -2,6 +2,7 @@ import { LitElement, css, type PropertyValues } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { literal, html as staticHtml, type StaticValue } from 'lit/static-html.js';
 import { styleMap } from 'lit/directives/style-map.js';
+import { typography } from 'gd-design-library/tokens';
 import {
   resolveThemeTree,
   get,
@@ -9,7 +10,6 @@ import {
   type TypographyStyleVariantName,
   type DesignCoreTheme,
 } from 'gd-design-core';
-import { typography } from 'gd-design-library/tokens';
 
 const MONOSPACE_VARIANTS: ReadonlySet<TypographyVariantName> = new Set(['code', 'kbd']);
 

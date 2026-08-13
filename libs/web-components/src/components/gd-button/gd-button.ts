@@ -1,16 +1,16 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import { button } from 'gd-design-library/tokens';
 import {
   resolveButtonRadius,
-  resolveThemeTree,
   buttonCssBlockToText,
-  get,
   type ButtonVariantName,
   type ButtonRoundedName,
   type ButtonTokenTree,
+  resolveThemeTree,
+  get,
   type DesignCoreTheme,
 } from 'gd-design-core';
-import { button } from 'gd-design-library/tokens';
 
 /** Mirrors `Button.types.ts`'s `ButtonStyledProps['$rounded']`. Button's own default is
  *  `rounded="none"` (`button.ts`'s `attrs.rounded: 'none'`), i.e. square corners. */

@@ -1,6 +1,7 @@
 import { LitElement, html, css, nothing, type PropertyValues } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
+import { input } from 'gd-design-library/tokens';
 import {
   resolveThemeTree,
   get,
@@ -9,7 +10,6 @@ import {
   type InputColorVariantName,
   type DesignCoreTheme,
 } from 'gd-design-core';
-import { input } from 'gd-design-library/tokens';
 
 interface ResolvedInputTokens {
   fontFamily: string | number;

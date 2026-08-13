@@ -100,7 +100,7 @@ console.log(
 );
 console.log(`  ${b('npm run check:web-components-ssr')}    standalone SSR/DSD render        ${dim('§2')}`);
 console.log(`  ${b('npm run check:web-components-size')}   bundle size + regression gate    ${dim('§3, §18.4')}`);
-console.log(`  ${b('npm run test:web-components')}         35 browser tests incl. a11y      ${dim('§18.2, §18.3')}\n`);
+console.log(`  ${b('npm run test:web-components')}         45 browser tests incl. a11y      ${dim('§18.2, §18.3')}\n`);
 
 if (missing.length > 0) {
   console.log(`${yellow(b('Some demos need a build first:'))}`);

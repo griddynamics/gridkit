@@ -1,8 +1,8 @@
 import { LitElement, html, css, nothing, type PropertyValues } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
-import { resolveThemeTree, createCheckboxStore, type CheckboxSizeName, type DesignCoreTheme } from 'gd-design-core';
 import { checkbox } from 'gd-design-library/tokens';
+import { resolveThemeTree, createCheckboxStore, type CheckboxSizeName, type DesignCoreTheme } from 'gd-design-core';
 
 interface ResolvedCheckboxTokens {
   indicatorSize: number;
