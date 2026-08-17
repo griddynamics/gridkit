@@ -187,7 +187,7 @@ export default meta;
 
 const Template: StoryFn<PropsWithChildren<AccordionWrapperProps>> = (args) => {
   return (
-    <Accordion {...args} isInline>
+    <Accordion {...args}>
       {ACCORDION_ITEMS.map((item) => {
         return (
           <AccordionItem
@@ -225,7 +225,7 @@ const accordionItems = [
   { id: 'item3', title: 'Title 3', content: 'Content 3' },
 ];
 
-<Accordion isInline>
+<Accordion>
   {accordionItems.map((item) => (
     <AccordionItem key={item.id} id={item.id}>
       <AccordionHeader>{item.title}</AccordionHeader>
@@ -360,8 +360,16 @@ export const AsInline: StoryObj<typeof Accordion> = {
   render: () => (
     <Accordion isInline>
       <AccordionItem id="item1">
-        <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" size="md" />}>Title 1</AccordionHeader>
+        <AccordionHeader>Title 1</AccordionHeader>
         <AccordionContent>Content 1</AccordionContent>
+      </AccordionItem>
+      <AccordionItem id="item2">
+        <AccordionHeader>Title 2</AccordionHeader>
+        <AccordionContent>Content 2</AccordionContent>
+      </AccordionItem>
+      <AccordionItem id="item3">
+        <AccordionHeader>Title 3</AccordionHeader>
+        <AccordionContent>Content 3</AccordionContent>
       </AccordionItem>
     </Accordion>
   ),
