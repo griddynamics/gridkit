@@ -76,7 +76,16 @@ const meta: Meta<typeof ChatContainer> = {
   </ul>
   </li>
   </ul>
-        `,
+        
+
+  <br/>
+  <br/>
+
+<h3>🧩 Web Components track (CTORNDSD-646)</h3>
+<b>Verdict — Lit custom element.</b> Grouped under &quot;Containers&quot; by name only — with useMediaQuery-driven responsive sidebar state and a useImperativeHandle public surface, this is a domain-specific component with real behavior. Medium confidence: no component with an imperative handle has been ported, so the cost of re-expressing it as element methods is unmeasured.
+<br/>
+Decision rule and full rationale: <code>docs/webcomponents-migration/05-native-html-guidelines.md</code>.
+`,
       },
     },
   },

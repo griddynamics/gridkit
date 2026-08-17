@@ -594,7 +594,7 @@ yarn test:ai:watch
 
 <!-- AUTO-GENERATED:COMPONENTS:START -->
 
-_66 components total — generated from `libs/ui/src/ai/schemas/` on 2026-07-24._
+_66 components total — generated from `libs/ui/src/ai/schemas/` on 2026-08-07._
 
 ### Other
 

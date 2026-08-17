@@ -23,7 +23,9 @@
       "@griddynamics/ui": ["libs/ui/src/index.ts"],
       "@griddynamics/ui/*": ["libs/ui/src/*"],
       "gd-design-library": ["libs/ui/src/index.ts"],
-      "gd-design-library/*": ["libs/ui/src/*"]
+      "gd-design-library/*": ["libs/ui/src/*"],
+      "gd-design-core": ["libs/design-core/src/index.ts"],
+      "gd-design-core/*": ["libs/design-core/src/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

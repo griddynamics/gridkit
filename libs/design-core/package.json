@@ -1,0 +1,27 @@
+{
+  "name": "gd-design-core",
+  "version": "0.0.1",
+  "description": "Framework-agnostic core for GridKit: pure token-resolution functions and zustand/vanilla state stores shared by every rendering adapter (React web, Lit/web-components, React Native).",
+  "license": "MIT",
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.js"
+    },
+    "./tokenResolvers": {
+      "types": "./tokenResolvers/index.d.ts",
+      "import": "./tokenResolvers/index.js"
+    },
+    "./stores": {
+      "types": "./stores/index.d.ts",
+      "import": "./stores/index.js"
+    }
+  },
+  "files": ["**/*"],
+  "dependencies": {
+    "zustand": "^5.0.6"
+  }
+}

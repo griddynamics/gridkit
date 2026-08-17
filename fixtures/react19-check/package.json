@@ -1,0 +1,18 @@
+{
+  "name": "react19-check",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "CTORNDSD-646b fixture. Isolated React 19 environment used to close FINDINGS.md Section 7 / GO condition 3: does React 19 natively assign custom-element properties, and does it auto-wire custom events to onFoo props? Deliberately outside npm workspaces so React 19 never mixes with the repo's pinned React 18.3.1.",
+  "scripts": {
+    "dev": "vite --port 5273"
+  },
+  "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.0.0",
+    "vite": "^7.0.0"
+  }
+}
