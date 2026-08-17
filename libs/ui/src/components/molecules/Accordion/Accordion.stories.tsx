@@ -381,8 +381,16 @@ export const AsInline: StoryObj<typeof Accordion> = {
       source: {
         code: `<Accordion isInline>
   <AccordionItem id="item1">
-    <AccordionHeader expandIcon={<Icon name="keyboardArrowDown" size="md" />}>Title 1</AccordionHeader>
+    <AccordionHeader>Title 1</AccordionHeader>
     <AccordionContent>Content 1</AccordionContent>
+  </AccordionItem>
+   <AccordionItem id="item2">
+    <AccordionHeader>Title 2</AccordionHeader>
+    <AccordionContent>Content 2</AccordionContent>
+  </AccordionItem>
+   <AccordionItem id="item3">
+    <AccordionHeader>Title 3</AccordionHeader>
+    <AccordionContent>Content 3</AccordionContent>
   </AccordionItem>
 </Accordion>`,
       },
