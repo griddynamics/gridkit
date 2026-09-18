@@ -1,0 +1,128 @@
+name: Evergreen Deploy
+
+on:
+  workflow_call:
+    inputs:
+      argocd-host:
+        required: false
+        type: string
+        description: "ArgoCD hostname"
+        default: "argocd-prod.evergreen.gcp.griddynamics.net:443"
+      argocd-version:
+        required: false
+        type: string
+        description: "ArgoCD binary version"
+        default: "2.14.11"
+      argocd-app-version:
+        required: false
+        type: string
+        description: "ArgoCD Application version"
+        default: "0.4"
+      tenant:
+        required: true
+        type: string
+        description: "Tenant name"
+      app-name:
+        required: true
+        type: string
+        description: "Application name"
+      env-name:
+        required: false
+        type: string
+        default: "dev"
+        description: "Environment name"
+      set-image-tag:
+        required: false
+        type: string
+        description: "Helm field where image tag is set"
+        default: "image.tag"
+      image-tag:
+        required: false
+        type: string
+        description: "Image tag to set"
+        default: "latest"
+      chart-version:
+        required: false
+        type: string
+        description: "Helm chart version"
+        default: "1.10"
+      destination-cloud:
+        required: false
+        type: string
+        description: "Destination cluster name in ArgoCD"
+        default: "evergreen-gcp"
+      runner-label:
+        required: false
+        type: string
+        default: "ubuntu-latest"
+        description: "Runner name or label where to run"
+
+env:
+  GCP_PROJECT_NAME: "gd-gcp-rnd-evergreen"
+  GCP_OIDC_PROVIDER: "projects/945405964360/locations/global/workloadIdentityPools/github/providers/cto-rnd-evergreen-infra"
+
+jobs:
+  deploy:
+    permissions:
+      id-token: write
+      contents: read
+    runs-on: ${{ inputs.runner-label }}
+    environment: ${{ inputs.env-name }}
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@v5
+
+      - name: "Authenticate to GCP via OIDC"
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # 3.0.0
+        id: gcp-auth
+        with:
+          workload_identity_provider: ${{ env.GCP_OIDC_PROVIDER }}
+          service_account: cicd-github-account@${{ env.GCP_PROJECT_NAME }}.iam.gserviceaccount.com
+
+      - name: "Get secrets"
+        id: get-secret
+        uses: google-github-actions/get-secretmanager-secrets@bc9c54b29fdffb8a47776820a7d26e77b379d262 # 3.0.0
+        with:
+          secrets: |-
+            atoken:${{ env.GCP_PROJECT_NAME }}/argocd-project-token-${{ inputs.tenant }}
+            ghtoken:${{ env.GCP_PROJECT_NAME }}/github--gd-evergreen-bot--pat
+
+      - name: "ArgoCD setup"
+        uses: clowdhaus/argo-cd-action@39d479ab6dd702536e4a20ecc140bffd67cfbee0 # 3.2.0
+        with:
+          version: ${{ inputs.argocd-version }}
+          command: version
+          options: --client --short
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "ArgoCD apply"
+        env:
+          ARGOCD_SERVER: ${{ inputs.argocd-host }}
+          ARGOCD_AUTH_TOKEN: ${{ steps.get-secret.outputs.atoken }}
+          ARGOCD_OPTS: --grpc-web
+        run: |
+          APP_NAME="${{ inputs.tenant }}--${{ inputs.app-name }}--${{ inputs.env-name }}"
+          argocd app set ${APP_NAME} --helm-set ${{ inputs.set-image-tag }}=${{ inputs.image-tag }} --source-position 1
+
+      - name: "Generate Ingress Summary"
+        continue-on-error: true
+        env:
+          ARGOCD_SERVER: ${{ inputs.argocd-host }}
+          ARGOCD_AUTH_TOKEN: ${{ steps.get-secret.outputs.atoken }}
+          ARGOCD_OPTS: --grpc-web
+        run: |
+          URLS_JSON=$(argocd app get argocd/${{ inputs.tenant }}--${{ inputs.app-name }}--${{ inputs.env-name }} -o json | jq -c '.status.summary.externalURLs')
+
+          echo "### 🚀 Deployed Ingress URLs" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "$URLS_JSON" != "null" ] && [ "$URLS_JSON" != "[]" ]; then
+            echo "| Environment | Link |" >> $GITHUB_STEP_SUMMARY
+            echo "| :--- | :--- |" >> $GITHUB_STEP_SUMMARY
+            echo "$URLS_JSON" | jq -r '.[]' | while read -r url; do
+              echo "| ${{ inputs.env-name }} | [🔗 $url]($url) |" >> $GITHUB_STEP_SUMMARY
+            done
+          else
+            echo "⚠️ No external URLs found for this application." >> $GITHUB_STEP_SUMMARY
+          fi
