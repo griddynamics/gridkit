@@ -1,6 +1,6 @@
 {
   "name": "gd-design-library",
-  "version": "1.8.3",
+  "version": "1.9.1",
   "license": "MIT",
   "type": "module",
   "main": "./index.cjs",
@@ -40,7 +40,9 @@
   },
   "typesVersions": {
     "*": {
-      "renderer": ["./utils/a2ui/index.d.ts"]
+      "renderer": [
+        "./utils/a2ui/index.d.ts"
+      ]
     }
   },
   "peerDependencies": {
