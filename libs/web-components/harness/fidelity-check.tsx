@@ -5,9 +5,10 @@
 // monorepo consumption via the node_modules/gd-design-library symlink (which points at source).
 // Run `npm run build:ui` first if this import 404s. Deliberate test-harness-only asset import
 // (font/reset CSS for visual-fidelity comparison), not a source-code dependency on
-// gd-design-library internals — the boundary rule below exists to stop internal path coupling
-// in shipped code, which this isn't.
+// gd-design-library internals — the boundary rule exists to stop internal path coupling in shipped
+// code, which this isn't.
 
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import '../../../dist/libs/ui/styles.css';
 import * as React from 'react';
 import { useState } from 'react';
@@ -18,9 +19,10 @@ import { GdCheckbox } from './GdCheckboxReact';
 import { GdTypography } from './GdTypographyReact';
 import { GdInput } from './GdInputReact';
 import { GdSelect } from './GdSelectReact';
+import { GdAvatar } from './GdAvatarReact';
 
 /**
- * Visual-fidelity verification harness — renders each of the 5 ported atoms with
+ * Visual-fidelity verification harness — renders each of the 6 ported atoms with
  * props matching the real Storybook stories being compared against.
  *
  * All 5 components now resolve their REAL `libs/ui/src/tokens/*.ts` object directly (see each
@@ -149,6 +151,29 @@ function SelectSection() {
   );
 }
 
+function AvatarSection() {
+  const portrait =
+    'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"%3E%3Crect width="64" height="64" fill="%2391b8d8"/%3E%3Ccircle cx="32" cy="24" r="13" fill="%23f1c7a5"/%3E%3Cpath d="M8 64c3-18 14-27 24-27s21 9 24 27" fill="%233e6184"/%3E%3C/svg%3E';
+  return (
+    <Section title="Avatar — image / fallback / badge / sizes">
+      <GdAvatar src={portrait} alt="Ada Lovelace" size="md" theme={defaultTheme} />
+      <GdAvatar fallback="AL" alt="Ada Lovelace" size="lg" theme={defaultTheme} />
+      <GdAvatar
+        fallback="GD"
+        alt="GridKit"
+        size="xl"
+        withBadge
+        badgeColor="bg.fill.success.primary.default"
+        backgroundColor="bg.fill.info.primary.default"
+        theme={defaultTheme}
+      />
+      <GdAvatar alt="Custom fallback" size="sm" theme={defaultTheme}>
+        <span slot="fallback">★</span>
+      </GdAvatar>
+    </Section>
+  );
+}
+
 function App() {
   return (
     <div style={{ padding: 24 }}>
@@ -157,6 +182,7 @@ function App() {
       <CheckboxSection />
       <TypographySection />
       <SelectSection />
+      <AvatarSection />
     </div>
   );
 }

@@ -14,7 +14,7 @@ scripts for building, testing, and demoing (see [Running locally](#running-local
 
 ## What's here
 
-- `src/components/gd-*/` — the 5 ported atoms, one Lit `LitElement` class per component, each with a
+- `src/components/gd-*/` — the 6 ported atoms, one Lit `LitElement` class per component, each with a
   `*.spec.ts` beside it.
 - `src/index.ts` — barrel export. Note this registers **all** elements on import; per-component
   registration is an open design item (`docs/webcomponents-migration/03-monorepo-structure.md` §3).
@@ -57,6 +57,7 @@ button.theme = defaultTheme; // must be a NEW object reference to trigger a re-r
 <gd-input label="Email" color="primary"></gd-input>
 <gd-select></gd-select>
 <gd-typography variant="h1" as="h1">Heading</gd-typography>
+<gd-avatar fallback="GD" size="lg" with-badge></gd-avatar>
 
 <script type="module">
   import 'web-components';
@@ -110,6 +111,19 @@ hand-maintain them.
 | `gd-input`      | `value`, `placeholder`, `label`, `helper-text`, `disabled`, `color` (`primary`\|`success`\|`warning`\|`error`), `debounce-callback-time`                                                                 | `gd-input` — `detail: { value }`                            | `adornment-start`, `adornment-end`          |
 | `gd-select`     | `items` (array), `value`, `disabled`, `color`, `width`, `min-width`, `max-width`                                                                                                                         | `gd-change` — `detail: { value }`                           | `placeholder`, `empty`                      |
 | `gd-typography` | `variant` (`span`\|`h1`–`h6`\|`p`\|`small`\|`caption`\|`header`\|`code`\|`kbd`), `as` (DOM tag), `style-variant` (single value or array)                                                                 | —                                                           | default (content)                           |
+| `gd-avatar`     | `src`, `alt`, `size` (`xs`–`xxl`), `with-badge`, `badge-color`, `background-color`, `fallback`; `theme` is a property                                                                                    | native `click`                                              | `fallback` (rich fallback content)          |
+
+### Avatar migration notes
+
+`gd-avatar` is the supported side-by-side alternative to React `Avatar`: React's `sizeVariant`
+becomes the scalar `size` attribute, primitive `fallbackComponent` becomes `fallback`, and rich
+`fallbackComponent` content goes in the named `fallback` slot. `backgroundColor` and `badgeColor`
+become `background-color` and `badge-color`; both accept GridKit colour-token paths or regular CSS
+colours. The React `onClick` prop becomes the platform `click` event. React consumers can use the
+typed `harness/GdAvatarReact.tsx` `@lit/react` adapter; it has no custom-event map because Avatar
+only uses the native click event. Vue 3 and Angular consume the element directly (`.theme` / other
+object properties with Vue `.prop`, and `CUSTOM_ELEMENTS_SCHEMA` in Angular); those integration
+fixtures are planned, not yet verified.
 
 ### Form participation (`gd-input`, `gd-checkbox`)
 
@@ -177,11 +191,12 @@ What follows from that:
 
 Consumer CSS can style internals from outside the shadow root:
 
-| Component     | Parts                                                           |
-| ------------- | --------------------------------------------------------------- |
-| `gd-button`   | `button`, `content`, `icon-start`, `icon-end`, `spinner`        |
-| `gd-input`    | `outer`, `label`, `row`, `input`, `border`, `outline`, `helper` |
-| `gd-checkbox` | `label`, `input`, `indicator`                                   |
+| Component     | Parts                                                                    |
+| ------------- | ------------------------------------------------------------------------ |
+| `gd-button`   | `button`, `content`, `icon-start`, `icon-end`, `spinner`                 |
+| `gd-input`    | `outer`, `label`, `row`, `input`, `border`, `outline`, `helper`          |
+| `gd-checkbox` | `label`, `input`, `indicator`                                            |
+| `gd-avatar`   | `avatar`, `image-wrapper`, `image`, `fallback`, `fallback-text`, `badge` |
 
 ```css
 gd-button::part(button) {

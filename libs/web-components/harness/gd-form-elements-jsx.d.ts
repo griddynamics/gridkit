@@ -10,6 +10,7 @@ declare global {
       'gd-checkbox': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
       'gd-input': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
       'gd-select': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+      'gd-avatar': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
     }
   }
 }
