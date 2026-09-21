@@ -33,13 +33,13 @@ jobs:
 
   build:
     needs: test
-    uses: griddynamics/cto-rnd-evergreen-gha/.github/workflows/evergreen-build.yaml@v3.3
+    uses: ./.github/workflows/evergreen-build.yaml
     with:
       image-name: gd-gcp-rnd-evergreen/evergreen-v2/gridkit-storybook
       build-context: './'
       dockerfile: './Dockerfile.storybook'
   deploy:
-    uses: griddynamics/cto-rnd-evergreen-gha/.github/workflows/evergreen-deploy.yaml@v3.3
+    uses: ./.github/workflows/evergreen-deploy.yaml
     needs: build
     with:
       tenant: gridkit
