@@ -1,0 +1,222 @@
+name: Evergreen Build
+
+on:
+  workflow_call:
+    secrets:
+      build-secrets:
+        required: false
+        description: |
+          Docker BuildKit secrets in `id=value` format, one per line.
+          e.g.
+          ```
+          FOO=bar
+          ```
+    inputs:
+      cr-host:
+        required: false
+        type: string
+        default: "us-central1-docker.pkg.dev"
+        description: "Container registry hostname"
+      cr-login:
+        required: false
+        type: string
+        default: "_json_key"
+        description: "Username for container registry"
+      build-context:
+        required: false
+        type: string
+        default: "."
+        description: "Build context for docker build"
+      dockerfile:
+        required: false
+        type: string
+        default: "Dockerfile"
+        description: "Path to Dockerfile"
+      image-name:
+        required: true
+        type: string
+        description: "Name of the image, format quay.io/username/tenant-service or just username/tenant-service"
+      runner-label:
+        required: false
+        type: string
+        default: "ubuntu-latest"
+        description: "Runner name or label where to run"
+      build-args:
+        description: |
+          Build arguments in `KEY=VALUE` format, one per line.
+          e.g.
+          ```
+          FOO=bar
+          BAZ=qux
+          ```
+        required: false
+        default: ""
+        type: string
+      build-target:
+        description: "Docker build target stage"
+        required: false
+        type: string
+        default: ""
+      run-test:
+        required: false
+        type: string
+        description: "Path to test results or test configuration"
+        default: ""
+      free-runner-disk-space:
+        description: "Free disk space on runner. Can be enabled in case image build fails because of disk space issues."
+        type: boolean
+        required: false
+        default: false
+    outputs:
+      image-tag:
+        description: "Built image tag"
+        value: ${{ jobs.build.outputs.image_tag }}
+
+# concurrency:
+#   group: ${{ github.workflow }}-${{ github.ref_name }}
+#   cancel-in-progress: true
+
+env:
+  GCP_PROJECT_NAME: "gd-gcp-rnd-evergreen"
+  GCP_OIDC_PROVIDER: "projects/945405964360/locations/global/workloadIdentityPools/github/providers/cto-rnd-evergreen-infra"
+
+jobs:
+  prepare:
+    runs-on: ${{ inputs.runner-label }}
+    outputs:
+      sha_short: ${{ steps.prepare.outputs.sha_short }}
+      repo_name: ${{ steps.prepare.outputs.repo_name }}
+      app_version: ${{ steps.prepare.outputs.version }}
+      test_folder: ${{ steps.prepare.outputs.test_folder }}
+      test_type: ${{ steps.prepare.outputs.test_type }}
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@v6
+
+      - name: "Prepare"
+        id: prepare
+        shell: bash
+        run: |
+          echo "sha_short=$(git rev-parse --short HEAD)"                    >> $GITHUB_OUTPUT 
+          echo "repo_name=$(echo ${{ github.repository }} | cut -f2 -d/ )"  >> $GITHUB_OUTPUT
+          echo "version=$(cat ${{ inputs.build-context }}/.version)"        >> $GITHUB_OUTPUT
+          echo "test_folder=$(echo ${{ inputs.run-test }} | cut -f1 -d/ )"  >> $GITHUB_OUTPUT
+          case "${{ inputs.run-test }}" in
+            *"jest"*)
+              echo "test_type=jest-junit" >> $GITHUB_OUTPUT
+              ;;
+            *"surefire"*)
+              echo "test_type=java-junit" >> $GITHUB_OUTPUT
+              ;;
+            *"trx"*)
+              echo "test_type=dotnet-trx" >> $GITHUB_OUTPUT
+              ;;
+            *)
+              echo "test_type=unknown" >> $GITHUB_OUTPUT
+              ;;
+          esac
+
+  build:
+    runs-on: ${{ inputs.runner-label }}
+    needs: [prepare]
+    outputs:
+      image_tag: ${{ needs.prepare.outputs.app_version || 0 }}-${{ needs.prepare.outputs.sha_short }}
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@v6
+
+      - name: "Authenticate to GCP via OIDC"
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # 3.0.0
+        id: gcp-auth
+        with:
+          workload_identity_provider: ${{ env.GCP_OIDC_PROVIDER }}
+          service_account: cicd-github-account@${{ env.GCP_PROJECT_NAME }}.iam.gserviceaccount.com
+
+      - name: "Get secrets"
+        id: get-secret
+        uses: google-github-actions/get-secretmanager-secrets@bc9c54b29fdffb8a47776820a7d26e77b379d262 # 3.0.0
+        with:
+          secrets: |-
+            crtoken:${{ env.GCP_PROJECT_NAME }}/evergreen-gcr-rw
+
+      - name: "Setup docker buildx"
+        uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # 4.0.0
+        with:
+          platforms: amd64
+
+      - name: "Container registry login"
+        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # 4.1.0
+        with:
+          registry: ${{ inputs.cr-host }}
+          username: ${{ inputs.cr-login }}
+          password: ${{ steps.get-secret.outputs.crtoken }}
+
+      # To avoid disk space issues
+      - name: Free Disk Space
+        if: ${{ inputs.free-runner-disk-space }}
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
+        with:
+          tool-cache: false
+          docker-images: false
+          android: true
+          dotnet: true
+          haskell: true
+          swap-storage: true
+
+      - name: "Build and push image"
+        uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # 7.1.0
+        with:
+          context: ${{ inputs.build-context }}
+          file: ${{ inputs.dockerfile }}
+          push: true
+          tags: |
+            ${{ inputs.cr-host }}/${{ inputs.image-name }}:${{ needs.prepare.outputs.app_version || 0 }}-${{ needs.prepare.outputs.sha_short }}
+          build-args: ${{ inputs.build-args }}
+          target: ${{ inputs.build-target }}
+          secrets: ${{ secrets.build-secrets }}
+
+  test:
+    if: ${{ inputs.run-test }}
+    runs-on: ${{ inputs.runner-label }}
+    needs: [prepare]
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@v6
+
+      - name: "Setup docker buildx"
+        uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # 4.0.0
+
+      - name: "Build image"
+        uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # 7.1.0
+        with:
+          context: ${{ inputs.build-context }}
+          file: ${{ inputs.dockerfile }}
+          push: false
+          tags: |
+            test:test
+          target: test
+          build-args: ${{ inputs.build-args }}
+          outputs: type=docker
+        env:
+          DOCKER_BUILD_SUMMARY: false
+          DOCKER_BUILD_RECORD_UPLOAD: false
+
+      - name: "Get Tests"
+        run: |
+          docker create --name tempc test:test
+          docker cp tempc:/tmp/evergreen-test ${{ needs.prepare.outputs.test_folder }}
+          docker rm tempc
+
+      - name: "Save artifacts"
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ needs.prepare.outputs.test_folder }}
+          path: ${{ inputs.run-test }}
+          retention-days: 2
+
+      - name: "Test Report"
+        uses: dorny/test-reporter@a43b3a5f7366b97d083190328d2c652e1a8b6aa2 # 3.0.0
+        with:
+          name: Test report
+          path: ${{ inputs.run-test }}
+          reporter: ${{ needs.prepare.outputs.test_type }}
