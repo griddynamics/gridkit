@@ -59,7 +59,16 @@ const meta: Meta<typeof Wrapper> = {
   <li><code>position</code>: Adjust element positioning (relative, absolute, fixed)</li>
   <li><code>display</code>: Control layout behavior (flex, block, inline-flex)</li>
   </ul>
-        `,
+        
+
+  <br/>
+  <br/>
+
+<h3>🧩 Web Components track (CTORNDSD-646)</h3>
+<b>Verdict — No abstraction — shared utility CSS.</b> Zero behavior and no visual surface of its own. Utility classes over the same tokens deliver the same result at zero runtime cost.
+<br/>
+Decision rule and full rationale: <code>docs/webcomponents-migration/05-native-html-guidelines.md</code>.
+`,
       },
     },
   },

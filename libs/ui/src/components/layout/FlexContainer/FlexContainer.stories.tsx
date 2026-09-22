@@ -403,7 +403,16 @@ const meta: Meta<typeof FlexContainer> = {
   <li><code>position</code>: CSS position property</li>
   <li><code>overflow</code>: Content overflow behavior</li>
   </ul>
-        `,
+        
+
+  <br/>
+  <br/>
+
+<h3>🧩 Web Components track (CTORNDSD-646)</h3>
+<b>Verdict — No abstraction — shared utility CSS.</b> Zero behavior and no visual surface of its own. Per-instance custom-element upgrade cost scales with exactly the elements used most.
+<br/>
+Decision rule and full rationale: <code>docs/webcomponents-migration/05-native-html-guidelines.md</code>.
+`,
       },
     },
   },

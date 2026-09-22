@@ -216,7 +216,16 @@ const meta: Meta<typeof Link> = {
   </ul>
   </li>
   </ul>
-        `,
+        
+
+  <br/>
+  <br/>
+
+<h3>🧩 Web Components track (CTORNDSD-646)</h3>
+<b>Verdict — Native &lt;a&gt; + shared token CSS.</b> Zero behavior. An &lt;a&gt; inside a shadow root is invisible to SEO crawlers, link checkers and a[href] queries, with no behavioral gain to offset it.
+<br/>
+Decision rule and full rationale: <code>docs/webcomponents-migration/05-native-html-guidelines.md</code>.
+`,
       },
     },
   },

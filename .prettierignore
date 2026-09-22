@@ -8,6 +8,8 @@ dist/
 libs/ui/src/stories
 libs/ui/scripts/
 libs/ui/stats.html
+libs/web-components/harness/ssr-dsd-static.html
+libs/web-components/harness/ssr-dsd-hydrated.html
 package.json
 package-lock.json
 .github/

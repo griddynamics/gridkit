@@ -336,7 +336,16 @@ const meta: Meta<typeof Select> = {
   </ul>
   </li>
   </ul>
-        `,
+        
+
+  <br/>
+  <br/>
+
+<h3>🧩 Web Components track (CTORNDSD-646)</h3>
+<b>Verdict — Lit custom element.</b> Strongest case in the catalog: the native popover attribute replaces this component’s hand-rolled portal plus outside-click listener, verified with real browser input. Ported as &lt;gd-select&gt; (reduced scope): 2.44 kB gzip vs 30.09 kB. The useSelectContext compound pattern has no custom-element analogue yet.
+<br/>
+Decision rule and full rationale: <code>docs/webcomponents-migration/05-native-html-guidelines.md</code>.
+`,
       },
     },
   },

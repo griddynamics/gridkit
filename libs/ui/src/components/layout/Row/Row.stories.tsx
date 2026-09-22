@@ -431,7 +431,16 @@ export default {
   <li><code>position</code>: CSS position property</li>
   <li><code>overflow</code>: Content overflow behavior</li>
   </ul>
-        `,
+        
+
+  <br/>
+  <br/>
+
+<h3>🧩 Web Components track (CTORNDSD-646)</h3>
+<b>Verdict — No abstraction — shared utility CSS.</b> Zero behavior. Shadow DOM actively fights flex layout: a percentage width on a shadow child resolves against an auto-width host, and the symptom is a child rendering at 0px rather than an error.
+<br/>
+Decision rule and full rationale: <code>docs/webcomponents-migration/05-native-html-guidelines.md</code>.
+`,
       },
     },
   },

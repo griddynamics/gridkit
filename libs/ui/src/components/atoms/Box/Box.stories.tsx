@@ -372,7 +372,16 @@ The \`Box\` component is a foundational layout primitive that provides a flexibl
 <li><b>Accessibility:</b> Use tabIndex when the box needs to be focusable</li>
 <li><b>Performance:</b> Prefer Box props over inline styles for better optimization</li>
 </ul>
-        `,
+        
+
+  <br/>
+  <br/>
+
+<h3>🧩 Web Components track (CTORNDSD-646)</h3>
+<b>Verdict — No abstraction — shared utility CSS.</b> Zero behavior and no visual surface of its own. Layout primitives are the highest-count nodes on a page, so per-instance shadow-root cost scales worst here, and a percentage width on a shadow child resolves against an auto-width host — the measured cause of a real width-collapse bug in the Select port.
+<br/>
+Decision rule and full rationale: <code>docs/webcomponents-migration/05-native-html-guidelines.md</code>.
+`,
       },
     },
   },

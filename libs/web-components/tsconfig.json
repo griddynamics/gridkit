@@ -1,0 +1,42 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "useDefineForClassFields": false,
+    // tsconfig `paths` fully replace (not merge with) the extended config's `paths`, so the
+    // root tsconfig.base.json entries this project still needs (gd-design-library,
+    // gd-design-core) are restated here, plus libs/ui's OWN internal aliases (@utils, @tokens,
+    // etc.) — needed only because `gd-button.ts` imports the real `gd-design-library/tokens`
+    // barrel for true single-source-of-truth (see gd-button.ts), and that barrel's source
+    // re-exports every token file in libs/ui/src/tokens, all of which resolve their own
+    // internal imports through these same aliases.
+    "paths": {
+      "gd-design-library": ["libs/ui/src/index.ts"],
+      "gd-design-library/*": ["libs/ui/src/*"],
+      "gd-design-core": ["libs/design-core/src/index.ts"],
+      "gd-design-core/*": ["libs/design-core/src/*"],
+      "@types": ["libs/ui/src/types/"],
+      "@types/*": ["libs/ui/src/types/*"],
+      "@constants": ["libs/ui/src/constants/"],
+      "@constants/*": ["libs/ui/src/constants/*"],
+      "@utils": ["libs/ui/src/utils/"],
+      "@utils/*": ["libs/ui/src/utils/*"],
+      "@hooks": ["libs/ui/src/hooks/"],
+      "@hooks/*": ["libs/ui/src/hooks/*"],
+      "@tokens": ["libs/ui/src/tokens/"],
+      "@tokens/*": ["libs/ui/src/tokens/*"],
+      "@components": ["libs/ui/src/components/"],
+      "@components/*": ["libs/ui/src/components/*"],
+      "@assets": ["libs/ui/src/assets/"],
+      "@assets/*": ["libs/ui/src/assets/*"]
+    }
+  },
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "./tsconfig.lib.json"
+    }
+  ]
+}

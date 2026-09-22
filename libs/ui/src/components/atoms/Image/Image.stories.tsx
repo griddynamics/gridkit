@@ -213,7 +213,16 @@ const meta: Meta<ImageProps> = {
   <li><b>Customization</b> – Styling via props and CSS</li>
   <li><b>Interaction</b> – Click handling and events</li>
   </ul>
-        `,
+        
+
+  <br/>
+  <br/>
+
+<h3>🧩 Web Components track (CTORNDSD-646)</h3>
+<b>Verdict — Native &lt;img&gt; + shared token CSS.</b> Medium confidence. It does carry load/error/fallback state, but &lt;img&gt; discovery by crawlers is load-bearing and srcset/sizes/loading/fetchpriority are native attributes a wrapper must re-plumb. Ship the fallback as a documented pattern instead of an element.
+<br/>
+Decision rule and full rationale: <code>docs/webcomponents-migration/05-native-html-guidelines.md</code>.
+`,
       },
     },
   },

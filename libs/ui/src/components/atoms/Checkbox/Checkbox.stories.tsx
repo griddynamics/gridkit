@@ -134,7 +134,16 @@ The \`Checkbox\` component provides a standard way for users to toggle a boolean
 </ul>
 </li>
 </ul>
-        `,
+        
+
+  <br/>
+  <br/>
+
+<h3>🧩 Web Components track (CTORNDSD-646)</h3>
+<b>Verdict — Lit custom element (conditional).</b> Owns indeterminate state and a custom indicator that native input styling cannot reproduce. Conditional on ElementInternals form participation. Note the ported &lt;gd-checkbox&gt; must declare checked as a JS property only, because an HTML boolean attribute cannot express &quot;unset&quot;. 1.63 kB gzip vs 24.99 kB.
+<br/>
+Decision rule and full rationale: <code>docs/webcomponents-migration/05-native-html-guidelines.md</code>.
+`,
       },
     },
   },

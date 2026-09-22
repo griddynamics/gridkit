@@ -1,0 +1,5 @@
+# CTORNDSD-646b: throwaway platform fixtures live here. Next.js generates
+# `fixtures/next-ssr-check/.next/dev/package.json` with no `name` field, which makes Nx fail to
+# process the project graph for the ENTIRE repo ("The projects in the following directories have no
+# name provided"). Every `nx` command — lint, build, test — breaks until this is excluded.
+fixtures/**

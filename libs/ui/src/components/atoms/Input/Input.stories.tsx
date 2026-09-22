@@ -339,7 +339,16 @@ const meta: Meta<typeof Input> = {
   <li><b>onBlur</b>: Input loses focus</li>
   <li><b>onClick</b>: Input is clicked</li>
   </ul>
-        `,
+        
+
+  <br/>
+  <br/>
+
+<h3>🧩 Web Components track (CTORNDSD-646)</h3>
+<b>Verdict — Lit custom element (conditional).</b> Owns label, helper text, border and controlled-value semantics including a verified cursor-stability guard. Conditional on ElementInternals form participation, which is not implemented yet — a form control that does not submit is not a replacement for one that does. Ported as &lt;gd-input&gt;: 1.83 kB gzip vs 18.99 kB.
+<br/>
+Decision rule and full rationale: <code>docs/webcomponents-migration/05-native-html-guidelines.md</code>.
+`,
       },
     },
   },
