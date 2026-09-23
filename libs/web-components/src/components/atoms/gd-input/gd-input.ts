@@ -172,6 +172,7 @@ export class GdInput extends LitElement {
   static formAssociated = true;
 
   @property({ type: String }) value = '';
+  @property({ type: String }) type = 'text';
   @property({ type: String }) placeholder = '';
   @property({ type: String }) label = '';
   @property({ type: String, attribute: 'helper-text' }) helperText = '';
@@ -389,6 +390,7 @@ export class GdInput extends LitElement {
           <input
             part="input"
             id="control"
+            type=${this.type}
             aria-label=${this.label ? nothing : this.placeholder || nothing}
             name=${this.name || nothing}
             ?required=${this.required}

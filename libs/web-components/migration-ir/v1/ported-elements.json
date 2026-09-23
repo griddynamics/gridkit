@@ -42,6 +42,12 @@
       "tag": "gd-menu",
       "category": "molecules",
       "reactSource": "libs/ui/src/components/molecules/Menu/Menu.tsx"
+    },
+    {
+      "component": "Counter",
+      "tag": "gd-counter",
+      "category": "molecules",
+      "reactSource": "libs/ui/src/components/molecules/Counter/Counter.tsx"
     }
   ]
 }

@@ -23,6 +23,7 @@ import '../src/components/atoms/gd-input/gd-input';
 import '../src/components/atoms/gd-select/gd-select';
 import '../src/components/atoms/gd-typography/gd-typography';
 import '../src/components/molecules/gd-menu/gd-menu';
+import '../src/components/molecules/gd-counter/gd-counter';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -45,6 +46,7 @@ export async function runSsrDsdCheck() {
     <gd-menu .theme=${defaultTheme}
       ><span slot="trigger">Actions</span><span slot="content">Menu content</span></gd-menu
     >
+    <gd-counter .theme=${defaultTheme}></gd-counter>
   `;
 
   const result = render(template);
@@ -52,10 +54,9 @@ export async function runSsrDsdCheck() {
   for await (const chunk of result) out += chunk;
 
   const dsdByTag = Object.fromEntries(
-    ['gd-avatar', 'gd-button', 'gd-checkbox', 'gd-input', 'gd-menu', 'gd-select', 'gd-typography'].map((tag) => [
-      tag,
-      new RegExp(`<${tag}[^>]*>\\s*<template shadowroot="open" shadowrootmode="open">`).test(out),
-    ])
+    ['gd-avatar', 'gd-button', 'gd-checkbox', 'gd-counter', 'gd-input', 'gd-menu', 'gd-select', 'gd-typography'].map(
+      (tag) => [tag, new RegExp(`<${tag}[^>]*>\\s*<template shadowroot="open" shadowrootmode="open">`).test(out)]
+    )
   );
 
   const staticHtmlPath = resolve(__dirname, '../harness/ssr-dsd-static.html');

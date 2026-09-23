@@ -5,3 +5,4 @@ export { GdInput } from './components/atoms/gd-input/gd-input';
 export { GdSelect } from './components/atoms/gd-select/gd-select';
 export { GdAvatar } from './components/atoms/gd-avatar/gd-avatar';
 export { GdMenu } from './components/molecules/gd-menu/gd-menu';
+export { GdCounter } from './components/molecules/gd-counter/gd-counter';

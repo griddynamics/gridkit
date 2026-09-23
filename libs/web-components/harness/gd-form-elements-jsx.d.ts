@@ -12,6 +12,7 @@ declare global {
       'gd-select': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
       'gd-avatar': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
       'gd-menu': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+      'gd-counter': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
     }
   }
 }

@@ -21,6 +21,7 @@ import { GdInput } from './GdInputReact';
 import { GdSelect } from './GdSelectReact';
 import { GdAvatar } from './GdAvatarReact';
 import { GdMenu } from './GdMenuReact';
+import { GdCounter } from './GdCounterReact';
 
 /**
  * Visual-fidelity verification harness — renders each of the 6 ported atoms with
@@ -201,6 +202,22 @@ function MenuSection() {
   );
 }
 
+function CounterSection() {
+  const [value, setValue] = useState(1);
+  return (
+    <Section title="Counter — quantity control">
+      <GdCounter
+        min={1}
+        max={5}
+        initial={1}
+        theme={defaultTheme}
+        onGdChange={(event: Event) => setValue((event as CustomEvent<{ value: number }>).detail.value)}
+      />
+      <output>Value: {value}</output>
+    </Section>
+  );
+}
+
 function App() {
   return (
     <div style={{ padding: 24 }}>
@@ -211,6 +228,7 @@ function App() {
       <SelectSection />
       <AvatarSection />
       <MenuSection />
+      <CounterSection />
     </div>
   );
 }
