@@ -1,0 +1,347 @@
+{
+  "schemaVersion": "react-component-ir/v1",
+  "source": "/Users/alekseypovolotskiy/dev/gd/gridkit/libs/ui/src/components/molecules/Menu/Menu.tsx",
+  "imports": [
+    {
+      "source": "react",
+      "specifiers": [
+        {
+          "imported": "useEffect",
+          "local": "useEffect"
+        },
+        {
+          "imported": "useRef",
+          "local": "useRef"
+        },
+        {
+          "imported": "useState",
+          "local": "useState"
+        },
+        {
+          "imported": "useImperativeHandle",
+          "local": "useImperativeHandle"
+        },
+        {
+          "imported": "useCallback",
+          "local": "useCallback"
+        },
+        {
+          "imported": "forwardRef",
+          "local": "forwardRef"
+        },
+        {
+          "imported": "KeyboardEvent",
+          "local": "KeyboardEvent"
+        },
+        {
+          "imported": "MutableRefObject",
+          "local": "MutableRefObject"
+        }
+      ]
+    },
+    {
+      "source": "@hooks/useTheme",
+      "specifiers": [
+        {
+          "imported": "useTheme",
+          "local": "useTheme"
+        }
+      ]
+    },
+    {
+      "source": "@hooks/useLogger",
+      "specifiers": [
+        {
+          "imported": "useLogger",
+          "local": "useLogger"
+        }
+      ]
+    },
+    {
+      "source": "@constants",
+      "specifiers": [
+        {
+          "imported": "KEYBOARD_KEYS",
+          "local": "KEYBOARD_KEYS"
+        }
+      ]
+    },
+    {
+      "source": "@utils",
+      "specifiers": [
+        {
+          "imported": "useAnimationFrame",
+          "local": "useAnimationFrame"
+        },
+        {
+          "imported": "get",
+          "local": "get"
+        }
+      ]
+    },
+    {
+      "source": "@tokens",
+      "specifiers": [
+        {
+          "imported": "convertToInlineBoxStyles",
+          "local": "convertToInlineBoxStyles"
+        }
+      ]
+    },
+    {
+      "source": "@components/atoms/Select/hooks",
+      "specifiers": [
+        {
+          "imported": "SelectContext",
+          "local": "SelectContext"
+        }
+      ]
+    },
+    {
+      "source": "@components/layout",
+      "specifiers": [
+        {
+          "imported": "Portal",
+          "local": "Portal"
+        }
+      ]
+    },
+    {
+      "source": "@components",
+      "specifiers": [
+        {
+          "imported": "SelectContextType",
+          "local": "SelectContextType"
+        },
+        {
+          "imported": "Option",
+          "local": "Option"
+        },
+        {
+          "imported": "SelectOnSelect",
+          "local": "SelectOnSelect"
+        }
+      ]
+    },
+    {
+      "source": "@types",
+      "specifiers": [
+        {
+          "imported": "InlineBoxStyles",
+          "local": "InlineBoxStyles"
+        }
+      ]
+    },
+    {
+      "source": "./constants",
+      "specifiers": [
+        {
+          "imported": "COMPONENT_NAME",
+          "local": "COMPONENT_NAME"
+        },
+        {
+          "imported": "EMPTY_CLIENT_RECT",
+          "local": "EMPTY_CLIENT_RECT"
+        }
+      ]
+    },
+    {
+      "source": "./MenuStyled",
+      "specifiers": [
+        {
+          "imported": "MenuTriggerStyled",
+          "local": "MenuTriggerStyled"
+        },
+        {
+          "imported": "MenuContentStyled",
+          "local": "MenuContentStyled"
+        }
+      ]
+    },
+    {
+      "source": "./",
+      "specifiers": [
+        {
+          "imported": "MenuProps",
+          "local": "MenuProps"
+        },
+        {
+          "imported": "MenuRef",
+          "local": "MenuRef"
+        }
+      ]
+    }
+  ],
+  "stylingDependencies": [
+    {
+      "kind": "import",
+      "source": "./MenuStyled",
+      "loc": {
+        "start": {
+          "line": 25,
+          "column": 0,
+          "index": 710
+        },
+        "end": {
+          "line": 25,
+          "column": 68,
+          "index": 778
+        }
+      }
+    }
+  ],
+  "components": [
+    {
+      "name": "Menu",
+      "props": {
+        "source": "{\n      onSelect,\n      children,\n      content,\n      itemIdentifier = (selected, current) => selected?.value === current?.value,\n      closeOnSelect = true,\n      minHeight: defaultMinHeight,\n      maxHeight: defaultMaxHeight,\n      offsetX: defaultOffsetX,\n      offsetY: defaultOffsetY,\n      placement,\n      ...rest\n    }",
+        "bindings": [
+          "onSelect",
+          "children",
+          "content",
+          "itemIdentifier",
+          "closeOnSelect",
+          "defaultMinHeight",
+          "defaultMaxHeight",
+          "defaultOffsetX",
+          "defaultOffsetY",
+          "placement",
+          "rest"
+        ],
+        "loc": {
+          "start": {
+            "line": 30,
+            "column": 4,
+            "index": 886
+          },
+          "end": {
+            "line": 42,
+            "column": 5,
+            "index": 1213
+          }
+        }
+      },
+      "state": [
+        {
+          "value": "isOpen",
+          "setter": "setIsOpen",
+          "initialValue": "false",
+          "loc": {
+            "start": {
+              "line": 48,
+              "column": 10,
+              "index": 1318
+            },
+            "end": {
+              "line": 48,
+              "column": 47,
+              "index": 1355
+            }
+          }
+        },
+        {
+          "value": "internalValue",
+          "setter": "setInternalValue",
+          "initialValue": "undefined",
+          "loc": {
+            "start": {
+              "line": 49,
+              "column": 10,
+              "index": 1367
+            },
+            "end": {
+              "line": 49,
+              "column": 64,
+              "index": 1421
+            }
+          }
+        },
+        {
+          "value": "apiControlTarget",
+          "setter": "setApiControlTarget",
+          "initialValue": "undefined",
+          "loc": {
+            "start": {
+              "line": 50,
+              "column": 10,
+              "index": 1433
+            },
+            "end": {
+              "line": 50,
+              "column": 82,
+              "index": 1505
+            }
+          }
+        }
+      ],
+      "effects": [
+        {
+          "callback": "() => {\n      if (isOpen) {\n        document.addEventListener('keydown', handleKeyDown as any);\n        document.addEventListener('mousedown', handleClickOutside);\n      } else {\n        document.removeEventListener('keydown', handleKeyDown as any);\n        document.removeEventListener('mousedown', handleClickOutside);\n      }\n\n      return () => {\n        document.removeEventListener('keydown', handleKeyDown as any);\n        document.removeEventListener('mousedown', handleClickOutside);\n      };\n    }",
+          "dependencies": "[isOpen]",
+          "hasCleanup": true,
+          "loc": {
+            "start": {
+              "line": 208,
+              "column": 4,
+              "index": 7078
+            },
+            "end": {
+              "line": 221,
+              "column": 16,
+              "index": 7606
+            }
+          }
+        }
+      ],
+      "jsxTemplates": [
+        {
+          "type": "JSXElement",
+          "source": "<SelectContext.Provider value={contextValue}>\n        <MenuTriggerStyled onClick={onClickHandler} theme={theme} ref={hostRef} data-testid={COMPONENT_NAME} {...rest}>\n          {children}\n        </MenuTriggerStyled>\n        {isOpen && (\n          <Portal withWrapper={false}>\n            <MenuContentStyled\n              ref={contentRef}\n              data-testid={COMPONENT_NAME}\n              theme={theme}\n              {...convertToInlineBoxStyles(rest as InlineBoxStyles)}\n            >\n              {content}\n            </MenuContentStyled>\n          </Portal>\n        )}\n      </SelectContext.Provider>",
+          "loc": {
+            "start": {
+              "line": 280,
+              "column": 6,
+              "index": 9537
+            },
+            "end": {
+              "line": 296,
+              "column": 31,
+              "index": 10148
+            }
+          }
+        }
+      ],
+      "stylingDependencies": [],
+      "unsupported": [
+        {
+          "kind": "portal",
+          "source": "<Portal withWrapper={false}>\n            <MenuContentStyled\n              ref={contentRef}\n              data-testid={COMPONENT_NAME}\n              theme={theme}\n              {...convertToInlineBoxStyles(rest as InlineBoxStyles)}\n            >\n              {content}\n            </MenuContentStyled>\n          </Portal>",
+          "loc": {
+            "start": {
+              "line": 285,
+              "column": 10,
+              "index": 9784
+            },
+            "end": {
+              "line": 294,
+              "column": 19,
+              "index": 10105
+            }
+          }
+        }
+      ],
+      "loc": {
+        "start": {
+          "line": 29,
+          "column": 2,
+          "index": 880
+        },
+        "end": {
+          "line": 298,
+          "column": 3,
+          "index": 10159
+        }
+      }
+    }
+  ]
+}

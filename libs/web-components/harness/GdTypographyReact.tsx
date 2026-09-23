@@ -1,6 +1,6 @@
 import { createComponent } from '@lit/react';
 import * as React from 'react';
-import { GdTypography as GdTypographyElement } from '../src/components/gd-typography/gd-typography';
+import { GdTypography as GdTypographyElement } from '../src/components/atoms/gd-typography/gd-typography';
 
 /**
  * React consumption harness for `gd-typography`. No custom events to map — Typography is

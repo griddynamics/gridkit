@@ -1,6 +1,6 @@
 import { createComponent } from '@lit/react';
 import * as React from 'react';
-import { GdInput as GdInputElement } from '../src/components/gd-input/gd-input';
+import { GdInput as GdInputElement } from '../src/components/atoms/gd-input/gd-input';
 
 /**
  * React consumption harness for `gd-input` — the cursor-jump repro harness (see

@@ -1,5 +1,5 @@
 /**
- * SSR / Declarative Shadow DOM (DSD) smoke check for `gd-button` and `gd-typography`. Uses
+ * SSR / Declarative Shadow DOM (DSD) smoke check for every ported Web Component. Uses
  * Lit's own SSR tooling (`@lit-labs/ssr`), added only to this package's own package.json.
  *
  * Loaded via Vite's `ssrLoadModule` (see run-ssr-dsd-check.mjs) rather than run directly
@@ -16,8 +16,13 @@ import { writeFileSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { defaultTheme } from 'gd-design-library/tokens';
-import '../src/components/gd-button/gd-button';
-import '../src/components/gd-typography/gd-typography';
+import '../src/components/atoms/gd-avatar/gd-avatar';
+import '../src/components/atoms/gd-button/gd-button';
+import '../src/components/atoms/gd-checkbox/gd-checkbox';
+import '../src/components/atoms/gd-input/gd-input';
+import '../src/components/atoms/gd-select/gd-select';
+import '../src/components/atoms/gd-typography/gd-typography';
+import '../src/components/molecules/gd-menu/gd-menu';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -31,16 +36,27 @@ export async function runSsrDsdCheck() {
   // so the check is meaningless without a theme. Matches how every other harness supplies it
   // (`fidelity-check.tsx`, `form-participation-check.ts`).
   const template = html`
+    <gd-avatar fallback="GD" .theme=${defaultTheme}></gd-avatar>
     <gd-button variant="primary" .theme=${defaultTheme}>Submit</gd-button>
+    <gd-checkbox .theme=${defaultTheme}>Accept terms</gd-checkbox>
+    <gd-input label="Name" .theme=${defaultTheme}></gd-input>
+    <gd-select .items=${[{ name: 'Alpha', value: 'alpha' }]} .theme=${defaultTheme}></gd-select>
     <gd-typography variant="h1" as="h1" .theme=${defaultTheme}>Heading</gd-typography>
+    <gd-menu .theme=${defaultTheme}
+      ><span slot="trigger">Actions</span><span slot="content">Menu content</span></gd-menu
+    >
   `;
 
   const result = render(template);
   let out = '';
   for await (const chunk of result) out += chunk;
 
-  const hasButtonDSD = /<gd-button[^>]*>\s*<template shadowroot="open" shadowrootmode="open">/.test(out);
-  const hasTypographyDSD = /<gd-typography[^>]*>\s*<template shadowroot="open" shadowrootmode="open">/.test(out);
+  const dsdByTag = Object.fromEntries(
+    ['gd-avatar', 'gd-button', 'gd-checkbox', 'gd-input', 'gd-menu', 'gd-select', 'gd-typography'].map((tag) => [
+      tag,
+      new RegExp(`<${tag}[^>]*>\\s*<template shadowroot="open" shadowrootmode="open">`).test(out),
+    ])
+  );
 
   const staticHtmlPath = resolve(__dirname, '../harness/ssr-dsd-static.html');
   writeFileSync(
@@ -95,5 +111,5 @@ export async function runSsrDsdCheck() {
 `
   );
 
-  return { out, hasButtonDSD, hasTypographyDSD, staticHtmlPath, hydratedHtmlPath };
+  return { out, dsdByTag, staticHtmlPath, hydratedHtmlPath };
 }

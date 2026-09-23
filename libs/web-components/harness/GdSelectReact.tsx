@@ -1,6 +1,6 @@
 import { createComponent } from '@lit/react';
 import * as React from 'react';
-import { GdSelect as GdSelectElement } from '../src/components/gd-select/gd-select';
+import { GdSelect as GdSelectElement } from '../src/components/atoms/gd-select/gd-select';
 
 /**
  * React consumption harness for `gd-select` — object/array props (`items`, `value`) pass

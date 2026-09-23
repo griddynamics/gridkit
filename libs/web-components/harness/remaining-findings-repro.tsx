@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import '../src/components/gd-typography/gd-typography';
+import '../src/components/atoms/gd-typography/gd-typography';
 import { GdInput } from './GdInputReact';
 import { GdSelect } from './GdSelectReact';
 

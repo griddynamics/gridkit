@@ -16,8 +16,8 @@
  */
 import '../src/index';
 import { defaultTheme } from 'gd-design-library/tokens';
-import type { GdCheckbox } from '../src/components/gd-checkbox/gd-checkbox';
-import type { GdInput } from '../src/components/gd-input/gd-input';
+import type { GdCheckbox } from '../src/components/atoms/gd-checkbox/gd-checkbox';
+import type { GdInput } from '../src/components/atoms/gd-input/gd-input';
 
 const root = document.getElementById('root')!;
 

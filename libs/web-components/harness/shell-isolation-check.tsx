@@ -2,7 +2,7 @@ import * as React from 'react';
 import { createRoot } from 'react-dom/client';
 import { CacheProvider, Global, css } from '@emotion/react';
 import createCache from '@emotion/cache';
-import '../src/components/gd-button/gd-button';
+import '../src/components/atoms/gd-button/gd-button';
 import './gd-button-shell';
 
 declare global {

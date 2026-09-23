@@ -1,6 +1,6 @@
 import { createComponent } from '@lit/react';
 import * as React from 'react';
-import { GdCheckbox as GdCheckboxElement } from '../src/components/gd-checkbox/gd-checkbox';
+import { GdCheckbox as GdCheckboxElement } from '../src/components/atoms/gd-checkbox/gd-checkbox';
 
 /**
  * React consumption harness for `gd-checkbox` — the React-19-scope nuance from the Migration

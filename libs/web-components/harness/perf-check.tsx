@@ -1,3 +1,6 @@
+// Harness-only built stylesheet: the package export resolves only after the UI build and the
+// harness intentionally compares against that emitted visual baseline.
+// eslint-disable-next-line @nx/enforce-module-boundaries
 import '../../../dist/libs/ui/styles.css';
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
@@ -11,7 +14,7 @@ import { defaultTheme } from 'gd-design-library/tokens';
 import { Button } from '../../ui/src/components/atoms/Button/Button';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { ThemeProvider } from '../../ui/src/hooks/useTheme/useTheme';
-import '../src/components/gd-button/gd-button';
+import '../src/components/atoms/gd-button/gd-button';
 import './gd-button-shell';
 
 /**

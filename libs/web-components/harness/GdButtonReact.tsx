@@ -1,6 +1,6 @@
 import { createComponent } from '@lit/react';
 import * as React from 'react';
-import { GdButton as GdButtonElement } from '../src/components/gd-button/gd-button';
+import { GdButton as GdButtonElement } from '../src/components/atoms/gd-button/gd-button';
 
 /**
  * React consumption harness  Scope — proves `gd-button` is usable from React via

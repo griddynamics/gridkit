@@ -206,9 +206,13 @@ export class GdSelect extends LitElement {
     // *definite* containing-block width, and `:host` itself defaults to `auto` (shrink-to-fit)
     // with no width set here. Matches the real `Select.tsx`'s `width`/`minWidth`/`maxWidth`
     // props being applied straight to its single outermost styled element.
-    if (changed.has('width')) this.style.width = this.width;
-    if (changed.has('maxWidth')) this.style.maxWidth = this.maxWidth;
-    if (changed.has('minWidth')) this.style.minWidth = this.minWidth ?? '';
+    // Lit's SSR host shim has no CSSStyleDeclaration. Browser layout receives these host
+    // constraints here; SSR still serializes the complete shadow DOM without them.
+    if (this.style) {
+      if (changed.has('width')) this.style.width = this.width;
+      if (changed.has('maxWidth')) this.style.maxWidth = this.maxWidth;
+      if (changed.has('minWidth')) this.style.minWidth = this.minWidth ?? '';
+    }
   }
 
   private _syncPopover(isOpen: boolean) {

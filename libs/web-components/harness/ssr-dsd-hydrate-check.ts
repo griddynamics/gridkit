@@ -1,5 +1,10 @@
-import '../src/components/gd-button/gd-button';
-import '../src/components/gd-typography/gd-typography';
+import '../src/components/atoms/gd-button/gd-button';
+import '../src/components/atoms/gd-avatar/gd-avatar';
+import '../src/components/atoms/gd-checkbox/gd-checkbox';
+import '../src/components/atoms/gd-input/gd-input';
+import '../src/components/atoms/gd-select/gd-select';
+import '../src/components/atoms/gd-typography/gd-typography';
+import '../src/components/molecules/gd-menu/gd-menu';
 import { defaultTheme } from 'gd-design-library/tokens';
 
 /**
@@ -34,9 +39,13 @@ window.addEventListener('DOMContentLoaded', () => {
   // only for this component; JS = fully styled. `gd-typography` is already styled from SSR
   // because it uses inline styles, so this changes nothing for it.
   const backgroundBeforeTheme = innerButtonBefore ? getComputedStyle(innerButtonBefore).backgroundColor : null;
-  document.querySelectorAll<HTMLElement & { theme?: unknown }>('gd-button, gd-typography').forEach((el) => {
-    el.theme = defaultTheme;
-  });
+  document
+    .querySelectorAll<
+      HTMLElement & { theme?: unknown }
+    >('gd-avatar, gd-button, gd-checkbox, gd-input, gd-menu, gd-select, gd-typography')
+    .forEach((el) => {
+      el.theme = defaultTheme;
+    });
 
   requestAnimationFrame(() => {
     setTimeout(async () => {

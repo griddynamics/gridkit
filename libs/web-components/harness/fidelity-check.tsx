@@ -20,6 +20,7 @@ import { GdTypography } from './GdTypographyReact';
 import { GdInput } from './GdInputReact';
 import { GdSelect } from './GdSelectReact';
 import { GdAvatar } from './GdAvatarReact';
+import { GdMenu } from './GdMenuReact';
 
 /**
  * Visual-fidelity verification harness — renders each of the 6 ported atoms with
@@ -174,6 +175,32 @@ function AvatarSection() {
   );
 }
 
+function MenuSection() {
+  const [value, setValue] = useState('None');
+  return (
+    <Section title="Menu — popover, selection, and light dismiss">
+      <GdMenu
+        theme={defaultTheme}
+        onGdChange={(event: Event) => {
+          const { data } = (event as CustomEvent<{ data: { name?: string; value: string } }>).detail;
+          setValue(`${data.name ?? data.value} (${data.value})`);
+        }}
+      >
+        <span slot="trigger">Actions ▾</span>
+        <div slot="content">
+          <button data-gd-menu-name="Edit" data-gd-menu-value="edit">
+            Edit
+          </button>
+          <button data-gd-menu-name="Archive" data-gd-menu-value="archive">
+            Archive
+          </button>
+        </div>
+      </GdMenu>
+      <output>Selected: {value}</output>
+    </Section>
+  );
+}
+
 function App() {
   return (
     <div style={{ padding: 24 }}>
@@ -183,6 +210,7 @@ function App() {
       <TypographySection />
       <SelectSection />
       <AvatarSection />
+      <MenuSection />
     </div>
   );
 }

@@ -52,7 +52,7 @@ const demos = [
   },
   {
     page: 'fidelity-check.html',
-    proves: 'All 5 atoms rendered with the real theme, for side-by-side comparison with Storybook',
+    proves: 'All 6 ported components rendered with the real theme, including gd-menu selection',
     findings: '§9, §16',
     needs: 'dist/libs/ui/styles.css',
   },

@@ -26,6 +26,10 @@ export default defineConfig({
   root: __dirname,
   cacheDir: '../../node_modules/.vite/libs/web-components-test',
   resolve: {
+    // @lit/react and react-dom must share one React dispatcher. Without dedupe, browser-mode
+    // dependency optimization can load a second React instance and make wrapper tests fail with
+    // an invalid hook call even though the element itself is correct.
+    dedupe: ['react', 'react-dom'],
     alias: {
       // The main vite.config.ts gets this from `nxViteTsPaths()`; this config resolves it
       // explicitly so the test project does not depend on the Nx tsconfig-paths plugin.
@@ -42,12 +46,15 @@ export default defineConfig({
   },
   test: {
     name: 'web-components',
-    include: ['src/**/*.spec.ts', 'test/**/*.spec.ts'],
+    include: ['src/**/*.spec.ts', 'src/**/*.spec.tsx', 'test/**/*.spec.ts', 'test/**/*.spec.tsx'],
     browser: {
       enabled: true,
       headless: true,
       provider: playwright(),
       instances: [{ browser: 'chromium' }],
     },
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom/client', '@lit/react'],
   },
 });
