@@ -39,4 +39,11 @@ export const counter = {
       height: 14,
     },
   },
+  webComponent: {
+    host: { display: 'inline-block' },
+    root: { display: 'flex', boxSizing: 'border-box' },
+    inputHost: { flex: '1 1 auto', minWidth: 0 },
+    inputOuter: { width: '100%' },
+    inputControl: { appearance: 'textfield', MozAppearance: 'textfield', textAlign: TextAlign.Center },
+  },
 };

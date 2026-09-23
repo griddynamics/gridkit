@@ -1011,6 +1011,27 @@
         "width": 14,
         "height": 14
       }
+    },
+    "webComponent": {
+      "host": {
+        "display": "inline-block"
+      },
+      "root": {
+        "display": "flex",
+        "boxSizing": "border-box"
+      },
+      "inputHost": {
+        "flex": "1 1 auto",
+        "minWidth": 0
+      },
+      "inputOuter": {
+        "width": "100%"
+      },
+      "inputControl": {
+        "appearance": "textfield",
+        "MozAppearance": "textfield",
+        "textAlign": "center"
+      }
     }
   },
   "name": "default",
@@ -3078,6 +3099,38 @@
       "maxHeight": 400,
       "offsetX": 4,
       "offsetY": 4
+    },
+    "webComponent": {
+      "host": {
+        "display": "inline-block"
+      },
+      "trigger": {
+        "default": {
+          "alignItems": "center",
+          "background": "none",
+          "border": 0,
+          "color": "inherit",
+          "cursor": "pointer",
+          "display": "inline-flex",
+          "font": "inherit",
+          "padding": 0
+        },
+        "focusVisible": {
+          "outlineOffset": "2px"
+        }
+      },
+      "content": {
+        "border": 0,
+        "boxSizing": "border-box",
+        "inset": "auto",
+        "height": "fit-content",
+        "display": "inline-block",
+        "margin": 0,
+        "overflow": "auto",
+        "padding": 0,
+        "position": "fixed",
+        "width": "fit-content"
+      }
     }
   },
   "table": {

@@ -173,6 +173,9 @@ export class GdInput extends LitElement {
 
   @property({ type: String }) value = '';
   @property({ type: String }) type = 'text';
+  /** Component-token layout overrides for composed ports; never consumer literal CSS. */
+  @property({ attribute: false }) styles: Record<string, string | number> = {};
+  @property({ attribute: false }) inputStyles: Record<string, string | number> = {};
   @property({ type: String }) placeholder = '';
   @property({ type: String }) label = '';
   @property({ type: String, attribute: 'helper-text' }) helperText = '';
@@ -345,7 +348,7 @@ export class GdInput extends LitElement {
     const focusColor = (this.theme.colors as { border?: { focus?: string } } | undefined)?.border?.focus ?? '#0069B4';
     const textColor = this.disabled ? resolved.disabledColor : resolved.color;
 
-    const outerStyle = { gap: `${resolved.wrapperGap}` };
+    const outerStyle = { gap: `${resolved.wrapperGap}`, ...this.styles };
     const rowStyle = {
       fontFamily: `${resolved.fontFamily}`,
       fontSize: `${resolved.fontSize}`,
@@ -391,6 +394,7 @@ export class GdInput extends LitElement {
             part="input"
             id="control"
             type=${this.type}
+            style=${styleMap(this.inputStyles)}
             aria-label=${this.label ? nothing : this.placeholder || nothing}
             name=${this.name || nothing}
             ?required=${this.required}
