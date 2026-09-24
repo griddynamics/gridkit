@@ -114,7 +114,12 @@ export interface Rule {
 }
 
 export type Condition =
-  BaseCondition | LeafCondition | OrCondition | AndCondition | SchemaBasedCondition | ValidateFunctionCondition;
+  | BaseCondition
+  | LeafCondition
+  | OrCondition
+  | AndCondition
+  | SchemaBasedCondition
+  | ValidateFunctionCondition;
 
 export interface BaseCondition {
   readonly type?: string;

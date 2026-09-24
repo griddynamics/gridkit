@@ -369,27 +369,19 @@ export class GdButton extends LitElement {
         aria-label=${this.ariaLabel ?? nothing}
         aria-pressed=${this.ariaPressed ?? nothing}
       >
-        ${
-          this._hasIconStart
-            ? html`<span class="gd-button__icon-start" part="icon-start"
-                ><slot name="icon-start" @slotchange=${this._onSlotChange}></slot
-              ></span>`
-            : html`<slot name="icon-start" @slotchange=${this._onSlotChange}></slot>`
-        }
-        ${
-          this._hasContent
-            ? html`<span class="gd-button__content" part="content"
-                ><slot @slotchange=${this._onSlotChange}></slot
-              ></span>`
-            : html`<slot @slotchange=${this._onSlotChange}></slot>`
-        }
-        ${
-          this._hasIconEnd
-            ? html`<span class="gd-button__icon-end" part="icon-end"
-                ><slot name="icon-end" @slotchange=${this._onSlotChange}></slot
-              ></span>`
-            : html`<slot name="icon-end" @slotchange=${this._onSlotChange}></slot>`
-        }
+        ${this._hasIconStart
+          ? html`<span class="gd-button__icon-start" part="icon-start"
+              ><slot name="icon-start" @slotchange=${this._onSlotChange}></slot
+            ></span>`
+          : html`<slot name="icon-start" @slotchange=${this._onSlotChange}></slot>`}
+        ${this._hasContent
+          ? html`<span class="gd-button__content" part="content"><slot @slotchange=${this._onSlotChange}></slot></span>`
+          : html`<slot @slotchange=${this._onSlotChange}></slot>`}
+        ${this._hasIconEnd
+          ? html`<span class="gd-button__icon-end" part="icon-end"
+              ><slot name="icon-end" @slotchange=${this._onSlotChange}></slot
+            ></span>`
+          : html`<slot name="icon-end" @slotchange=${this._onSlotChange}></slot>`}
         ${this.isLoading ? html`<span class="spinner" part="spinner" aria-hidden="true"></span>` : nothing}
       </button>
     `;

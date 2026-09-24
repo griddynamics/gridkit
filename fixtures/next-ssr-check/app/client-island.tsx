@@ -28,7 +28,8 @@ export default function ClientIsland() {
       });
 
       const button = document.getElementById('server-button') as
-        (HTMLElement & { updateComplete?: Promise<unknown> }) | null;
+        | (HTMLElement & { updateComplete?: Promise<unknown> })
+        | null;
       await button?.updateComplete;
       await new Promise((r) => setTimeout(r, 150));
 

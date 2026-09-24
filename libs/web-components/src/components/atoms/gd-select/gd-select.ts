@@ -320,22 +320,20 @@ export class GdSelect extends LitElement {
           style=${styleMap(dropdownStyle)}
           @toggle=${this._onDropdownToggle}
         >
-          ${
-            this.items.length
-              ? this.items.map(
-                  (item) => html`
-                    <div
-                      class="option"
-                      role="option"
-                      aria-selected=${selected?.value === item.value}
-                      @click=${() => this._select(item)}
-                    >
-                      ${item.name}
-                    </div>
-                  `
-                )
-              : html`<slot name="empty"></slot>`
-          }
+          ${this.items.length
+            ? this.items.map(
+                (item) => html`
+                  <div
+                    class="option"
+                    role="option"
+                    aria-selected=${selected?.value === item.value}
+                    @click=${() => this._select(item)}
+                  >
+                    ${item.name}
+                  </div>
+                `
+              )
+            : html`<slot name="empty"></slot>`}
         </div>
       </div>
     `;

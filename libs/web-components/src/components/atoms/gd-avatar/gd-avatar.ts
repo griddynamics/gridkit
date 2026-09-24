@@ -134,38 +134,32 @@ export class GdAvatar extends LitElement {
     return html`
       <div class="avatar" part="avatar" role="img" aria-label=${this.alt} style=${styleMap(hostStyle)}>
         <div class="image-wrapper" part="image-wrapper" style=${styleMap(imageStyle)}>
-          ${
-            showImage
-              ? html`<img
-                  part="image"
-                  src=${this.src!}
-                  alt=${this.alt}
-                  @error=${this._onImageError}
-                  @load=${this._onImageLoad}
-                />`
-              : showFallback
-                ? html`<div class="fallback" part="fallback" aria-label=${this.alt}>
-                    ${
-                      this._hasFallbackSlot
-                        ? html`<slot name="fallback" @slotchange=${this._onFallbackSlotChange}></slot>`
-                        : this.fallback !== undefined
-                          ? html`<span
-                              class="fallback-text"
-                              part="fallback-text"
-                              style=${styleMap({ fontSize: `${fallbackFontSize}` })}
-                              >${this.fallback}</span
-                            >`
-                          : html`<slot name="fallback" @slotchange=${this._onFallbackSlotChange}></slot>`
-                    }
-                  </div>`
-                : nothing
-          }
+          ${showImage
+            ? html`<img
+                part="image"
+                src=${this.src!}
+                alt=${this.alt}
+                @error=${this._onImageError}
+                @load=${this._onImageLoad}
+              />`
+            : showFallback
+              ? html`<div class="fallback" part="fallback" aria-label=${this.alt}>
+                  ${this._hasFallbackSlot
+                    ? html`<slot name="fallback" @slotchange=${this._onFallbackSlotChange}></slot>`
+                    : this.fallback !== undefined
+                      ? html`<span
+                          class="fallback-text"
+                          part="fallback-text"
+                          style=${styleMap({ fontSize: `${fallbackFontSize}` })}
+                          >${this.fallback}</span
+                        >`
+                      : html`<slot name="fallback" @slotchange=${this._onFallbackSlotChange}></slot>`}
+                </div>`
+              : nothing}
         </div>
-        ${
-          this.withBadge
-            ? html`<span class="badge" part="badge" role="status" style=${styleMap(badgeStyle)}></span>`
-            : nothing
-        }
+        ${this.withBadge
+          ? html`<span class="badge" part="badge" role="status" style=${styleMap(badgeStyle)}></span>`
+          : nothing}
       </div>
     `;
   }
