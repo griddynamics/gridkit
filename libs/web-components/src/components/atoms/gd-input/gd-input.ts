@@ -404,9 +404,11 @@ export class GdInput extends LitElement {
     // from outside it; without it, a consumer's only escape hatch is the `theme` property.
     return html`
       <div class="outer" part="outer" style=${styleMap(outerStyle)}>
-        ${this.label
-          ? html`<label class="label" part="label" for="control" style=${styleMap(labelStyle)}>${this.label}</label>`
-          : nothing}
+        ${
+          this.label
+            ? html`<label class="label" part="label" for="control" style=${styleMap(labelStyle)}>${this.label}</label>`
+            : nothing
+        }
         <div class="row" part="row" style=${styleMap(rowStyle)}>
           <slot name="adornment-start"></slot>
           <input
@@ -430,9 +432,11 @@ export class GdInput extends LitElement {
           <span class="outline" part="outline" style=${styleMap(outlineStyle)}></span>
           <slot name="adornment-end"></slot>
         </div>
-        ${this.helperText
-          ? html`<span class="helper" part="helper" style=${styleMap(helperStyle)}>${this.helperText}</span>`
-          : nothing}
+        ${
+          this.helperText
+            ? html`<span class="helper" part="helper" style=${styleMap(helperStyle)}>${this.helperText}</span>`
+            : nothing
+        }
       </div>
     `;
   }

@@ -291,21 +291,23 @@ export class GdCheckbox extends LitElement {
           @change=${this._onChange}
         />
         <span class="indicator" part="indicator" style=${styleMap(indicatorStyle)}>
-          ${this.indeterminate
-            ? html`<svg width=${resolved.iconSize} height=${resolved.iconSize} viewBox="0 0 10 10" fill="none">
-                <path d="M1 5H9" stroke="white" stroke-width="1.5" stroke-linecap="round" />
-              </svg>`
-            : currentChecked
+          ${
+            this.indeterminate
               ? html`<svg width=${resolved.iconSize} height=${resolved.iconSize} viewBox="0 0 10 10" fill="none">
-                  <path
-                    d="M1.5 5L4 7.5L8.5 2.5"
-                    stroke="white"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
+                  <path d="M1 5H9" stroke="white" stroke-width="1.5" stroke-linecap="round" />
                 </svg>`
-              : nothing}
+              : currentChecked
+                ? html`<svg width=${resolved.iconSize} height=${resolved.iconSize} viewBox="0 0 10 10" fill="none">
+                    <path
+                      d="M1.5 5L4 7.5L8.5 2.5"
+                      stroke="white"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>`
+                : nothing
+          }
         </span>
         <!-- Bare span, no style — matches Checkbox.tsx's real unstyled label span exactly:
              no css/style prop at all, purely ambient-inherited color/font, which crosses

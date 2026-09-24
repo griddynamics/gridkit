@@ -40,9 +40,9 @@ window.addEventListener('DOMContentLoaded', () => {
   // because it uses inline styles, so this changes nothing for it.
   const backgroundBeforeTheme = innerButtonBefore ? getComputedStyle(innerButtonBefore).backgroundColor : null;
   document
-    .querySelectorAll<
-      HTMLElement & { theme?: unknown }
-    >('gd-avatar, gd-button, gd-checkbox, gd-input, gd-menu, gd-select, gd-typography')
+    .querySelectorAll<HTMLElement & { theme?: unknown }>(
+      'gd-avatar, gd-button, gd-checkbox, gd-input, gd-menu, gd-select, gd-typography'
+    )
     .forEach((el) => {
       el.theme = defaultTheme;
     });

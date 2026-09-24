@@ -3,31 +3,10 @@ import type { DesignCoreTheme } from '../types';
 
 /** Mirrors gd-design-library's `TypographyVariant` values that resolve to a real scale entry. */
 export type TypographyVariantName =
-  | 'span'
-  | 'h1'
-  | 'h2'
-  | 'h3'
-  | 'h4'
-  | 'h5'
-  | 'h6'
-  | 'p'
-  | 'small'
-  | 'caption'
-  | 'header'
-  | 'code'
-  | 'kbd';
+  'span' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'small' | 'caption' | 'header' | 'code' | 'kbd';
 
 export type TypographyStyleVariantName =
-  | 'light'
-  | 'normal'
-  | 'semibold'
-  | 'bold'
-  | 'italic'
-  | 'small'
-  | 'uppercase'
-  | 'lowercase'
-  | 'underline'
-  | 'strike';
+  'light' | 'normal' | 'semibold' | 'bold' | 'italic' | 'small' | 'uppercase' | 'lowercase' | 'underline' | 'strike';
 
 export interface ResolvedTypographyStyle {
   fontFamily: string | number;

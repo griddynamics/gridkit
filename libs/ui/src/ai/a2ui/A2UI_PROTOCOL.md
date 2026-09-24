@@ -289,14 +289,14 @@ All types are derived from `aiComponentsSchema` via [`./component-map.ts`](./com
 
 ### Feedback & Status
 
-| Type                    | GridKit component    | Notes                                                                                                                                                             |
+| Type | GridKit component | Notes |
 | ----------------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| `"progress-bar"`        | `ProgressBar`        | `value`: 0–100.                                                                                                                                                   |
-| `"loader"`              | `Loader`             | Loading indicator. Use top-level `name: "circle"                                                                                                                  | "dots"`, optional `rounded`for dots,`size`, `variant`, and `withWrapper`. |
-| `"skeleton"`            | `Skeleton`           | Placeholder. Prefer top-level `variant`, `width`, `height`, optional `backgroundColor`, and optional `animationName`. Use `styling` for extra CSS overrides only. |
-| `"inline-notification"` | `InlineNotification` | `variant`: `"success"` `"warning"` `"error"` `"info"`.                                                                                                            |
-| `"snackbar"`            | `Snackbar`           | Floating auto-dismiss notification.                                                                                                                               |
-| `"tooltip"`             | `Tooltip`            | Hover tooltip. Supports `children[]` as trigger.                                                                                                                  |
+| `"progress-bar"` | `ProgressBar` | `value`: 0–100. |
+| `"loader"` | `Loader` | Loading indicator. Use top-level `name: "circle"                                                                                                                  | "dots"`, optional `rounded`for dots,`size`, `variant`, and `withWrapper`. |
+| `"skeleton"` | `Skeleton` | Placeholder. Prefer top-level `variant`, `width`, `height`, optional `backgroundColor`, and optional `animationName`. Use `styling` for extra CSS overrides only. |
+| `"inline-notification"` | `InlineNotification` | `variant`: `"success"` `"warning"` `"error"` `"info"`. |
+| `"snackbar"` | `Snackbar` | Floating auto-dismiss notification. |
+| `"tooltip"` | `Tooltip` | Hover tooltip. Supports `children[]` as trigger. |
 
 ### Overlay & Dialog
 
