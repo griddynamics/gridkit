@@ -1,6 +1,4 @@
-import { TextAlign } from '@types';
 import { get } from '@utils';
-
 import { getSpacing } from './utils';
 
 export const counter = {
@@ -9,7 +7,7 @@ export const counter = {
     width: '140px',
     '& input': {
       width: '100%',
-      textAlign: TextAlign.Center,
+      textAlign: 'center',
     },
   },
   navButton: {
@@ -47,7 +45,7 @@ export const counter = {
     inputControl: {
       appearance: 'textfield',
       MozAppearance: 'textfield',
-      textAlign: TextAlign.Center,
+      textAlign: 'center',
       '&::-webkit-inner-spin-button, &::-webkit-outer-spin-button': { WebkitAppearance: 'none', margin: 0 },
     },
   },
