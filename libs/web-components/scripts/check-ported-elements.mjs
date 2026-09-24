@@ -4,11 +4,21 @@ import { resolve } from 'node:path';
 
 const packageRoot = resolve(import.meta.dirname, '..');
 const componentsRoot = resolve(packageRoot, 'src/components');
-const manifest = JSON.parse(await readFile(resolve(packageRoot, 'migration-ir/v1/ported-elements.json'), 'utf8'));
-if (manifest.schemaVersion !== 'gridkit-web-component-ports/v1') {
-  throw new Error(`Unsupported port manifest: ${manifest.schemaVersion}`);
-}
-const ports = manifest.ports;
+
+// This is the deliberately supported Web Component surface. It used to live in
+// `migration-ir`, which was removed along with the other one-off migration
+// artifacts. Keep the inventory here so this check can continue to catch an
+// accidental missing port, public export, or SSR fixture.
+const ports = [
+  { tag: 'gd-avatar', category: 'atoms' },
+  { tag: 'gd-button', category: 'atoms' },
+  { tag: 'gd-checkbox', category: 'atoms' },
+  { tag: 'gd-input', category: 'atoms' },
+  { tag: 'gd-select', category: 'atoms' },
+  { tag: 'gd-typography', category: 'atoms' },
+  { tag: 'gd-counter', category: 'molecules' },
+  { tag: 'gd-menu', category: 'molecules' },
+];
 
 const discovered = [];
 for (const category of ['atoms', 'molecules']) {

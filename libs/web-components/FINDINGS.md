@@ -1216,10 +1216,8 @@ needed.
 
 ## 17. CTORNDSD-646b — form participation, CSS Parts, React 19, and Next.js
 
-All four were open items carried out of the original spike. Each is now measured. Harnesses:
-`harness/form-participation-check.{html,ts}` (this package), `fixtures/react19-check/`, and
-`fixtures/next-ssr-check/` (both outside npm workspaces so their React 19 never mixes with the
-repo's pinned 18.3.1). Screenshots are tracked this time, under
+All four were open items carried out of the original spike. Each is now measured using this package's
+harness and retired isolated React 19 and Next.js environments. Screenshots are tracked under
 `docs/webcomponents-migration/assets/`.
 
 ### 17.1 `ElementInternals` form participation — PASS, with one real bug found and fixed
@@ -1297,7 +1295,7 @@ and may change; part names are public API.
 
 ### 17.3 React 19 — closes Section 7 and GO condition 3
 
-Measured against **React 19.2.8** in `fixtures/react19-check`:
+Measured against **React 19.2.8** in a retired isolated compatibility environment:
 
 ```json
 {
@@ -1320,7 +1318,7 @@ argument for generating the React wrapper layer rather than hand-maintaining it.
 
 ### 17.4 Next.js — the two findings that change how this ships
 
-Next.js 16.3.0, App Router, Turbopack, React 19.2.8 (`fixtures/next-ssr-check`).
+Next.js 16.3.0, App Router, Turbopack, React 19.2.8 (retired isolated compatibility environment).
 
 **Finding A — Turbopack compiling the Lit _source_ silently breaks all reactivity.** Pointing the
 fixture at `libs/web-components/src` produced empty shadow roots on every element. The cause:
@@ -1374,10 +1372,10 @@ build does not provide. So the supposedly framework-agnostic **token** package i
 `'use client'` boundary is therefore mandatory, and a dynamic `import()` inside a try/catch does not
 help — Turbopack still pulls the module into the server graph at resolve time.
 
-**Finding D — placing a Next fixture inside the repo breaks Nx repo-wide.** Next generates
-`fixtures/next-ssr-check/.next/dev/package.json` with no `name`, and Nx then refuses to build the
-project graph at all: _"The projects in the following directories have no name provided"_ — every
-`nx` command fails until excluded. Fixed with a `.nxignore` containing `fixtures/**`.
+**Finding D — placing a Next fixture inside the repo breaks Nx repo-wide.** Next can generate a
+`.next/dev/package.json` with no `name`, and Nx then refuses to build the project graph at all:
+_"The projects in the following directories have no name provided"_. Future in-repo Next apps need an
+appropriate generated-output exclusion.
 
 ### 17.5 Caveat on one number
 
@@ -1638,7 +1636,7 @@ gd-button: true`, `gd-typography: true`, static page has **0** `<script>` tags a
 
 ## 20. Section 2's "correctly styled" claim regressed — Constructable StyleSheets cannot cross into DSD
 
-Found while executing every step of `DEMO.md` end-to-end rather than reading it. Two separate
+Found while executing the former end-to-end runbook rather than reading it. Two separate
 problems were tangled together on the SSR pages; only one was a harness bug.
 
 **Problem 1 — the harness rendered without a theme (fixed).** `scripts/ssr-dsd-render.ts` rendered

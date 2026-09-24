@@ -2,10 +2,8 @@
 
 **Owner:** CTORNDSD-646b · **Answers:** CTORNDSD-646 acceptance criteria 5 and 10 · **Status:** Delivered
 
-Fixtures: `fixtures/react19-check/` (Vite + React 19.2.8) and `fixtures/next-ssr-check/` (Next.js
-16.3.0, App Router, Turbopack, React 19.2.8). Both sit outside npm workspaces with their own
-`node_modules`, so React 19 never mixes with the repo's pinned 18.3.1 — verified: the root remains
-18.3.1 and `package-lock.json` is untouched.
+The compatibility investigation used isolated React 19 and Next.js environments. Those retired
+fixtures are no longer part of the repository.
 
 ## 1. Direct usage versus React wrappers — the difference is exactly one thing
 
@@ -101,7 +99,7 @@ This is worth a follow-up beyond the Lit migration: an RSC-safe token entry poin
 
 ## 4. Client boundary placement — the working pattern
 
-Verified working in `fixtures/next-ssr-check`:
+The retired Next.js compatibility environment verified this pattern:
 
 ```tsx
 // app/page.tsx — SERVER component. Renders the tags; imports nothing from the package.
@@ -149,7 +147,6 @@ still returns `null` while the `h2` exists inside `gd-typography`'s shadow root 
 
 ## 7. Incidental finding worth keeping
 
-Placing a Next.js fixture inside the repo **breaks Nx repo-wide**: Next generates
-`fixtures/next-ssr-check/.next/dev/package.json` with no `name`, and Nx then refuses to build the
-project graph at all — every `nx` command fails until excluded. Fixed with a `.nxignore` containing
-`fixtures/**` (**measured**, §17.4). Any future in-repo Next app needs the same guard.
+Placing a Next.js fixture inside the repo **breaks Nx repo-wide**: generated `.next/dev/package.json`
+files may have no `name`, causing Nx to reject the project graph. Any future in-repo Next app needs an
+appropriate generated-output exclusion.

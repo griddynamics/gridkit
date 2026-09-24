@@ -92,19 +92,8 @@ npm run crc ComponentName
 
 ## Web Components spike (CTORNDSD-646)
 
-An investigation into porting GridKit from React to Lit custom elements. **Every demo below runs from
-the repo root — you never need to `cd` into a package or fixture.**
-
-### One-time setup
-
-```bash
-npm install          # if you haven't already
-npm run demo:setup   # builds dist/ + installs the two fixtures (~2-3 min)
-```
-
-`demo:setup` builds `gd-design-library`, `gd-design-core`, and `web-components`, then installs
-`fixtures/react19-check` and `fixtures/next-ssr-check`. Some demos need those build artifacts; the
-demo index tells you which.
+An investigation into porting GridKit from React to Lit custom elements. Build and verification
+commands run from the repository root.
 
 ### Test it step by step
 
@@ -188,15 +177,12 @@ This step is worth running on its own after any change to a component's `render(
 that exercises the components in **Node**, where there is no shadow root and no Constructable
 StyleSheets. It caught a real regression that the browser tests could not — §18.7.
 
-#### 7. Start the harness and Storybook
+#### 7. Start the local server and Storybook
 
 ```bash
-npm run demo:harness   # prints the demo map, serves harness pages on :5173
-npm run storybook      # SECOND terminal — the React baseline on :6006
+npm run dev:web-components
+npm run storybook
 ```
-
-`demo:harness` prints every page with its URL, what it proves, and any missing prerequisite. Run
-`npm run demo:index` on its own any time for the same map.
 
 #### 8. Style isolation — the core justification
 
@@ -239,32 +225,7 @@ Speed figures are machine-specific — the _percentages_ in
 [`10-performance-report.md`](./docs/webcomponents-migration/10-performance-report.md) are the portable
 result, not the absolute milliseconds.
 
-#### 11. The two framework fixtures
-
-```bash
-npm run demo:react19   # :5273
-```
-
-Read `window.__react19Check`. Expect object props to reach the property natively (`theme` by
-reference, no stringified attribute) but `onGdChange` to fire **zero** times — silently, with no
-warning. That silence is why the React wrapper layer should be generated. §17.3.
-
-```bash
-npm run demo:next      # :5373
-```
-
-Then, in another terminal:
-
-```bash
-curl -s http://localhost:5373/ | grep -c shadowrootmode   # expect 0
-curl -s http://localhost:5373/ | grep -c '<h2'            # expect 0
-```
-
-Both zeros are the finding: **Next.js emits no Declarative Shadow DOM**, so with JavaScript off the
-page has unstyled text and no headings. The page also shows a server-side import probe failing with
-`createContext is not a function` — the token barrel is not RSC-safe. §17.4.
-
-#### 12. Everything automated, in one command
+#### 11. Everything automated, in one command
 
 ```bash
 npm run verify:web-components

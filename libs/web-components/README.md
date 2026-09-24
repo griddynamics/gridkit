@@ -8,9 +8,8 @@ writeup, including the Shadow DOM style-isolation reproduction, the SSR/Declarat
 check, the bundle-size comparison against the React+Emotion originals, and a visual-fidelity
 verification pass against real Storybook stories.
 
-Never published — `private: true`, and deliberately absent from `publish:*`. It **does** have root
-scripts for building, testing, and demoing (see [Running locally](#running-locally)); start with
-`npm run demo:index`.
+Never published — `private: true`, and deliberately absent from `publish:*`. Root scripts build and
+verify the package; see [Checks](#checks).
 
 ## What's here
 
@@ -25,8 +24,8 @@ scripts for building, testing, and demoing (see [Running locally](#running-local
   wrappers (`Gd*React.tsx`), the Shadow DOM style-isolation reproduction, the SSR/DSD reproductions,
   the visual-fidelity page, the render-speed check (`perf-check`), the form-participation and CSS-Parts
   check, and the "Lit wraps React" shell (`gd-button-shell.ts`) with its own speed/isolation checks.
-- `scripts/` — `demo-index.mjs` (the demo map), `measure-bundle-size.mjs`, `check-bundle-size.mjs`
-  (the regression gate), and `run-ssr-dsd-check.mjs`.
+- `scripts/` — `measure-bundle-size.mjs`, `check-bundle-size.mjs` (the regression gate), and
+  `run-ssr-dsd-check.mjs`.
 - `bundle-size-baseline.json` — committed baseline for the size gate.
 - `FINDINGS.md` — the chronological investigation log. The decision-oriented write-up is in
   `docs/webcomponents-migration/`.
@@ -93,9 +92,8 @@ export const GdCheckbox = createComponent({
 ```
 
 React 19 also assigns primitive/object/array properties natively without a wrapper — **now measured,
-not inherited guidance** (`FINDINGS.md` Section 17, verified against React 19.2.8 in
-`fixtures/react19-check`). An object prop reaches the property by reference and is not stringified
-into an attribute.
+not inherited guidance** (`FINDINGS.md` Section 17). An object prop reaches the property by reference
+and is not stringified into an attribute.
 
 Custom-event-to-callback translation still needs the wrapper (or a manual `addEventListener`) on
 React 19: an `onGdChange` JSX prop fires **zero** times and is silently dropped — not stringified
@@ -214,21 +212,15 @@ Part names are the short semantic role, not the internal class names — `::part
 beyond the form-validation ones listed above (e.g. `.focus()`), and `::part()` on `gd-select` /
 `gd-typography`.
 
-## Running locally
+## Local harnesses
 
 **Everything runs from the repo root.** You never need to `cd` into this package.
 
 ```bash
-npm run demo:setup    # once: builds dist/ + installs the fixtures (~2-3 min)
-npm run demo:index    # lists every demo, its URL, what it proves, and what it needs
-npm run demo:harness  # prints the demo map, then serves the harness pages on :5173
+npm run dev:web-components
 ```
 
-`demo:index` is the authoritative list — it reads the actual harness directory and checks build
-prerequisites, so it cannot drift out of date the way a hand-written list would. Run it rather than
-trusting the summary below.
-
-### Demo pages
+### Harness pages
 
 | Page                                     | Proves                                                                     | Findings     |
 | ---------------------------------------- | -------------------------------------------------------------------------- | ------------ |
@@ -257,16 +249,6 @@ npm run verify:web-components      # type-check + lint + both test suites + size
 
 Individually: `npm run type-check:web-components`, `npx nx lint web-components`,
 `npm run build:web-components`.
-
-### Framework fixtures
-
-```bash
-npm run demo:react19   # :5273 — React 19 interop
-npm run demo:next      # :5373 — Next.js SSR
-```
-
-Both live outside npm workspaces because they need React 19 while this repo is pinned to 18.3.1. See
-[`fixtures/README.md`](../../fixtures/README.md).
 
 ### Tests must use a real browser
 

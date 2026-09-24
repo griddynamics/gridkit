@@ -197,25 +197,17 @@ requirement is unaffected, but the mechanisms differ enough to matter — see
 
 ## Reproduce every measurement yourself
 
-Every number in these documents comes from something you can re-run. **All commands are root commands
-— no `cd` required.**
-
-```bash
-npm run demo:setup    # once: builds dist/ + installs the fixtures (~2-3 min)
-npm run demo:index    # the authoritative demo list, with URLs and prerequisites
-```
+Every number in these documents comes from a check that can be run from the repository root.
 
 | Claim in these docs                                    | Reproduce with                                                               |
 | ------------------------------------------------------ | ---------------------------------------------------------------------------- |
-| Shadow DOM blocks the CTORNDSD-286 collision           | `npm run demo:harness` → `/harness/shell-isolation-check.html`               |
+| Shadow DOM blocks the CTORNDSD-286 collision           | `npm run dev:web-components` → `/harness/shell-isolation-check.html`         |
 | Zero-JS server rendering via Declarative Shadow DOM    | `npm run check:web-components-ssr`, then open `/harness/ssr-dsd-static.html` |
 | Bundle sizes and the regression gate                   | `npm run check:web-components-size`                                          |
-| Mount/update speed, incl. the stylesheet-cache result  | `npm run demo:harness` → `/harness/perf-check.html`                          |
-| Form participation and `::part()`                      | `npm run demo:harness` → `/harness/form-participation-check.html`            |
-| Input cursor guard · Typography gap · Select `popover` | `npm run demo:harness` → `/harness/remaining-findings-repro.html`            |
-| Visual fidelity against the real components            | `npm run demo:harness` + `npm run storybook` side by side                    |
-| React 19: properties work, custom events don't         | `npm run demo:react19` → read `window.__react19Check`                        |
-| Next.js emits no DSD; tokens aren't RSC-safe           | `npm run demo:next`, then `curl -s localhost:5373 \| grep -c shadowrootmode` |
+| Mount/update speed, incl. the stylesheet-cache result  | `npm run dev:web-components` → `/harness/perf-check.html`                    |
+| Form participation and `::part()`                      | `npm run dev:web-components` → `/harness/form-participation-check.html`      |
+| Input cursor guard · Typography gap · Select `popover` | `npm run dev:web-components` → `/harness/remaining-findings-repro.html`      |
+| Visual fidelity against the real components            | `npm run dev:web-components` + `npm run storybook` side by side              |
 | The a11y bug, and all component behavior               | `npm run test:web-components`                                                |
 | Everything non-interactive, as CI runs it              | `npm run verify:web-components`                                              |
 
