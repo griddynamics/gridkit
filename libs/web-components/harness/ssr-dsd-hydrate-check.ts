@@ -5,7 +5,6 @@ import '../src/components/atoms/gd-input/gd-input';
 import '../src/components/atoms/gd-select/gd-select';
 import '../src/components/atoms/gd-typography/gd-typography';
 import '../src/components/molecules/gd-menu/gd-menu';
-import '../src/components/molecules/gd-counter/gd-counter';
 import { defaultTheme } from 'gd-design-library/tokens';
 
 /**
@@ -43,7 +42,7 @@ window.addEventListener('DOMContentLoaded', () => {
   document
     .querySelectorAll<
       HTMLElement & { theme?: unknown }
-    >('gd-avatar, gd-button, gd-checkbox, gd-counter, gd-input, gd-menu, gd-select, gd-typography')
+    >('gd-avatar, gd-button, gd-checkbox, gd-input, gd-menu, gd-select, gd-typography')
     .forEach((el) => {
       el.theme = defaultTheme;
     });

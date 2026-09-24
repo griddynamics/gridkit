@@ -6,6 +6,7 @@ import {
   buttonCssBlockToText,
   type ButtonVariantName,
   type ButtonRoundedName,
+  type ButtonCssBlock,
   type ButtonTokenTree,
   resolveThemeTree,
   get,
@@ -198,6 +199,7 @@ export class GdButton extends LitElement {
    *  overriding `HTMLElement`'s own native `ariaPressed` accessor with an incompatible type. */
   @property({ type: String, attribute: 'aria-pressed' }) ariaPressed: string | null = null;
   @property({ type: String }) justifyContent?: string;
+  @property({ attribute: false }) styles: ButtonCssBlock = {};
   @property({ attribute: false }) theme: DesignCoreTheme = {};
 
   /** Tracks whether each named/default slot actually has assigned content — mirrors
@@ -306,6 +308,7 @@ export class GdButton extends LitElement {
         borderRadius: radius,
         '&:focus-visible::after': { borderRadius: radius },
       }),
+      buttonCssBlockToText('button', this.styles),
       buttonCssBlockToText('.gd-button__content', tokens.content.default),
       this.justifyContent ? buttonCssBlockToText('.gd-button__content', { justifyContent: this.justifyContent }) : '',
       buttonCssBlockToText('.gd-button__icon-start', tokens.startIcon.default),

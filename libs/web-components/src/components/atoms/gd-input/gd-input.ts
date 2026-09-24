@@ -7,6 +7,8 @@ import {
   get,
   createInputStore,
   debounce,
+  buttonCssBlockToText,
+  type ButtonCssBlock,
   type InputColorVariantName,
   type DesignCoreTheme,
 } from 'gd-design-core';
@@ -176,6 +178,10 @@ export class GdInput extends LitElement {
   /** Component-token layout overrides for composed ports; never consumer literal CSS. */
   @property({ attribute: false }) styles: Record<string, string | number> = {};
   @property({ attribute: false }) inputStyles: Record<string, string | number> = {};
+  @property({ attribute: false }) inputStyleRules: ButtonCssBlock = {};
+  @property({ type: String, attribute: 'aria-label' }) ariaLabel: string | null = null;
+  @property({ type: String, attribute: 'aria-valuemin' }) ariaValueMin: string | null = null;
+  @property({ type: String, attribute: 'aria-valuemax' }) ariaValueMax: string | null = null;
   @property({ type: String }) placeholder = '';
   @property({ type: String }) label = '';
   @property({ type: String, attribute: 'helper-text' }) helperText = '';
@@ -188,6 +194,8 @@ export class GdInput extends LitElement {
   @property({ type: Boolean, reflect: true }) required = false;
 
   @query('input') private _input!: HTMLInputElement;
+  private _ruleSheet?: CSSStyleSheet;
+  private _ruleText = '';
 
   private _store = createInputStore({ debounceCallbackTime: this.debounceCallbackTime });
   private _unsubscribe?: () => void;
@@ -293,6 +301,17 @@ export class GdInput extends LitElement {
   }
 
   updated(changed: PropertyValues<this>) {
+    const cssText = buttonCssBlockToText('input', this.inputStyleRules);
+    if (this.shadowRoot && cssText !== this._ruleText) {
+      this._ruleText = cssText;
+      const sheet = new CSSStyleSheet();
+      sheet.replaceSync(cssText);
+      this.shadowRoot.adoptedStyleSheets = [
+        ...this.shadowRoot.adoptedStyleSheets.filter((item) => item !== this._ruleSheet),
+        sheet,
+      ];
+      this._ruleSheet = sheet;
+    }
     // Form state tracks `value` and `required` regardless of the cursor guard below: the guard
     // exists to protect the *DOM input's* cursor, not to withhold the value from the form.
     if (changed.has('value') || changed.has('required')) this._syncFormState();
@@ -395,7 +414,9 @@ export class GdInput extends LitElement {
             id="control"
             type=${this.type}
             style=${styleMap(this.inputStyles)}
-            aria-label=${this.label ? nothing : this.placeholder || nothing}
+            aria-label=${this.ariaLabel ?? (this.label ? nothing : this.placeholder || nothing)}
+            aria-valuemin=${this.ariaValueMin ?? nothing}
+            aria-valuemax=${this.ariaValueMax ?? nothing}
             name=${this.name || nothing}
             ?required=${this.required}
             placeholder=${this.placeholder}

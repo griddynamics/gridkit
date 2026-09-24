@@ -44,6 +44,11 @@ export const counter = {
     root: { display: 'flex', boxSizing: 'border-box' },
     inputHost: { flex: '1 1 auto', minWidth: 0 },
     inputOuter: { width: '100%' },
-    inputControl: { appearance: 'textfield', MozAppearance: 'textfield', textAlign: TextAlign.Center },
+    inputControl: {
+      appearance: 'textfield',
+      MozAppearance: 'textfield',
+      textAlign: TextAlign.Center,
+      '&::-webkit-inner-spin-button, &::-webkit-outer-spin-button': { WebkitAppearance: 'none', margin: 0 },
+    },
   },
 };
