@@ -78,6 +78,7 @@ __screenshots__
 # step 6 of the walkthrough in the root README.
 /libs/web-components/harness/ssr-dsd-static.html
 /libs/web-components/harness/ssr-dsd-hydrated.html
+libs/web-components/bundle-size-baseline.json
 
 # Vitest artifacts
 .vitest-artifacts
@@ -91,7 +92,7 @@ AGENTS.md
 /libs/web-components/screenshots/
 /libs/web-components/migration-ir/
 
-# CTORNDSD-646b platform fixtures — build output and generated types only; the fixture
+# Platform fixtures — build output and generated types only; the fixture
 # sources themselves are tracked. See docs/webcomponents-migration/08-react-and-nextjs.md.
 /fixtures/*/.next/
 /fixtures/*/next-env.d.ts

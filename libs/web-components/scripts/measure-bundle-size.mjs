@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Bundle-size comparison of the 5 Lit-ported atoms against their React+Emotion equivalents
+ * Bundle-size comparison of every Lit-ported component against its React+Emotion equivalent
  * already tracked by libs/ui/.size-limit.budgets.json.
  *
  * Both sides are measured the same way (gzip, per-export/per-chunk, shared runtime
@@ -26,18 +26,21 @@ const UI_SIZE_REPORT = resolve(REPO_ROOT, 'libs/ui/scripts/output/size-limit-rep
 
 /** Regex used to identify which component a preserveModules chunk belongs to. */
 const COMPONENT_SNIFFERS = {
+  Avatar: /GdAvatar/,
   Button: /resolveButtonVariantStyle|GdButton/,
   Checkbox: /resolveCheckboxStyle|GdCheckbox/,
-  Typography: /resolveTypographyStyle|GdTypography/,
+  Counter: /GdCounter/,
   Input: /resolveInputStyle|GdInput/,
+  Menu: /GdMenu/,
   Select: /resolveSelectStyle|GdSelect/,
+  Typography: /resolveTypographyStyle|GdTypography/,
 };
 
 function gzipBytes(buf) {
   return gzipSync(buf, { level: 9 }).length;
 }
 
-function measureLitAtoms() {
+function measureLitComponents() {
   if (!existsSync(LIT_DIST)) {
     console.error(`✗ ${LIT_DIST} not found — run \`nx build web-components\` first.`);
     process.exit(1);
@@ -65,7 +68,7 @@ function measureLitAtoms() {
   return { results, sharedHelperGzip };
 }
 
-function measureReactAtoms() {
+function measureReactComponents() {
   if (!existsSync(UI_SIZE_REPORT)) {
     console.log('  (no cached libs/ui size report — running `node libs/ui/scripts/size-check.mjs --json`...)');
     execFileSync('node', ['libs/ui/scripts/size-check.mjs', '--json'], { cwd: REPO_ROOT, stdio: 'inherit' });
@@ -73,10 +76,13 @@ function measureReactAtoms() {
   const report = JSON.parse(readFileSync(UI_SIZE_REPORT, 'utf-8'));
   const byName = Object.fromEntries(report.entries.map((e) => [e.name, e.size]));
   return {
+    Avatar: byName.Avatar,
     Button: byName.Button,
     Checkbox: byName.Checkbox,
+    Counter: byName.Counter,
     Typography: byName.Typography,
     Input: byName.Input,
+    Menu: byName.Menu,
     Select: byName.Select,
   };
 }
@@ -115,18 +121,18 @@ function fmt(bytes) {
   return `${(bytes / 1024).toFixed(2)} kB`;
 }
 
-const { results: litAtoms, sharedHelperGzip } = measureLitAtoms();
-const reactAtoms = measureReactAtoms();
+const { results: litComponents, sharedHelperGzip } = measureLitComponents();
+const reactComponents = measureReactComponents();
 const litRuntimeCost = measureLitRuntimeCost();
 
 console.log('\n╔═════════════════════════════════════════════════════╗');
-console.log('║  Lit vs. React+Emotion bundle size (gzip, per atom) ║');
+console.log('║ Lit vs. React+Emotion bundle size (gzip, per component)║');
 console.log('╚═════════════════════════════════════════════════════╝\n');
 
 const rows = [];
 for (const name of Object.keys(COMPONENT_SNIFFERS)) {
-  const lit = litAtoms[name]?.gzip;
-  const react = reactAtoms[name];
+  const lit = litComponents[name]?.gzip;
+  const react = reactComponents[name];
   const ratio = lit && react ? (react / lit).toFixed(1) : 'n/a';
   rows.push({ name, lit, react, ratio });
   console.log(
@@ -137,14 +143,20 @@ for (const name of Object.keys(COMPONENT_SNIFFERS)) {
 console.log(`\n  Shared Lit chunk helpers (barrel + decorator metadata, paid once): ${fmt(sharedHelperGzip)}`);
 console.log(`  \`lit\` runtime itself (net-new dep for a React-only consumer):        ${fmt(litRuntimeCost)}`);
 console.log(
-  `  React figures above already include libs/ui's shared Emotion/theme baseline (~17-19kB per\n  export) that an existing React+Emotion app has already paid once — the Lit side's equivalent\n  one-time cost is the ${fmt(litRuntimeCost)} \`lit\` runtime line above, which most React apps have NOT\n  already paid. Compare "5 atoms + shared cost" totals, not just the per-atom rows in isolation.`
+  `  React figures above already include libs/ui's shared Emotion/theme baseline (~17-19kB per\n  export) that an existing React+Emotion app has already paid once — the Lit side's equivalent\n  one-time cost is the ${fmt(litRuntimeCost)} \`lit\` runtime line above, which most React apps have NOT\n  already paid. Compare the component total plus shared cost, not just the per-component rows in isolation.`
 );
 
-const litTotal = Object.values(litAtoms).reduce((sum, { gzip }) => sum + gzip, 0) + sharedHelperGzip;
-const reactTotal = Object.values(reactAtoms).reduce((sum, size) => sum + (size ?? 0), 0);
-console.log(`\n  5-atom total, Lit (incl. shared helpers, excl. \`lit\` runtime): ${fmt(litTotal)}`);
-console.log(`  5-atom total, Lit (incl. \`lit\` runtime, one-time):             ${fmt(litTotal + litRuntimeCost)}`);
-console.log(`  5-atom total, React+Emotion (per-export, not de-duplicated):    ${fmt(reactTotal)}`);
+const litTotal = Object.values(litComponents).reduce((sum, { gzip }) => sum + gzip, 0) + sharedHelperGzip;
+const reactTotal = Object.values(reactComponents).reduce((sum, size) => sum + (size ?? 0), 0);
+console.log(
+  `\n  ${Object.keys(COMPONENT_SNIFFERS).length}-component total, Lit (incl. shared helpers, excl. \`lit\` runtime): ${fmt(litTotal)}`
+);
+console.log(
+  `  ${Object.keys(COMPONENT_SNIFFERS).length}-component total, Lit (incl. \`lit\` runtime, one-time):             ${fmt(litTotal + litRuntimeCost)}`
+);
+console.log(
+  `  ${Object.keys(COMPONENT_SNIFFERS).length}-component total, React+Emotion (per-export, not de-duplicated):    ${fmt(reactTotal)}`
+);
 
 if (process.argv.includes('--json')) {
   const outFile = resolve(__dirname, '../bundle-size-report.json');
