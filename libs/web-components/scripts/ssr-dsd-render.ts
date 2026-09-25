@@ -35,7 +35,7 @@ export async function runSsrDsdCheck() {
   // in Times. That is the real components' own themeless behavior (FINDINGS.md Sections 13, 16),
   // not an SSR defect — but it makes this page contradict its own "visibly styled" instruction,
   // so the check is meaningless without a theme. Matches how every other harness supplies it
-  // (`fidelity-check.tsx`, `form-participation-check.ts`).
+  // (`fidelity-check.ts`, `form-participation-check.ts`).
   const template = html`
     <gd-avatar fallback="GD" .theme=${defaultTheme}></gd-avatar>
     <gd-button variant="primary" .theme=${defaultTheme}>Submit</gd-button>

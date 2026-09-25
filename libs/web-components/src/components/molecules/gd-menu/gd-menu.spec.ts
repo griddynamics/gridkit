@@ -126,8 +126,8 @@ describe('gd-menu', () => {
     </gd-menu>`;
     const menu = host.querySelector<GdMenu>('gd-menu')!;
     menu.theme = defaultTheme;
-    // React's @lit/react adapter assigns boolean props, so false is represented by a property,
-    // not the HTML attribute `close-on-select="false"` (whose presence is truthy).
+    // Boolean false must be set as a property, not as `close-on-select="false"`
+    // (whose attribute presence is truthy).
     menu.closeOnSelect = false;
     await settle(menu);
 

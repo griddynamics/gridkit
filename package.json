@@ -11,9 +11,6 @@
     "ai-schemas",
     "gridkit"
   ],
-  "bin": {
-    "create-component": "./bin/create-component.js"
-  },
   "scripts": {
     "test": "nx test ui --coverage --watch=false",
     "test:ai": "nx test ui --run src/ai/__tests__",
@@ -27,6 +24,8 @@
     "measure:web-components-size": "npm run build:web-components && node libs/web-components/scripts/measure-bundle-size.mjs --json",
     "check:web-components-ssr": "node libs/web-components/scripts/run-ssr-dsd-check.mjs",
     "dev:web-components": "vite --config libs/web-components/vite.config.ts",
+    "dev:web-components:angular": "vite --config libs/web-components/vite.config.ts --open /harness/fidelity-check.html",
+    "dev:web-components:vue": "vite --config libs/web-components/vite.config.ts --open /harness/fidelity-check-vue.html",
     "dev:react-native": "npm run start --workspace=libs/react-native --",
     "update-readme-stats": "node libs/ui/scripts/update-readme-stats.mjs",
     "check:readme-stats": "node libs/ui/scripts/update-readme-stats.mjs --check",
@@ -50,10 +49,9 @@
     "publish:form-configurator-react": "npm publish dist/libs/form-configurator/adapter-react",
     "publish:form-configurator": "npm run publish:form-configurator-core && npm run publish:form-configurator-react",
     "version:form-configurator": "npm version patch --prefix libs/form-configurator/core --no-git-tag-version && npm version patch --prefix libs/form-configurator/adapter-react --no-git-tag-version",
-    "version:form-configurator:minor": "npm version minor --prefix libs/form-configurator/core --no-git-tag-version && npm version minor --prefix libs/form-configurator/adapter-react --no-git-tag-version",
+    "version:form-configurator:minor": "npm version minor --prefix libs/form-configurator/core --no-git-tag-version && npm version patch --prefix libs/form-configurator/adapter-react --no-git-tag-version",
     "version:form-configurator:major": "npm version major --prefix libs/form-configurator/core --no-git-tag-version && npm version major --prefix libs/form-configurator/adapter-react --no-git-tag-version",
     "build-storybook": "npm run export-theme && nx run ui:build-storybook",
-    "crc": "node ./bin/create-component.js",
     "export-theme": "nx build ui && node ./bin/export-theme.js",
     "generate-ai-docs": "npx tsx ./bin/generate-ai-docs.mjs",
     "prepare": "husky",
@@ -92,6 +90,10 @@
     "node": ">=22.17.0"
   },
   "devDependencies": {
+    "@angular/common": "^21.2.24",
+    "@angular/compiler": "^21.2.24",
+    "@angular/core": "^21.2.24",
+    "@angular/platform-browser": "^21.2.24",
     "@anthropic-ai/sdk": "^0.105.0",
     "@arethetypeswrong/cli": "^0.18.2",
     "@babel/core": "^7.14.5",
@@ -170,6 +172,7 @@
     "path": "^0.12.7",
     "playwright": "^1.56.1",
     "prettier": "^3.4.2",
+    "publint": "^0.3.24",
     "remark-gfm": "^4.0.1",
     "rollup": "^4.60.1",
     "rollup-plugin-visualizer": "^7.0.1",
@@ -182,10 +185,11 @@
     "tslib": "^2.3.0",
     "typescript": "~5.6.2",
     "typescript-eslint": "^8.18.2",
-    "verdaccio": "^6.0.5",
+    "verdaccio": "^6.10.4",
     "vite": "^8.1.4",
     "vite-plugin-dts": "^4.5.0",
-    "vitest": "4.1.8"
+    "vitest": "4.1.8",
+    "vue": "^3.5.43"
   },
   "lint-staged": {
     "libs/**/*.{ts,tsx}": [
