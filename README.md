@@ -12,10 +12,10 @@ Nx monorepo containing the GridKit design system packages.
 
 Not published, and under active investigation:
 
-| Package                                  | Description                                                                                                                  |
-| ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `gd-design-core` (`libs/design-core`)    | Framework-agnostic state stores + token resolution. No React, no Lit, no `gd-design-library` dependency                      |
-| `web-components` (`libs/web-components`) | Lit custom-element port of 5 GridKit atoms. `private: true` — see the [Web Components README](libs/web-components/README.md) |
+| Package                                  | Description                                                                                                  |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `gd-design-core` (`libs/design-core`)    | Framework-agnostic state stores + token resolution. No React, no Lit, no `gd-design-library` dependency      |
+| `web-components` (`libs/web-components`) | Lit custom-element port GridKit atoms. `private: true` — see [Web Components](libs/web-components/README.md) |
 
 ## Quick start
 

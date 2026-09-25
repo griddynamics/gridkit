@@ -24,8 +24,6 @@
     "measure:web-components-size": "npm run build:web-components && node libs/web-components/scripts/measure-bundle-size.mjs --json",
     "check:web-components-ssr": "node libs/web-components/scripts/run-ssr-dsd-check.mjs",
     "dev:web-components": "vite --config libs/web-components/vite.config.ts",
-    "dev:web-components:angular": "vite --config libs/web-components/vite.config.ts --open /harness/fidelity-check.html",
-    "dev:web-components:vue": "vite --config libs/web-components/vite.config.ts --open /harness/fidelity-check-vue.html",
     "dev:react-native": "npm run start --workspace=libs/react-native --",
     "update-readme-stats": "node libs/ui/scripts/update-readme-stats.mjs",
     "check:readme-stats": "node libs/ui/scripts/update-readme-stats.mjs --check",

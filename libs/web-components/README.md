@@ -98,17 +98,17 @@ const accepted = ref(false);
 
 ## Run locally
 
+Start the development server for all Web Components examples:
+
 ```bash
 npm install
 npm run dev:web-components
 ```
 
-Open the Angular or Vue examples directly:
+Vite prints the local URL in the terminal (usually `http://localhost:5173`). The command does not select a framework or open a page by default. Choose the example you want in the browser:
 
-```bash
-npm run dev:web-components:angular
-npm run dev:web-components:vue
-```
+- Angular: `http://localhost:5173/harness/fidelity-check.html`
+- Vue: `http://localhost:5173/harness/fidelity-check-vue.html`
 
 Build the library with:
 
