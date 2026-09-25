@@ -1,2 +1,0 @@
-export * from './&PLACEHOLDER_COMPONENT_NAME&';
-export * from './&PLACEHOLDER_COMPONENT_NAME&.types';

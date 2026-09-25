@@ -21,16 +21,15 @@ const server = await createServer({
 
 try {
   const mod = await server.ssrLoadModule(resolve(__dirname, 'ssr-dsd-render.ts'));
-  const { out, hasButtonDSD, hasTypographyDSD, staticHtmlPath, hydratedHtmlPath } = await mod.runSsrDsdCheck();
+  const { out, dsdByTag, staticHtmlPath, hydratedHtmlPath } = await mod.runSsrDsdCheck();
 
   console.log('--- SSR output ---\n' + out + '\n------------------\n');
-  console.log('DSD present for gd-button:     ', hasButtonDSD);
-  console.log('DSD present for gd-typography: ', hasTypographyDSD);
+  for (const [tag, present] of Object.entries(dsdByTag)) console.log(`DSD present for ${tag}:`, present);
   console.log(`\nWrote no-JS static DSD reproduction → ${staticHtmlPath}`);
   console.log(`Wrote hydration reproduction → ${hydratedHtmlPath}`);
 
-  if (!hasButtonDSD || !hasTypographyDSD) {
-    console.error('\nFAIL: expected DSD template wrapper missing for one or both components.');
+  if (Object.values(dsdByTag).some((present) => !present)) {
+    console.error('\nFAIL: expected DSD template wrapper missing for one or more components.');
     process.exitCode = 1;
   }
 } finally {

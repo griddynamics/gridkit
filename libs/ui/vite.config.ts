@@ -8,7 +8,6 @@ import dts from 'vite-plugin-dts';
 import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
 import { visualizer } from 'rollup-plugin-visualizer';
 import preserveDirectives from 'rollup-preserve-directives';
-import tsconfigPaths from 'vite-tsconfig-paths';
 import { sharedAlias } from './vitest.alias';
 
 export default defineConfig(() => {
@@ -71,7 +70,6 @@ export default defineConfig(() => {
       include: ['@emotion/react'], // Force tree-shaking
     },
     plugins: [
-      tsconfigPaths(),
       react({ jsxImportSource: '@emotion/react' }),
       babel({
         plugins: [['@emotion/babel-plugin', { sourceMap: false, autoLabel: 'never', cssPropOptimization: true }]],
@@ -155,6 +153,7 @@ export default defineConfig(() => {
       },
     },
     resolve: {
+      tsconfigPaths: true,
       alias: sharedAlias,
     },
   };

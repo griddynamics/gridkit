@@ -73,7 +73,7 @@ const notes = [];
 for (const [name, size] of Object.entries(current)) {
   const before = baseline[name];
   if (typeof before !== 'number') {
-    notes.push(`+ ${name}: ${size} B (new, not in baseline)`);
+    failures.push(`+ ${name}: ${size} B (new component is not baselined)`);
     continue;
   }
   const deltaPct = ((size - before) / before) * 100;
@@ -83,14 +83,14 @@ for (const [name, size] of Object.entries(current)) {
 }
 
 for (const name of Object.keys(baseline)) {
-  if (!(name in current)) notes.push(`- ${name}: missing from the current report`);
+  if (!(name in current)) failures.push(`- ${name}: missing from the current report`);
 }
 
 console.log(`Bundle size vs baseline (tolerance ${TOLERANCE_PCT}%):`);
 notes.forEach((n) => console.log(n));
 
 if (failures.length > 0) {
-  console.error(`\n✗ ${failures.length} bundle-size regression(s) beyond ${TOLERANCE_PCT}%:`);
+  console.error(`\n✗ ${failures.length} bundle-size regression(s) or component-coverage gap(s):`);
   failures.forEach((f) => console.error(`  ${f}`));
   console.error('\nIf the growth is intended, re-run with --update and explain it in the commit.');
   process.exit(1);
