@@ -2,7 +2,7 @@
   "name": "gd-react-native",
   "version": "0.0.0",
   "private": true,
-  "description": "CTORNDSD-590 spike: disposable React Native PoC for gd-design-library's atoms. Not published.",
+  "description": "CTORNDSD-590 spike: disposable React Native PoC for gd-design-library's atoms.",
   "main": "index.js",
   "scripts": {
     "start": "expo start",

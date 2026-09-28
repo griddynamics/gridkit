@@ -42,7 +42,7 @@ export default defineConfig({
   },
   test: {
     name: 'web-components',
-    include: ['src/**/*.spec.ts', 'test/**/*.spec.ts'],
+    include: ['src/**/*.spec.ts', 'src/**/*.spec.tsx', 'test/**/*.spec.ts', 'test/**/*.spec.tsx'],
     browser: {
       enabled: true,
       headless: true,

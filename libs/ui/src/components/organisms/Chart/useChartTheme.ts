@@ -25,6 +25,22 @@ interface CartesianTheme {
   gridDefaults: ChartGridDefaults;
 }
 
+interface TooltipTheme {
+  containerStyles: CSSObject;
+  labelStyles: CSSObject;
+  itemStyles: CSSObject;
+  dotStyles: CSSObject;
+}
+
+interface LegendTheme {
+  containerStyles: CSSObject;
+  itemStyles: CSSObject;
+  itemInteractiveStyles: CSSObject;
+  itemHiddenStyles: CSSObject;
+  labelTextStyles: CSSObject;
+  dotStyles: CSSObject;
+}
+
 function createChartThemeProxy(theme: DefaultTheme) {
   const { chart, ...rest } = theme || {};
   return new Proxy(
@@ -59,7 +75,7 @@ export function useCartesianTheme(theme: DefaultTheme): CartesianTheme {
 /**
  * Resolves tooltip tokens from the chart theme proxy.
  */
-export function useTooltipTheme(theme: DefaultTheme) {
+export function useTooltipTheme(theme: DefaultTheme): TooltipTheme {
   const themeChart = createChartThemeProxy(theme);
 
   return {
@@ -109,7 +125,7 @@ export function useHoverTheme(theme: DefaultTheme) {
 /**
  * Resolves legend tokens from the chart theme proxy.
  */
-export function useLegendTheme(theme: DefaultTheme) {
+export function useLegendTheme(theme: DefaultTheme): LegendTheme {
   const themeChart = createChartThemeProxy(theme);
 
   return {

@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import type { CSSObject } from '@emotion/react';
 import { Image, ImagePreview, InlineNotification } from '@components';
 import type { A2UIComponent } from '../../../ai';
 import { isSafeA2UIUrl } from '../../../ai';
@@ -39,7 +40,7 @@ export function getImageObjectFit(component: A2UIComponent) {
   return component.objectFit || getAttributeString(component, 'objectFit');
 }
 
-export function getImageStyles(component: A2UIComponent) {
+export function getImageStyles(component: A2UIComponent): CSSObject | undefined {
   const componentStyles = getComponentStyles(component.styling);
   const mergedStyles = {
     ...componentStyles,
@@ -48,7 +49,7 @@ export function getImageStyles(component: A2UIComponent) {
     ...(getImageObjectFit(component) ? { objectFit: getImageObjectFit(component) } : {}),
   };
 
-  return Object.keys(mergedStyles).length > 0 ? mergedStyles : undefined;
+  return Object.keys(mergedStyles).length > 0 ? (mergedStyles as CSSObject) : undefined;
 }
 
 type ImagePreviewItemSpec = {

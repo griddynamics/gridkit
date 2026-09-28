@@ -44,8 +44,6 @@ npm run build-storybook
 npm run verify:ui:full         # All 10 verification phases + Verdaccio smoke test
 npm run verify:ui:ci           # CI gate (non-zero exit on failure)
 
-# Scaffolding
-npm run crc ComponentName      # Interactive scaffold for a new component (prompts for tier)
 ```
 
 ## Architecture
@@ -107,6 +105,5 @@ The form-configurator packages use Jest (`jest.config.ts` per package).
 
 - **Commits**: Conventional Commits (`feat:`, `fix:`, `chore:`, etc.) enforced by commitlint.
 - **Pre-commit**: prettier format check + lint-staged (ESLint + prettier on staged `libs/**` files, markdownlint on `*.md`).
-- **New components**: `npm run crc ComponentName` launches an interactive prompt to choose the tier (atoms/molecules/organisms/widget) and scaffolds all required files.
 - **Styling**: never write raw hex or pixel literals in component styles. Access values through the theme object (`get(theme, 'component.variant', {})`). Use the Emotion `css` prop, not inline `style` or CSS modules.
 - **SSR compatibility**: components must render without errors in a Node environment. Mark client-only hooks with `'use client'` directive. The `ssr-check` and `rsc-render-check` scripts in `verify:ui` catch violations.
