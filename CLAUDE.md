@@ -18,7 +18,7 @@ Node >= 22.17.0, npm workspaces. Run `npm install` after cloning.
 
 ```bash
 # Development
-npm run storybook              # Storybook dev server at http://localhost:6006
+npm run storybook              # Shared React + Web Components Storybook at http://localhost:6006
 npm test                       # Unit tests for gd-design-library (vitest, jsdom)
 npm run test:ai                # AI integration tests in src/ai/__tests__/
 npm run test:form-configurator # Unit tests for both form-configurator packages (jest)
@@ -39,6 +39,7 @@ npm run storybook:visual       # Run visual regression tests
 npm run build:ui               # Full gd-design-library build: readme-stats + ai-docs + type-check + nx build + postbuild-types
 npm run build:form-configurator
 npm run build-storybook
+npm run storybook:check-links  # Built story indexes + source/shipped AI link validation
 
 # Verification (run on built dist — requires npm run build:ui first)
 npm run verify:ui:full         # All 10 verification phases + Verdaccio smoke test
@@ -66,6 +67,8 @@ Component tiers: `atoms` (primitive building blocks), `molecules` (composed from
 Path aliases defined in `libs/ui/vitest.alias.ts` and `libs/ui/tsconfig.json`: `@components`, `@hooks`, `@tokens`, `@types`, `@utils`, `@constants`, `@assets`, `@stories`.
 
 **Build output** — Vite produces both ESM (`.js`, `preserveModules`) and CJS (`.cjs`) to `dist/libs/ui`. Post-build step (`scripts/postbuild-types.mjs`) patches `.d.ts` exports. React and `@emotion/*` are externalized. `bin/export-theme.js` serializes `defaultTheme` to JSON from the built dist; it runs automatically as part of `npm run storybook` and `npm run build-storybook`.
+
+**Shared Storybook** — `npm run storybook` manages the React host (6006) and native Web Components preview (6007) together. Open only the host. The React catalog receives a central `React/` title prefix; do not duplicate that prefix in stories or MDX. The combined static artifact is `libs/ui/storybook-static`, with the child under `web-components/`. Use generated story IDs for links and run `storybook:check-links` after the combined build. Package-only validation uses `node bin/storybook/check-links.mjs --package` and indexes source stories without building previews. Do not regenerate the frozen legacy route inventory to conceal missing entries. Phase 1 contains only the native overview; component coverage and harness cleanup are later phases.
 
 **Package subpaths** — the published package exposes four explicit subpaths (wildcards are intentionally removed to prevent internal path coupling):
 

@@ -40,7 +40,7 @@ export default function App() {
 }
 ```
 
-See the [Storybook](https://github.com/griddynamics/gd-design-system#storybook) for interactive component examples and full API documentation.
+See the [React catalog in Storybook](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/react-introduction-welcome--docs) for interactive component examples and full API documentation.
 
 ## Setup
 
@@ -52,7 +52,7 @@ npm install
 ## Development
 
 ```bash
-npm run storybook          # Storybook at http://localhost:6006
+npm run storybook          # Shared React + Web Components Storybook at http://localhost:6006
 npm test                   # gd-design-library unit tests
 npm run test:form-configurator   # form-configurator tests
 npm run type-check         # TypeScript check
@@ -64,8 +64,34 @@ npm run lint               # ESLint
 ```bash
 npm run build:ui                # Build gd-design-library (ESM + CJS + types)
 npm run build:form-configurator # Build both form-configurator packages
-npm run build-storybook         # Build static Storybook
+npm run build-storybook         # Build and validate the complete static Storybook
 ```
+
+## Storybook
+
+One entry point contains two peer catalogs: **React** (the existing stories and documentation)
+and **Web Components** (native custom-element stories). The Web Components catalog currently
+contains the Phase 1 overview; Phase 2 adds stories for the six existing atoms and two molecules.
+
+`npm run storybook` manages both preview servers automatically; open `http://localhost:6006`.
+Ports 6006 and 6007 must be free. There is no separate Web Components startup command.
+`npm run build-storybook` produces one deployable directory at `libs/ui/storybook-static`,
+including the composed preview under `web-components/`.
+
+```bash
+npm run storybook:check-links   # Validate built Storybooks and shipped AI documentation links
+npm run storybook:test          # Existing React interaction tests (native coverage follows in Phase 2)
+npm run storybook:visual        # Existing React visual tests
+```
+
+React titles receive their `React/` prefix in `.storybook/main.ts`; do not add it again in
+individual story/MDX titles. Use the IDs in the generated `index.json` for links. Old published
+React manager/iframe links redirect to their new IDs while retaining args, globals, and anchors.
+`bin/storybook/legacy-react-ids.json` is the frozen pre-migration inventory, not a generated
+list to refresh when a story disappears. Link checks cover source documentation and the
+`llms.txt`, AI Markdown/JSON, and AI JavaScript copied into the UI package.
+
+The Angular/Vue and other Web Components harnesses are unchanged in Phase 1.
 
 ## Verification (gd-design-library)
 

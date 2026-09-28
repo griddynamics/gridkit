@@ -1,0 +1,10 @@
+.git
+.nx
+node_modules
+**/node_modules
+dist
+tmp
+**/storybook-static
+**/coverage
+**/.vitest-artifacts
+**/.vitest-attachments

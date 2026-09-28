@@ -98,6 +98,12 @@ const accepted = ref(false);
 
 ## Run locally
 
+The shared Storybook is started from the repository root with `npm run storybook` and
+opened at `http://localhost:6006`. Its **Web Components** section currently contains the
+Phase 1 overview; native stories for the eight existing elements follow in Phase 2.
+There is no separate Web Components Storybook command. The existing Angular/Vue harness
+workflow below remains available until the later integration-check cleanup.
+
 Start the development server for all Web Components examples:
 
 ```bash

@@ -3,13 +3,16 @@ WORKDIR /app
 
 COPY package.json package-lock.json nx.json tsconfig.base.json .npmrc eslint.config.mjs ./
 COPY libs/ui/ libs/ui/
-COPY bin/export-theme.js bin/export-theme.js
+COPY libs/design-core/ libs/design-core/
+COPY libs/web-components/ libs/web-components/
+COPY libs/form-configurator/ libs/form-configurator/
+COPY libs/react-native/package.json libs/react-native/package.json
+COPY bin/ bin/
+COPY README.md CLAUDE.md ./
 
 RUN npm ci
 
-RUN npx nx build ui \
- && node ./bin/export-theme.js \
- && npx nx run ui:build-storybook
+RUN npm run build-storybook
 
 FROM nginx:alpine AS runner
 WORKDIR /usr/share/nginx/html

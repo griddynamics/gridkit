@@ -53,6 +53,7 @@ libs/ui/coverage/*
 # storybook
 storybook-static/*
 libs/ui/storybook-static/*
+libs/web-components/storybook-static/*
 *storybook.log
 
 vite.config.*.timestamp*

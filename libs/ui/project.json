@@ -6,6 +6,9 @@
   "tags": [],
   "// targets": "to see all targets run: nx show project ui --web",
   "targets": {
+    "build-storybook": {
+      "inputs": ["default", "^production", "{workspaceRoot}/bin/storybook/**/*"]
+    },
     "nx-release-publish": {
       "options": {
         "packageRoot": "dist/{projectRoot}"
