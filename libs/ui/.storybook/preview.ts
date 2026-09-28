@@ -11,6 +11,12 @@ const preview: Preview = {
     options: {
       storySort: {
         order: [
+          'Introduction',
+          ['Welcome', 'Feedback & Contribution'],
+          'Theme & Tokens',
+          ['Theme', 'Colors', 'Fonts', 'Spacing', 'Radius', 'zIndex', 'Breakpoints', 'Shadows', 'Values', 'Animations'],
+          'Patterns & Best Practices',
+          ['UX-UI Design patterns and best practices', 'Cross-Device UX Notes'],
           'React',
           [
             'Introduction',

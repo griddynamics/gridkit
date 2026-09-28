@@ -55,8 +55,8 @@ try {
   });
   page.on('pageerror', (error) => errors.push(error.message));
   const docs = () => page.frameLocator('#storybook-preview-iframe');
-  await page.goto(`${base}/?path=/docs/introduction-welcome--docs&globals=theme:light#intro`);
-  await page.waitForURL((url) => url.searchParams.get('path') === '/docs/react-introduction-welcome--docs');
+  await page.goto(`${base}/?path=/docs/react-introduction-welcome--docs&globals=theme:light#intro`);
+  await page.waitForURL((url) => url.searchParams.get('path') === '/docs/introduction-welcome--docs');
   await docs()
     .getByRole('heading', { name: /Welcome to GridKit/ })
     .waitFor();
@@ -66,13 +66,13 @@ try {
   assert.ok(
     navigationUrls.some(
       (url) =>
-        url.searchParams.get('path') === '/docs/react-introduction-welcome--docs' &&
+        url.searchParams.get('path') === '/docs/introduction-welcome--docs' &&
         url.searchParams.get('globals') === 'theme:light'
     )
   );
 
   await page.goto(`${base}/docs/introduction-welcome--docs#intro`);
-  await page.waitForURL((url) => url.searchParams.get('path') === '/docs/react-introduction-welcome--docs');
+  await page.waitForURL((url) => url.searchParams.get('path') === '/docs/introduction-welcome--docs');
   await docs()
     .getByRole('heading', { name: /Welcome to GridKit/ })
     .waitFor();
@@ -84,6 +84,15 @@ try {
 
   await page.goto(`${base}/?path=/docs/react-introduction-ai-integration-overview--docs`);
   await docs().getByRole('heading', { name: 'AI Integration', exact: true }).waitFor();
+
+  await page.goto(`${base}/?path=/docs/react-theme-tokens-colors--docs`);
+  await page.waitForURL((url) => url.searchParams.get('path') === '/docs/theme-tokens-colors--docs');
+  await docs()
+    .getByRole('heading', { name: /Colors preview/ })
+    .waitFor();
+
+  await page.goto(`${base}/?path=/docs/patterns-best-practices-cross-device-ux-notes--docs`);
+  await docs().getByRole('heading', { name: 'Cross-Device UX Notes', exact: true }).waitFor();
 
   // Composition must load the child's own native renderer, not a React wrapper.
   await page.goto(`${base}/?path=/story/web-components_introduction-overview--overview`);

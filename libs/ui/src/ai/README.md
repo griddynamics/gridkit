@@ -174,7 +174,7 @@ const schemaResult = validateSchema(componentSchema);
 ### External References
 
 - **[llms.txt](./../llms.txt)** - LLM-friendly documentation (package root)
-- **[React Component Storybook](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/react-introduction-welcome--docs)** - Interactive React component documentation in the shared Storybook
+- **[React Component Storybook](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/introduction-welcome--docs)** - Interactive React component documentation in the shared Storybook
 
 ## API Reference
 
@@ -594,7 +594,7 @@ yarn test:ai:watch
 
 <!-- AUTO-GENERATED:COMPONENTS:START -->
 
-_66 components total — generated from `libs/ui/src/ai/schemas/` on 2026-09-25._
+_66 components total — generated from `libs/ui/src/ai/schemas/` on 2026-09-28._
 
 ### Other
 

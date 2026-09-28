@@ -3,7 +3,7 @@ import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync } from 'node
 import { tmpdir } from 'node:os';
 import { extname, join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { legacyReactIds } from './routes.mjs';
+import { legacyReactIds, sharedDocIds } from './routes.mjs';
 import { validateLinks } from './link-validation.mjs';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
@@ -49,10 +49,22 @@ if (built) {
 
 const errors = [];
 for (const id of legacyReactIds) {
-  if (!indexes.react.entries[`react-${id}`]) errors.push(`Missing migrated React entry: ${id}`);
+  const canonical = sharedDocIds.includes(id) ? id : `react-${id}`;
+  if (!indexes.react.entries[canonical]) errors.push(`Missing migrated entry: ${canonical}`);
+}
+for (const id of sharedDocIds) {
+  if (!indexes.react.entries[id]) errors.push(`Missing shared documentation: ${id}`);
+  if (indexes.react.entries[`react-${id}`]) errors.push(`Shared documentation duplicated under React: ${id}`);
 }
 for (const entry of Object.values(indexes.react.entries)) {
-  if (!entry.title.startsWith('React/')) errors.push(`Entry is outside the React root: ${entry.id}`);
+  if (!entry.title.startsWith('React/') && !sharedDocIds.includes(entry.id))
+    errors.push(`Unclassified entry outside the React root: ${entry.id}`);
+}
+if (built) {
+  // The built index applies preview.storySort; shared docs must precede React.
+  const firstEntries = Object.values(indexes.react.entries).slice(0, sharedDocIds.length);
+  if (firstEntries.some((entry) => !sharedDocIds.includes(entry.id)))
+    errors.push('Shared documentation must appear before React in the built sidebar order');
 }
 if (!indexes.webComponents.entries['introduction-overview--overview']) errors.push('Missing Web Components overview');
 

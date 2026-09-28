@@ -40,7 +40,7 @@ export default function App() {
 }
 ```
 
-See the [React catalog in Storybook](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/react-introduction-welcome--docs) for interactive component examples and full API documentation.
+See the [shared Storybook](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/introduction-welcome--docs) for design references, interactive component examples, and API documentation.
 
 ## Setup
 
@@ -69,7 +69,9 @@ npm run build-storybook         # Build and validate the complete static Storybo
 
 ## Storybook
 
-One entry point contains two peer catalogs: **React** (the existing stories and documentation)
+Shared **Introduction**, **Theme & Tokens**, and framework-neutral **Patterns & Best Practices**
+appear at the top level, before the framework catalogs.
+One entry point contains two peer catalogs: **React** (components and React-specific guides)
 and **Web Components** (native custom-element stories). The Web Components catalog currently
 contains the Phase 1 overview; Phase 2 adds stories for the six existing atoms and two molecules.
 
@@ -85,8 +87,13 @@ npm run storybook:visual        # Existing React visual tests
 ```
 
 React titles receive their `React/` prefix in `.storybook/main.ts`; do not add it again in
-individual story/MDX titles. Use the IDs in the generated `index.json` for links. Old published
-React manager/iframe links redirect to their new IDs while retaining args, globals, and anchors.
+individual story/MDX titles. Framework-neutral MDX pages are explicitly listed by basename and
+canonical ID in `bin/storybook/shared-docs.json` and receive no prefix. Keep basenames unique.
+The shared pages cover welcome/contribution, default-theme JSON references, UI/UX principles,
+and cross-device UX. Guides teaching React APIs (including Atomic Design examples, theme hooks,
+FAQ, AI integration, form configuration, and component-based patterns) remain under React.
+Use the IDs in the generated `index.json` for links. Both pre-migration URLs and interim
+`react-` URLs for shared pages resolve to their canonical IDs, retaining args, globals, and anchors.
 `bin/storybook/legacy-react-ids.json` is the frozen pre-migration inventory, not a generated
 list to refresh when a story disappears. Link checks cover source documentation and the
 `llms.txt`, AI Markdown/JSON, and AI JavaScript copied into the UI package.

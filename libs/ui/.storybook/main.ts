@@ -3,11 +3,14 @@ import type { Plugin } from 'vite';
 import remarkGfm from 'remark-gfm';
 // Build-time workspace tooling, not a dependency of the shipped UI library.
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { legacyRedirectHead } from '../../../bin/storybook/routes.mjs';
+import { legacyRedirectHead, sharedDocs } from '../../../bin/storybook/routes.mjs';
+
+const sharedNames = Object.keys(sharedDocs).join('|');
 
 const config: StorybookConfig = {
   stories: [
-    { directory: '../src', files: '**/*.mdx', titlePrefix: 'React' },
+    { directory: '../src', files: `**/@(${sharedNames}).mdx` },
+    { directory: '../src', files: `**/!(${sharedNames}).mdx`, titlePrefix: 'React' },
     { directory: '../src', files: '**/*.stories.@(js|jsx|mjs|ts|tsx)', titlePrefix: 'React' },
   ],
   refs: (_config, { configType }) => ({
