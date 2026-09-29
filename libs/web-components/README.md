@@ -99,9 +99,37 @@ const accepted = ref(false);
 ## Run locally
 
 The shared Storybook is started from the repository root with `npm run storybook` and
-opened at `http://localhost:6006`. Its **Web Components** section currently contains the
-Phase 1 overview; native stories for the eight existing elements follow in Phase 2.
-There is no separate Web Components Storybook command. The existing Angular/Vue harness
+opened at `http://localhost:6006`. Its **Web Components** section contains native stories, Controls, and docs for all eight
+existing elements. Interactive stories show native event payloads below the component.
+
+| Storybook component                                                                                                      | React-contract coverage                                                                         |
+| ------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- |
+| [Avatar](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/web-components_atoms-avatar--docs)         | Image, fallback, badge, every size, custom colors                                               |
+| [Button](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/web-components_atoms-button--docs)         | Every variant and radius, full-width, icon-only, loading, disabled, icon slots                  |
+| [Checkbox](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/web-components_atoms-checkbox--docs)     | Checked, indeterminate, disabled, both sizes; `gd-change` → `{ checked }`                       |
+| [Input](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/web-components_atoms-input--docs)           | Types, validation colors, read-only/disabled, adornments; `gd-input`/`gd-change`                |
+| [Select](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/web-components_atoms-select--docs)         | Single/multiple, search, auto-open, colors, adornments, custom initiator; `gd-change`           |
+| [Typography](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/web-components_atoms-typography--docs) | All 18 variants, display sizes, style variants, alignment/color controls, semantic override     |
+| [Counter](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/web-components_molecules-counter--docs)   | Minimum/maximum, custom range, disabled; `gd-change` → `{ value: number }`                      |
+| [Menu](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/web-components_molecules-menu--docs)         | Placement, offsets, height constraints, close/persist behavior; `gd-change` → `{ data, value }` |
+
+### React-to-custom-element contract
+
+The ports preserve each source component's component-specific public contract using native
+custom-element equivalents. Primitive props remain attributes/properties; objects, arrays,
+functions, themes, and style objects are JavaScript properties. React callbacks become native
+DOM/custom events, `ReactNode` props become default or named slots, and imperative refs become
+public element methods. Generic React/Emotion box props are supplied with host CSS or the
+component's `styles` property rather than reproduced as React-only prop names.
+
+`react-parity.json` records the required mapping and Storybook examples for every shipped port.
+`npm run check:web-components-ports` fails when an element, required mapping, or parity story is
+missing. Unit tests cover the programmatic property/event contract; the Storybook smoke test also
+checks multiple/searchable Select behavior and every Typography variant/display size in Chromium.
+
+There is no separate Web Components Storybook command. Run `npm run build-storybook`
+then `node bin/storybook/smoke-test.mjs` to verify every native story plus input, checkbox,
+select, counter, and menu interactions in Chromium. The existing Angular/Vue harness
 workflow below remains available until the later integration-check cleanup.
 
 Start the development server for all Web Components examples:

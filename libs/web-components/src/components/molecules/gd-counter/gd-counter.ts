@@ -21,6 +21,7 @@ export class GdCounter extends LitElement {
   @property({ type: Number }) initial = 1;
   @property({ type: Boolean, attribute: 'is-disabled', reflect: true }) isDisabled = false;
   @property({ attribute: false }) theme: DesignCoreTheme = {};
+  @property({ attribute: false }) styles: Styles = {};
   private value = 1;
   private draft = '1';
   private initialized = false;
@@ -65,7 +66,7 @@ export class GdCounter extends LitElement {
     const inputStyles = Object.fromEntries(
       Object.entries(t.webComponent.inputControl).filter(([, value]) => typeof value !== 'object')
     ) as Styles;
-    return html`<div part="root" style=${styleMap({ ...root, ...t.webComponent.root })}>
+    return html`<div part="root" style=${styleMap({ ...root, ...t.webComponent.root, ...this.styles })}>
       <gd-button
         part="decrement"
         variant="outlined"

@@ -1,0 +1,153 @@
+{
+  "gd-avatar": {
+    "react": "Avatar",
+    "source": [
+      "src",
+      "alt",
+      "sizeVariant",
+      "withBadge",
+      "badgeColor",
+      "backgroundColor",
+      "styles",
+      "slot name=\"fallback\""
+    ],
+    "stories": ["Default", "Image", "Badge", "AllSizes", "CustomColors", "SlottedFallback"]
+  },
+  "gd-button": {
+    "react": "Button",
+    "source": [
+      "variant",
+      "rounded",
+      "disabled",
+      "fullWidth",
+      "isIcon",
+      "isLoading",
+      "type",
+      "role",
+      "tabIndex",
+      "ariaLabel",
+      "ariaPressed",
+      "styles",
+      "slot name=\"icon-start\"",
+      "slot name=\"icon-end\""
+    ],
+    "stories": ["Default", "AllVariants", "Rounded", "FullWidth", "IconOnly", "Loading", "IconSlots"]
+  },
+  "gd-checkbox": {
+    "react": "Checkbox",
+    "source": ["checked", "indeterminate", "disabled", "name", "value", "size", "styles", "gd-change"],
+    "stories": ["Default", "Checked", "Indeterminate", "Disabled", "Sizes"]
+  },
+  "gd-input": {
+    "react": "Input",
+    "source": [
+      "variant",
+      "color",
+      "disabled",
+      "readOnly",
+      "value",
+      "defaultValue",
+      "checked",
+      "defaultChecked",
+      "name",
+      "width",
+      "styles",
+      "placeholder",
+      "label",
+      "helperText",
+      "required",
+      "ariaRequiredValue",
+      "ariaDescribedBy",
+      "role",
+      "inputmode",
+      "tabIndex",
+      "debounceCallbackTime",
+      "slot name=\"adornment-start\"",
+      "slot name=\"adornment-end\"",
+      "gd-input",
+      "gd-change"
+    ],
+    "stories": ["Default", "Empty", "Disabled", "ReadOnly", "ValidationColors", "WithAdornments", "InputTypes"]
+  },
+  "gd-select": {
+    "react": "Select",
+    "source": [
+      "items",
+      "itemsCount",
+      "value",
+      "disabled",
+      "color",
+      "placeholder",
+      "multiple",
+      "searchable",
+      "searchPlaceholder",
+      "autoOpen",
+      "activeIndex",
+      "dropdownMaxHeight",
+      "itemIdentifier",
+      "itemStringifier",
+      "renderOption",
+      "width",
+      "minWidth",
+      "maxWidth",
+      "styles",
+      "slot name=\"initiator\"",
+      "slot name=\"empty\"",
+      "slot name=\"adornment-start\"",
+      "slot name=\"adornment-end\"",
+      "gd-change",
+      "open()",
+      "close()"
+    ],
+    "stories": [
+      "Default",
+      "Selected",
+      "Disabled",
+      "Empty",
+      "Multiple",
+      "Searchable",
+      "AutoOpen",
+      "ValidationColors",
+      "WithAdornments",
+      "CustomInitiator"
+    ]
+  },
+  "gd-typography": {
+    "react": "Typography",
+    "source": ["variant", "as", "color", "size", "align", "styleVariant", "styles", "slot"],
+    "stories": [
+      "Default",
+      "AllVariants",
+      "DisplaySizes",
+      "StyleVariants",
+      "SemanticOverride",
+      "CodeAndKeyboard",
+      "CaptionAndHeader"
+    ]
+  },
+  "gd-counter": {
+    "react": "Counter",
+    "source": ["min", "max", "initial", "isDisabled", "styles", "gd-change"],
+    "stories": ["Default", "AdjustedMaximum", "AdjustedMinimum", "CustomRange", "Disabled"]
+  },
+  "gd-menu": {
+    "react": "Menu",
+    "source": [
+      "itemIdentifier",
+      "closeOnSelect",
+      "offsetX",
+      "offsetY",
+      "minHeight",
+      "maxHeight",
+      "placement",
+      "selectedValue",
+      "styles",
+      "slot name=\"trigger\"",
+      "slot name=\"content\"",
+      "gd-change",
+      "openMenu()",
+      "closeMenu()"
+    ],
+    "stories": ["Default", "KeepOpenOnSelect", "Placement", "WithOffset", "WithHeightConstraints"]
+  }
+}

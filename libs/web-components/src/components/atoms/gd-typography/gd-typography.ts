@@ -1,4 +1,4 @@
-import { LitElement, css, type PropertyValues } from 'lit';
+import { LitElement, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { literal, html as staticHtml, type StaticValue } from 'lit/static-html.js';
 import { styleMap } from 'lit/directives/style-map.js';
@@ -6,7 +6,7 @@ import { typography } from 'gd-design-library/tokens';
 import {
   resolveThemeTree,
   get,
-  type TypographyVariantName,
+  type TypographyVariantName as CoreTypographyVariantName,
   type TypographyStyleVariantName,
   type DesignCoreTheme,
 } from 'gd-design-core';
@@ -25,6 +25,22 @@ interface ResolvedTypographyStyle {
   marginBottom?: string;
 }
 
+type TypographySize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
+export type TypographyVariantName = CoreTypographyVariantName | 'div' | 'strong' | 'i' | 'sup' | 'sub';
+type TextAlign =
+  | 'start'
+  | 'end'
+  | 'center'
+  | 'left'
+  | 'right'
+  | 'justify'
+  | 'match-parent'
+  | 'inherit'
+  | 'initial'
+  | 'revert'
+  | 'revert-layer'
+  | 'unset';
+
 /**
  * Resolves the REAL `typography` object (`gd-design-library/tokens`) against `theme` — the
  * single-source-of-truth replacement for the old, hand-mirrored `resolveTypographyStyle` in
@@ -36,10 +52,15 @@ interface ResolvedTypographyStyle {
 function resolveTypographyTokens(
   theme: DesignCoreTheme,
   variant: TypographyVariantName,
+  size: TypographySize,
   styleVariant?: TypographyStyleVariantName | TypographyStyleVariantName[]
 ): ResolvedTypographyStyle {
   const resolved = resolveThemeTree(typography, theme) as unknown as Record<string, Record<string, unknown>>;
-  const style: Record<string, unknown> = { fontFamily: resolved.base.fontFamily, ...resolved[variant] };
+  const variantStyles = resolved[variant] ?? resolved.span;
+  const sizeStyles = variant === 'div' ? ((variantStyles[size] as Record<string, unknown> | undefined) ?? {}) : {};
+  const style: Record<string, unknown> = { fontFamily: resolved.base.fontFamily, ...variantStyles, ...sizeStyles };
+  // `div` is a map of size blocks. Do not leak those nested objects into CSS.
+  for (const key of ['xs', 'sm', 'md', 'lg', 'xl', 'xxl']) delete style[key];
 
   if (MONOSPACE_VARIANTS.has(variant)) {
     // Real token key is the flat property `'family.code'` under `font` (a literal dot in the
@@ -81,9 +102,13 @@ export class GdTypography extends LitElement {
     }
   `;
 
-  @property({ type: String }) variant: TypographyVariantName = 'span';
-  @property({ type: String }) as: keyof HTMLElementTagNameMap = 'span';
+  @property({ type: String }) variant: TypographyVariantName = 'p';
+  @property({ type: String }) as?: keyof HTMLElementTagNameMap;
+  @property({ type: String }) size: TypographySize = 'md';
+  @property({ type: String }) align: TextAlign = 'start';
+  @property({ type: String }) color?: string;
   @property({ attribute: 'style-variant' }) styleVariant?: TypographyStyleVariantName | TypographyStyleVariantName[];
+  @property({ attribute: false }) styles: Record<string, string | number> = {};
   @property({ attribute: false }) theme: DesignCoreTheme = {};
 
   private static readonly TAG_MAP: Partial<Record<keyof HTMLElementTagNameMap, StaticValue>> = {
@@ -101,21 +126,16 @@ export class GdTypography extends LitElement {
     small: literal`small`,
     code: literal`code`,
     kbd: literal`kbd`,
+    strong: literal`strong`,
+    i: literal`i`,
+    sup: literal`sup`,
+    sub: literal`sub`,
   };
 
-  willUpdate(changed: PropertyValues<this>) {
-    if (!changed.has('as') && changed.has('variant') && !this.hasAttribute('as')) {
-      // Mirrors the React original's `$as || $variant || 'span'` fallback: when no
-      // explicit `as` is set, the DOM tag tracks `variant` for the variants that map
-      // to a real HTML tag (h1-h6, p); everything else stays `span`.
-      const variantTag = (GdTypography.TAG_MAP as Record<string, StaticValue>)[this.variant] ? this.variant : 'span';
-      this.as = variantTag as keyof HTMLElementTagNameMap;
-    }
-  }
-
   render() {
-    const resolved = resolveTypographyTokens(this.theme, this.variant, this.styleVariant);
-    const tag = GdTypography.TAG_MAP[this.as] ?? literal`span`;
+    const resolved = resolveTypographyTokens(this.theme, this.variant, this.size, this.styleVariant);
+    const semanticTag = this.as ?? (this.variant as keyof HTMLElementTagNameMap);
+    const tag = GdTypography.TAG_MAP[semanticTag] ?? literal`span`;
 
     const style = {
       fontFamily: `${resolved.fontFamily}`,
@@ -127,6 +147,16 @@ export class GdTypography extends LitElement {
       ...(resolved.textDecoration ? { textDecoration: resolved.textDecoration } : {}),
       ...(resolved.marginTop !== undefined ? { marginTop: resolved.marginTop } : {}),
       ...(resolved.marginBottom !== undefined ? { marginBottom: resolved.marginBottom } : {}),
+      textAlign: this.align,
+      ...(this.color
+        ? {
+            color:
+              (get(this.theme.colors ?? {}, this.color, undefined) as string | undefined) ??
+              (get(this.theme, this.color, undefined) as string | undefined) ??
+              this.color,
+          }
+        : {}),
+      ...this.styles,
     };
 
     return staticHtml`<${tag} style=${styleMap(style)}><slot></slot></${tag}>`;

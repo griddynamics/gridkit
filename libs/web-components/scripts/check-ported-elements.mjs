@@ -37,14 +37,32 @@ if (missingFromManifest.length || missingFromSource.length) {
   );
 }
 
-const [index, ssr] = await Promise.all([
+const [index, ssr, parityText] = await Promise.all([
   readFile(resolve(packageRoot, 'src/index.ts'), 'utf8'),
   readFile(resolve(packageRoot, 'scripts/ssr-dsd-render.ts'), 'utf8'),
+  readFile(resolve(packageRoot, 'react-parity.json'), 'utf8'),
 ]);
+const parity = JSON.parse(parityText);
 for (const { tag, category } of ports) {
   const modulePath = `./components/${category}/${tag}/${tag}`;
   if (!index.includes(modulePath)) throw new Error(`Missing public export for ${tag}: ${modulePath}`);
   if (!ssr.includes(`<${tag}`)) throw new Error(`SSR harness does not render ${tag}.`);
 }
 
-console.log(`Verified ${ports.length} Web Component ports: ${ports.map(({ tag }) => tag).join(', ')}`);
+for (const { tag, category } of ports) {
+  const contract = parity[tag];
+  if (!contract) throw new Error(`Missing React parity contract for ${tag}.`);
+  const source = await readFile(resolve(componentsRoot, category, tag, `${tag}.ts`), 'utf8');
+  const storyName = tag.slice(3).replace(/(^|-)([a-z])/g, (_match, _separator, letter) => letter.toUpperCase());
+  const stories = await readFile(resolve(packageRoot, 'stories', `${storyName}.stories.ts`), 'utf8');
+  for (const needle of contract.source) {
+    if (!source.includes(needle)) throw new Error(`${tag} is missing React ${contract.react} API mapping: ${needle}`);
+  }
+  for (const story of contract.stories) {
+    if (!stories.includes(`export const ${story}`)) throw new Error(`${tag} is missing parity story: ${story}`);
+  }
+}
+
+console.log(
+  `Verified ${ports.length} Web Component ports and React parity contracts: ${ports.map(({ tag }) => tag).join(', ')}`
+);

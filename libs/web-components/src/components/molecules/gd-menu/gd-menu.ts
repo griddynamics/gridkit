@@ -1,4 +1,4 @@
-import { LitElement, html, type PropertyValues } from 'lit';
+import { LitElement, css, html, type PropertyValues } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { menu } from 'gd-design-library/tokens';
@@ -43,6 +43,21 @@ function resolveMenuTokens(theme: DesignCoreTheme): {
  */
 @customElement('gd-menu')
 export class GdMenu extends LitElement {
+  static styles = css`
+    /* The menu token intentionally gives the open surface an inline-block display.
+       Because it is applied as an inline style, it otherwise overrides Chromium's
+       user-agent closed-popover display rule and leaves a
+       closed menu painted in normal flow. Keep the token for intrinsic open sizing,
+       but make the native popover state authoritative for visibility. */
+    .content:not(:popover-open) {
+      display: none !important;
+    }
+  `;
+
+  @property({ attribute: false }) itemIdentifier?: (
+    selected: { value?: unknown } | null,
+    current: { value?: unknown }
+  ) => boolean;
   @property({ type: Boolean, reflect: true }) open = false;
   @property({ type: Boolean, attribute: 'close-on-select' }) closeOnSelect = true;
   @property({ type: Number, attribute: 'min-height' }) minHeight = 80;
@@ -52,6 +67,7 @@ export class GdMenu extends LitElement {
   @property({ type: String }) placement: MenuPlacement = 'bottom-right';
   @property({ attribute: false }) selectedValue: unknown = undefined;
   @property({ attribute: false }) theme: DesignCoreTheme = {};
+  @property({ attribute: false }) styles: Record<string, string | number> = {};
 
   @query('.trigger') private _trigger!: HTMLButtonElement;
   @query('.content') private _content!: HTMLElement;
@@ -78,7 +94,7 @@ export class GdMenu extends LitElement {
 
   updated(changed: PropertyValues<this>) {
     const tokens = resolveMenuTokens(this.theme);
-    this.style.display = tokens.webComponent.host.display;
+    Object.assign(this.style, { display: tokens.webComponent.host.display, ...this.styles });
     if (!changed.has('open')) return;
     if (this.open) this._show();
     else this._hide();

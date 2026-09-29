@@ -9,13 +9,15 @@ const meta = {
     page.innerHTML = `
       <h1 style="font-size: 28px; font-weight: 600; margin-bottom: 16px">GridKit Web Components</h1>
       <p style="margin-bottom: 12px">This native custom-element catalog shares one Storybook with the React library.</p>
-      <p>Component stories will be added in Phase 2 for the existing supported elements only:</p>
+      <p>Browse the existing supported elements under Atoms and Molecules:</p>
       <ul style="list-style: disc; padding-left: 24px; margin: 16px 0">
         <li>Atoms: gd-avatar, gd-button, gd-checkbox, gd-input, gd-select, gd-typography</li>
         <li>Molecules: gd-counter, gd-menu</li>
       </ul>
-      <p style="margin-bottom: 12px">Stories will consume custom elements directly, without React adapters, using the production theme and styles.</p>
-      <p>The Angular and Vue integration checks remain in place during this scaffold phase.</p>
+      <p style="margin-bottom: 12px">Stories consume custom elements directly, without React adapters, using the production defaultTheme property and built stylesheet/fonts.</p>
+      <p>Use Controls to explore properties. Interactive stories display native gd-input / gd-change event details below the element. Objects such as theme and items are JavaScript properties, not string attributes.</p>
+      <p>Menu demonstrates trigger/content slots, selection, Escape and outside-click dismissal. Counter demonstrates bounded quantity changes. Other components are intentionally postponed.</p>
+      <p>The Angular and Vue integration checks remain in place; harness cleanup is a later phase.</p>
     `;
     return page;
   },
