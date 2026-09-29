@@ -25,6 +25,7 @@ export interface SelectStoreActions {
   toggle: () => void;
   setSearchText: (text: string) => void;
   setDisabled: (disabled: boolean) => void;
+  setMultiple: (multiple: boolean) => void;
   /** Call when the consumer's external `value` prop changes — mirrors `Select.tsx`'s value-sync effect. */
   syncExternalValue: (value: SelectValue) => void;
   /** Mirrors `Select.tsx`'s `_onSelect`: single-select replaces + closes, multi-select toggles membership. */
@@ -74,6 +75,10 @@ export function createSelectStore(options: CreateSelectStoreOptions = {}) {
     },
     setSearchText: (text) => set({ searchText: text }),
     setDisabled: (next) => set({ disabled: next }),
+    setMultiple: (next) => {
+      const state = get();
+      set({ multiple: next, internalValue: normalizeValue(state.internalValue, next) });
+    },
 
     syncExternalValue: (nextValue) => {
       const state = get();

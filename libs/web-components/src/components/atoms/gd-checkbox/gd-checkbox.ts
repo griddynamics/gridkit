@@ -102,6 +102,7 @@ export class GdCheckbox extends LitElement {
   @property({ type: Boolean, reflect: true }) disabled = false;
   @property({ type: String }) size: CheckboxSizeName = 'md';
   @property({ attribute: false }) theme: DesignCoreTheme = {};
+  @property({ attribute: false }) styles: Record<string, string | number> = {};
   /** Submitted under this key in `FormData`. No `name` means no form submission, same as native. */
   @property({ type: String }) name = '';
   /** Submitted value when checked. Matches native `<input type="checkbox">`, which submits `'on'`. */
@@ -258,7 +259,7 @@ export class GdCheckbox extends LitElement {
     const resolved = resolveCheckboxTokens(this.theme, this.size);
     const currentChecked = state.checked;
 
-    const wrapperStyle = { gap: `${resolved.wrapperGap}` };
+    const wrapperStyle = { gap: `${resolved.wrapperGap}`, ...this.styles };
 
     const indicatorStyle = {
       width: `${resolved.indicatorSize}px`,

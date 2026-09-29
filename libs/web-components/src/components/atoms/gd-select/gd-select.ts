@@ -5,7 +5,9 @@ import { select } from 'gd-design-library/tokens';
 import {
   resolveThemeTree,
   createSelectStore,
+  filterSelectOptions,
   type SelectOption,
+  type SelectItemIdentifier,
   type InputColorVariantName,
   type DesignCoreTheme,
 } from 'gd-design-core';
@@ -68,10 +70,9 @@ function resolveSelectTokens(theme: DesignCoreTheme, color: InputColorVariantNam
 }
 
 /**
- * Select port (per the implementation plan's Migration Example) — reduced-scope PoC:
- * single-select only, no search, fixed-below positioning. Explicitly deferred from this
- * PoC: multi-select, search filtering, full keyboard navigation parity (see FINDINGS.md
- * for what a full-parity port would additionally require).
+ * Select port. Component-specific React props are represented as custom-element properties,
+ * named slots, native events, and public methods. ReactNode/function props use slots or
+ * property callbacks because they cannot be serialized as HTML attributes.
  *
  * Platform-native replacement evaluated here: the HTML `popover` attribute gives native
  * top-layer rendering plus light-dismiss (outside-click/Escape close) for free, replacing
@@ -165,9 +166,25 @@ export class GdSelect extends LitElement {
   `;
 
   @property({ type: Array }) items: SelectOption[] = [];
-  @property({ attribute: false }) value: SelectOption | null = null;
+  @property({ type: Number, attribute: 'items-count' }) itemsCount?: number;
+  @property({ attribute: false }) value: SelectOption | SelectOption[] | null = null;
   @property({ type: Boolean, reflect: true }) disabled = false;
   @property({ type: String }) color: InputColorVariantName = 'primary';
+  @property({ type: String }) placeholder = 'Select';
+  @property({ type: Boolean }) multiple = false;
+  @property({ type: Boolean }) searchable = false;
+  @property({ type: String, attribute: 'search-placeholder' }) searchPlaceholder = 'Search...';
+  @property({ type: Boolean, attribute: 'auto-open' }) autoOpen = true;
+  @property({ type: String, attribute: 'dropdown-max-height' }) dropdownMaxHeight = '240px';
+  @property({ attribute: false }) activeIndex?: string | number;
+  @property({ attribute: false }) itemIdentifier?: SelectItemIdentifier;
+  @property({ attribute: false }) itemStringifier: (item: SelectOption) => string = (item) => item.name;
+  @property({ attribute: false }) renderOption?: (data: {
+    item: SelectOption;
+    index: number;
+    isActiveItem: boolean;
+    className: string;
+  }) => unknown;
   /** Mirrors `Select.tsx`'s `width`/`minWidth`/`maxWidth` props (real defaults:
    *  `width: '100%'`, `maxWidth: 'initial'`, `minWidth` unset) — applied to the trigger
    *  wrapper. Without an explicit width, an empty trigger (no selected value, no
@@ -177,6 +194,7 @@ export class GdSelect extends LitElement {
   @property({ type: String }) width = '100%';
   @property({ type: String, attribute: 'min-width' }) minWidth?: string;
   @property({ type: String, attribute: 'max-width' }) maxWidth = 'initial';
+  @property({ attribute: false }) styles: Record<string, string | number> = {};
   @property({ attribute: false }) theme: DesignCoreTheme = {};
 
   @query('.trigger') private _trigger!: HTMLButtonElement;
@@ -199,7 +217,8 @@ export class GdSelect extends LitElement {
   }
 
   willUpdate(changed: PropertyValues<this>) {
-    if (changed.has('value')) this._store.getState().syncExternalValue(this.value);
+    if (changed.has('multiple')) this._store.getState().setMultiple(this.multiple);
+    if (changed.has('value') || changed.has('multiple')) this._store.getState().syncExternalValue(this.value);
     if (changed.has('disabled')) this._store.getState().setDisabled(this.disabled);
     // Applied directly on the host (`:host`'s own inline style), not just the shadow-root
     // `.wrapper` — a percentage width on a shadow-DOM child only resolves against a
@@ -212,6 +231,7 @@ export class GdSelect extends LitElement {
       if (changed.has('width')) this.style.width = this.width;
       if (changed.has('maxWidth')) this.style.maxWidth = this.maxWidth;
       if (changed.has('minWidth')) this.style.minWidth = this.minWidth ?? '';
+      if (changed.has('styles')) Object.assign(this.style, this.styles);
     }
   }
 
@@ -241,20 +261,43 @@ export class GdSelect extends LitElement {
   }
 
   private _toggleOpen() {
-    if (this.disabled) return;
+    if (this.disabled || !this.autoOpen) return;
     this._store.getState().toggle();
   }
 
+  open() {
+    this._store.getState().open();
+  }
+
+  close() {
+    this._store.getState().close();
+  }
+
   private _select(option: SelectOption) {
-    const nextValue = this._store.getState().select(option);
-    this.value = Array.isArray(nextValue) ? null : nextValue;
+    const nextValue = this._store.getState().select(option, this.itemIdentifier);
+    this.value = nextValue;
     this.dispatchEvent(new CustomEvent('gd-change', { detail: { value: this.value }, bubbles: true, composed: true }));
+  }
+
+  private _onSearch(event: Event) {
+    this._store.getState().setSearchText((event.target as HTMLInputElement).value);
+  }
+
+  private _onTriggerKeyDown(event: KeyboardEvent) {
+    if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this.open();
+    }
+    if (event.key === 'Escape') this.close();
   }
 
   render() {
     const state = this._store.getState();
     const resolved = resolveSelectTokens(this.theme, this.color);
     const selected = Array.isArray(state.internalValue) ? null : state.internalValue;
+    const selectedItems = Array.isArray(state.internalValue) ? state.internalValue : selected ? [selected] : [];
+    const visibleItems = filterSelectOptions(this.items, state.searchText, this.itemStringifier) ?? [];
+    const selectedText = selectedItems.map(this.itemStringifier).join(', ');
     // Same expression gd-input.ts uses for its own focus ring — the real button.default
     // `'&:focus-visible'` color path (`colors.border.focus`).
     const focusColor = (this.theme.colors as { border?: { focus?: string } } | undefined)?.border?.focus ?? '#0069B4';
@@ -286,6 +329,7 @@ export class GdSelect extends LitElement {
       // field reused for both, since they're the same token value in the real component too.
       margin: `${resolved.dropdownPadding}`,
       padding: `${resolved.dropdownPadding}`,
+      ...(this.dropdownMaxHeight ? { maxHeight: this.dropdownMaxHeight } : {}),
       '--gd-select-hover-bg': resolved.hoverBackgroundColor,
     };
 
@@ -299,8 +343,13 @@ export class GdSelect extends LitElement {
           aria-haspopup="listbox"
           aria-expanded=${state.isOpen}
           @click=${this._toggleOpen}
+          @keydown=${this._onTriggerKeyDown}
         >
-          <span>${selected?.name ?? html`<slot name="placeholder"></slot>`}</span>
+          <slot name="adornment-start"></slot>
+          <span>
+            <slot name="initiator">${selectedText || this.placeholder || html`<slot name="placeholder"></slot>`}</slot>
+          </span>
+          <slot name="adornment-end"></slot>
           <span class="arrow" ?data-open=${state.isOpen} aria-hidden="true">
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
               <path
@@ -317,22 +366,38 @@ export class GdSelect extends LitElement {
           class="dropdown"
           popover="auto"
           role="listbox"
+          aria-multiselectable=${this.multiple}
           style=${styleMap(dropdownStyle)}
           @toggle=${this._onDropdownToggle}
         >
-          ${this.items.length
-            ? this.items.map(
-                (item) => html`
+          ${this.searchable
+            ? html`<input
+                type="search"
+                class="search"
+                placeholder=${this.searchPlaceholder}
+                .value=${state.searchText}
+                @input=${this._onSearch}
+                aria-label=${this.searchPlaceholder || 'Search options'}
+              />`
+            : null}
+          ${visibleItems.length
+            ? visibleItems.map((item, index) => {
+                const isSelected = selectedItems.some((current) =>
+                  this.itemIdentifier ? this.itemIdentifier(current, item) : current.value === item.value
+                );
+                const custom = this.renderOption?.({ item, index, isActiveItem: isSelected, className: 'option' });
+                return html`
                   <div
                     class="option"
                     role="option"
-                    aria-selected=${selected?.value === item.value}
+                    aria-selected=${isSelected}
+                    data-active=${String(this.activeIndex) === String(index)}
                     @click=${() => this._select(item)}
                   >
-                    ${item.name}
+                    ${custom ?? this.itemStringifier(item)}
                   </div>
-                `
-              )
+                `;
+              })
             : html`<slot name="empty"></slot>`}
         </div>
       </div>

@@ -163,4 +163,23 @@ describe('gd-input', () => {
       expect(el.disabled).toBe(true);
     });
   });
+
+  it('maps React input behavior and accessibility props to the inner native input', async () => {
+    mount('<gd-input id="email" variant="email" readonly aria-required required></gd-input>');
+    const el = host.querySelector<GdInput>('#email')!;
+    el.width = '320px';
+    el.inputmode = 'email';
+    el.ariaDescribedBy = 'email-help';
+    el.tabIndex = 2;
+    await settle(el);
+    const inner = el.shadowRoot!.querySelector<HTMLInputElement>('input')!;
+    expect(inner.type).toBe('email');
+    expect(inner.readOnly).toBe(true);
+    expect(inner.required).toBe(true);
+    expect(inner.getAttribute('aria-required')).toBe('true');
+    expect(inner.getAttribute('aria-describedby')).toBe('email-help');
+    expect(inner.inputMode).toBe('email');
+    expect(inner.tabIndex).toBe(2);
+    expect(el.style.width).toBe('320px');
+  });
 });

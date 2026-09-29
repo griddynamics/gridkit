@@ -40,6 +40,22 @@ describe('gd-menu', () => {
     expect(content.style.width).toBe('fit-content');
     expect(content.style.height).toBe('fit-content');
     expect(content.style.display).toBe('inline-block');
+    expect(getComputedStyle(content).display).toBe('none');
+  });
+
+  it('is visually hidden again after the native popover closes', async () => {
+    const menu = mount();
+    await settle(menu);
+    menu.openMenu();
+    await settle(menu);
+    const content = menu.shadowRoot!.querySelector<HTMLElement>('[part="content"]')!;
+    expect(content.matches(':popover-open')).toBe(true);
+    expect(getComputedStyle(content).display).not.toBe('none');
+
+    menu.closeMenu();
+    await settle(menu);
+    expect(content.matches(':popover-open')).toBe(false);
+    expect(getComputedStyle(content).display).toBe('none');
   });
 
   it('keeps the opened popover intrinsically sized and positioned beside its trigger with a slotted wrapper', async () => {

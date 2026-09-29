@@ -67,6 +67,17 @@ if (built) {
     errors.push('Shared documentation must appear before React in the built sidebar order');
 }
 if (!indexes.webComponents.entries['introduction-overview--overview']) errors.push('Missing Web Components overview');
+for (const [group, names] of [
+  ['atoms', ['avatar', 'button', 'checkbox', 'input', 'select', 'typography']],
+  ['molecules', ['counter', 'menu']],
+]) {
+  for (const name of names) {
+    for (const variant of ['docs', 'default']) {
+      const id = `${group}-${name}--${variant}`;
+      if (!indexes.webComponents.entries[id]) errors.push(`Missing native Web Components entry: ${id}`);
+    }
+  }
+}
 
 const excluded = new Set(['node_modules', '.git', 'dist', 'storybook-static', 'coverage', 'output', '.nx']);
 const extensions = new Set([
