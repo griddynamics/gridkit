@@ -26,7 +26,7 @@ The AI integration system includes discovery utilities, validation mechanisms, a
 ### Interactive Documentation
 
 📖 **Explore the AI Integration System in Storybook**:  
-[View AI Integration Documentation](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/introduction-welcome--docs)
+[View AI Integration Documentation](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/react-introduction-ai-integration-overview--docs)
 
 The Storybook provides interactive examples, component playgrounds, and comprehensive documentation for all AI integration features. You can experiment with components, see live examples, and understand how to use the system effectively.
 
@@ -174,7 +174,7 @@ const schemaResult = validateSchema(componentSchema);
 ### External References
 
 - **[llms.txt](./../llms.txt)** - LLM-friendly documentation (package root)
-- **[Component Storybook](https://storybook.cto-rnd-system-design.griddynamics.net/)** - Interactive component documentation
+- **[React Component Storybook](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/introduction-welcome--docs)** - Interactive React component documentation in the shared Storybook
 
 ## API Reference
 
@@ -594,7 +594,7 @@ yarn test:ai:watch
 
 <!-- AUTO-GENERATED:COMPONENTS:START -->
 
-_66 components total — generated from `libs/ui/src/ai/schemas/` on 2026-09-25._
+_66 components total — generated from `libs/ui/src/ai/schemas/` on 2026-09-28._
 
 ### Other
 

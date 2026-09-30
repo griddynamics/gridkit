@@ -1,9 +1,26 @@
 import type { StorybookConfig } from '@storybook/react-vite';
 import type { Plugin } from 'vite';
 import remarkGfm from 'remark-gfm';
+// Build-time workspace tooling, not a dependency of the shipped UI library.
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { legacyRedirectHead, sharedDocs } from '../../../bin/storybook/routes.mjs';
+
+const sharedNames = Object.keys(sharedDocs).join('|');
 
 const config: StorybookConfig = {
-  stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
+  stories: [
+    { directory: '../src', files: `**/@(${sharedNames}).mdx` },
+    { directory: '../src', files: `**/!(${sharedNames}).mdx`, titlePrefix: 'React' },
+    { directory: '../src', files: '**/*.stories.@(js|jsx|mjs|ts|tsx)', titlePrefix: 'React' },
+  ],
+  refs: (_config, { configType }) => ({
+    'web-components': {
+      title: 'Web Components',
+      url: configType === 'DEVELOPMENT' ? 'http://localhost:6007' : './web-components/',
+    },
+  }),
+  managerHead: (head) => `${legacyRedirectHead()}${head}`,
+  previewHead: (head) => `${legacyRedirectHead()}${head}`,
   staticDirs: ['public', '../src/assets'],
   addons: [
     '@storybook/addon-onboarding',

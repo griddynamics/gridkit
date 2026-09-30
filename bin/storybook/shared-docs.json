@@ -1,0 +1,16 @@
+{
+  "Welcome": "introduction-welcome--docs",
+  "Feedback": "introduction-feedback-contribution--docs",
+  "Default-Theme": "theme-tokens-theme--docs",
+  "Default-Theme-Colors": "theme-tokens-colors--docs",
+  "Default-Theme-Fonts": "theme-tokens-fonts--docs",
+  "Default-Theme-Spacing": "theme-tokens-spacing--docs",
+  "Default-Theme-Radius": "theme-tokens-radius--docs",
+  "Default-Theme-zIndex": "theme-tokens-zindex--docs",
+  "Default-Theme-Breakpoints": "theme-tokens-breakpoints--docs",
+  "Default-Theme-Shadows": "theme-tokens-shadows--docs",
+  "Default-Theme-Values": "theme-tokens-values--docs",
+  "Default-Theme-Animations": "theme-tokens-animations--docs",
+  "Cross-Device-UX-Notes": "patterns-best-practices-cross-device-ux-notes--docs",
+  "UX-UI-Design-Patterns-and-Best-Practices": "patterns-best-practices-ux-ui-design-patterns-and-best-practices--docs"
+}

@@ -17,7 +17,7 @@
  *   });
  *
  * A2UI protocol: https://a2ui.org
- * GridKit storybook: https://storybook.cto-rnd-system-design.griddynamics.net
+ * GridKit React AI documentation: https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/react-introduction-ai-integration-overview--docs
  */
 
 import { A2UI_COMPONENT_MAP, A2UI_AVAILABLE_ICONS, A2UI_BUTTON_VARIANTS, A2UI_ICON_CATALOG } from './component-map';

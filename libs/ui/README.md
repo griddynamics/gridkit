@@ -4,7 +4,7 @@
 
 **GridKit** is Grid Dynamics' official React component library — 64 accessible, themeable components built for e-commerce and enterprise applications. It connects directly to Figma design tokens and includes a built-in AI layer that lets LLMs generate and render UI at runtime.
 
-**Browse components:** [Storybook](https://storybook.cto-rnd-system-design.griddynamics.net)
+**Browse components:** [Shared Storybook](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/introduction-welcome--docs)
 
 ---
 
@@ -61,7 +61,7 @@ function Hero() {
 }
 ```
 
-That's it. Open [Storybook](https://storybook.cto-rnd-system-design.griddynamics.net) to browse all 64 components with live props and code samples.
+That's it. Open the [shared Storybook](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/introduction-welcome--docs) and expand **React** to browse all 64 components with live props and code samples. Common design documentation appears first; Web Components have a separate peer section in the same Storybook.
 
 ---
 

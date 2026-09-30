@@ -1030,7 +1030,11 @@
       "inputControl": {
         "appearance": "textfield",
         "MozAppearance": "textfield",
-        "textAlign": "center"
+        "textAlign": "center",
+        "&::-webkit-inner-spin-button, &::-webkit-outer-spin-button": {
+          "WebkitAppearance": "none",
+          "margin": 0
+        }
       }
     }
   },

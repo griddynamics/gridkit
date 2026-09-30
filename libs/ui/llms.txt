@@ -84,7 +84,7 @@ Pre-built indexes for quick discovery:
 > Run `yarn build:ui` to regenerate. Do not edit the block between the markers manually.
 
 <!-- AUTO-GENERATED:COMPONENTS:START -->
-66 components total — generated from libs/ui/src/ai/schemas/ on 2026-09-25.
+66 components total — generated from libs/ui/src/ai/schemas/ on 2026-09-28.
 
 ## Other
 
@@ -2353,7 +2353,7 @@ These guardrails are automatically extracted from component schemas and included
 ### Documentation
 - [AI README](./ai/README.md) - **Comprehensive overview, quick start, and examples** ⭐ **Start here**
 - [Prompt Usage Manual](./ai/PROMPT_USAGE_MANUAL.md) - **Complete guide for using prompts** ⭐
-- [Component Storybook](https://storybook.cto-rnd-system-design.griddynamics.net/) - Interactive component documentation and playground
+- [React Component Storybook](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/introduction-welcome--docs) - Interactive React component documentation and playground in the shared Storybook
 - API Documentation: Generated from component schemas
 - Theme Documentation: Available in theme configuration
 - Accessibility Guidelines: Built into component schemas
@@ -2362,9 +2362,9 @@ These guardrails are automatically extracted from component schemas and included
 
 **Instructions & Getting Started:**
 - [Introduction](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/introduction-welcome--docs) - Overview of the GridKit Design System
-- [Installation](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/introduction-getting-started--docs) - Step-by-step integration guide
-- [Theme Tokens Usage](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/introduction-theme-tokens-usage--docs) - Using theme tokens
-- [Logging and Debugging](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/introduction-logging-and-debugging--docs) - Logging system guidelines
+- [Installation](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/react-introduction-getting-started--docs) - Step-by-step integration guide
+- [Theme Tokens Usage](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/react-introduction-theme-tokens-usage--docs) - Using theme tokens
+- [Logging and Debugging](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/react-introduction-logging-and-debugging--docs) - Logging system guidelines
 - [Usage Guidelines](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/patterns-best-practices-ux-ui-design-patterns-and-best-practices--docs) - Best practices
 - [Contributing](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/introduction-feedback-contribution--docs) - Contribution guidelines
 
@@ -2379,7 +2379,7 @@ These guardrails are automatically extracted from component schemas and included
 - [Animation Tokens](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/theme-tokens-animations--docs) - Motion tokens
 - [Values Tokens](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/theme-tokens-values--docs) - Miscellaneous tokens
 - [zIndex Tokens](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/theme-tokens-zindex--docs) - Stacking order
-- [Theme Customization](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/introduction-getting-started--docs) - Custom themes
+- [Theme Customization](https://storybook.cto-rnd-system-design.griddynamics.net/?path=/docs/react-introduction-getting-started--docs) - Custom themes
 
 ### Support
 - Component schemas provide comprehensive prop documentation

@@ -14,7 +14,7 @@ const meta: Meta<typeof Chart> = {
     docs: {
       description: {
         component:
-          'Data visualization component built on visx — supports line, bar, area, pie, and donut variants with theming, interactive legend, responsive sizing, and accessibility. See the **[Introduction](?path=/docs/introduction-charts--docs)** page for full usage guide, API reference, and FAQ.',
+          'Data visualization component built on visx — supports line, bar, area, pie, and donut variants with theming, interactive legend, responsive sizing, and accessibility. See the **[Introduction](?path=/docs/react-introduction-charts--docs)** page for full usage guide, API reference, and FAQ.',
       },
     },
   },

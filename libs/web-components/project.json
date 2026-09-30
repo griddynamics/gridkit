@@ -5,6 +5,9 @@
   "projectType": "library",
   "tags": ["spike"],
   "targets": {
+    "build-storybook": {
+      "inputs": ["default", "^production"]
+    },
     "build": {
       "executor": "@nx/vite:build",
       "outputs": ["{options.outputPath}"],
