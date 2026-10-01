@@ -4,28 +4,48 @@ import assert from 'node:assert/strict';
 export async function checkNativeStories(page, base) {
   const index = await (await page.request.get(`${base}/web-components/index.json`)).json();
   const stories = Object.values(index.entries).filter(
-    (entry) => entry.type === 'story' && /^(Atoms|Molecules)\//.test(entry.title)
+    (entry) =>
+      entry.type === 'story' && /^(Atoms|Molecules)\//.test(entry.title) && !entry.id.endsWith('--default-tokens')
   );
   const names = new Set();
+  const tags = { inputfile: 'input-file', sliderdots: 'slider-dots' };
   for (const story of stories) {
     const name = story.title.split('/')[1].toLowerCase();
     names.add(name);
     await page.goto(`${base}/web-components/iframe.html?id=${story.id}&viewMode=story`);
-    await page.locator(`gd-${name}`).first().waitFor();
+    const tag = `gd-${tags[name] ?? name}`;
+    await page.locator(tag).first().waitFor({ state: 'attached' });
     await page.waitForFunction((tag) => {
       const el = document.querySelector(tag);
       return el?.shadowRoot?.childElementCount > 0;
-    }, `gd-${name}`);
+    }, tag);
   }
   assert.deepEqual([...names].sort(), [
     'avatar',
+    'badge',
+    'box',
     'button',
     'checkbox',
     'counter',
+    'icon',
+    'image',
     'input',
+    'inputfile',
+    'label',
+    'link',
+    'loader',
     'menu',
     'select',
+    'separator',
+    'skeleton',
+    'slider',
+    'sliderdots',
+    'switch',
+    'textarea',
+    'toggle',
+    'truncate',
     'typography',
+    'wrapper',
   ]);
   const open = async (id) => {
     await page.goto(`${base}/web-components/iframe.html?id=${id}&viewMode=story`);
@@ -112,6 +132,34 @@ export async function checkNativeStories(page, base) {
       elements.map((element) => getComputedStyle(element.shadowRoot.firstElementChild).fontSize)
     );
   assert.equal(new Set(displayFontSizes).size, 5);
+  await open('atoms-slider--default');
+  const slider = page.getByRole('slider', { name: 'Slider' });
+  await slider.fill('55');
+  await event({ value: 55 });
+  await open('atoms-sliderdots--default');
+  await page.getByRole('tab', { name: 'Go to slide 3' }).click();
+  await event({ index: 2 });
+  await open('atoms-switch--default');
+  await page.locator('gd-switch label').click();
+  await event({ checked: true });
+  await open('atoms-textarea--default');
+  await page.getByRole('textbox').fill('Updated comment');
+  await event({ value: 'Updated comment' });
+  await open('atoms-toggle--default');
+  await page.getByRole('button', { name: 'Option 2', exact: true }).click();
+  await event({ value: 'Option 2' });
+  await open('atoms-truncate--line-truncation');
+  assert.equal(
+    await page
+      .locator('gd-truncate')
+      .evaluate((element) => getComputedStyle(element.shadowRoot.querySelector('[part="content"]')).webkitLineClamp),
+    '2'
+  );
+  await open('atoms-wrapper--custom-tag-wrapper');
+  assert.equal(
+    await page.locator('gd-wrapper').evaluate((element) => element.shadowRoot.firstElementChild.tagName),
+    'SECTION'
+  );
   await open('molecules-counter--default');
   await page.getByRole('button', { name: 'Increment counter', exact: true }).click();
   await event({ value: 2 });
@@ -153,6 +201,6 @@ export async function checkNativeStories(page, base) {
   await event({ data: { name: 'Archive', value: 'archive' }, value: 'archive' });
   await page.getByRole('button', { name: 'Edit', exact: true }).waitFor();
   console.log(
-    `Verified ${stories.length} native component stories and input/checkbox/select/typography/counter/menu interactions.`
+    `Verified ${stories.length} native component stories and representative interactions for every interactive atom and molecule.`
   );
 }

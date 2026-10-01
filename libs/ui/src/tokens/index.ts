@@ -54,6 +54,7 @@ import { checkbox } from './checkbox';
 import { zIndex } from './zIndex';
 import { sidebar } from './sidebar';
 import { imagePreview } from './imagePreview';
+import { image } from './image';
 import { inputArea } from './inputArea';
 import { sliderDots } from './sliderDots';
 import { attachmentFile } from './attachmentFile';
@@ -119,6 +120,7 @@ export * from './truncate';
 export * from './zIndex';
 export * from './sidebar';
 export * from './imagePreview';
+export * from './image';
 export * from './inputArea';
 export * from './sliderDots';
 export * from './attachmentFile';
@@ -133,6 +135,7 @@ export const defaultTokens = {
   separator,
   draganddrop,
   avatar,
+  image,
   chatbubble,
   radiogroup,
   draganddropfiles,

@@ -40,6 +40,9 @@ export default defineConfig({
       '@assets': path.join(uiSrc, 'assets'),
     },
   },
+  optimizeDeps: {
+    include: ['lit/directives/repeat.js'],
+  },
   test: {
     name: 'web-components',
     include: ['src/**/*.spec.ts', 'src/**/*.spec.tsx', 'test/**/*.spec.ts', 'test/**/*.spec.tsx'],

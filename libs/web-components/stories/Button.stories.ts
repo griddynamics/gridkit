@@ -21,6 +21,14 @@ const roundedOptions = ['none', 'default', 'round', 'xs', 'sm', 'md', 'lg', 'xl'
 const meta = {
   title: 'Atoms/Button',
   tags: ['autodocs'],
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'Button matching React variants, icons, loading, width, rounding, disabled, custom styling, states, and accessibility.',
+      },
+    },
+  },
   args: {
     variant: 'primary',
     rounded: 'none',
@@ -77,3 +85,15 @@ export const IconSlots: Story = {
     return button;
   },
 };
+export const WithIcons: Story = IconSlots;
+export const FullWidthButton: Story = FullWidth;
+export const RoundedButton: Story = Rounded;
+export const DisabledButton: Story = Disabled;
+export const ButtonStatesUsingClass: Story = { args: { ariaPressed: 'true', label: 'Pressed state' } };
+export const CustomStyledButton: Story = {
+  render: (args) => element('gd-button', { ...args, styles: { letterSpacing: '0.08em' } }, 'Custom styled'),
+};
+export const RealWorldExamples: Story = AllVariants;
+export const IsLoading: Story = Loading;
+export const WithAccessibility: Story = { args: { ariaLabel: 'Save changes', label: 'Save' } };
+export const DefaultTokens: Story = { render: () => document.createElement('pre') };

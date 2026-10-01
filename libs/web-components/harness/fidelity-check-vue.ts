@@ -101,6 +101,141 @@ const App = {
           h('gd-counter', { min: 1, max: 5, initial: 1, theme: defaultTheme }),
           h('output', `Value: ${counterValue.value}`),
         ]),
+        section('Box — vertical / horizontal / bordered / highlighted', [
+          h('gd-box', { variant: 'vertical', theme: defaultTheme }, 'Vertical box'),
+          h('gd-box', { variant: 'horizontal', isBordered: true, theme: defaultTheme }, 'Bordered horizontal box'),
+          h(
+            'gd-box',
+            { isBordered: true, isHighlighted: true, withShadowHover: true, theme: defaultTheme },
+            'Interactive box'
+          ),
+        ]),
+        section('Badge — variants / sizes / icons / disabled', [
+          h('gd-badge', { variant: 'primary', appearance: 'filled', size: 'xs', theme: defaultTheme }, 'Primary'),
+          h('gd-badge', { variant: 'secondary', appearance: 'outline', size: 'md', theme: defaultTheme }, [
+            h('span', { slot: 'icon-start' }, '★'),
+            'With icon',
+          ]),
+          h(
+            'gd-badge',
+            { variant: 'tertiary', appearance: 'filledLight', size: 'lg', disabled: true, theme: defaultTheme },
+            'Disabled'
+          ),
+        ]),
+        section('Image — image / caption / fallback', [
+          h('gd-image', {
+            src: portrait,
+            alt: 'Ada Lovelace',
+            width: 96,
+            height: 96,
+            caption: 'Portrait',
+            theme: defaultTheme,
+          }),
+          h(
+            'gd-image',
+            { src: '/missing-image.png', alt: 'Unavailable image', width: 96, height: 96, theme: defaultTheme },
+            [h('span', { slot: 'fallback' }, 'Image unavailable')]
+          ),
+        ]),
+        section('Icon — shared React/Web Components catalog', [
+          h('gd-icon', { name: 'star', size: 'xs', theme: defaultTheme }),
+          h('gd-icon', { name: 'search', size: 'md', theme: defaultTheme }),
+          h('gd-icon', { name: 'edit', size: 'xl', 'aria-label': 'Edit', theme: defaultTheme }),
+        ]),
+        section('InputFile — default / multiple / accept / icon', [
+          h('gd-input-file', { theme: defaultTheme }, 'Browse Files'),
+          h('gd-input-file', { multiple: true, accept: 'image/*', theme: defaultTheme }, 'Choose images'),
+          h('gd-input-file', { isIcon: true, 'aria-label': 'Upload file', theme: defaultTheme }, [
+            h('gd-icon', { name: 'upload' }),
+          ]),
+          h('gd-input-file', { disabled: true, theme: defaultTheme }, 'Disabled'),
+        ]),
+        section('Label — text / icon / association', [
+          h('gd-label', { for: 'vue-labelled-input', theme: defaultTheme }, 'Account name'),
+          h('input', { id: 'vue-labelled-input' }),
+          h('gd-label', { theme: defaultTheme }, [h('gd-icon', { name: 'star' }), ' Required label']),
+        ]),
+        section('Link — variants / underline / size / disabled', [
+          h('gd-link', { href: '#vue-link', variant: 'primary', size: 'sm', theme: defaultTheme }, 'Primary'),
+          h(
+            'gd-link',
+            { href: '#vue-link', variant: 'inherit', underline: 'highlight', size: 'md', theme: defaultTheme },
+            'Highlighted'
+          ),
+          h('gd-link', { variant: 'inverted', size: 'lg', disabled: true, theme: defaultTheme }, 'Disabled'),
+        ]),
+        section('Loader — circle / dots / sizes / wrapper variants', [
+          h('gd-loader', { name: 'circle', size: 'xs', theme: defaultTheme }),
+          h('gd-loader', { name: 'dots', size: 'md', rounded: 'round', theme: defaultTheme }),
+          h('gd-loader', { name: 'circle', size: 'lg', variant: 'section', theme: defaultTheme }),
+          h('gd-loader', { name: 'circle', size: 'sm', withWrapper: false, theme: defaultTheme }),
+        ]),
+        section('Separator — horizontal / vertical / labels / variants', [
+          h('gd-separator', { length: '180px', theme: defaultTheme }),
+          h('gd-separator', {
+            length: '180px',
+            label: 'OR',
+            labelPosition: 'center',
+            size: 'md',
+            variant: 'dashed',
+            theme: defaultTheme,
+          }),
+          h('gd-separator', { length: '80px', orientation: 'vertical', label: 'Or', size: 'md', theme: defaultTheme }),
+        ]),
+        section('Skeleton — rounded / circular / rectangular / children', [
+          h('gd-skeleton', { width: '180px', height: '15px', theme: defaultTheme }),
+          h('gd-skeleton', { width: '60px', height: '60px', variant: 'circular', theme: defaultTheme }),
+          h(
+            'gd-skeleton',
+            {
+              width: '180px',
+              height: '50px',
+              variant: 'rectangular',
+              backgroundColor: 'theme.palette.success.main',
+              theme: defaultTheme,
+            },
+            'Loading Content...'
+          ),
+        ]),
+        section('Slider / dots — range and carousel navigation', [
+          h('gd-slider', { min: 0, max: 100, value: 45, 'aria-label': 'Volume', theme: defaultTheme }),
+          h('gd-slider-dots', { count: 5, activeIndex: 1, theme: defaultTheme }),
+        ]),
+        section('Switch — default / checked / loading', [
+          h('gd-switch', { theme: defaultTheme }, 'Notifications'),
+          h('gd-switch', { checked: true, label: 'left', theme: defaultTheme }, 'Enabled'),
+          h('gd-switch', { isLoading: true, theme: defaultTheme }, 'Saving'),
+        ]),
+        section('Textarea — colors / counter / resize', [
+          h('gd-textarea', { placeholder: 'Comment', theme: defaultTheme }),
+          h('gd-textarea', { color: 'success', maxCharacters: 100, defaultValue: 'Looks good', theme: defaultTheme }),
+          h('gd-textarea', { resize: 'both', rows: 3, theme: defaultTheme }),
+        ]),
+        section('Toggle — selected / disabled', [
+          h('gd-toggle', { items: ['Option 1', 'Option 2', 'Option 3'], value: 'Option 1', theme: defaultTheme }),
+          h('gd-toggle', {
+            items: ['Option 1', 'Option 2', 'Option 3'],
+            value: 'Option 2',
+            disabled: true,
+            theme: defaultTheme,
+          }),
+        ]),
+        section('Truncate — single / multiple lines', [
+          h(
+            'gd-truncate',
+            { style: 'width: 180px', theme: defaultTheme },
+            'A long single-line value that must be truncated.'
+          ),
+          h(
+            'gd-truncate',
+            { style: 'width: 180px', lines: 2, theme: defaultTheme },
+            'A longer block of content constrained to two lines for the Vue integration harness.'
+          ),
+        ]),
+        section('Wrapper — inline / section', [
+          h('gd-wrapper', { variant: 'inline', theme: defaultTheme }, 'Inline content'),
+          h('gd-wrapper', { variant: 'section', as: 'section', theme: defaultTheme }, 'Section content'),
+        ]),
       ]);
   },
 };

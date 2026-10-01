@@ -119,7 +119,19 @@ export class GdAvatar extends LitElement {
     const tokens = resolveAvatarTokens(this.theme, size);
     const fallbackFontSize = get(
       this.theme,
-      `font.size.${size === 'xs' ? 'caption' : size === 'sm' ? 'small' : size === 'md' ? 'h6' : size === 'lg' ? 'h5' : size === 'xl' ? 'h4' : 'h3'}`,
+      `font.size.${
+        size === 'xs'
+          ? 'caption'
+          : size === 'sm'
+            ? 'small'
+            : size === 'md'
+              ? 'h6'
+              : size === 'lg'
+                ? 'h5'
+                : size === 'xl'
+                  ? 'h4'
+                  : 'h3'
+      }`,
       '16px'
     );
     const hostStyle = { ...cssLengths(tokens.default), ...this.styles };

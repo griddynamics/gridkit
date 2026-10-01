@@ -1,6 +1,7 @@
 import * as path from 'path';
 
 export const sharedAlias = {
+  'gd-design-core': path.resolve(__dirname, '../design-core/src/index.ts'),
   '@': path.resolve(__dirname, './src'),
   '@types': path.resolve(__dirname, './src/types/'),
   '@constants': path.resolve(__dirname, './src/constants/'),

@@ -6,9 +6,26 @@ type Tag = Extract<keyof HTMLElementTagNameMap, `gd-${string}`>;
 
 const sourceKeyProperties: Partial<Record<Tag, readonly string[]>> = {
   'gd-avatar': ['sizeVariant'],
+  'gd-badge': ['variant', 'appearance', 'size'],
+  'gd-box': ['variant', 'isBordered'],
   'gd-button': ['variant', 'rounded'],
   'gd-checkbox': ['size'],
   'gd-input': ['variant', 'color'],
+  'gd-image': ['src', 'alt', 'objectFit'],
+  'gd-icon': ['name', 'size'],
+  'gd-input-file': ['accept', 'multiple'],
+  'gd-label': ['htmlFor'],
+  'gd-link': ['variant', 'href'],
+  'gd-loader': ['name', 'variant', 'size'],
+  'gd-separator': ['orientation', 'variant', 'size', 'labelPosition'],
+  'gd-skeleton': ['variant', 'width', 'height'],
+  'gd-slider': ['min', 'max', 'value'],
+  'gd-slider-dots': ['count', 'activeIndex'],
+  'gd-switch': ['checked', 'disabled', 'isLoading'],
+  'gd-textarea': ['variant', 'color', 'value'],
+  'gd-toggle': ['items', 'value'],
+  'gd-truncate': ['lines'],
+  'gd-wrapper': ['variant', 'as'],
   'gd-select': ['color'],
   'gd-typography': ['variant', 'as', 'size', 'align'],
   'gd-counter': ['min', 'max', 'initial'],
@@ -21,6 +38,13 @@ const sourceEvents: Partial<Record<Tag, readonly string[]>> = {
   'gd-select': ['gd-change'],
   'gd-counter': ['gd-change'],
   'gd-menu': ['gd-change'],
+  'gd-image': ['gd-load', 'gd-error'],
+  'gd-input-file': ['gd-change'],
+  'gd-slider': ['gd-change'],
+  'gd-slider-dots': ['gd-change'],
+  'gd-switch': ['gd-change'],
+  'gd-textarea': ['gd-input', 'gd-change'],
+  'gd-toggle': ['gd-change'],
 };
 
 const escapeHtml = (value: string) =>
@@ -112,7 +136,9 @@ export function storySource(canvas: HTMLElement | undefined, fallback: string) {
     setup.push('');
   });
 
-  return `${markup.join('\n\n')}\n\n<script type="module">\n${setup.map((line) => (line ? `  ${line}` : '')).join('\n')}\n</script>`;
+  return `${markup.join('\n\n')}\n\n<script type="module">\n${setup
+    .map((line) => (line ? `  ${line}` : ''))
+    .join('\n')}\n</script>`;
 }
 
 /** Use the same property-based theme contract as application consumers. */

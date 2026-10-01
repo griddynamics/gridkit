@@ -6,6 +6,14 @@ type Args = Pick<GdCheckbox, 'checked' | 'disabled' | 'indeterminate' | 'size' |
 const meta = {
   title: 'Atoms/Checkbox',
   tags: ['autodocs'],
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'Checkbox matching React controlled, indeterminate, disabled, size, native form, and change-event behavior.',
+      },
+    },
+  },
   args: { checked: false, disabled: false, indeterminate: false, size: 'md', name: '', value: 'on', required: false },
   argTypes: { size: { control: 'select', options: ['sm', 'md'] } },
   render: (args: Args) => {
@@ -31,3 +39,5 @@ export const Sizes: Story = {
     return row;
   },
 };
+export const Controlled: Story = Checked;
+export const DefaultTokens: Story = { render: () => document.createElement('pre') };

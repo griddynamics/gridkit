@@ -1,4 +1,307 @@
 {
+  "gd-toggle": {
+    "react": "Toggle",
+    "source": ["items", "value", "disabled", "renderItemContent", "styles", "gd-change", "gd-button", "role=\"group\""],
+    "stories": ["Default", "Disabled", "WithCustomRender", "WithAccessibility", "DefaultTokens"]
+  },
+  "gd-truncate": {
+    "react": "Truncate",
+    "source": ["lines", "styles", "slot", "isTruncated", "measure()", "part=\"content\""],
+    "stories": ["Default", "LineTruncation", "WithCustomStyling", "RefAPIWithTooltipOnOverflow", "WithAccessibility"]
+  },
+  "gd-wrapper": {
+    "react": "Wrapper",
+    "source": ["variant", "as", "styles", "slot", "part=\"wrapper\""],
+    "stories": [
+      "InteractiveExample",
+      "SectionWrapper",
+      "InlineWrapper",
+      "FullPageWrapper",
+      "CustomTagWrapper",
+      "WithAccessibility",
+      "DefaultTokens"
+    ]
+  },
+  "gd-slider": {
+    "react": "Slider",
+    "source": ["min", "max", "value", "step", "disabled", "styles", "gd-change", "part=\"slider\""],
+    "stories": [
+      "Default",
+      "WithInitialValue",
+      "Disabled",
+      "CustomStyles",
+      "Controlled",
+      "WithAccessibility",
+      "DefaultTokens"
+    ]
+  },
+  "gd-slider-dots": {
+    "react": "SliderDots",
+    "source": ["count", "activeIndex", "styles", "gd-change", "role=\"tablist\"", "role=\"tab\""],
+    "stories": ["Default", "Interactive", "ManyDots", "DefaultTokens"]
+  },
+  "gd-switch": {
+    "react": "Switch",
+    "source": ["checked", "disabled", "isLoading", "label", "name", "styles", "gd-change", "slot", "gd-loader"],
+    "stories": [
+      "Default",
+      "Checked",
+      "Disabled",
+      "LabelLeft",
+      "Controlled",
+      "Uncontrolled",
+      "WithLoading",
+      "WithAccessibility",
+      "DefaultTokens"
+    ]
+  },
+  "gd-textarea": {
+    "react": "Textarea",
+    "source": [
+      "value",
+      "defaultValue",
+      "name",
+      "placeholder",
+      "resize",
+      "variant",
+      "color",
+      "ariaDescribedBy",
+      "dynamicHeightAdjustment",
+      "autoFocus",
+      "disabled",
+      "readOnly",
+      "rows",
+      "maxLength",
+      "maxCharacters",
+      "minHeight",
+      "maxHeight",
+      "styles",
+      "gd-input",
+      "gd-change",
+      "focus("
+    ],
+    "stories": [
+      "Default",
+      "Disabled",
+      "ReadOnly",
+      "VariantInline",
+      "ColorPrimary",
+      "ColorSuccess",
+      "ColorWarning",
+      "ColorError",
+      "AutoFocus",
+      "DynamicHeight",
+      "WithCharLimit",
+      "Resizable",
+      "WithControlledStateEraseOnEnterClick",
+      "MaxCharacters",
+      "WithAccessibility",
+      "DefaultTokens"
+    ]
+  },
+  "gd-separator": {
+    "react": "Separator",
+    "source": [
+      "orientation",
+      "length",
+      "color",
+      "size",
+      "variant",
+      "as",
+      "label",
+      "labelPosition",
+      "labelColor",
+      "styles",
+      "part=\"line\"",
+      "part=\"label\""
+    ],
+    "stories": [
+      "Default",
+      "WithCustomColor",
+      "WithDifferentVariants",
+      "WithLabel",
+      "Vertical",
+      "VerticalWithLabel",
+      "WithAccessibility",
+      "DefaultTokens"
+    ]
+  },
+  "gd-skeleton": {
+    "react": "Skeleton",
+    "source": [
+      "variant",
+      "width",
+      "height",
+      "backgroundColor",
+      "animationName",
+      "animationProps",
+      "styles",
+      "slot",
+      "part=\"skeleton\""
+    ],
+    "stories": [
+      "Default",
+      "Circular",
+      "Rectangular",
+      "WithThemeColor",
+      "WithCustomAnimation",
+      "WithChildren",
+      "ComposedLayout",
+      "WithAccessibility",
+      "DefaultTokens"
+    ]
+  },
+  "gd-icon": {
+    "react": "Icon",
+    "source": ["name", "width", "height", "size", "fill", "fillSvg", "theme", "part=\"svg\""],
+    "stories": [
+      "AllIcons",
+      "Default",
+      "WithDefinedSize",
+      "RegisteringCustomIcons",
+      "WithAccessibility",
+      "DefaultTokens"
+    ]
+  },
+  "gd-input-file": {
+    "react": "InputFile",
+    "source": ["accept", "capture", "multiple", "disabled", "isIcon", "buttonVariant", "styles", "gd-change", "open()"],
+    "stories": [
+      "Default",
+      "Disabled",
+      "Multiple",
+      "WithAccept",
+      "CustomLabel",
+      "IconLabel",
+      "WithCustomStyles",
+      "WithAccessibility",
+      "DefaultTokens"
+    ]
+  },
+  "gd-label": {
+    "react": "Label",
+    "source": ["htmlFor", "styles", "slot", "part=\"label\""],
+    "stories": [
+      "LabelDefault",
+      "LabelWithChildIcon",
+      "CustomStyles",
+      "DefaultWithTailwind",
+      "WithAccessibility",
+      "DefaultTokens"
+    ]
+  },
+  "gd-link": {
+    "react": "Link",
+    "source": [
+      "variant",
+      "size",
+      "underline",
+      "color",
+      "cursor",
+      "disabled",
+      "target",
+      "href",
+      "rel",
+      "styles",
+      "slot"
+    ],
+    "stories": [
+      "Variants",
+      "Disabled",
+      "TargetBlankVisited",
+      "InheritWithButtonAsChild",
+      "Inverted",
+      "InheritWithTypographyAsChild",
+      "InheritWithTailwind",
+      "CustomStyles",
+      "WithUnderline",
+      "WithSizes",
+      "WithAccessibility",
+      "DefaultTokens"
+    ]
+  },
+  "gd-loader": {
+    "react": "Loader",
+    "source": ["name", "variant", "size", "rounded", "animationProps", "withWrapper", "styles", "popover", "slot"],
+    "stories": [
+      "Default",
+      "LoaderNames",
+      "LoaderSizes",
+      "LoaderRounded",
+      "LoaderVariantsWithWrapperViewAsHeaderTag",
+      "CustomLoaderTailwindClassBounceAnimation",
+      "LoaderSectionVariant",
+      "SectionLoaderButtonVariant",
+      "InlineLoaderButtonVariant",
+      "WithAccessibility",
+      "DefaultTokens"
+    ]
+  },
+  "gd-badge": {
+    "react": "Badge",
+    "source": [
+      "variant",
+      "appearance",
+      "size",
+      "disabled",
+      "styles",
+      "slot name=\"icon-start\"",
+      "slot name=\"icon-end\""
+    ],
+    "stories": [
+      "Default",
+      "Sizes",
+      "Variants",
+      "WithIcons",
+      "WithBoxStyles",
+      "Disabled",
+      "WithAccessibility",
+      "DefaultTokens"
+    ]
+  },
+  "gd-box": {
+    "react": "Box",
+    "source": ["variant", "isBordered", "isHighlighted", "withShadowHover", "tabIndex", "styles", "slot"],
+    "stories": [
+      "Default",
+      "Bordered",
+      "Highlighted",
+      "WithShadowHover",
+      "VerticalLayout",
+      "HorizontalLayout",
+      "CenteredContent",
+      "Examples",
+      "WithAccessibility",
+      "DefaultTokens"
+    ]
+  },
+  "gd-image": {
+    "react": "Image",
+    "source": [
+      "src",
+      "alt",
+      "width",
+      "height",
+      "caption",
+      "objectFit",
+      "styles",
+      "slot name=\"placeholder\"",
+      "slot name=\"fallback\"",
+      "gd-load",
+      "gd-error"
+    ],
+    "stories": [
+      "Default",
+      "WithCaption",
+      "WithPlaceholder",
+      "Clickable",
+      "FallbackImage",
+      "WithAsProp",
+      "WithCaptionAsProp",
+      "WithAccessibility",
+      "DefaultTokens"
+    ]
+  },
   "gd-avatar": {
     "react": "Avatar",
     "source": [
@@ -11,7 +314,18 @@
       "styles",
       "slot name=\"fallback\""
     ],
-    "stories": ["Default", "Image", "Badge", "AllSizes", "CustomColors", "SlottedFallback"]
+    "stories": [
+      "Default",
+      "WithBadge",
+      "WithCustomBadgeColor",
+      "WithInitials",
+      "WithCustomBackgroundColor",
+      "WithIcon",
+      "WithImageAndFallback",
+      "WithDifferentSize",
+      "WithAccessibility",
+      "DefaultTokens"
+    ]
   },
   "gd-button": {
     "react": "Button",
@@ -31,12 +345,26 @@
       "slot name=\"icon-start\"",
       "slot name=\"icon-end\""
     ],
-    "stories": ["Default", "AllVariants", "Rounded", "FullWidth", "IconOnly", "Loading", "IconSlots"]
+    "stories": [
+      "AllVariants",
+      "Default",
+      "WithIcons",
+      "IconOnly",
+      "FullWidthButton",
+      "RoundedButton",
+      "DisabledButton",
+      "ButtonStatesUsingClass",
+      "CustomStyledButton",
+      "RealWorldExamples",
+      "IsLoading",
+      "WithAccessibility",
+      "DefaultTokens"
+    ]
   },
   "gd-checkbox": {
     "react": "Checkbox",
     "source": ["checked", "indeterminate", "disabled", "name", "value", "size", "styles", "gd-change"],
-    "stories": ["Default", "Checked", "Indeterminate", "Disabled", "Sizes"]
+    "stories": ["Default", "Controlled", "Indeterminate", "Disabled", "Sizes", "DefaultTokens"]
   },
   "gd-input": {
     "react": "Input",
@@ -67,7 +395,25 @@
       "gd-input",
       "gd-change"
     ],
-    "stories": ["Default", "Empty", "Disabled", "ReadOnly", "ValidationColors", "WithAdornments", "InputTypes"]
+    "stories": [
+      "PrimaryDefaultWithLabelAndHelperText",
+      "SuccessWithLabelAndHelperText",
+      "WarningWithLabelAndHelperText",
+      "ErrorWithLabelAndHelperText",
+      "Disabled",
+      "ReadOnly",
+      "WrapperAsSpan",
+      "WithAdornments",
+      "WithStartAdornment",
+      "WithEndAdornmentAsIcon",
+      "DefaultWithTailwind",
+      "CustomStyles",
+      "CheckboxWithLabel",
+      "RadioControlledWithLabel",
+      "RadioGroupWithLabel",
+      "WithAccessibility",
+      "DefaultTokens"
+    ]
   },
   "gd-select": {
     "react": "Select",
@@ -101,15 +447,21 @@
     ],
     "stories": [
       "Default",
-      "Selected",
+      "MultipleSelect",
+      "WithAdornmentsAndResetOptionStory",
+      "WithCustomInitiatorAndSelectedOutputValue",
+      "UsingRefComponentWithCustomPlaceholder",
+      "WithFileInputAndCustomDropdown",
+      "CustomItemIdentifierComponent",
+      "WithAccessibility",
       "Disabled",
-      "Empty",
-      "Multiple",
+      "EmptyItems",
+      "ColorPrimary",
+      "ColorSuccess",
+      "ColorWarning",
+      "ColorError",
       "Searchable",
-      "AutoOpen",
-      "ValidationColors",
-      "WithAdornments",
-      "CustomInitiator"
+      "DefaultTokens"
     ]
   },
   "gd-typography": {
@@ -117,18 +469,29 @@
     "source": ["variant", "as", "color", "size", "align", "styleVariant", "styles", "slot"],
     "stories": [
       "Default",
-      "AllVariants",
-      "DisplaySizes",
-      "StyleVariants",
-      "SemanticOverride",
-      "CodeAndKeyboard",
-      "CaptionAndHeader"
+      "AsCustomComponent",
+      "AsCustomHtmlTag",
+      "CombinedStyleVariant",
+      "Disclaimers",
+      "Display",
+      "Heading",
+      "Body",
+      "WithAccessibility",
+      "DefaultTokens"
     ]
   },
   "gd-counter": {
     "react": "Counter",
     "source": ["min", "max", "initial", "isDisabled", "styles", "gd-change"],
-    "stories": ["Default", "AdjustedMaximum", "AdjustedMinimum", "CustomRange", "Disabled"]
+    "stories": [
+      "Default",
+      "AdjustedMaxValue5",
+      "AdjustedMinValue3",
+      "AdjustedMin2MaxValue10",
+      "WithExternalCounterChangeHandler",
+      "Disabled",
+      "DefaultTokens"
+    ]
   },
   "gd-menu": {
     "react": "Menu",
@@ -148,6 +511,16 @@
       "openMenu()",
       "closeMenu()"
     ],
-    "stories": ["Default", "KeepOpenOnSelect", "Placement", "WithOffset", "WithHeightConstraints"]
+    "stories": [
+      "Default",
+      "CloseOnSelectFalse",
+      "Placement",
+      "WithRefControl",
+      "WithOffset",
+      "WithHeightConstraints",
+      "WithPositioningOptions",
+      "WithEditAndDeleteModals",
+      "DefaultTokens"
+    ]
   }
 }

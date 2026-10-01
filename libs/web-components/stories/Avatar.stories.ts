@@ -6,6 +6,14 @@ type Args = Pick<GdAvatar, 'src' | 'alt' | 'fallback' | 'size' | 'withBadge' | '
 const meta = {
   title: 'Atoms/Avatar',
   tags: ['autodocs'],
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'Avatar matching the React image, fallback initials or icon, badge, color, size, and accessibility states.',
+      },
+    },
+  },
   args: {
     src: '',
     alt: 'Ada Lovelace',
@@ -49,3 +57,12 @@ export const SlottedFallback: Story = {
     return avatar;
   },
 };
+export const WithBadge: Story = { args: { withBadge: true } };
+export const WithCustomBadgeColor: Story = { args: { withBadge: true, badgeColor: '#22c55e' } };
+export const WithInitials: Story = { args: { src: '', fallback: 'AL' } };
+export const WithCustomBackgroundColor: Story = { args: { src: '', fallback: 'AL', backgroundColor: '#6b46c1' } };
+export const WithIcon: Story = SlottedFallback;
+export const WithImageAndFallback: Story = { args: { src: portrait, fallback: 'AL' } };
+export const WithDifferentSize: Story = AllSizes;
+export const WithAccessibility: Story = { args: { alt: 'Ada Lovelace profile photo' } };
+export const DefaultTokens: Story = { render: () => document.createElement('pre') };

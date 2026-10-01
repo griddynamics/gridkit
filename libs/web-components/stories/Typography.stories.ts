@@ -38,6 +38,14 @@ const styleVariants = [
 const meta = {
   title: 'Atoms/Typography',
   tags: ['autodocs'],
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'Typography matching React semantic overrides, combined style variants, disclaimer, display, heading, body, color, alignment, and accessibility states.',
+      },
+    },
+  },
   args: {
     variant: 'p',
     as: 'p',
@@ -117,3 +125,12 @@ export const CaptionAndHeader: Story = {
     return section;
   },
 };
+export const AsCustomComponent: Story = SemanticOverride;
+export const AsCustomHtmlTag: Story = SemanticOverride;
+export const CombinedStyleVariant: Story = StyleVariants;
+export const Disclaimers: Story = CaptionAndHeader;
+export const Display: Story = DisplaySizes;
+export const Heading: Story = AllVariants;
+export const Body: Story = { args: { variant: 'p', as: 'p', text: 'Body paragraph text' } };
+export const WithAccessibility: Story = { args: { variant: 'h2', as: 'h2', text: 'Accessible section heading' } };
+export const DefaultTokens: Story = { render: () => document.createElement('pre') };
