@@ -13,6 +13,8 @@
     "jsxImportSource": "@emotion/react",
     "baseUrl": "./",
     "paths": {
+      "gd-design-core": ["../design-core/src/index.ts"],
+      "gd-design-core/*": ["../design-core/src/*"],
       "@/*": ["src/*"],
       "@types": ["src/types/"],
       "@types/*": ["src/types/*"],

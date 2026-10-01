@@ -40,6 +40,14 @@ const colors = ['primary', 'success', 'warning', 'error'] as const;
 const meta = {
   title: 'Atoms/Input',
   tags: ['autodocs'],
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'Input matching React labels, helper text, validation colors, disabled/read-only states, adornments, styles, checkbox/radio modes, accessibility, and native events.',
+      },
+    },
+  },
   args: {
     value: 'Default Input',
     variant: 'text',
@@ -102,3 +110,30 @@ export const InputTypes: Story = {
     return section;
   },
 };
+export const PrimaryDefaultWithLabelAndHelperText: Story = Default;
+export const SuccessWithLabelAndHelperText: Story = { args: { color: 'success' } };
+export const WarningWithLabelAndHelperText: Story = { args: { color: 'warning' } };
+export const ErrorWithLabelAndHelperText: Story = { args: { color: 'error' } };
+export const WrapperAsSpan: Story = {
+  ...Default,
+  parameters: {
+    docs: {
+      description: { story: 'The Custom Element host is stable; internal layout provides the React wrapper behavior.' },
+    },
+  },
+};
+export const WithStartAdornment: Story = WithAdornments;
+export const WithEndAdornmentAsIcon: Story = WithAdornments;
+export const DefaultWithTailwind: Story = {
+  render: (args) => element('gd-input', { ...args, styles: { fontWeight: 700 } }),
+};
+export const CustomStyles: Story = {
+  render: (args) => element('gd-input', { ...args, styles: { letterSpacing: '0.05em' } }),
+};
+export const CheckboxWithLabel: Story = { args: { variant: 'checkbox', value: '', label: 'Accept terms' } };
+export const RadioControlledWithLabel: Story = { args: { variant: 'radio', value: 'one', label: 'Option one' } };
+export const RadioGroupWithLabel: Story = InputTypes;
+export const WithAccessibility: Story = {
+  args: { required: true, label: 'Email address', helperText: 'Required field' },
+};
+export const DefaultTokens: Story = { render: () => document.createElement('pre') };

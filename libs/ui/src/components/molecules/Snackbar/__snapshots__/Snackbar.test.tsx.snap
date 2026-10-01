@@ -19,13 +19,14 @@ exports[`Snackbar > SHOULD render the snackbar with correct message and title 1`
         data-testid="Icon-cross"
         fill="none"
         height="10"
+        style="--gd-icon-fill: #0069B4; --gd-icon-fill-svg: none;"
         viewBox="0 0 24 24"
         width="10"
         xmlns="http://www.w3.org/2000/svg"
       >
         <path
           d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z"
-          fill="#0069B4"
+          fill="var(--gd-icon-fill)"
         />
       </svg>
     </div>
@@ -37,13 +38,14 @@ exports[`Snackbar > SHOULD render the snackbar with correct message and title 1`
         data-testid="Icon-info"
         fill="none"
         height="20"
+        style="--gd-icon-fill: #0069B4; --gd-icon-fill-svg: none;"
         viewBox="0 0 24 24"
         width="20"
         xmlns="http://www.w3.org/2000/svg"
       >
         <path
           d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 17C11.45 17 11 16.55 11 16V12C11 11.45 11.45 11 12 11C12.55 11 13 11.45 13 12V16C13 16.55 12.55 17 12 17ZM13 9H11V7H13V9Z"
-          fill="#0069B4"
+          fill="var(--gd-icon-fill)"
         />
       </svg>
       <div

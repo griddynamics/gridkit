@@ -1,12 +1,13 @@
 'use client';
-import { forwardRef, ComponentType } from 'react';
+import { forwardRef, ComponentType, type CSSProperties, type Ref, type RefAttributes } from 'react';
+import { iconCatalog, type GridKitIconName } from 'gd-design-core';
 
 import { get } from '@utils';
 import { useTheme } from '@hooks/useTheme';
 import { getBoxStyles, resolveThemeColor } from '@tokens/utils';
 import type { BoxStyles } from '@types';
 
-import { IconsList as DefaultIconsList, COMPONENT_NAME } from './constants';
+import { COMPONENT_NAME } from './constants';
 import { IconProps } from './Icon.types';
 
 let CustomIconsList: Record<string, ComponentType<IconProps>> = {};
@@ -20,10 +21,10 @@ export const Icon = forwardRef<SVGElement, IconProps>(
     const { theme } = useTheme();
     const { icon, colors } = theme || {};
     const iconSize = get(icon, ['size', size], { width, height });
-    const IconsList = { ...DefaultIconsList, ...CustomIconsList };
-    const SelectedIcon = IconsList[name as keyof typeof IconsList];
+    const CustomIcon = CustomIconsList[name];
+    const definition = iconCatalog[name as GridKitIconName];
 
-    if (!SelectedIcon) {
+    if (!CustomIcon && !definition) {
       console.warn(`Icon "${String(name)}" not found.`);
       return null;
     }
@@ -31,15 +32,36 @@ export const Icon = forwardRef<SVGElement, IconProps>(
     const { boxStyles, restProps: restNotStyledProps } = getBoxStyles(rest as BoxStyles);
     const componentStyles = [boxStyles, styles];
 
+    if (CustomIcon) {
+      const RegisteredIcon = CustomIcon as ComponentType<IconProps & RefAttributes<SVGSVGElement>>;
+      return (
+        <RegisteredIcon
+          ref={forwardedRef as Ref<SVGSVGElement>}
+          name={name}
+          data-testid={`${COMPONENT_NAME}-${name}`}
+          fill={resolveThemeColor(colors, fill)}
+          fillSvg={resolveThemeColor(colors, fillSvg)}
+          {...iconSize}
+          css={componentStyles}
+          {...restNotStyledProps}
+        />
+      );
+    }
+
+    const resolvedFill = resolveThemeColor(colors, fill) || 'currentColor';
+    const resolvedFillSvg = resolveThemeColor(colors, fillSvg) || 'none';
     return (
-      <SelectedIcon
-        ref={forwardedRef}
+      <svg
+        ref={forwardedRef as Ref<SVGSVGElement>}
         data-testid={`${COMPONENT_NAME}-${name}`}
-        fill={resolveThemeColor(colors, fill)}
-        fillSvg={resolveThemeColor(colors, fillSvg)}
+        viewBox={definition.viewBox}
+        fill={resolvedFillSvg}
+        xmlns="http://www.w3.org/2000/svg"
+        style={{ '--gd-icon-fill': resolvedFill, '--gd-icon-fill-svg': resolvedFillSvg } as CSSProperties}
         {...iconSize}
         css={componentStyles}
         {...restNotStyledProps}
+        dangerouslySetInnerHTML={{ __html: definition.body }}
       />
     );
   }

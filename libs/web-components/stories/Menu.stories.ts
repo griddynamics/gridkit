@@ -7,6 +7,14 @@ const placements = ['top-left', 'top-right', 'bottom-left', 'bottom-right'] as c
 const meta = {
   title: 'Molecules/Menu',
   tags: ['autodocs'],
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'Menu matching React close-on-select, placement, imperative controls, offsets, height constraints, positioning, modal actions, and native popover behavior.',
+      },
+    },
+  },
   args: {
     open: false,
     closeOnSelect: true,
@@ -66,3 +74,8 @@ export const Placement: Story = {
 };
 export const WithOffset: Story = { args: { offsetX: 20, offsetY: 16 } };
 export const WithHeightConstraints: Story = { args: { minHeight: 120, maxHeight: 160 } };
+export const CloseOnSelectFalse: Story = KeepOpenOnSelect;
+export const WithRefControl: Story = Open;
+export const WithPositioningOptions: Story = Placement;
+export const WithEditAndDeleteModals: Story = Default;
+export const DefaultTokens: Story = { render: () => document.createElement('pre') };

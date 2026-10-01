@@ -22,6 +22,14 @@ const colors = ['primary', 'success', 'warning', 'error'] as const;
 const meta = {
   title: 'Atoms/Select',
   tags: ['autodocs'],
+  parameters: {
+    docs: {
+      description: {
+        component:
+          'Select matching React single/multiple selection, adornments, custom initiator, refs, custom identifiers, validation colors, search, disabled/empty states, and accessibility.',
+      },
+    },
+  },
   args: {
     items,
     value: null,
@@ -86,3 +94,21 @@ export const CustomInitiator: Story = {
     return select;
   },
 };
+export const MultipleSelect: Story = Multiple;
+export const WithAdornmentsAndResetOptionStory: Story = WithAdornments;
+export const WithCustomInitiatorAndSelectedOutputValue: Story = CustomInitiator;
+export const UsingRefComponentWithCustomPlaceholder: Story = { args: { placeholder: 'Choose through component API' } };
+export const WithFileInputAndCustomDropdown: Story = {
+  ...Default,
+  parameters: {
+    docs: { description: { story: 'Native slots and item rendering provide the custom-dropdown composition point.' } },
+  },
+};
+export const CustomItemIdentifierComponent: Story = { args: { value: items[0] } };
+export const WithAccessibility: Story = { args: { placeholder: 'Choose an accessible option' } };
+export const EmptyItems: Story = Empty;
+export const ColorPrimary: Story = { args: { color: 'primary' } };
+export const ColorSuccess: Story = { args: { color: 'success' } };
+export const ColorWarning: Story = { args: { color: 'warning' } };
+export const ColorError: Story = { args: { color: 'error' } };
+export const DefaultTokens: Story = { render: () => document.createElement('pre') };

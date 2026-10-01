@@ -1,0 +1,29 @@
+{
+  "source": "https://storybook.cto-rnd-system-design.griddynamics.net/index.json",
+  "auditedAt": "2026-10-01",
+  "components": {
+    "gd-avatar": 10,
+    "gd-badge": 8,
+    "gd-box": 10,
+    "gd-button": 13,
+    "gd-checkbox": 6,
+    "gd-icon": 6,
+    "gd-image": 9,
+    "gd-input": 17,
+    "gd-input-file": 9,
+    "gd-label": 6,
+    "gd-link": 12,
+    "gd-loader": 11,
+    "gd-select": 16,
+    "gd-separator": 8,
+    "gd-skeleton": 9,
+    "gd-slider": 7,
+    "gd-slider-dots": 4,
+    "gd-switch": 9,
+    "gd-textarea": 16,
+    "gd-toggle": 5,
+    "gd-truncate": 5,
+    "gd-typography": 10,
+    "gd-wrapper": 7
+  }
+}

@@ -11,6 +11,8 @@
     ],
     "baseUrl": ".",
     "paths": {
+      "gd-design-core": ["../../design-core/src/index.ts"],
+      "gd-design-core/*": ["../../design-core/src/*"],
       "gd-form-configurator": ["../core/src/index.ts"],
       "@form-configurator/adapter-react": ["./src/index.ts"],
       "@griddynamics/ui": ["../../../libs/ui/src/index.ts"],

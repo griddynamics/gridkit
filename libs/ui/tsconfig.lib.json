@@ -14,6 +14,8 @@
     // Aliases
     "baseUrl": ".",
     "paths": {
+      "gd-design-core": ["../design-core/src/index.ts"],
+      "gd-design-core/*": ["../design-core/src/*"],
       "@types": ["src/types/"],
       "@types/*": ["src/types/*"],
       "@constants": ["src/constants/"],
@@ -60,5 +62,6 @@
     "**/*.integration.tsx",
     "**/*.integration.helpers.tsx"
   ],
-  "include": ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx", "src/**/*.json"]
+  "include": ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx", "src/**/*.json"],
+  "references": [{ "path": "../design-core/tsconfig.lib.json" }]
 }
