@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdMenu } from '../src';
-import { element, observed } from './helpers';
+import { defaultTokenViewer, element, observed } from './helpers';
 
 type Args = Pick<GdMenu, 'open' | 'closeOnSelect' | 'placement' | 'offsetX' | 'offsetY' | 'minHeight' | 'maxHeight'>;
 const placements = ['top-left', 'top-right', 'bottom-left', 'bottom-right'] as const;
@@ -78,4 +78,4 @@ export const CloseOnSelectFalse: Story = KeepOpenOnSelect;
 export const WithRefControl: Story = Open;
 export const WithPositioningOptions: Story = Placement;
 export const WithEditAndDeleteModals: Story = Default;
-export const DefaultTokens: Story = { render: () => document.createElement('pre') };
+export const DefaultTokens: Story = { render: () => defaultTokenViewer('menu') };

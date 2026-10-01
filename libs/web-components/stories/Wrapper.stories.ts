@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdWrapper } from '../src';
-import { element } from './helpers';
+import { defaultTokenViewer, element } from './helpers';
 
 type Args = Pick<GdWrapper, 'variant' | 'as' | 'styles'> & { text: string };
 const meta = {
@@ -71,9 +71,5 @@ export const WithAccessibility: Story = {
   tags: ['a11y'],
 };
 export const DefaultTokens: Story = {
-  render: () => {
-    const pre = document.createElement('pre');
-    pre.textContent = 'defaultTheme.wrapper';
-    return pre;
-  },
+  render: () => defaultTokenViewer('wrapper'),
 };

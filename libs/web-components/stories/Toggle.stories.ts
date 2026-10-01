@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GridKitIconName } from 'gd-design-core';
 import type { GdToggle } from '../src';
-import { element, observed } from './helpers';
+import { defaultTokenViewer, element, observed } from './helpers';
 
 type Args = Pick<GdToggle, 'items' | 'value' | 'disabled' | 'renderItemContent' | 'styles'>;
 const items = ['Option 1', 'Option 2', 'Option 3'];
@@ -54,9 +54,5 @@ export const WithAccessibility: Story = {
   tags: ['a11y'],
 };
 export const DefaultTokens: Story = {
-  render: () => {
-    const pre = document.createElement('pre');
-    pre.textContent = 'defaultTheme.switchToggle';
-    return pre;
-  },
+  render: () => defaultTokenViewer('switchToggle'),
 };

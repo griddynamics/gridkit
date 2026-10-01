@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdInputFile } from '../src';
-import { element, observed } from './helpers';
+import { defaultTokenViewer, element, observed } from './helpers';
 
 type Args = Pick<GdInputFile, 'accept' | 'capture' | 'multiple' | 'disabled' | 'isIcon' | 'buttonVariant'>;
 const meta = {
@@ -58,9 +58,5 @@ export const WithAccessibility: Story = {
   },
 };
 export const DefaultTokens: Story = {
-  render: () => {
-    const pre = document.createElement('pre');
-    pre.textContent = 'defaultTheme.inputfile';
-    return pre;
-  },
+  render: () => defaultTokenViewer('inputfile'),
 };

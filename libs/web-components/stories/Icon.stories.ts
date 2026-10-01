@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import { iconCatalog, type GridKitIconName } from 'gd-design-core';
 import type { GdIcon } from '../src';
-import { element } from './helpers';
+import { defaultTokenViewer, element } from './helpers';
 
 type Args = Pick<GdIcon, 'name' | 'size' | 'fill'>;
 const names = Object.keys(iconCatalog) as GridKitIconName[];
@@ -65,9 +65,5 @@ export const WithAccessibility: Story = {
   },
 };
 export const DefaultTokens: Story = {
-  render: () => {
-    const pre = document.createElement('pre');
-    pre.textContent = 'defaultTheme.icon';
-    return pre;
-  },
+  render: () => defaultTokenViewer('icon'),
 };

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdSlider } from '../src';
-import { element, observed } from './helpers';
+import { defaultTokenViewer, element, observed } from './helpers';
 
 type Args = Pick<GdSlider, 'min' | 'max' | 'value' | 'step' | 'disabled' | 'styles'>;
 const meta = {
@@ -50,9 +50,5 @@ export const WithAccessibility: Story = {
   tags: ['a11y'],
 };
 export const DefaultTokens: Story = {
-  render: () => {
-    const pre = document.createElement('pre');
-    pre.textContent = 'defaultTheme.slider';
-    return pre;
-  },
+  render: () => defaultTokenViewer('slider'),
 };

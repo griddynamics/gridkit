@@ -149,6 +149,87 @@ export function element<T extends Tag>(tag: T, props: Partial<HTMLElementTagName
   return node;
 }
 
+const tokenViewerStyles = `
+  font-family: monospace;
+  font-size: 14px;
+  background: #f9f9f9;
+  padding: 12px;
+  border-radius: 6px;
+  white-space: pre-wrap;
+  overflow-x: auto;
+  color: #333;
+  max-height: 800px;
+`;
+
+function tokenNode(value: unknown, indent = 0): HTMLElement {
+  if (typeof value === 'function') return tokenNode(value(), indent);
+
+  if (typeof value !== 'object' || value === null) {
+    const text = document.createElement('span');
+    text.style.color = '#545454';
+    text.textContent = JSON.stringify(value);
+    return text;
+  }
+
+  const node = document.createElement('div');
+  node.style.margin = '2px 0';
+  for (const [key, childValue] of Object.entries(value)) {
+    const line = document.createElement('div');
+    line.style.cssText = `display:block;margin:2px 0;padding-left:${(indent + 1) * 12}px`;
+    const keyElement = document.createElement('span');
+    keyElement.style.cssText = 'color:#0d52a5;margin-right:6px';
+    keyElement.textContent = `"${key}" :`;
+    line.append(keyElement);
+
+    if (typeof childValue === 'object' && childValue !== null) {
+      keyElement.style.cursor = 'pointer';
+      keyElement.tabIndex = 0;
+      keyElement.setAttribute('role', 'button');
+      keyElement.setAttribute('aria-expanded', 'true');
+      const brace = document.createElement('span');
+      brace.style.cssText = 'color:#545454;user-select:none';
+      brace.textContent = '{';
+      const content = tokenNode(childValue, indent + 1);
+      const closingBrace = document.createElement('span');
+      closingBrace.style.cssText = 'color:#545454;user-select:none';
+      closingBrace.textContent = ' } ';
+      const toggle = () => {
+        const expanded = keyElement.getAttribute('aria-expanded') === 'true';
+        keyElement.setAttribute('aria-expanded', String(!expanded));
+        brace.textContent = expanded ? '{...}' : '{';
+        content.hidden = expanded;
+        closingBrace.hidden = expanded;
+      };
+      keyElement.addEventListener('click', toggle);
+      keyElement.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          toggle();
+        }
+      });
+      line.append(brace, content, closingBrace);
+    } else {
+      line.append(tokenNode(childValue, indent + 1));
+    }
+    node.append(line);
+  }
+  return node;
+}
+
+/** Render the same default-theme branch shown by the React Storybook TokenViewer. */
+export function defaultTokenViewer(
+  label: string,
+  themeToken: keyof typeof defaultTheme = label as keyof typeof defaultTheme
+) {
+  const viewer = document.createElement('div');
+  viewer.style.cssText = tokenViewerStyles;
+  viewer.tabIndex = 0;
+  viewer.setAttribute('role', 'region');
+  viewer.setAttribute('aria-label', 'Token viewer');
+  viewer.append(tokenNode({ [label]: defaultTheme[themeToken] }));
+  return viewer;
+}
+
 /** Each render owns its output and listeners; no state leaks between stories. */
 export function observed(node: HTMLElement, eventName: string, initial: unknown) {
   const section = document.createElement('section');

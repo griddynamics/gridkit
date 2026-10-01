@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdSkeleton } from '../src';
-import { element } from './helpers';
+import { defaultTokenViewer, element } from './helpers';
 
 type Args = Pick<
   GdSkeleton,
@@ -88,10 +88,6 @@ export const WithAccessibility: Story = {
   tags: ['a11y'],
 };
 export const DefaultTokens: Story = {
-  render: () => {
-    const pre = document.createElement('pre');
-    pre.textContent = 'defaultTheme.skeleton';
-    return pre;
-  },
+  render: () => defaultTokenViewer('skeleton'),
   parameters: { layout: 'padded' },
 };

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdInput } from '../src';
-import { element, observed } from './helpers';
+import { defaultTokenViewer, element, observed } from './helpers';
 
 type Args = Pick<
   GdInput,
@@ -136,4 +136,4 @@ export const RadioGroupWithLabel: Story = InputTypes;
 export const WithAccessibility: Story = {
   args: { required: true, label: 'Email address', helperText: 'Required field' },
 };
-export const DefaultTokens: Story = { render: () => document.createElement('pre') };
+export const DefaultTokens: Story = { render: () => defaultTokenViewer('input') };

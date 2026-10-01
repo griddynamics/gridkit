@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdTextarea } from '../src';
-import { element, observed } from './helpers';
+import { defaultTokenViewer, element, observed } from './helpers';
 
 type Args = Pick<
   GdTextarea,
@@ -151,9 +151,5 @@ export const WithAccessibility: Story = {
   tags: ['a11y'],
 };
 export const DefaultTokens: Story = {
-  render: () => {
-    const pre = document.createElement('pre');
-    pre.textContent = 'defaultTheme.textarea';
-    return pre;
-  },
+  render: () => defaultTokenViewer('textarea'),
 };

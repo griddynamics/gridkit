@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdTypography } from '../src';
-import { element } from './helpers';
+import { defaultTokenViewer, element } from './helpers';
 
 type Args = Pick<GdTypography, 'variant' | 'as' | 'size' | 'align' | 'color' | 'styleVariant'> & { text: string };
 const variants = [
@@ -133,4 +133,4 @@ export const Display: Story = DisplaySizes;
 export const Heading: Story = AllVariants;
 export const Body: Story = { args: { variant: 'p', as: 'p', text: 'Body paragraph text' } };
 export const WithAccessibility: Story = { args: { variant: 'h2', as: 'h2', text: 'Accessible section heading' } };
-export const DefaultTokens: Story = { render: () => document.createElement('pre') };
+export const DefaultTokens: Story = { render: () => defaultTokenViewer('typography') };

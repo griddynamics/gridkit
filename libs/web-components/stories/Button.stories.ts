@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdButton } from '../src';
-import { element } from './helpers';
+import { defaultTokenViewer, element } from './helpers';
 
 type Args = Pick<
   GdButton,
@@ -96,4 +96,4 @@ export const CustomStyledButton: Story = {
 export const RealWorldExamples: Story = AllVariants;
 export const IsLoading: Story = Loading;
 export const WithAccessibility: Story = { args: { ariaLabel: 'Save changes', label: 'Save' } };
-export const DefaultTokens: Story = { render: () => document.createElement('pre') };
+export const DefaultTokens: Story = { render: () => defaultTokenViewer('button') };

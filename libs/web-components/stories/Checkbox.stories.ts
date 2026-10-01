@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdCheckbox } from '../src';
-import { element, observed } from './helpers';
+import { defaultTokenViewer, element, observed } from './helpers';
 
 type Args = Pick<GdCheckbox, 'checked' | 'disabled' | 'indeterminate' | 'size' | 'name' | 'value' | 'required'>;
 const meta = {
@@ -40,4 +40,4 @@ export const Sizes: Story = {
   },
 };
 export const Controlled: Story = Checked;
-export const DefaultTokens: Story = { render: () => document.createElement('pre') };
+export const DefaultTokens: Story = { render: () => defaultTokenViewer('checkbox') };

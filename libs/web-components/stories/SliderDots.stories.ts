@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdSliderDots } from '../src';
-import { element, observed } from './helpers';
+import { defaultTokenViewer, element, observed } from './helpers';
 
 type Args = Pick<GdSliderDots, 'count' | 'activeIndex' | 'styles'>;
 const meta = {
@@ -48,9 +48,5 @@ export const ManyDots: Story = {
   parameters: { docs: { description: { story: 'Ten dots with the fifth active.' } } },
 };
 export const DefaultTokens: Story = {
-  render: () => {
-    const pre = document.createElement('pre');
-    pre.textContent = 'defaultTheme.sliderDots';
-    return pre;
-  },
+  render: () => defaultTokenViewer('sliderDots'),
 };

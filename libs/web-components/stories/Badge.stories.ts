@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdBadge } from '../src';
-import { element } from './helpers';
+import { defaultTokenViewer, element } from './helpers';
 
 type Args = Pick<GdBadge, 'variant' | 'appearance' | 'size' | 'disabled'>;
 const meta = {
@@ -59,9 +59,5 @@ export const WithAccessibility: Story = {
   },
 };
 export const DefaultTokens: Story = {
-  render: () => {
-    const pre = document.createElement('pre');
-    pre.textContent = 'defaultTheme.badge';
-    return pre;
-  },
+  render: () => defaultTokenViewer('badge'),
 };

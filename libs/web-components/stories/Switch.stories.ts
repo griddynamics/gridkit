@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdSwitch } from '../src';
-import { element, observed } from './helpers';
+import { defaultTokenViewer, element, observed } from './helpers';
 
 type Args = Pick<GdSwitch, 'checked' | 'disabled' | 'isLoading' | 'label' | 'name' | 'styles'>;
 const meta = {
@@ -61,9 +61,5 @@ export const WithAccessibility: Story = {
   tags: ['a11y'],
 };
 export const DefaultTokens: Story = {
-  render: () => {
-    const pre = document.createElement('pre');
-    pre.textContent = 'defaultTheme.switchToken';
-    return pre;
-  },
+  render: () => defaultTokenViewer('switch', 'switchToken'),
 };

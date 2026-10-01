@@ -47,6 +47,21 @@ export async function checkNativeStories(page, base) {
     'typography',
     'wrapper',
   ]);
+  const tokenStories = Object.values(index.entries).filter(
+    (entry) => entry.type === 'story' && entry.id.endsWith('--default-tokens')
+  );
+  for (const story of tokenStories) {
+    await page.goto(`${base}/web-components/iframe.html?id=${story.id}&viewMode=story`);
+    const viewer = page.getByRole('region', { name: 'Token viewer' });
+    await viewer.waitFor();
+    const text = await viewer.textContent();
+    assert.ok(text.length > 50, `${story.id} should render its theme token values`);
+    assert.doesNotMatch(text, /^defaultTheme\./, `${story.id} should not render a token placeholder`);
+    const branch = viewer.getByRole('button').first();
+    await branch.click();
+    assert.equal(await branch.getAttribute('aria-expanded'), 'false');
+  }
+  assert.equal(tokenStories.length, 24, 'Every React token story port should render Web Component tokens');
   const open = async (id) => {
     await page.goto(`${base}/web-components/iframe.html?id=${id}&viewMode=story`);
     await page.locator('#storybook-root').waitFor();

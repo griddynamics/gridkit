@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdLoader } from '../src';
-import { element } from './helpers';
+import { defaultTokenViewer, element } from './helpers';
 
 type Args = Pick<GdLoader, 'name' | 'variant' | 'size' | 'rounded' | 'withWrapper' | 'animationProps' | 'styles'>;
 const meta = {
@@ -72,9 +72,5 @@ export const WithAccessibility: Story = {
   },
 };
 export const DefaultTokens: Story = {
-  render: () => {
-    const pre = document.createElement('pre');
-    pre.textContent = 'defaultTheme.loader';
-    return pre;
-  },
+  render: () => defaultTokenViewer('loader'),
 };

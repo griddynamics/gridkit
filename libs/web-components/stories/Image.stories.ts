@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdImage } from '../src';
-import { element, portrait } from './helpers';
+import { defaultTokenViewer, element, portrait } from './helpers';
 
 type Args = Pick<GdImage, 'src' | 'alt' | 'width' | 'height' | 'caption' | 'objectFit'>;
 const meta = {
@@ -84,9 +84,5 @@ export const WithCaptionAsProp: Story = {
 };
 export const WithAccessibility: Story = { args: { alt: 'Portrait of Ada Lovelace', caption: 'Ada Lovelace' } };
 export const DefaultTokens: Story = {
-  render: () => {
-    const pre = document.createElement('pre');
-    pre.textContent = 'defaultTheme.image';
-    return pre;
-  },
+  render: () => defaultTokenViewer('image'),
 };

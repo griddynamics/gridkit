@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdAvatar } from '../src';
-import { element, portrait } from './helpers';
+import { defaultTokenViewer, element, portrait } from './helpers';
 
 type Args = Pick<GdAvatar, 'src' | 'alt' | 'fallback' | 'size' | 'withBadge' | 'badgeColor' | 'backgroundColor'>;
 const meta = {
@@ -65,4 +65,4 @@ export const WithIcon: Story = SlottedFallback;
 export const WithImageAndFallback: Story = { args: { src: portrait, fallback: 'AL' } };
 export const WithDifferentSize: Story = AllSizes;
 export const WithAccessibility: Story = { args: { alt: 'Ada Lovelace profile photo' } };
-export const DefaultTokens: Story = { render: () => document.createElement('pre') };
+export const DefaultTokens: Story = { render: () => defaultTokenViewer('avatar') };

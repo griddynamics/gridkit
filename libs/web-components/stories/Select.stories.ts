@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdSelect } from '../src';
-import { element, observed, items } from './helpers';
+import { defaultTokenViewer, element, observed, items } from './helpers';
 
 type Args = Pick<
   GdSelect,
@@ -111,4 +111,4 @@ export const ColorPrimary: Story = { args: { color: 'primary' } };
 export const ColorSuccess: Story = { args: { color: 'success' } };
 export const ColorWarning: Story = { args: { color: 'warning' } };
 export const ColorError: Story = { args: { color: 'error' } };
-export const DefaultTokens: Story = { render: () => document.createElement('pre') };
+export const DefaultTokens: Story = { render: () => defaultTokenViewer('select') };

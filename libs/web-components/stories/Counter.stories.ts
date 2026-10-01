@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdCounter } from '../src';
-import { element, observed } from './helpers';
+import { defaultTokenViewer, element, observed } from './helpers';
 
 type Args = Pick<GdCounter, 'min' | 'max' | 'initial' | 'isDisabled'>;
 const meta = {
@@ -29,4 +29,4 @@ export const AdjustedMaxValue5: Story = { args: { max: 5, initial: 5 } };
 export const AdjustedMinValue3: Story = { args: { min: 3, initial: 3 } };
 export const AdjustedMin2MaxValue10: Story = CustomRange;
 export const WithExternalCounterChangeHandler: Story = Default;
-export const DefaultTokens: Story = { render: () => document.createElement('pre') };
+export const DefaultTokens: Story = { render: () => defaultTokenViewer('counter') };

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdBox } from '../src';
-import { element } from './helpers';
+import { defaultTokenViewer, element } from './helpers';
 
 type Args = Pick<GdBox, 'variant' | 'isBordered' | 'isHighlighted' | 'withShadowHover'>;
 const meta = {
@@ -60,9 +60,5 @@ export const WithAccessibility: Story = {
   },
 };
 export const DefaultTokens: Story = {
-  render: () => {
-    const pre = document.createElement('pre');
-    pre.textContent = 'defaultTheme.box';
-    return pre;
-  },
+  render: () => defaultTokenViewer('box'),
 };
