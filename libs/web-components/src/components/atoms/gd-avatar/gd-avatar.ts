@@ -92,10 +92,13 @@ export class GdAvatar extends LitElement {
   @property({ type: String, reflect: true }) src?: string;
   @property({ type: String, reflect: true }) alt = '';
   @property({ type: String, reflect: true }) size: AvatarSize = 'md';
+  /** Canonical React prop name; `size` remains as a backwards-compatible custom-element alias. */
+  @property({ type: String, attribute: 'size-variant' }) sizeVariant?: AvatarSize;
   @property({ type: Boolean, attribute: 'with-badge', reflect: true }) withBadge = false;
   @property({ type: String, attribute: 'badge-color', reflect: true }) badgeColor = 'bg.fill.success.primary.default';
   @property({ type: String, attribute: 'background-color', reflect: true }) backgroundColor?: string;
   @property({ type: String, reflect: true }) fallback?: string;
+  @property({ attribute: false }) styles: Record<string, string | number> = {};
   @property({ attribute: false }) theme: DesignCoreTheme = {};
 
   @state() private _failed = false;
@@ -112,20 +115,33 @@ export class GdAvatar extends LitElement {
   }
 
   render() {
-    const tokens = resolveAvatarTokens(this.theme, this.size);
+    const size = this.sizeVariant ?? this.size;
+    const tokens = resolveAvatarTokens(this.theme, size);
     const fallbackFontSize = get(
       this.theme,
-      `font.size.${this.size === 'xs' ? 'caption' : this.size === 'sm' ? 'small' : this.size === 'md' ? 'h6' : this.size === 'lg' ? 'h5' : this.size === 'xl' ? 'h4' : 'h3'}`,
+      `font.size.${
+        size === 'xs'
+          ? 'caption'
+          : size === 'sm'
+            ? 'small'
+            : size === 'md'
+              ? 'h6'
+              : size === 'lg'
+                ? 'h5'
+                : size === 'xl'
+                  ? 'h4'
+                  : 'h3'
+      }`,
       '16px'
     );
-    const hostStyle = cssLengths(tokens.default);
+    const hostStyle = { ...cssLengths(tokens.default), ...this.styles };
     const imageStyle = {
       ...tokens.imageWrapper.default,
       backgroundColor: resolveColor(this.theme, this.backgroundColor, tokens.imageWrapper.default.backgroundColor),
     };
     const badgeStyle = {
       ...cssLengths(tokens.badge.default),
-      ...cssLengths(tokens.badge.size[this.size as Exclude<AvatarSize, 'xxl'>] ?? tokens.badge.size.md),
+      ...cssLengths(tokens.badge.size[size as Exclude<AvatarSize, 'xxl'>] ?? tokens.badge.size.md),
       backgroundColor: resolveColor(this.theme, this.badgeColor, this.badgeColor),
     };
     const showImage = Boolean(this.src) && !this._failed;

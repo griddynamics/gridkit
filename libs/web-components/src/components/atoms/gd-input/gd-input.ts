@@ -175,6 +175,13 @@ export class GdInput extends LitElement {
 
   @property({ type: String }) value = '';
   @property({ type: String }) type = 'text';
+  /** React calls the native input type `variant`; keep `type` as a compatibility alias. */
+  @property({ type: String }) variant?: string;
+  @property({ type: String, attribute: 'default-value' }) defaultValue?: string;
+  @property({ type: Boolean, reflect: true }) readOnly = false;
+  @property({ type: Boolean }) checked = false;
+  @property({ type: Boolean, attribute: 'default-checked' }) defaultChecked = false;
+  @property({ type: String }) width?: string;
   /** Component-token layout overrides for composed ports; never consumer literal CSS. */
   @property({ attribute: false }) styles: Record<string, string | number> = {};
   @property({ attribute: false }) inputStyles: Record<string, string | number> = {};
@@ -182,6 +189,12 @@ export class GdInput extends LitElement {
   @property({ type: String, attribute: 'aria-label' }) ariaLabel: string | null = null;
   @property({ type: String, attribute: 'aria-valuemin' }) ariaValueMin: string | null = null;
   @property({ type: String, attribute: 'aria-valuemax' }) ariaValueMax: string | null = null;
+  /** React's boolean `ariaRequired` maps to the platform's string ARIA reflection. */
+  @property({ type: Boolean, attribute: 'aria-required' }) ariaRequiredValue = false;
+  @property({ type: String, attribute: 'aria-describedby' }) ariaDescribedBy: string | null = null;
+  @property({ type: String }) inputmode?: string;
+  @property({ type: String }) role: string | null = null;
+  @property({ type: Number }) tabIndex = 0;
   @property({ type: String }) placeholder = '';
   @property({ type: String }) label = '';
   @property({ type: String, attribute: 'helper-text' }) helperText = '';
@@ -280,7 +293,7 @@ export class GdInput extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     this._unsubscribe = this._store.subscribe(() => this.requestUpdate());
-    if (this._defaultValue === undefined) this._defaultValue = this.value;
+    if (this._defaultValue === undefined) this._defaultValue = this.defaultValue ?? this.value;
   }
 
   disconnectedCallback() {
@@ -290,6 +303,7 @@ export class GdInput extends LitElement {
 
   firstUpdated() {
     this._input.value = this.value;
+    if (this.defaultChecked && !this.checked) this.checked = true;
     this._syncFormState();
   }
 
@@ -298,6 +312,7 @@ export class GdInput extends LitElement {
       this._store.getState().setDebounceCallbackTime(this.debounceCallbackTime);
       this._debouncedDispatch = undefined;
     }
+    if (this.style && changed.has('width')) this.style.width = this.width ?? '';
   }
 
   updated(changed: PropertyValues<this>) {
@@ -339,10 +354,19 @@ export class GdInput extends LitElement {
   }
 
   private _onInput(event: Event) {
-    const newValue = (event.target as HTMLInputElement).value;
+    const control = event.target as HTMLInputElement;
+    const newValue = control.value;
+    this.checked = control.checked;
     this._lastInternalValue = newValue;
     this.value = newValue;
     this._getDebouncedDispatch()(newValue);
+    this.dispatchEvent(
+      new CustomEvent('gd-change', {
+        detail: { value: newValue, checked: control.checked },
+        bubbles: true,
+        composed: true,
+      })
+    );
   }
 
   private _onMouseDown() {
@@ -363,6 +387,7 @@ export class GdInput extends LitElement {
   }
 
   render() {
+    const inputType = this.variant ?? this.type;
     const resolved = resolveInputTokens(this.theme, this.color);
     const focusColor = (this.theme.colors as { border?: { focus?: string } } | undefined)?.border?.focus ?? '#0069B4';
     const textColor = this.disabled ? resolved.disabledColor : resolved.color;
@@ -405,20 +430,33 @@ export class GdInput extends LitElement {
     return html`
       <div class="outer" part="outer" style=${styleMap(outerStyle)}>
         ${this.label
-          ? html`<label class="label" part="label" for="control" style=${styleMap(labelStyle)}>${this.label}</label>`
+          ? html`<label
+              class="label"
+              part="label"
+              for=${this.id ? `${this.id}-control` : 'control'}
+              style=${styleMap(labelStyle)}
+              >${this.label}</label
+            >`
           : nothing}
         <div class="row" part="row" style=${styleMap(rowStyle)}>
           <slot name="adornment-start"></slot>
           <input
             part="input"
-            id="control"
-            type=${this.type}
+            id=${this.id ? `${this.id}-control` : 'control'}
+            type=${inputType}
             style=${styleMap(this.inputStyles)}
             aria-label=${this.ariaLabel ?? (this.label ? nothing : this.placeholder || nothing)}
             aria-valuemin=${this.ariaValueMin ?? nothing}
             aria-valuemax=${this.ariaValueMax ?? nothing}
+            aria-required=${this.ariaRequiredValue || nothing}
+            aria-describedby=${this.ariaDescribedBy ?? nothing}
+            inputmode=${this.inputmode ?? nothing}
+            role=${this.role ?? nothing}
+            tabindex=${this.tabIndex}
             name=${this.name || nothing}
             ?required=${this.required}
+            ?readonly=${this.readOnly}
+            .checked=${this.checked}
             placeholder=${this.placeholder}
             ?disabled=${this.disabled}
             @input=${this._onInput}

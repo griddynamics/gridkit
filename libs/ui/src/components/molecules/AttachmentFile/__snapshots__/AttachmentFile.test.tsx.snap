@@ -11,13 +11,14 @@ exports[`AttachmentFile > SHOULD match snapshot with all props 1`] = `
       data-testid="Icon-fileCopy"
       fill="#474747"
       height="32"
+      style="--gd-icon-fill: currentColor; --gd-icon-fill-svg: #474747;"
       viewBox="0 0 24 24"
       width="32"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
         d="M16 1H2V17H4V3H16V1ZM15 5L21 11V23H6V5H15ZM14 12H19.5L14 6.5V12Z"
-        fill="currentColor"
+        fill="var(--gd-icon-fill)"
       />
     </svg>
     <div
@@ -72,13 +73,14 @@ exports[`AttachmentFile > SHOULD match snapshot with all props 1`] = `
           data-testid="Icon-cross"
           fill="none"
           height="18"
+          style="--gd-icon-fill: currentColor; --gd-icon-fill-svg: none;"
           viewBox="0 0 24 24"
           width="18"
           xmlns="http://www.w3.org/2000/svg"
         >
           <path
             d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z"
-            fill="currentColor"
+            fill="var(--gd-icon-fill)"
           />
         </svg>
       </span>
@@ -98,13 +100,14 @@ exports[`AttachmentFile > SHOULD match snapshot without meta 1`] = `
       data-testid="Icon-fileCopy"
       fill="#474747"
       height="32"
+      style="--gd-icon-fill: currentColor; --gd-icon-fill-svg: #474747;"
       viewBox="0 0 24 24"
       width="32"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
         d="M16 1H2V17H4V3H16V1ZM15 5L21 11V23H6V5H15ZM14 12H19.5L14 6.5V12Z"
-        fill="currentColor"
+        fill="var(--gd-icon-fill)"
       />
     </svg>
     <div
@@ -139,13 +142,14 @@ exports[`AttachmentFile > SHOULD match snapshot without meta 1`] = `
           data-testid="Icon-cross"
           fill="none"
           height="18"
+          style="--gd-icon-fill: currentColor; --gd-icon-fill-svg: none;"
           viewBox="0 0 24 24"
           width="18"
           xmlns="http://www.w3.org/2000/svg"
         >
           <path
             d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z"
-            fill="currentColor"
+            fill="var(--gd-icon-fill)"
           />
         </svg>
       </span>
@@ -165,13 +169,14 @@ exports[`AttachmentFile > SHOULD match snapshot without remove button 1`] = `
       data-testid="Icon-fileCopy"
       fill="#474747"
       height="32"
+      style="--gd-icon-fill: currentColor; --gd-icon-fill-svg: #474747;"
       viewBox="0 0 24 24"
       width="32"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
         d="M16 1H2V17H4V3H16V1ZM15 5L21 11V23H6V5H15ZM14 12H19.5L14 6.5V12Z"
-        fill="currentColor"
+        fill="var(--gd-icon-fill)"
       />
     </svg>
     <div
@@ -224,13 +229,14 @@ exports[`AttachmentFile > isLoading > SHOULD match snapshot when isLoading 1`] =
       data-testid="Icon-fileCopy"
       fill="#474747"
       height="32"
+      style="--gd-icon-fill: currentColor; --gd-icon-fill-svg: #474747;"
       viewBox="0 0 24 24"
       width="32"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
         d="M16 1H2V17H4V3H16V1ZM15 5L21 11V23H6V5H15ZM14 12H19.5L14 6.5V12Z"
-        fill="currentColor"
+        fill="var(--gd-icon-fill)"
       />
     </svg>
     <div

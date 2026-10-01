@@ -73,7 +73,7 @@ Shared **Introduction**, **Theme & Tokens**, and framework-neutral **Patterns & 
 appear at the top level, before the framework catalogs.
 One entry point contains two peer catalogs: **React** (components and React-specific guides)
 and **Web Components** (native custom-element stories). The Web Components catalog currently
-contains the Phase 1 overview; Phase 2 adds stories for the six existing atoms and two molecules.
+contains native stories and controls for all 23 published atoms and two molecules.
 
 `npm run storybook` manages both preview servers automatically; open `http://localhost:6006`.
 Ports 6006 and 6007 must be free. There is no separate Web Components startup command.
@@ -82,7 +82,7 @@ including the composed preview under `web-components/`.
 
 ```bash
 npm run storybook:check-links   # Validate built Storybooks and shipped AI documentation links
-npm run storybook:test          # Existing React interaction tests (native coverage follows in Phase 2)
+npm run storybook:test          # React interaction tests
 npm run storybook:visual        # Existing React visual tests
 ```
 
@@ -98,7 +98,10 @@ Use the IDs in the generated `index.json` for links. Both pre-migration URLs and
 list to refresh when a story disappears. Link checks cover source documentation and the
 `llms.txt`, AI Markdown/JSON, and AI JavaScript copied into the UI package.
 
-The Angular/Vue and other Web Components harnesses are unchanged in Phase 1.
+Native browser smoke checks run with `node bin/storybook/smoke-test.mjs` after the combined build.
+They render every native story and exercise representative custom events, state changes,
+semantic output, truncation, and popover dismissal. Angular and Vue harnesses render every
+supported atom family and both molecules through native custom elements.
 
 ## Verification (gd-design-library)
 

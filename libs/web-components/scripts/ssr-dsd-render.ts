@@ -17,9 +17,26 @@ import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { defaultTheme } from 'gd-design-library/tokens';
 import '../src/components/atoms/gd-avatar/gd-avatar';
+import '../src/components/atoms/gd-badge/gd-badge';
+import '../src/components/atoms/gd-box/gd-box';
 import '../src/components/atoms/gd-button/gd-button';
 import '../src/components/atoms/gd-checkbox/gd-checkbox';
 import '../src/components/atoms/gd-input/gd-input';
+import '../src/components/atoms/gd-image/gd-image';
+import '../src/components/atoms/gd-icon/gd-icon';
+import '../src/components/atoms/gd-input-file/gd-input-file';
+import '../src/components/atoms/gd-label/gd-label';
+import '../src/components/atoms/gd-link/gd-link';
+import '../src/components/atoms/gd-loader/gd-loader';
+import '../src/components/atoms/gd-separator/gd-separator';
+import '../src/components/atoms/gd-skeleton/gd-skeleton';
+import '../src/components/atoms/gd-slider/gd-slider';
+import '../src/components/atoms/gd-slider-dots/gd-slider-dots';
+import '../src/components/atoms/gd-switch/gd-switch';
+import '../src/components/atoms/gd-textarea/gd-textarea';
+import '../src/components/atoms/gd-toggle/gd-toggle';
+import '../src/components/atoms/gd-truncate/gd-truncate';
+import '../src/components/atoms/gd-wrapper/gd-wrapper';
 import '../src/components/atoms/gd-select/gd-select';
 import '../src/components/atoms/gd-typography/gd-typography';
 import '../src/components/molecules/gd-menu/gd-menu';
@@ -38,9 +55,26 @@ export async function runSsrDsdCheck() {
   // (`fidelity-check.ts`, `form-participation-check.ts`).
   const template = html`
     <gd-avatar fallback="GD" .theme=${defaultTheme}></gd-avatar>
+    <gd-badge .theme=${defaultTheme}>Status</gd-badge>
+    <gd-box .theme=${defaultTheme}>Box content</gd-box>
     <gd-button variant="primary" .theme=${defaultTheme}>Submit</gd-button>
     <gd-checkbox .theme=${defaultTheme}>Accept terms</gd-checkbox>
     <gd-input label="Name" .theme=${defaultTheme}></gd-input>
+    <gd-image alt="Fallback"><span slot="fallback">No image</span></gd-image>
+    <gd-icon name="star" .theme=${defaultTheme}></gd-icon>
+    <gd-input-file .theme=${defaultTheme}>Upload</gd-input-file>
+    <gd-label for="name" .theme=${defaultTheme}>Name</gd-label>
+    <gd-link href="/docs" .theme=${defaultTheme}>Docs</gd-link>
+    <gd-loader .theme=${defaultTheme}></gd-loader>
+    <gd-separator label="OR" .theme=${defaultTheme}></gd-separator>
+    <gd-skeleton width="120px" height="20px" .theme=${defaultTheme}></gd-skeleton>
+    <gd-slider value="50" .theme=${defaultTheme}></gd-slider>
+    <gd-slider-dots count="5" active-index="1" .theme=${defaultTheme}></gd-slider-dots>
+    <gd-switch .theme=${defaultTheme}>Notifications</gd-switch>
+    <gd-textarea placeholder="Comment" .theme=${defaultTheme}></gd-textarea>
+    <gd-toggle .items=${['One', 'Two']} value="One" .theme=${defaultTheme}></gd-toggle>
+    <gd-truncate lines="2" .theme=${defaultTheme}>Long content</gd-truncate>
+    <gd-wrapper variant="inline" .theme=${defaultTheme}>Wrapped content</gd-wrapper>
     <gd-select .items=${[{ name: 'Alpha', value: 'alpha' }]} .theme=${defaultTheme}></gd-select>
     <gd-typography variant="h1" as="h1" .theme=${defaultTheme}>Heading</gd-typography>
     <gd-menu .theme=${defaultTheme}
@@ -54,9 +88,33 @@ export async function runSsrDsdCheck() {
   for await (const chunk of result) out += chunk;
 
   const dsdByTag = Object.fromEntries(
-    ['gd-avatar', 'gd-button', 'gd-checkbox', 'gd-counter', 'gd-input', 'gd-menu', 'gd-select', 'gd-typography'].map(
-      (tag) => [tag, new RegExp(`<${tag}[^>]*>\\s*<template shadowroot="open" shadowrootmode="open">`).test(out)]
-    )
+    [
+      'gd-avatar',
+      'gd-badge',
+      'gd-box',
+      'gd-button',
+      'gd-checkbox',
+      'gd-counter',
+      'gd-image',
+      'gd-icon',
+      'gd-input',
+      'gd-input-file',
+      'gd-label',
+      'gd-link',
+      'gd-loader',
+      'gd-separator',
+      'gd-skeleton',
+      'gd-slider',
+      'gd-slider-dots',
+      'gd-switch',
+      'gd-textarea',
+      'gd-toggle',
+      'gd-truncate',
+      'gd-wrapper',
+      'gd-menu',
+      'gd-select',
+      'gd-typography',
+    ].map((tag) => [tag, new RegExp(`<${tag}[^>]*>\\s*<template shadowroot="open" shadowrootmode="open">`).test(out)])
   );
 
   const staticHtmlPath = resolve(__dirname, '../harness/ssr-dsd-static.html');

@@ -4,6 +4,7 @@ import { readFile, stat } from 'node:fs/promises';
 import { extname, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
+import { checkNativeStories } from './native-checks.mjs';
 
 // Serve the exact combined artifact. --url also checks the common dev command.
 const root = fileURLToPath(new URL('../../libs/ui/storybook-static/', import.meta.url));
@@ -97,12 +98,18 @@ try {
   // Composition must load the child's own native renderer, not a React wrapper.
   await page.goto(`${base}/?path=/story/web-components_introduction-overview--overview`);
   const nativeFrame = page.frameLocator('#storybook-ref-web-components');
-  await nativeFrame.getByRole('heading', { name: 'GridKit Web Components', exact: true }).waitFor();
+  await nativeFrame.getByRole('heading', { name: 'Using Web Components', exact: true }).waitFor();
+
+  await page.goto(`${base}/?path=/story/web-components_atoms-button--default`);
+  await nativeFrame.getByRole('button', { name: 'Button', exact: true }).waitFor();
+  await page.goto(`${base}/?path=/docs/web-components_atoms-button--docs`);
+  await nativeFrame.getByRole('heading', { name: 'Button', exact: true }).first().waitFor();
 
   await page.goto(`${base}/iframe.html?id=atoms-button--default&viewMode=story&args=size:sm`);
   await page.waitForURL((url) => url.searchParams.get('id') === 'react-atoms-button--default');
   await page.getByRole('button').first().waitFor();
   assert.equal(new URL(page.url()).searchParams.get('args'), 'size:sm');
+  if (!process.argv.includes('--url')) await checkNativeStories(page, base);
   assert.deepEqual(errors, [], 'Storybook should not raise browser runtime errors');
   console.log(
     'Storybook smoke checks passed: React docs, AI docs, internal links, composition, and legacy manager/iframe routes.'
