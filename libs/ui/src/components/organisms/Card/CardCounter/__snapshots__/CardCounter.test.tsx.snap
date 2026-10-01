@@ -28,13 +28,14 @@ exports[`CardCounter > SHOULD match snapshot 1`] = `
             data-testid="Icon-minus"
             fill="none"
             height="14"
+            style="--gd-icon-fill: currentColor; --gd-icon-fill-svg: none;"
             viewBox="0 0 24 24"
             width="14"
             xmlns="http://www.w3.org/2000/svg"
           >
             <path
               d="M19 13H5V11H19V13Z"
-              fill="currentColor"
+              fill="var(--gd-icon-fill)"
             />
           </svg>
         </span>
@@ -83,13 +84,14 @@ exports[`CardCounter > SHOULD match snapshot 1`] = `
             data-testid="Icon-plus"
             fill="none"
             height="14"
+            style="--gd-icon-fill: currentColor; --gd-icon-fill-svg: none;"
             viewBox="0 0 24 24"
             width="14"
             xmlns="http://www.w3.org/2000/svg"
           >
             <path
               d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z"
-              fill="currentColor"
+              fill="var(--gd-icon-fill)"
             />
           </svg>
         </span>
