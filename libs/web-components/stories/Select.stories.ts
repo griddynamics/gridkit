@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdSelect } from '../src';
-import { defaultTokenViewer, element, observed, items } from './helpers';
+import { defaultTokenViewer, element, observed, items, sectionedArgTypes } from './helpers';
 
 type Args = Pick<
   GdSelect,
@@ -37,15 +37,13 @@ const meta = {
     color: 'primary',
     placeholder: 'Choose an option',
     multiple: false,
-    searchable: false,
-    searchPlaceholder: 'Search options',
     autoOpen: true,
     dropdownMaxHeight: '240px',
     width: '280px',
     minWidth: undefined,
     maxWidth: 'initial',
   },
-  argTypes: { color: { control: 'select', options: colors } },
+  argTypes: sectionedArgTypes('Select', { color: { control: 'select', options: colors } }),
   render: (args: Args) => {
     const select = element('gd-select', args);
     select.addEventListener('gd-change', (event) => {
@@ -61,7 +59,7 @@ export const Selected: Story = { args: { value: items[1] } };
 export const Disabled: Story = { args: { disabled: true, value: items[0] } };
 export const Empty: Story = { args: { items: [] } };
 export const Multiple: Story = { args: { multiple: true, value: [items[0], items[2]] } };
-export const Searchable: Story = { args: { searchable: true } };
+export const Searchable: Story = { args: { searchable: true, searchPlaceholder: 'Search options' } };
 export const AutoOpen: Story = { args: { autoOpen: false }, name: 'Manual open (autoOpen=false)' };
 export const ValidationColors: Story = {
   render: (args) => {

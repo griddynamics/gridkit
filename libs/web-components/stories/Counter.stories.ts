@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdCounter } from '../src';
-import { defaultTokenViewer, element, observed } from './helpers';
+import { defaultTokenViewer, element, observed, sectionedArgTypes } from './helpers';
 
 type Args = Pick<GdCounter, 'min' | 'max' | 'initial' | 'isDisabled'>;
 const meta = {
@@ -15,6 +15,7 @@ const meta = {
     },
   },
   args: { min: 1, max: 5, initial: 1, isDisabled: false },
+  argTypes: sectionedArgTypes('Counter', {}),
   render: (args: Args) => observed(element('gd-counter', args), 'gd-change', { value: args.initial }),
 } satisfies Meta<Args>;
 export default meta;

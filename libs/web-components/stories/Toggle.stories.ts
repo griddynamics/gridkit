@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GridKitIconName } from 'gd-design-core';
 import type { GdToggle } from '../src';
-import { defaultTokenViewer, element, observed } from './helpers';
+import { defaultTokenViewer, element, observed, sectionedArgTypes } from './helpers';
 
 type Args = Pick<GdToggle, 'items' | 'value' | 'disabled' | 'renderItemContent' | 'styles'>;
 const items = ['Option 1', 'Option 2', 'Option 3'];
@@ -18,13 +18,13 @@ const meta = {
     },
   },
   args: { items, value: 'Option 1', disabled: false },
-  argTypes: {
+  argTypes: sectionedArgTypes('Toggle', {
     items: { description: 'String or label/value items', control: 'object' },
     value: { description: 'Selected item value', control: 'text' },
     disabled: { description: 'Disables all options', control: 'boolean' },
     renderItemContent: { description: 'Optional item render function', control: false },
     styles: { description: 'Custom group styles', control: 'object' },
-  },
+  }),
   render: (args: Args) => observed(element('gd-toggle', args), 'gd-change', { value: args.value }),
 } satisfies Meta<Args>;
 export default meta;

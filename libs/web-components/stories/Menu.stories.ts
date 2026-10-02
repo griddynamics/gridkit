@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdMenu } from '../src';
 import { defaultTokenViewer, element, observed, sectionedArgTypes } from './helpers';
 
-type Args = Pick<GdMenu, 'open' | 'closeOnSelect' | 'placement' | 'offsetX' | 'offsetY' | 'minHeight' | 'maxHeight'>;
+type Args = Pick<GdMenu, 'closeOnSelect' | 'placement' | 'offsetX' | 'offsetY' | 'minHeight' | 'maxHeight'>;
 const placements = ['top-left', 'top-right', 'bottom-left', 'bottom-right'] as const;
 const meta = {
   title: 'Molecules/Menu',
@@ -16,7 +16,6 @@ const meta = {
     },
   },
   args: {
-    open: false,
     closeOnSelect: true,
     placement: 'bottom-right',
     offsetX: 4,
@@ -51,7 +50,9 @@ const meta = {
 export default meta;
 type Story = StoryObj<Args>;
 export const Default: Story = {};
-export const Open: Story = { args: { open: true } };
+export const Open: Story = {
+  render: (args) => element('gd-menu', { ...args, open: true }),
+};
 export const KeepOpenOnSelect: Story = { args: { closeOnSelect: false } };
 export const Placement: Story = {
   render: (args) => {

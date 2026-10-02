@@ -2,7 +2,9 @@ import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdAvatar } from '../src';
 import { defaultTokenViewer, element, portrait, sectionedArgTypes } from './helpers';
 
-type Args = Pick<GdAvatar, 'src' | 'alt' | 'fallback' | 'size' | 'withBadge' | 'badgeColor' | 'backgroundColor'>;
+type Args = Pick<GdAvatar, 'src' | 'alt' | 'sizeVariant' | 'withBadge' | 'badgeColor' | 'backgroundColor'> & {
+  fallbackComponent: string;
+};
 const meta = {
   title: 'Atoms/Avatar',
   tags: ['autodocs'],
@@ -17,32 +19,34 @@ const meta = {
   args: {
     src: '',
     alt: 'Ada Lovelace',
-    fallback: 'AL',
-    size: 'md',
+    fallbackComponent: 'AL',
+    sizeVariant: 'md',
     withBadge: false,
     badgeColor: 'bg.fill.success.primary.default',
     backgroundColor: undefined,
   },
   argTypes: sectionedArgTypes('Avatar', {
-    size: { control: 'select', options: ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'] },
+    sizeVariant: { control: 'select', options: ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'] },
     badgeColor: { control: 'color' },
     backgroundColor: { control: 'color' },
   }),
-  render: (args: Args) => element('gd-avatar', args),
+  render: ({ fallbackComponent, ...args }: Args) => element('gd-avatar', { ...args, fallback: fallbackComponent }),
 } satisfies Meta<Args>;
 export default meta;
 type Story = StoryObj<Args>;
 export const Default: Story = {};
 export const Image: Story = { args: { src: portrait } };
-export const Badge: Story = { args: { withBadge: true, size: 'xl' } };
-export const Small: Story = { args: { size: 'sm' } };
-export const Large: Story = { args: { size: 'lg' } };
+export const Badge: Story = { args: { withBadge: true, sizeVariant: 'xl' } };
+export const Small: Story = { args: { sizeVariant: 'sm' } };
+export const Large: Story = { args: { sizeVariant: 'lg' } };
 export const AllSizes: Story = {
   render: (args) => {
     const row = document.createElement('div');
     row.style.cssText = 'display:flex;gap:16px;align-items:center';
     for (const size of ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'] as const)
-      row.append(element('gd-avatar', { ...args, size, alt: `${size} avatar` }));
+      row.append(
+        element('gd-avatar', { ...args, fallback: args.fallbackComponent, sizeVariant: size, alt: `${size} avatar` })
+      );
     return row;
   },
 };
@@ -59,10 +63,12 @@ export const SlottedFallback: Story = {
 };
 export const WithBadge: Story = { args: { withBadge: true } };
 export const WithCustomBadgeColor: Story = { args: { withBadge: true, badgeColor: '#22c55e' } };
-export const WithInitials: Story = { args: { src: '', fallback: 'AL' } };
-export const WithCustomBackgroundColor: Story = { args: { src: '', fallback: 'AL', backgroundColor: '#6b46c1' } };
+export const WithInitials: Story = { args: { src: '', fallbackComponent: 'AL' } };
+export const WithCustomBackgroundColor: Story = {
+  args: { src: '', fallbackComponent: 'AL', backgroundColor: '#6b46c1' },
+};
 export const WithIcon: Story = SlottedFallback;
-export const WithImageAndFallback: Story = { args: { src: portrait, fallback: 'AL' } };
+export const WithImageAndFallback: Story = { args: { src: portrait, fallbackComponent: 'AL' } };
 export const WithDifferentSize: Story = AllSizes;
 export const WithAccessibility: Story = { args: { alt: 'Ada Lovelace profile photo' } };
 export const DefaultTokens: Story = { render: () => defaultTokenViewer('avatar') };

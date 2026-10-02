@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdWrapper } from '../src';
-import { defaultTokenViewer, element } from './helpers';
+import { defaultTokenViewer, element, sectionedArgTypes } from './helpers';
 
-type Args = Pick<GdWrapper, 'variant' | 'as' | 'styles'> & { text: string };
+type Args = Pick<GdWrapper, 'variant' | 'as' | 'styles'> & { children: string };
 const meta = {
   title: 'Atoms/Wrapper',
   tags: ['autodocs'],
@@ -15,14 +15,14 @@ const meta = {
       },
     },
   },
-  args: { variant: 'inline', as: 'div', text: 'This is a basic wrapper.' },
-  argTypes: {
+  args: { variant: 'inline', as: 'div', children: 'This is a basic wrapper.' },
+  argTypes: sectionedArgTypes('Wrapper', {
     variant: { description: 'Layout context', control: 'select', options: ['inline', 'section', 'fullPage'] },
     as: { description: 'Internal semantic HTML tag', control: 'text' },
-    text: { description: 'Slotted content', control: 'text' },
+    children: { description: 'Slotted content', control: 'text' },
     styles: { description: 'Custom wrapper styles', control: 'object' },
-  },
-  render: ({ text, ...args }: Args) => element('gd-wrapper', args, text),
+  }),
+  render: ({ children, ...args }: Args) => element('gd-wrapper', args, children),
 } satisfies Meta<Args>;
 export default meta;
 type Story = StoryObj<Args>;
@@ -34,7 +34,7 @@ export const SectionWrapper: Story = {
   name: 'Variant: Section',
   args: {
     variant: 'section',
-    text: 'This content is semantically grouped within a section element.',
+    children: 'This content is semantically grouped within a section element.',
     styles: { padding: '20px', width: '400px', border: '1px solid #ccc', backgroundColor: '#f9f9f9' },
   },
 };
@@ -42,7 +42,7 @@ export const InlineWrapper: Story = {
   name: 'Variant: Inline (Span)',
   args: {
     variant: 'inline',
-    text: 'this part is wrapped in a span',
+    children: 'this part is wrapped in a span',
     styles: {
       padding: '4px 8px',
       borderRadius: '4px',
@@ -56,14 +56,14 @@ export const FullPageWrapper: Story = {
   name: 'Variant: Full Page',
   args: {
     variant: 'fullPage',
-    text: 'This wrapper covers the entire viewport.',
+    children: 'This wrapper covers the entire viewport.',
     styles: { display: 'flex', alignItems: 'center', justifyContent: 'center' },
   },
   parameters: { layout: 'fullscreen' },
 };
 export const CustomTagWrapper: Story = {
   name: 'Custom tag Wrapper',
-  args: { as: 'section', text: 'Custom tag Wrapper' },
+  args: { as: 'section', children: 'Custom tag Wrapper' },
 };
 export const WithAccessibility: Story = {
   args: { 'aria-label': 'Content wrapper' } as never,

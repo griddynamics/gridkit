@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdTruncate } from '../src';
 import { element, sectionedArgTypes } from './helpers';
 
-type Args = Pick<GdTruncate, 'lines' | 'styles'> & { text: string };
+type Args = Pick<GdTruncate, 'lines' | 'styles'> & { children: string };
 const long =
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
 const meta = {
@@ -17,16 +17,16 @@ const meta = {
       },
     },
   },
-  args: { lines: 1, text: long },
+  args: { lines: 1, children: long },
   argTypes: sectionedArgTypes('Truncate', {
-    text: { description: 'Text or slotted content to display', control: 'text' },
+    children: { description: 'Text or slotted content to display', control: 'text' },
     lines: { description: 'Maximum visible line count', control: 'number' },
     styles: { description: 'Custom content styles', control: 'object' },
   }),
-  render: ({ text, ...args }: Args) => {
+  render: ({ children, ...args }: Args) => {
     const box = document.createElement('div');
     box.style.width = '240px';
-    box.append(element('gd-truncate', args, text));
+    box.append(element('gd-truncate', args, children));
     return box;
   },
 } satisfies Meta<Args>;
@@ -36,13 +36,13 @@ export const Default: Story = {
   parameters: { docs: { description: { story: 'One-line truncation within a constrained container.' } } },
 };
 export const LineTruncation: Story = {
-  args: { lines: 2, text: 'This is a very long text that will wrap to multiple lines' },
+  args: { lines: 2, children: 'This is a very long text that will wrap to multiple lines' },
   parameters: { docs: { description: { story: 'CSS line-clamp limits content to two lines.' } } },
 };
 export const WithCustomStyling: Story = {
   args: {
     styles: { color: '#dc2626', fontWeight: 600, fontSize: '18px' },
-    text: 'This text has custom styling applied via the styles property.',
+    children: 'This text has custom styling applied via the styles property.',
   },
 };
 export const RefAPIWithTooltipOnOverflow: Story = {

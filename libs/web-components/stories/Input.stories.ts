@@ -4,7 +4,7 @@ import { defaultTokenViewer, element, observed, sectionedArgTypes } from './help
 
 type Args = Pick<
   GdInput,
-  | 'value'
+  | 'defaultValue'
   | 'variant'
   | 'label'
   | 'helperText'
@@ -14,7 +14,6 @@ type Args = Pick<
   | 'required'
   | 'color'
   | 'width'
-  | 'inputmode'
   | 'role'
   | 'tabIndex'
   | 'debounceCallbackTime'
@@ -49,7 +48,7 @@ const meta = {
     },
   },
   args: {
-    value: 'Default Input',
+    defaultValue: 'Default Input',
     variant: 'text',
     label: 'Label',
     helperText: 'Helper text',
@@ -59,7 +58,6 @@ const meta = {
     required: false,
     color: 'primary',
     width: '320px',
-    inputmode: undefined,
     role: null,
     tabIndex: 0,
     debounceCallbackTime: undefined,
@@ -73,13 +71,13 @@ const meta = {
     input.addEventListener('gd-input', (event) => {
       input.value = (event as CustomEvent<{ value: string }>).detail.value;
     });
-    return observed(input, 'gd-input', { value: args.value });
+    return observed(input, 'gd-input', { value: args.defaultValue });
   },
 } satisfies Meta<Args>;
 export default meta;
 type Story = StoryObj<Args>;
 export const Default: Story = {};
-export const Empty: Story = { args: { value: '' } };
+export const Empty: Story = { args: { defaultValue: '' } };
 export const Disabled: Story = { args: { disabled: true } };
 export const ReadOnly: Story = { args: { readOnly: true } };
 export const ValidationColors: Story = {
@@ -109,7 +107,7 @@ export const InputTypes: Story = {
     const section = document.createElement('section');
     section.style.cssText = 'display:grid;gap:16px;max-width:360px';
     for (const variant of ['text', 'email', 'password', 'search', 'number', 'date'])
-      section.append(element('gd-input', { ...args, variant, value: '', label: variant }));
+      section.append(element('gd-input', { ...args, variant, defaultValue: '', label: variant }));
     return section;
   },
 };
@@ -133,8 +131,10 @@ export const DefaultWithTailwind: Story = {
 export const CustomStyles: Story = {
   render: (args) => element('gd-input', { ...args, styles: { letterSpacing: '0.05em' } }),
 };
-export const CheckboxWithLabel: Story = { args: { variant: 'checkbox', value: '', label: 'Accept terms' } };
-export const RadioControlledWithLabel: Story = { args: { variant: 'radio', value: 'one', label: 'Option one' } };
+export const CheckboxWithLabel: Story = { args: { variant: 'checkbox', defaultValue: '', label: 'Accept terms' } };
+export const RadioControlledWithLabel: Story = {
+  args: { variant: 'radio', defaultValue: 'one', label: 'Option one' },
+};
 export const RadioGroupWithLabel: Story = InputTypes;
 export const WithAccessibility: Story = {
   args: { required: true, label: 'Email address', helperText: 'Required field' },

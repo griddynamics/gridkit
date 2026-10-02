@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdSlider } from '../src';
-import { defaultTokenViewer, element, observed } from './helpers';
+import { defaultTokenViewer, element, observed, sectionedArgTypes } from './helpers';
 
 type Args = Pick<GdSlider, 'min' | 'max' | 'value' | 'step' | 'disabled' | 'styles'>;
 const meta = {
@@ -16,14 +16,14 @@ const meta = {
     },
   },
   args: { min: 1, max: 100, value: 1, step: 1, disabled: false },
-  argTypes: {
+  argTypes: sectionedArgTypes('Slider', {
     min: { description: 'Minimum value of the slider range', control: 'number' },
     max: { description: 'Maximum value of the slider range', control: 'number' },
     value: { description: 'Current slider value', control: 'number' },
     step: { description: 'Increment between permitted values', control: 'number' },
     disabled: { description: 'Whether the slider is disabled', control: 'boolean' },
     styles: { description: 'Custom slider style overrides', control: 'object' },
-  },
+  }),
   render: (args: Args) => observed(element('gd-slider', args), 'gd-change', { value: args.value }),
 } satisfies Meta<Args>;
 export default meta;

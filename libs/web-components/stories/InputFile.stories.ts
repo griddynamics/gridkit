@@ -2,7 +2,9 @@ import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdInputFile } from '../src';
 import { defaultTokenViewer, element, observed, sectionedArgTypes } from './helpers';
 
-type Args = Pick<GdInputFile, 'accept' | 'capture' | 'multiple' | 'disabled' | 'isIcon' | 'buttonVariant'>;
+type Args = Pick<GdInputFile, 'accept' | 'capture' | 'multiple' | 'disabled' | 'isIcon'> & {
+  buttonProps: { variant?: GdInputFile['buttonVariant'] };
+};
 const meta = {
   title: 'Atoms/InputFile',
   tags: ['autodocs'],
@@ -14,7 +16,14 @@ const meta = {
       },
     },
   },
-  args: { accept: '', capture: undefined, multiple: false, disabled: false, isIcon: false, buttonVariant: 'outlined' },
+  args: {
+    accept: '',
+    capture: undefined,
+    multiple: false,
+    disabled: false,
+    isIcon: false,
+    buttonProps: { variant: 'outlined' },
+  },
   argTypes: sectionedArgTypes('InputFile', {
     accept: { description: 'Accepted file MIME types or extensions', control: 'text' },
     capture: {
@@ -25,13 +34,10 @@ const meta = {
     multiple: { description: 'Allows selection of multiple files', control: 'boolean' },
     disabled: { description: 'Disables the file picker', control: 'boolean' },
     isIcon: { description: 'Uses icon-only button sizing', control: 'boolean' },
-    buttonVariant: {
-      description: 'Visual variant passed to the internal button',
-      control: 'select',
-      options: ['primary', 'secondary', 'outlined'],
-    },
+    buttonProps: { description: 'Properties passed to the internal button', control: 'object' },
   }),
-  render: (args: Args) => observed(element('gd-input-file', args), 'gd-change', { files: [] }),
+  render: ({ buttonProps, ...args }: Args) =>
+    observed(element('gd-input-file', { ...args, buttonVariant: buttonProps.variant }), 'gd-change', { files: [] }),
 } satisfies Meta<Args>;
 export default meta;
 type Story = StoryObj<Args>;

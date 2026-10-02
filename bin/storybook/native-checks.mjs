@@ -1,8 +1,42 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+
+const reactArgTypes = JSON.parse(
+  await readFile(
+    new URL('../../libs/web-components/stories/react-storybook-arg-types.snapshot.json', import.meta.url),
+    'utf8'
+  )
+);
 
 /** Trusted browser input is required for native popover light-dismiss. */
 export async function checkNativeStories(page, base) {
   const index = await (await page.request.get(`${base}/web-components/index.json`)).json();
+  for (const [component, sourceArgTypes] of Object.entries(reactArgTypes)) {
+    const title = `${component === 'Counter' || component === 'Menu' ? 'Molecules' : 'Atoms'}/${component}`;
+    const entry = Object.values(index.entries).find(
+      (candidate) => candidate.type === 'story' && candidate.title === title
+    );
+    assert.ok(entry, `${title} must have a Web Component story`);
+    await page.goto(`${base}/web-components/iframe.html?id=${entry.id}&viewMode=story`);
+    const targetArgTypes = await page.evaluate(async (storyId) => {
+      const preview = window.__STORYBOOK_PREVIEW__;
+      await preview.storeInitializationPromise;
+      const story = await preview.storyStoreValue.loadStory({ storyId });
+      return JSON.parse(JSON.stringify(story.argTypes ?? {}));
+    }, entry.id);
+    assert.deepEqual(
+      Object.keys(targetArgTypes).sort(),
+      Object.keys(sourceArgTypes).sort(),
+      `${title} control inventory must match React`
+    );
+    for (const [name, source] of Object.entries(sourceArgTypes)) {
+      const target = targetArgTypes[name];
+      assert.equal(target.description, source.description, `${title}.${name} description must match React`);
+      assert.deepEqual(target.options, source.options, `${title}.${name} options must match React`);
+      assert.deepEqual(target.table, source.table, `${title}.${name} table metadata must match React`);
+      assert.deepEqual(target.if, source.if, `${title}.${name} conditional visibility must match React`);
+    }
+  }
   const stories = Object.values(index.entries).filter(
     (entry) =>
       entry.type === 'story' && /^(Atoms|Molecules)\//.test(entry.title) && !entry.id.endsWith('--default-tokens')

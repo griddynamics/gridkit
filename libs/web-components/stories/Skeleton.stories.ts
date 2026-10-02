@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdSkeleton } from '../src';
-import { defaultTokenViewer, element } from './helpers';
+import { defaultTokenViewer, element, sectionedArgTypes } from './helpers';
 
 type Args = Pick<
   GdSkeleton,
@@ -18,7 +18,7 @@ const meta = {
     },
   },
   args: { width: '250px', height: '15px', variant: 'rounded', animationName: 'blinkKeyframes' },
-  argTypes: {
+  argTypes: sectionedArgTypes('Skeleton', {
     variant: {
       description: 'Controls the shape of the skeleton.',
       control: 'select',
@@ -33,7 +33,7 @@ const meta = {
     },
     animationProps: { description: 'Animation duration, easing, delay, and iteration string.', control: 'text' },
     styles: { description: 'Custom CSS properties applied to the skeleton.', control: 'object' },
-  },
+  }),
   render: (args: Args) => element('gd-skeleton', args),
 } satisfies Meta<Args>;
 export default meta;

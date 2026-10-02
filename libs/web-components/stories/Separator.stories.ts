@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdSeparator } from '../src';
-import { defaultTokenViewer, element } from './helpers';
+import { defaultTokenViewer, element, sectionedArgTypes } from './helpers';
 
 type Args = Pick<
   GdSeparator,
@@ -19,7 +19,7 @@ const meta = {
     },
   },
   args: { orientation: 'horizontal', size: 'sm', variant: 'solid', as: 'div', labelPosition: 'center' },
-  argTypes: {
+  argTypes: sectionedArgTypes('Separator', {
     orientation: {
       description: 'The orientation of the separator.',
       control: 'select',
@@ -46,7 +46,7 @@ const meta = {
       options: ['start', 'center', 'end'],
     },
     labelColor: { description: 'A CSS color or GridKit theme color path for the label.', control: 'text' },
-  },
+  }),
   render: (args: Args) => {
     const wrapper = document.createElement('div');
     wrapper.style.width = '300px';

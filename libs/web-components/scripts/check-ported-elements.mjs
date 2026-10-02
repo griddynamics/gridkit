@@ -9,28 +9,11 @@ const repoRoot = resolve(packageRoot, '../..');
 
 const propertyName = (node) =>
   ts.isIdentifier(node) || ts.isStringLiteral(node) || ts.isNumericLiteral(node) ? node.text : undefined;
-const unwrapExpression = (node) => (ts.isAsExpression(node) || ts.isSatisfiesExpression(node) ? node.expression : node);
 
 function objectProperty(object, name) {
   return object?.properties.find(
     (property) => ts.isPropertyAssignment(property) && propertyName(property.name) === name
   )?.initializer;
-}
-
-function findObject(sourceFile, name) {
-  let result;
-  const visit = (node) => {
-    if (
-      !result &&
-      ts.isVariableDeclaration(node) &&
-      propertyName(node.name) === name &&
-      ts.isObjectLiteralExpression(unwrapExpression(node.initializer))
-    )
-      result = unwrapExpression(node.initializer);
-    ts.forEachChild(node, visit);
-  };
-  visit(sourceFile);
-  return result;
 }
 
 function storyArgTypes(source, fileName) {
@@ -68,26 +51,6 @@ function storyArgTypes(source, fileName) {
   );
 }
 
-function sectionMap(source) {
-  const sourceFile = ts.createSourceFile('helpers.ts', source, ts.ScriptTarget.Latest, true);
-  const sections = findObject(sourceFile, 'reactArgTypeSections');
-  return new Map(
-    (sections?.properties ?? []).filter(ts.isPropertyAssignment).map((component) => {
-      const controls = ts.isObjectLiteralExpression(component.initializer) ? component.initializer.properties : [];
-      return [
-        propertyName(component.name),
-        new Map(
-          controls
-            .filter(ts.isPropertyAssignment)
-            .map((control) => [
-              propertyName(control.name),
-              ts.isStringLiteral(control.initializer) ? control.initializer.text : undefined,
-            ])
-        ),
-      ];
-    })
-  );
-}
 const fullStoryParity = new Set([
   'gd-avatar',
   'gd-box',
@@ -167,16 +130,22 @@ if (missingFromManifest.length || missingFromSource.length) {
   );
 }
 
-const [index, ssr, parityText, publishedAuditText, storyHelpers] = await Promise.all([
+const [index, ssr, parityText, publishedAuditText, generatedArgTypesText, sourceArgTypesText] = await Promise.all([
   readFile(resolve(packageRoot, 'src/index.ts'), 'utf8'),
   readFile(resolve(packageRoot, 'scripts/ssr-dsd-render.ts'), 'utf8'),
   readFile(resolve(packageRoot, 'react-parity.json'), 'utf8'),
   readFile(resolve(packageRoot, 'published-atoms-audit.json'), 'utf8'),
-  readFile(resolve(packageRoot, 'stories/helpers.ts'), 'utf8'),
+  readFile(resolve(packageRoot, 'stories/react-storybook-arg-types.generated.ts'), 'utf8'),
+  readFile(resolve(packageRoot, 'stories/react-storybook-arg-types.snapshot.json'), 'utf8'),
 ]);
 const parity = JSON.parse(parityText);
 const publishedAudit = JSON.parse(publishedAuditText);
-const sections = sectionMap(storyHelpers);
+const generatedArgTypesSource = generatedArgTypesText.match(/reactStorybookArgTypes = ([\s\S]+) as const;/)?.[1];
+const generatedArgTypes = generatedArgTypesSource
+  ? Function(`"use strict"; return (${generatedArgTypesSource});`)()
+  : {};
+if (JSON.stringify(generatedArgTypes) !== JSON.stringify(JSON.parse(sourceArgTypesText)))
+  throw new Error('Generated React Storybook metadata does not match the published source snapshot.');
 const atomTags = ports.filter(({ category }) => category === 'atoms').map(({ tag }) => tag);
 const publishedAtomTags = Object.keys(publishedAudit.components);
 const missingPublishedAtoms = publishedAtomTags.filter((tag) => !atomTags.includes(tag));
@@ -214,21 +183,22 @@ for (const { tag, category } of ports) {
       'utf8'
     );
     const reactControls = storyArgTypes(reactStories, `${contract.react}.stories.tsx`);
-    const targetControls = storyArgTypes(stories, `${storyName}.stories.ts`);
-    const targetSections = sections.get(storyName) ?? new Map();
-    for (const control of targetControls.keys()) {
-      const sourceSection = reactControls.get(control)?.category;
-      const targetSection = targetSections.get(control);
-      if (sourceSection !== targetSection) {
+    const targetControls = generatedArgTypes[storyName] ?? {};
+    if (!stories.includes(`sectionedArgTypes('${storyName}'`))
+      throw new Error(`${tag} must merge the complete React argTypes metadata.`);
+    const missingControls = [...reactControls.keys()].filter((control) => !(control in targetControls));
+    if (missingControls.length)
+      throw new Error(`${tag} Storybook controls are missing: ${missingControls.join(', ')}.`);
+    for (const [control, sourceMetadata] of reactControls) {
+      const targetMetadata = targetControls[control];
+      for (const section of ['category', 'subcategory']) {
+        const sourceSection = sourceMetadata[section];
+        const targetSection = targetMetadata.table?.[section];
+        if (sourceSection === targetSection) continue;
         throw new Error(
-          `${tag} Storybook section mismatch for ${control}: React=${sourceSection ?? 'unsectioned'}, Web Component=${
-            targetSection ?? 'unsectioned'
-          }.`
+          `${tag} Storybook ${section} mismatch for ${control}: React=${sourceSection ?? 'unsectioned'}, Web Component=${targetSection ?? 'unsectioned'}.`
         );
       }
-    }
-    for (const control of targetSections.keys()) {
-      if (!targetControls.has(control)) throw new Error(`${tag} has a stale Storybook section for ${control}.`);
     }
     const exported = [...reactStories.matchAll(/^export const (\w+)/gm)].map((match) => match[1]);
     const missing = exported.filter((story) => !contract.stories.includes(story));

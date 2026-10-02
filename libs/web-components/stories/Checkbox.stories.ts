@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdCheckbox } from '../src';
 import { defaultTokenViewer, element, observed, sectionedArgTypes } from './helpers';
 
-type Args = Pick<GdCheckbox, 'checked' | 'disabled' | 'indeterminate' | 'size' | 'name' | 'value' | 'required'>;
+type Args = Pick<GdCheckbox, 'checked' | 'disabled' | 'indeterminate' | 'size' | 'name' | 'value'>;
 const meta = {
   title: 'Atoms/Checkbox',
   tags: ['autodocs'],
@@ -14,7 +14,7 @@ const meta = {
       },
     },
   },
-  args: { checked: false, disabled: false, indeterminate: false, size: 'md', name: '', value: 'on', required: false },
+  args: { checked: false, disabled: false, indeterminate: false, size: 'md', name: '', value: 'on' },
   argTypes: sectionedArgTypes('Checkbox', { size: { control: 'select', options: ['sm', 'md'] } }),
   render: (args: Args) => {
     const checkbox = element('gd-checkbox', args, 'Accept terms');
