@@ -1,19 +1,25 @@
 import { LitElement, html, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
+import { html as staticHtml, unsafeStatic } from 'lit/static-html.js';
 import { image } from 'gd-design-library/tokens';
 import { resolveThemeTree, type DesignCoreTheme } from 'gd-design-core';
+import '../gd-skeleton/gd-skeleton';
 
 export type ImageObjectFit = 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
 type CssValues = Record<string, string | number>;
 
 @customElement('gd-image')
 export class GdImage extends LitElement {
+  @property({ type: String, reflect: true }) as: 'div' | 'figure' = 'div';
+  @property({ type: String, attribute: 'caption-as', reflect: true }) captionAs: 'figcaption' | 'p' | 'span' =
+    'figcaption';
   @property({ type: String, reflect: true }) src?: string;
   @property({ type: String, reflect: true }) alt = '';
   @property({ type: Number, reflect: true }) width?: number;
   @property({ type: Number, reflect: true }) height?: number;
   @property({ type: String, reflect: true }) caption?: string;
+  @property({ type: String, reflect: true }) placeholder?: string;
   @property({ type: String, attribute: 'object-fit', reflect: true }) objectFit: ImageObjectFit = 'cover';
   @property({ attribute: false }) styles: CssValues = {};
   @property({ attribute: false }) theme: DesignCoreTheme = {};
@@ -54,26 +60,36 @@ export class GdImage extends LitElement {
       ...this.styles,
     };
     const showFallback = !this.src || this._failed;
-    return html`<figure part="root" style=${styleMap(wrapper)}>
-      ${this._loading && this.src
-        ? html`<span part="placeholder" style=${styleMap(tokens.placeholder)}><slot name="placeholder"></slot></span>`
-        : nothing}
-      ${showFallback
-        ? html`<slot name="fallback"></slot>`
-        : html`<img
-            part="image"
-            src=${this.src!}
-            alt=${this.alt}
-            width=${this.width ?? nothing}
-            height=${this.height ?? nothing}
-            style=${styleMap(imageStyles)}
-            @load=${this._loaded}
-            @error=${this._errored}
-          />`}
-      ${this.caption
-        ? html`<figcaption part="caption" style=${styleMap(tokens.caption)}>${this.caption}</figcaption>`
-        : nothing}
-    </figure>`;
+    const wrapperTag = unsafeStatic(this.as === 'figure' ? 'figure' : 'div');
+    const captionTag = unsafeStatic(['p', 'span'].includes(this.captionAs) ? this.captionAs : 'figcaption');
+    return staticHtml`<${wrapperTag} part="root" style=${styleMap(wrapper)}>
+      ${
+        this._loading && this.src && this.placeholder
+          ? html`<span part="placeholder" style=${styleMap(tokens.placeholder)}>
+              <gd-skeleton height="100%">${this.placeholder}<slot name="placeholder"></slot></gd-skeleton>
+            </span>`
+          : nothing
+      }
+      ${
+        showFallback
+          ? html`<slot name="fallback"></slot>`
+          : html`<img
+              part="image"
+              src=${this.src!}
+              alt=${this.alt}
+              width=${this.width ?? nothing}
+              height=${this.height ?? nothing}
+              style=${styleMap(imageStyles)}
+              @load=${this._loaded}
+              @error=${this._errored}
+            />`
+      }
+      ${
+        this.caption
+          ? staticHtml`<${captionTag} part="caption" style=${styleMap(tokens.caption)}>${this.caption}</${captionTag}>`
+          : nothing
+      }
+    </${wrapperTag}>`;
   }
 }
 
