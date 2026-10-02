@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdImage } from '../src';
-import { defaultTokenViewer, element, portrait } from './helpers';
+import { defaultTokenViewer, element, portrait, sectionedArgTypes } from './helpers';
 
 type Args = Pick<GdImage, 'src' | 'alt' | 'width' | 'height' | 'caption' | 'objectFit'>;
 const meta = {
@@ -15,7 +15,7 @@ const meta = {
     },
   },
   args: { src: portrait, alt: 'Portrait', width: 160, height: 160, caption: '', objectFit: 'cover' },
-  argTypes: {
+  argTypes: sectionedArgTypes('Image', {
     src: { description: 'Image source URL', control: 'text' },
     alt: { description: 'Accessible image alternative text', control: 'text' },
     width: { description: 'Rendered image width in pixels', control: 'number' },
@@ -26,7 +26,7 @@ const meta = {
       control: 'select',
       options: ['cover', 'contain', 'fill', 'none', 'scale-down'],
     },
-  },
+  }),
   render: (args: Args) => element('gd-image', args),
 } satisfies Meta<Args>;
 export default meta;

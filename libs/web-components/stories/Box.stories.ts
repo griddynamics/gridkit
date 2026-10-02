@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdBox } from '../src';
-import { defaultTokenViewer, element } from './helpers';
+import { defaultTokenViewer, element, sectionedArgTypes } from './helpers';
 
 type Args = Pick<GdBox, 'variant' | 'isBordered' | 'isHighlighted' | 'withShadowHover'>;
 const meta = {
@@ -15,12 +15,12 @@ const meta = {
     },
   },
   args: { variant: 'vertical', isBordered: false, isHighlighted: false, withShadowHover: false },
-  argTypes: {
+  argTypes: sectionedArgTypes('Box', {
     variant: { description: 'Box orientation variant', control: 'select', options: ['vertical', 'horizontal'] },
     isBordered: { description: 'Adds a border to the box', control: 'boolean' },
     isHighlighted: { description: 'Adds the React hover outline treatment', control: 'boolean' },
     withShadowHover: { description: 'Adds the React elevation shadow on hover', control: 'boolean' },
-  },
+  }),
   render: (args: Args) => element('gd-box', args, 'Box content'),
 } satisfies Meta<Args>;
 export default meta;

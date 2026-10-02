@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdBadge } from '../src';
-import { defaultTokenViewer, element } from './helpers';
+import { defaultTokenViewer, element, sectionedArgTypes } from './helpers';
 
 type Args = Pick<GdBadge, 'variant' | 'appearance' | 'size' | 'disabled'>;
 const meta = {
@@ -15,7 +15,7 @@ const meta = {
     },
   },
   args: { variant: 'primary', appearance: 'filled', size: 'md', disabled: false },
-  argTypes: {
+  argTypes: sectionedArgTypes('Badge', {
     variant: {
       description: 'Visual style variant of the badge',
       control: 'select',
@@ -28,7 +28,7 @@ const meta = {
     },
     size: { description: 'Badge size', control: 'select', options: ['xs', 'sm', 'md', 'lg'] },
     disabled: { description: 'Whether the badge uses disabled styling', control: 'boolean' },
-  },
+  }),
   render: (args: Args) => element('gd-badge', args, 'Badge'),
 } satisfies Meta<Args>;
 export default meta;

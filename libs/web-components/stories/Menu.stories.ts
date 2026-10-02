@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdMenu } from '../src';
-import { defaultTokenViewer, element, observed } from './helpers';
+import { defaultTokenViewer, element, observed, sectionedArgTypes } from './helpers';
 
 type Args = Pick<GdMenu, 'open' | 'closeOnSelect' | 'placement' | 'offsetX' | 'offsetY' | 'minHeight' | 'maxHeight'>;
 const placements = ['top-left', 'top-right', 'bottom-left', 'bottom-right'] as const;
@@ -24,7 +24,7 @@ const meta = {
     minHeight: 80,
     maxHeight: 400,
   },
-  argTypes: { placement: { control: 'select', options: placements } },
+  argTypes: sectionedArgTypes('Menu', { placement: { control: 'select', options: placements } }),
   render: (args: Args) => {
     const menu = element('gd-menu', args);
     const trigger = document.createElement('span');

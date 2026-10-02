@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdButton } from '../src';
-import { defaultTokenViewer, element } from './helpers';
+import { defaultTokenViewer, element, sectionedArgTypes } from './helpers';
 
 type Args = Pick<
   GdButton,
@@ -43,10 +43,10 @@ const meta = {
     ariaPressed: null,
     label: 'Button',
   },
-  argTypes: {
+  argTypes: sectionedArgTypes('Button', {
     variant: { control: 'select', options: variants },
     rounded: { control: 'select', options: roundedOptions },
-  },
+  }),
   render: ({ label, ...props }: Args) => element('gd-button', props, label),
 } satisfies Meta<Args>;
 export default meta;

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdTextarea } from '../src';
-import { defaultTokenViewer, element, observed } from './helpers';
+import { defaultTokenViewer, element, observed, sectionedArgTypes } from './helpers';
 
 type Args = Pick<
   GdTextarea,
@@ -43,7 +43,7 @@ const meta = {
     readOnly: false,
     dynamicHeightAdjustment: false,
   },
-  argTypes: {
+  argTypes: sectionedArgTypes('Textarea', {
     name: { description: 'Native field name', control: 'text' },
     placeholder: { description: 'Placeholder text', control: 'text' },
     value: { description: 'Controlled value', control: 'text' },
@@ -65,7 +65,7 @@ const meta = {
     maxLength: { description: 'Native hard character limit', control: 'number' },
     maxCharacters: { description: 'Visual character counter threshold', control: 'number' },
     styles: { description: 'Custom textarea styles', control: 'object' },
-  },
+  }),
   render: (args: Args) =>
     observed(element('gd-textarea', args), 'gd-input', { value: args.value ?? args.defaultValue ?? '' }),
 } satisfies Meta<Args>;

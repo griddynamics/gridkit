@@ -4,6 +4,106 @@ import type {} from '../src/index';
 
 type Tag = Extract<keyof HTMLElementTagNameMap, `gd-${string}`>;
 
+type ArgType = {
+  table?: Record<string, unknown>;
+  [key: string]: unknown;
+};
+
+const reactArgTypeSections = {
+  Avatar: { badgeColor: 'Badge', backgroundColor: 'Appearance' },
+  Badge: { variant: 'Visual Style', appearance: 'Visual Style', size: 'Visual Style', disabled: 'Visual Style' },
+  Box: {
+    variant: 'Core Props',
+    isBordered: 'Visual Style',
+    isHighlighted: 'Visual Style',
+    withShadowHover: 'Visual Style',
+  },
+  Button: { variant: 'Visual Style', rounded: 'Visual Style' },
+  Checkbox: { size: 'Layout' },
+  Icon: { name: 'Icon Selection', size: 'Size & Dimensions', fill: 'Styling & Colors' },
+  Image: {
+    src: 'Core Properties',
+    alt: 'Core Properties',
+    width: 'Dimensions',
+    height: 'Dimensions',
+    caption: 'Content & Display',
+    objectFit: 'Styling',
+  },
+  Input: { variant: 'Core Properties', color: 'Appearance & Styling' },
+  InputFile: {
+    accept: 'File Handling',
+    capture: 'Mobile Features',
+    multiple: 'File Handling',
+    disabled: 'State',
+    isIcon: 'Button Customization',
+  },
+  Label: { htmlFor: 'Core Properties', styles: 'Styling' },
+  Link: {
+    variant: 'Core Properties',
+    size: 'Appearance',
+    underline: 'Appearance',
+    cursor: 'Appearance',
+    disabled: 'State & Behavior',
+    href: 'Core Properties',
+    target: 'Navigation & Behavior',
+    rel: 'Navigation & Behavior',
+    styles: 'Styling',
+  },
+  Loader: {
+    name: 'Appearance',
+    variant: 'Layout & Positioning',
+    size: 'Appearance',
+    rounded: 'Appearance',
+    withWrapper: 'Layout & Positioning',
+    animationProps: 'Content & Customization',
+    styles: 'Custom Styling',
+  },
+  Menu: { placement: 'Menu Options (Positioning & Dimensions)' },
+  SliderDots: { count: 'Core Properties', activeIndex: 'Core Properties' },
+  Switch: { checked: 'State', disabled: 'State', isLoading: 'State', label: 'Layout', name: 'Identification' },
+  Textarea: {
+    name: 'Basics',
+    placeholder: 'Basics',
+    value: 'Basics',
+    defaultValue: 'Basics',
+    minHeight: 'Sizing & Layout',
+    maxHeight: 'Sizing & Layout',
+    disabled: 'Accessibility',
+    readOnly: 'Accessibility',
+    autoFocus: 'Accessibility',
+    resize: 'Behavior',
+    rows: 'Sizing & Layout',
+    dynamicHeightAdjustment: 'Behavior',
+    variant: 'Styling',
+    color: 'Styling',
+    maxLength: 'Behavior',
+    styles: 'Styling',
+  },
+  Truncate: { lines: 'Truncation', styles: 'Appearance' },
+  Typography: {
+    variant: 'Appearance',
+    as: 'Behavior',
+    size: 'Appearance',
+    align: 'Layout',
+    color: 'Appearance',
+    styleVariant: 'Appearance',
+  },
+} as const;
+
+/** Preserve the semantic control sections defined by the corresponding React story. */
+export function sectionedArgTypes<
+  Component extends keyof typeof reactArgTypeSections,
+  ArgTypes extends Record<string, ArgType>,
+>(component: Component, argTypes: ArgTypes): ArgTypes {
+  const sections = reactArgTypeSections[component] as Partial<Record<keyof ArgTypes, string>>;
+  return Object.fromEntries(
+    Object.entries(argTypes).map(([name, argType]) => {
+      const category = sections[name];
+      return [name, category ? { ...argType, table: { ...argType.table, category } } : argType];
+    })
+  ) as ArgTypes;
+}
+
 const sourceKeyProperties: Partial<Record<Tag, readonly string[]>> = {
   'gd-avatar': ['sizeVariant'],
   'gd-badge': ['variant', 'appearance', 'size'],

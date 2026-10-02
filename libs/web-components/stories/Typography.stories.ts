@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdTypography } from '../src';
-import { defaultTokenViewer, element } from './helpers';
+import { defaultTokenViewer, element, sectionedArgTypes } from './helpers';
 
 type Args = Pick<GdTypography, 'variant' | 'as' | 'size' | 'align' | 'color' | 'styleVariant'> & { text: string };
 const variants = [
@@ -55,14 +55,14 @@ const meta = {
     styleVariant: [],
     text: 'Body paragraph text for comparison.',
   },
-  argTypes: {
+  argTypes: sectionedArgTypes('Typography', {
     variant: { control: 'select', options: variants },
     as: { control: 'select', options: variants },
     size: { control: 'select', options: ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'] },
     align: { control: 'select', options: ['start', 'end', 'center', 'left', 'right', 'justify'] },
     color: { control: 'color' },
     styleVariant: { control: 'multi-select', options: styleVariants },
-  },
+  }),
   render: ({ text, ...props }: Args) => element('gd-typography', props, text),
 } satisfies Meta<Args>;
 export default meta;

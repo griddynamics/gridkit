@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdInputFile } from '../src';
-import { defaultTokenViewer, element, observed } from './helpers';
+import { defaultTokenViewer, element, observed, sectionedArgTypes } from './helpers';
 
 type Args = Pick<GdInputFile, 'accept' | 'capture' | 'multiple' | 'disabled' | 'isIcon' | 'buttonVariant'>;
 const meta = {
@@ -15,7 +15,7 @@ const meta = {
     },
   },
   args: { accept: '', capture: undefined, multiple: false, disabled: false, isIcon: false, buttonVariant: 'outlined' },
-  argTypes: {
+  argTypes: sectionedArgTypes('InputFile', {
     accept: { description: 'Accepted file MIME types or extensions', control: 'text' },
     capture: {
       description: 'Preferred camera capture source',
@@ -30,7 +30,7 @@ const meta = {
       control: 'select',
       options: ['primary', 'secondary', 'outlined'],
     },
-  },
+  }),
   render: (args: Args) => observed(element('gd-input-file', args), 'gd-change', { files: [] }),
 } satisfies Meta<Args>;
 export default meta;

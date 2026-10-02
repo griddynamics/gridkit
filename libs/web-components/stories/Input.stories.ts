@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdInput } from '../src';
-import { defaultTokenViewer, element, observed } from './helpers';
+import { defaultTokenViewer, element, observed, sectionedArgTypes } from './helpers';
 
 type Args = Pick<
   GdInput,
@@ -64,7 +64,10 @@ const meta = {
     tabIndex: 0,
     debounceCallbackTime: undefined,
   },
-  argTypes: { variant: { control: 'select', options: inputVariants }, color: { control: 'select', options: colors } },
+  argTypes: sectionedArgTypes('Input', {
+    variant: { control: 'select', options: inputVariants },
+    color: { control: 'select', options: colors },
+  }),
   render: (args: Args) => {
     const input = element('gd-input', args);
     input.addEventListener('gd-input', (event) => {

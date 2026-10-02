@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdAvatar } from '../src';
-import { defaultTokenViewer, element, portrait } from './helpers';
+import { defaultTokenViewer, element, portrait, sectionedArgTypes } from './helpers';
 
 type Args = Pick<GdAvatar, 'src' | 'alt' | 'fallback' | 'size' | 'withBadge' | 'badgeColor' | 'backgroundColor'>;
 const meta = {
@@ -23,11 +23,11 @@ const meta = {
     badgeColor: 'bg.fill.success.primary.default',
     backgroundColor: undefined,
   },
-  argTypes: {
+  argTypes: sectionedArgTypes('Avatar', {
     size: { control: 'select', options: ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'] },
     badgeColor: { control: 'color' },
     backgroundColor: { control: 'color' },
-  },
+  }),
   render: (args: Args) => element('gd-avatar', args),
 } satisfies Meta<Args>;
 export default meta;

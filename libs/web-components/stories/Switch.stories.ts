@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdSwitch } from '../src';
-import { defaultTokenViewer, element, observed } from './helpers';
+import { defaultTokenViewer, element, observed, sectionedArgTypes } from './helpers';
 
 type Args = Pick<GdSwitch, 'checked' | 'disabled' | 'isLoading' | 'label' | 'name' | 'styles'>;
 const meta = {
@@ -16,14 +16,14 @@ const meta = {
     },
   },
   args: { name: 'switch', checked: false, disabled: false, isLoading: false, label: 'right' },
-  argTypes: {
+  argTypes: sectionedArgTypes('Switch', {
     checked: { description: 'Checked state', control: 'boolean' },
     disabled: { description: 'Disables interaction', control: 'boolean' },
     isLoading: { description: 'Shows a loader and disables interaction', control: 'boolean' },
     label: { description: 'Position of the slotted label', control: 'select', options: ['left', 'right'] },
     name: { description: 'Native checkbox name', control: 'text' },
     styles: { description: 'Custom wrapper styles', control: 'object' },
-  },
+  }),
   render: (args: Args) => observed(element('gd-switch', args, 'Label'), 'gd-change', { checked: args.checked }),
 } satisfies Meta<Args>;
 export default meta;

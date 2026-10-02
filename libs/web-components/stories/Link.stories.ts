@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdLink } from '../src';
-import { defaultTokenViewer, element } from './helpers';
+import { defaultTokenViewer, element, sectionedArgTypes } from './helpers';
 
 type Args = Pick<
   GdLink,
@@ -26,7 +26,7 @@ const meta = {
     target: undefined,
     rel: '',
   },
-  argTypes: {
+  argTypes: sectionedArgTypes('Link', {
     variant: {
       description: 'Design variant',
       control: 'select',
@@ -41,7 +41,7 @@ const meta = {
     target: { description: 'Browsing context target', control: 'text' },
     rel: { description: 'Anchor relationship attribute', control: 'text' },
     styles: { description: 'Custom inline style overrides', control: 'object' },
-  },
+  }),
   render: (args: Args) => element('gd-link', args, 'GridKit link'),
 } satisfies Meta<Args>;
 export default meta;

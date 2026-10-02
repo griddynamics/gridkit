@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdLoader } from '../src';
-import { defaultTokenViewer, element } from './helpers';
+import { defaultTokenViewer, element, sectionedArgTypes } from './helpers';
 
 type Args = Pick<GdLoader, 'name' | 'variant' | 'size' | 'rounded' | 'withWrapper' | 'animationProps' | 'styles'>;
 const meta = {
@@ -15,7 +15,7 @@ const meta = {
     },
   },
   args: { name: 'circle', variant: 'inline', size: 'md', rounded: 'none', withWrapper: true },
-  argTypes: {
+  argTypes: sectionedArgTypes('Loader', {
     name: { control: 'select', options: ['circle', 'dots'] },
     variant: { control: 'select', options: ['inline', 'section', 'fullPage'] },
     size: { control: 'select', options: ['xs', 'sm', 'md', 'lg', 'xl'] },
@@ -27,7 +27,7 @@ const meta = {
     withWrapper: { description: 'Whether the positioning wrapper is rendered', control: 'boolean' },
     animationProps: { description: 'CSS animation timing, easing, and iteration values', control: 'text' },
     styles: { description: 'Custom loader style overrides', control: 'object' },
-  },
+  }),
   render: (args: Args) => element('gd-loader', args),
 } satisfies Meta<Args>;
 export default meta;

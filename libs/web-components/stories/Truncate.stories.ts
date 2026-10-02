@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdTruncate } from '../src';
-import { element } from './helpers';
+import { element, sectionedArgTypes } from './helpers';
 
 type Args = Pick<GdTruncate, 'lines' | 'styles'> & { text: string };
 const long =
@@ -18,11 +18,11 @@ const meta = {
     },
   },
   args: { lines: 1, text: long },
-  argTypes: {
+  argTypes: sectionedArgTypes('Truncate', {
     text: { description: 'Text or slotted content to display', control: 'text' },
     lines: { description: 'Maximum visible line count', control: 'number' },
     styles: { description: 'Custom content styles', control: 'object' },
-  },
+  }),
   render: ({ text, ...args }: Args) => {
     const box = document.createElement('div');
     box.style.width = '240px';

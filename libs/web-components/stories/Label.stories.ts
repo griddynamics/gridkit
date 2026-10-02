@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdLabel } from '../src';
-import { defaultTokenViewer, element } from './helpers';
+import { defaultTokenViewer, element, sectionedArgTypes } from './helpers';
 
 type Args = Pick<GdLabel, 'htmlFor' | 'styles'>;
 const meta = {
@@ -15,10 +15,10 @@ const meta = {
     },
   },
   args: { htmlFor: 'example' },
-  argTypes: {
+  argTypes: sectionedArgTypes('Label', {
     htmlFor: { description: 'ID of the associated form control', control: 'text' },
     styles: { description: 'Custom inline style overrides', control: 'object' },
-  },
+  }),
   render: (args: Args) => element('gd-label', args, 'Field label'),
 } satisfies Meta<Args>;
 export default meta;

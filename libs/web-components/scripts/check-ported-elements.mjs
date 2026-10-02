@@ -1,10 +1,93 @@
 #!/usr/bin/env node
 import { readdir, readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import ts from 'typescript';
 
 const packageRoot = resolve(import.meta.dirname, '..');
 const componentsRoot = resolve(packageRoot, 'src/components');
 const repoRoot = resolve(packageRoot, '../..');
+
+const propertyName = (node) =>
+  ts.isIdentifier(node) || ts.isStringLiteral(node) || ts.isNumericLiteral(node) ? node.text : undefined;
+const unwrapExpression = (node) => (ts.isAsExpression(node) || ts.isSatisfiesExpression(node) ? node.expression : node);
+
+function objectProperty(object, name) {
+  return object?.properties.find(
+    (property) => ts.isPropertyAssignment(property) && propertyName(property.name) === name
+  )?.initializer;
+}
+
+function findObject(sourceFile, name) {
+  let result;
+  const visit = (node) => {
+    if (
+      !result &&
+      ts.isVariableDeclaration(node) &&
+      propertyName(node.name) === name &&
+      ts.isObjectLiteralExpression(unwrapExpression(node.initializer))
+    )
+      result = unwrapExpression(node.initializer);
+    ts.forEachChild(node, visit);
+  };
+  visit(sourceFile);
+  return result;
+}
+
+function storyArgTypes(source, fileName) {
+  const sourceFile = ts.createSourceFile(fileName, source, ts.ScriptTarget.Latest, true);
+  let result;
+  const visit = (node) => {
+    if (!result && ts.isPropertyAssignment(node) && propertyName(node.name) === 'argTypes') {
+      if (ts.isObjectLiteralExpression(node.initializer)) result = node.initializer;
+      if (
+        ts.isCallExpression(node.initializer) &&
+        node.initializer.arguments[1] &&
+        ts.isObjectLiteralExpression(node.initializer.arguments[1])
+      )
+        result = node.initializer.arguments[1];
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(sourceFile);
+  return new Map(
+    (result?.properties ?? []).filter(ts.isPropertyAssignment).map((property) => {
+      const table = ts.isObjectLiteralExpression(property.initializer)
+        ? objectProperty(property.initializer, 'table')
+        : undefined;
+      const category = table && ts.isObjectLiteralExpression(table) ? objectProperty(table, 'category') : undefined;
+      const subcategory =
+        table && ts.isObjectLiteralExpression(table) ? objectProperty(table, 'subcategory') : undefined;
+      return [
+        propertyName(property.name),
+        {
+          category: category && ts.isStringLiteral(category) ? category.text : undefined,
+          subcategory: subcategory && ts.isStringLiteral(subcategory) ? subcategory.text : undefined,
+        },
+      ];
+    })
+  );
+}
+
+function sectionMap(source) {
+  const sourceFile = ts.createSourceFile('helpers.ts', source, ts.ScriptTarget.Latest, true);
+  const sections = findObject(sourceFile, 'reactArgTypeSections');
+  return new Map(
+    (sections?.properties ?? []).filter(ts.isPropertyAssignment).map((component) => {
+      const controls = ts.isObjectLiteralExpression(component.initializer) ? component.initializer.properties : [];
+      return [
+        propertyName(component.name),
+        new Map(
+          controls
+            .filter(ts.isPropertyAssignment)
+            .map((control) => [
+              propertyName(control.name),
+              ts.isStringLiteral(control.initializer) ? control.initializer.text : undefined,
+            ])
+        ),
+      ];
+    })
+  );
+}
 const fullStoryParity = new Set([
   'gd-avatar',
   'gd-box',
@@ -84,14 +167,16 @@ if (missingFromManifest.length || missingFromSource.length) {
   );
 }
 
-const [index, ssr, parityText, publishedAuditText] = await Promise.all([
+const [index, ssr, parityText, publishedAuditText, storyHelpers] = await Promise.all([
   readFile(resolve(packageRoot, 'src/index.ts'), 'utf8'),
   readFile(resolve(packageRoot, 'scripts/ssr-dsd-render.ts'), 'utf8'),
   readFile(resolve(packageRoot, 'react-parity.json'), 'utf8'),
   readFile(resolve(packageRoot, 'published-atoms-audit.json'), 'utf8'),
+  readFile(resolve(packageRoot, 'stories/helpers.ts'), 'utf8'),
 ]);
 const parity = JSON.parse(parityText);
 const publishedAudit = JSON.parse(publishedAuditText);
+const sections = sectionMap(storyHelpers);
 const atomTags = ports.filter(({ category }) => category === 'atoms').map(({ tag }) => tag);
 const publishedAtomTags = Object.keys(publishedAudit.components);
 const missingPublishedAtoms = publishedAtomTags.filter((tag) => !atomTags.includes(tag));
@@ -128,6 +213,23 @@ for (const { tag, category } of ports) {
       resolve(repoRoot, 'libs/ui/src/components', category, contract.react, `${contract.react}.stories.tsx`),
       'utf8'
     );
+    const reactControls = storyArgTypes(reactStories, `${contract.react}.stories.tsx`);
+    const targetControls = storyArgTypes(stories, `${storyName}.stories.ts`);
+    const targetSections = sections.get(storyName) ?? new Map();
+    for (const control of targetControls.keys()) {
+      const sourceSection = reactControls.get(control)?.category;
+      const targetSection = targetSections.get(control);
+      if (sourceSection !== targetSection) {
+        throw new Error(
+          `${tag} Storybook section mismatch for ${control}: React=${sourceSection ?? 'unsectioned'}, Web Component=${
+            targetSection ?? 'unsectioned'
+          }.`
+        );
+      }
+    }
+    for (const control of targetSections.keys()) {
+      if (!targetControls.has(control)) throw new Error(`${tag} has a stale Storybook section for ${control}.`);
+    }
     const exported = [...reactStories.matchAll(/^export const (\w+)/gm)].map((match) => match[1]);
     const missing = exported.filter((story) => !contract.stories.includes(story));
     const stale = contract.stories.filter((story) => !exported.includes(story));

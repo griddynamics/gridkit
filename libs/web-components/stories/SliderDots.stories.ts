@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdSliderDots } from '../src';
-import { defaultTokenViewer, element, observed } from './helpers';
+import { defaultTokenViewer, element, observed, sectionedArgTypes } from './helpers';
 
 type Args = Pick<GdSliderDots, 'count' | 'activeIndex' | 'styles'>;
 const meta = {
@@ -16,11 +16,11 @@ const meta = {
     },
   },
   args: { count: 5, activeIndex: 0 },
-  argTypes: {
+  argTypes: sectionedArgTypes('SliderDots', {
     count: { description: 'Total number of dots to render', control: 'number' },
     activeIndex: { description: 'Zero-based index of the active dot', control: 'number' },
     styles: { description: 'Custom container styles', control: 'object' },
-  },
+  }),
   render: (args: Args) => observed(element('gd-slider-dots', args), 'gd-change', { index: args.activeIndex }),
 } satisfies Meta<Args>;
 export default meta;

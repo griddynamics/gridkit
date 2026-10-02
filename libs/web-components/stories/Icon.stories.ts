@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import { iconCatalog, type GridKitIconName } from 'gd-design-core';
 import type { GdIcon } from '../src';
-import { defaultTokenViewer, element } from './helpers';
+import { defaultTokenViewer, element, sectionedArgTypes } from './helpers';
 
 type Args = Pick<GdIcon, 'name' | 'size' | 'fill'>;
 const names = Object.keys(iconCatalog) as GridKitIconName[];
@@ -17,7 +17,7 @@ const meta = {
     },
   },
   args: { name: 'star', size: 'md', fill: 'currentColor' },
-  argTypes: {
+  argTypes: sectionedArgTypes('Icon', {
     name: { description: 'Icon name from the shared React/Web Components catalog', control: 'select', options: names },
     size: {
       description: 'Theme size applied to width and height',
@@ -25,7 +25,7 @@ const meta = {
       options: ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'],
     },
     fill: { description: 'Path fill or theme color token', control: 'color' },
-  },
+  }),
   render: (args: Args) => element('gd-icon', args),
 } satisfies Meta<Args>;
 export default meta;
