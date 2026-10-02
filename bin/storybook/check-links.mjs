@@ -3,7 +3,7 @@ import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync } from 'node
 import { tmpdir } from 'node:os';
 import { extname, join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { legacyReactIds, sharedDocIds } from './routes.mjs';
+import { legacyReactIds, legacyRouteAliases, sharedDocIds } from './routes.mjs';
 import { validateLinks } from './link-validation.mjs';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
@@ -49,7 +49,7 @@ if (built) {
 
 const errors = [];
 for (const id of legacyReactIds) {
-  const canonical = sharedDocIds.includes(id) ? id : `react-${id}`;
+  const canonical = legacyRouteAliases[id] ?? (sharedDocIds.includes(id) ? id : `react-${id}`);
   if (!indexes.react.entries[canonical]) errors.push(`Missing migrated entry: ${canonical}`);
 }
 for (const id of sharedDocIds) {

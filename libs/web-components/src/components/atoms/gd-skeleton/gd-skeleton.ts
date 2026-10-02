@@ -1,7 +1,14 @@
 import { LitElement, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { animations, resolveThemeColor, skeleton } from 'gd-design-library/tokens';
-import { buttonCssBlockToText, resolveThemeTree, type ButtonCssBlock, type DesignCoreTheme } from 'gd-design-core';
+import {
+  buttonCssBlockToText,
+  get,
+  keyframesCssBlockToText,
+  resolveThemeTree,
+  type ButtonCssBlock,
+  type DesignCoreTheme,
+} from 'gd-design-core';
 
 type SkeletonVariant = 'rounded' | 'rectangular' | 'circular';
 type CssBlock = ButtonCssBlock;
@@ -18,8 +25,10 @@ export class GdSkeleton extends LitElement {
   @property({ attribute: false }) theme: DesignCoreTheme = {};
 
   render() {
-    const tokens = resolveThemeTree(skeleton, this.theme) as unknown as Record<string, CssBlock>;
-    const resolvedAnimations = resolveThemeTree(animations, this.theme) as unknown as Record<string, CssBlock>;
+    const skeletonTokens = get(this.theme, 'skeleton', skeleton) as typeof skeleton;
+    const animationTokens = get(this.theme, 'animations', animations) as typeof animations;
+    const tokens = resolveThemeTree(skeletonTokens, this.theme) as unknown as Record<string, CssBlock>;
+    const resolvedAnimations = resolveThemeTree(animationTokens, this.theme) as unknown as Record<string, CssBlock>;
     const themeFrames = this.animationName ? resolvedAnimations[this.animationName] : undefined;
     const animationCssName = themeFrames ? 'gd-skeleton-animation' : this.animationName;
     const dimensions: CssBlock = {
@@ -39,7 +48,7 @@ export class GdSkeleton extends LitElement {
         ? buttonCssBlockToText('.skeleton', { animation: `${animationCssName} ${this.animationProps}` })
         : '',
       buttonCssBlockToText('.skeleton', this.styles),
-      themeFrames ? buttonCssBlockToText('@keyframes gd-skeleton-animation', themeFrames) : '',
+      keyframesCssBlockToText('gd-skeleton-animation', themeFrames),
     ].join('\n');
     if (this.shadowRoot && typeof CSSStyleSheet !== 'undefined') {
       const sheet = new CSSStyleSheet();

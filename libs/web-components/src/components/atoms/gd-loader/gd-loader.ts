@@ -1,7 +1,14 @@
 import { LitElement, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { loader, animations } from 'gd-design-library/tokens';
-import { buttonCssBlockToText, get, resolveThemeTree, type ButtonCssBlock, type DesignCoreTheme } from 'gd-design-core';
+import {
+  buttonCssBlockToText,
+  get,
+  keyframesCssBlockToText,
+  resolveThemeTree,
+  type ButtonCssBlock,
+  type DesignCoreTheme,
+} from 'gd-design-core';
 import '../gd-wrapper/gd-wrapper';
 
 type LoaderName = 'circle' | 'dots';
@@ -38,9 +45,6 @@ export class GdLoader extends LitElement {
     const animationTokenName = get(tokens, ['animation', this.name, 'name'], '');
     const frames = resolvedAnimations[animationTokenName] ?? {};
     const localAnimationName = `gd-loader-${this.name}`;
-    const keyframes = Object.entries(frames)
-      .map(([step, block]) => buttonCssBlockToText(step, block as CssBlock))
-      .join('');
     const radius = get(this.theme, `radius.${this.rounded}`, '0px');
     const cssText = [
       buttonCssBlockToText('.loader', tokens.default),
@@ -57,7 +61,7 @@ export class GdLoader extends LitElement {
           })
         : '',
       buttonCssBlockToText('.loader', this.styles),
-      keyframes ? `@keyframes ${localAnimationName} {\n${keyframes}}` : '',
+      keyframesCssBlockToText(localAnimationName, frames),
     ].join('\n');
     const root = this.shadowRoot;
     if (root && typeof CSSStyleSheet !== 'undefined') {
