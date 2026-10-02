@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdSliderDots } from '../src';
-import { defaultTokenViewer, element, observed, sectionedArgTypes } from './helpers';
+import { defaultTokenViewer, element, stack, sectionedArgTypes } from './helpers';
 
 type Args = Pick<GdSliderDots, 'count' | 'activeIndex' | 'styles'>;
 const meta = {
@@ -21,7 +21,7 @@ const meta = {
     activeIndex: { description: 'Zero-based index of the active dot', control: 'number' },
     styles: { description: 'Custom container styles', control: 'object' },
   }),
-  render: (args: Args) => observed(element('gd-slider-dots', args), 'gd-change', { index: args.activeIndex }),
+  render: (args: Args) => element('gd-slider-dots', args),
 } satisfies Meta<Args>;
 export default meta;
 type Story = StoryObj<Args>;
@@ -31,14 +31,14 @@ export const Default: Story = {
 export const Interactive: Story = {
   render: () => {
     const dots = element('gd-slider-dots', { count: 5 });
-    const output = document.createElement('output');
+    const output = element('gd-typography', {});
     output.textContent = 'Active slide: 1 of 5';
-    dots.addEventListener(
-      'gd-change',
-      (e) => (output.textContent = `Active slide: ${(e as CustomEvent<{ index: number }>).detail.index + 1} of 5`)
-    );
-    const section = document.createElement('section');
-    section.append(output, dots);
+    dots.addEventListener('gd-change', (e) => {
+      dots.activeIndex = (e as CustomEvent<{ index: number }>).detail.index;
+      output.textContent = `Active slide: ${dots.activeIndex + 1} of 5`;
+    });
+    const section = stack('column', '16px', output, dots);
+    section.style.alignItems = 'center';
     return section;
   },
   parameters: { docs: { description: { story: 'Clicking a dot updates the active slide output.' } } },

@@ -1,64 +1,33 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
-import type { GdBox } from '../src';
-import { defaultTokenViewer, element, sectionedArgTypes } from './helpers';
+// Generated from libs/ui/src/components/atoms/Box/Box.stories.tsx; edit the source example or native-story adapter.
+import * as fixtures from './fixtures/Box.generated.js';
+import { nativeMeta, nativeStory } from './native-story';
+import { sectionedArgTypes } from './helpers';
 
-type Args = Pick<GdBox, 'variant' | 'isBordered' | 'isHighlighted' | 'withShadowHover'>;
+const sourceMeta = nativeMeta(fixtures.default, sectionedArgTypes('Box', {}));
 const meta = {
   title: 'Atoms/Box',
   tags: ['autodocs'],
+  args: sourceMeta.args,
   parameters: {
+    layout: 'centered',
     docs: {
       description: {
         component:
-          'Layout container matching React Box orientation, border, hover highlight, shadow, accessibility, and custom style behavior.',
+          'Layout container with orientation, border, hover highlight, shadow, accessibility, and custom styling.',
       },
     },
   },
-  args: { variant: 'vertical', isBordered: false, isHighlighted: false, withShadowHover: false },
-  argTypes: sectionedArgTypes('Box', {
-    variant: { description: 'Box orientation variant', control: 'select', options: ['vertical', 'horizontal'] },
-    isBordered: { description: 'Adds a border to the box', control: 'boolean' },
-    isHighlighted: { description: 'Adds the React hover outline treatment', control: 'boolean' },
-    withShadowHover: { description: 'Adds the React elevation shadow on hover', control: 'boolean' },
-  }),
-  render: (args: Args) => element('gd-box', args, 'Box content'),
-} satisfies Meta<Args>;
+  argTypes: sourceMeta.argTypes,
+  render: sourceMeta.render,
+};
 export default meta;
-type Story = StoryObj<Args>;
-export const Default: Story = {};
-export const Bordered: Story = { args: { isBordered: true } };
-export const Highlighted: Story = { args: { isBordered: true, isHighlighted: true } };
-export const WithShadowHover: Story = { args: { withShadowHover: true } };
-export const VerticalLayout: Story = {};
-export const HorizontalLayout: Story = { args: { variant: 'horizontal' } };
-export const CenteredContent: Story = {
-  render: (args) =>
-    element(
-      'gd-box',
-      { ...args, styles: { width: '240px', height: '120px', alignItems: 'center', justifyContent: 'center' } },
-      'Centered content'
-    ),
-};
-export const Examples: Story = {
-  render: () => {
-    const root = document.createElement('div');
-    root.style.cssText = 'display:grid;gap:16px';
-    root.append(
-      element('gd-box', { isBordered: true }, 'Bordered'),
-      element('gd-box', { variant: 'horizontal', withShadowHover: true }, 'Horizontal hover')
-    );
-    return root;
-  },
-};
-export const WithAccessibility: Story = {
-  render: (args) => {
-    const box = element('gd-box', args, 'Keyboard-focusable box');
-    box.tabIndex = 0;
-    box.setAttribute('role', 'region');
-    box.setAttribute('aria-label', 'Example box');
-    return box;
-  },
-};
-export const DefaultTokens: Story = {
-  render: () => defaultTokenViewer('box'),
-};
+export const Default = { ...nativeStory(fixtures.Default, meta) };
+export const Bordered = { ...nativeStory(fixtures.Bordered, meta) };
+export const Highlighted = { ...nativeStory(fixtures.Highlighted, meta) };
+export const WithShadowHover = { ...nativeStory(fixtures.WithShadowHover, meta) };
+export const VerticalLayout = { ...nativeStory(fixtures.VerticalLayout, meta) };
+export const HorizontalLayout = { ...nativeStory(fixtures.HorizontalLayout, meta) };
+export const CenteredContent = { ...nativeStory(fixtures.CenteredContent, meta) };
+export const Examples = { ...nativeStory(fixtures.Examples, meta) };
+export const WithAccessibility = { ...nativeStory(fixtures.WithAccessibility, meta) };
+export const DefaultTokens = { ...nativeStory(fixtures.DefaultTokens, meta) };

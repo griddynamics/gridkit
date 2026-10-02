@@ -7,11 +7,13 @@ import '../src/index';
 import { storySource } from '../stories/helpers';
 
 const preview: Preview = {
+  tags: ['autodocs'],
   parameters: {
     layout: 'padded',
     options: { storySort: { order: ['Introduction', 'Atoms', 'Molecules'] } },
     a11y: { test: 'todo' },
     docs: {
+      defaultName: 'Docs',
       source: {
         language: 'html',
         transform: (

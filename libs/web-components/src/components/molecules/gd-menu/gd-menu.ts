@@ -83,12 +83,14 @@ export class GdMenu extends LitElement {
     // that native behavior; retain `click` below for keyboard activation.
     this.addEventListener('pointerdown', this._onSlottedItemClick, true);
     this.addEventListener('click', this._onSlottedItemClick);
+    this.ownerDocument.addEventListener('pointerdown', this._onOutsidePointerDown, true);
   }
 
   disconnectedCallback() {
     this.removeEventListener('gd-menu-select', this._onSelect);
     this.removeEventListener('pointerdown', this._onSlottedItemClick, true);
     this.removeEventListener('click', this._onSlottedItemClick);
+    this.ownerDocument.removeEventListener('pointerdown', this._onOutsidePointerDown, true);
     super.disconnectedCallback();
   }
 
@@ -168,6 +170,12 @@ export class GdMenu extends LitElement {
   private _onSelect = (event: Event) => {
     const detail = (event as CustomEvent<{ data?: MenuOption; value?: unknown }>).detail;
     this._select(detail?.data ?? detail);
+  };
+
+  // Some Chromium hosts do not light-dismiss a shadow-root popover on blank page
+  // space. Keep the public state consistent for all outside pointer targets.
+  private _onOutsidePointerDown = (event: PointerEvent) => {
+    if (this.open && !event.composedPath().includes(this)) this.closeMenu();
   };
 
   private _onSlottedItemClick = (event: Event) => {

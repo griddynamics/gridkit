@@ -1,7 +1,11 @@
 import type { Preview } from '@storybook/react-vite';
 
 const preview: Preview = {
+  tags: ['autodocs'],
   parameters: {
+    docs: {
+      defaultName: 'Docs',
+    },
     controls: {
       matchers: {
         color: /(background|color)$/i,

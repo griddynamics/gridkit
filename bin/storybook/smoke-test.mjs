@@ -5,6 +5,7 @@ import { extname, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 import { checkNativeStories } from './native-checks.mjs';
+import { checkRenderedStoryParity } from './story-parity.mjs';
 
 // Serve the exact combined artifact. --url also checks the common dev command.
 const root = fileURLToPath(new URL('../../libs/ui/storybook-static/', import.meta.url));
@@ -117,7 +118,12 @@ try {
   await page.waitForURL((url) => url.searchParams.get('id') === 'react-atoms-button--default');
   await page.getByRole('button').first().waitFor();
   assert.equal(new URL(page.url()).searchParams.get('args'), 'size:sm');
-  if (!process.argv.includes('--url')) await checkNativeStories(page, base);
+  if (!process.argv.includes('--url')) {
+    await checkNativeStories(page, base);
+    const parity = await checkRenderedStoryParity(browser, base, `${base}/web-components`);
+    assert.deepEqual(parity.failures, [], 'Every paired story must preserve its React example');
+    console.log(`Compared ${parity.count} rendered React/Web Components stories.`);
+  }
   assert.deepEqual(errors, [], 'Storybook should not raise browser runtime errors');
   console.log(
     'Storybook smoke checks passed: React docs, AI docs, internal links, composition, and legacy manager/iframe routes.'

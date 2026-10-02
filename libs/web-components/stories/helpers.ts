@@ -1,6 +1,7 @@
 import { defaultTheme } from 'gd-design-library/tokens';
 import type { DesignCoreTheme } from 'gd-design-core';
 import type { ArgTypes as StorybookArgTypes } from '@storybook/web-components-vite';
+import { action } from 'storybook/actions';
 import type {} from '../src/index';
 import { reactStorybookArgTypes } from './react-storybook-arg-types.generated';
 
@@ -143,20 +144,12 @@ function lightDom(node: Element) {
  * Storybook cannot infer useful source from our imperative DOM render functions. */
 export function storySource(canvas: HTMLElement | undefined, fallback: string) {
   if (!canvas) return fallback;
-  const isNestedCustomElement = (node: HTMLElement) => {
-    let parent = node.parentElement;
-    while (parent && parent !== canvas) {
-      if (parent.localName.startsWith('gd-')) return true;
-      parent = parent.parentElement;
-    }
-    return false;
-  };
-  const nodes = Array.from(canvas.querySelectorAll<HTMLElement>('*')).filter(
-    (node) => node.localName.startsWith('gd-') && !isNestedCustomElement(node)
+  const nodes = Array.from(canvas.querySelectorAll<HTMLElement>('*')).filter((node) =>
+    node.localName.startsWith('gd-')
   );
   if (!nodes.length) return fallback;
 
-  const markup: string[] = [];
+  const markup = lightDom(canvas);
   const setup: string[] = ["import 'web-components';", "import { defaultTheme } from 'gd-design-library/tokens';", ''];
   nodes.forEach((node, index) => {
     const tag = node.localName as Tag;
@@ -187,12 +180,6 @@ export function storySource(canvas: HTMLElement | undefined, fallback: string) {
         } else attributes.set(attribute, String(value));
       } else if (typeof value !== 'function' && value !== undefined) assignments.push([property, value]);
     }
-    const attributeText = [...attributes]
-      .map(([name, value]) => (value === '' ? name : `${name}="${escapeHtml(value)}"`))
-      .join(' ');
-    const content = lightDom(node);
-    markup.push(`<${tag}${attributeText ? ` ${attributeText}` : ''}>${content}</${tag}>`);
-
     const variable = nodes.length === 1 ? 'component' : `component${index + 1}`;
     const sameTagIndex = nodes.slice(0, index).filter((candidate) => candidate.localName === tag).length;
     setup.push(
@@ -209,9 +196,7 @@ export function storySource(canvas: HTMLElement | undefined, fallback: string) {
     setup.push('');
   });
 
-  return `${markup.join('\n\n')}\n\n<script type="module">\n${setup
-    .map((line) => (line ? `  ${line}` : ''))
-    .join('\n')}\n</script>`;
+  return `${markup}\n\n<script type="module">\n${setup.map((line) => (line ? `  ${line}` : '')).join('\n')}\n</script>`;
 }
 
 /** Use the same property-based theme contract as application consumers. */
@@ -219,6 +204,9 @@ export function element<T extends Tag>(tag: T, props: Partial<HTMLElementTagName
   const node = document.createElement(tag);
   Object.assign(node, { theme: defaultTheme as DesignCoreTheme }, props);
   node.textContent = text;
+  for (const eventName of sourceEvents[tag] ?? []) {
+    node.addEventListener(eventName, (event) => action(eventName)((event as CustomEvent<unknown>).detail));
+  }
   return node;
 }
 
@@ -325,3 +313,14 @@ export const items = [
 
 export const portrait =
   'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"%3E%3Crect width="64" height="64" fill="%2391b8d8"/%3E%3Ccircle cx="32" cy="24" r="13" fill="%23f1c7a5"/%3E%3Cpath d="M8 64c3-18 14-27 24-27s21 9 24 27" fill="%233e6184"/%3E%3C/svg%3E';
+
+/** Framework-neutral equivalent of the React stories' Row / Column layout. */
+export function stack(direction: 'row' | 'column', gap: string, ...children: Node[]) {
+  const node = document.createElement('div');
+  node.style.display = 'flex';
+  node.style.flexDirection = direction;
+  node.style.gap = gap;
+  if (direction === 'row') node.style.alignItems = 'center';
+  node.append(...children);
+  return node;
+}

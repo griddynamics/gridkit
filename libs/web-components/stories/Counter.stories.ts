@@ -1,33 +1,30 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
-import type { GdCounter } from '../src';
-import { defaultTokenViewer, element, observed, sectionedArgTypes } from './helpers';
+// Generated from libs/ui/src/components/molecules/Counter/Counter.stories.tsx; edit the source example or native-story adapter.
+import * as fixtures from './fixtures/Counter.generated.js';
+import { nativeMeta, nativeStory } from './native-story';
+import { sectionedArgTypes } from './helpers';
 
-type Args = Pick<GdCounter, 'min' | 'max' | 'initial' | 'isDisabled'>;
+const sourceMeta = nativeMeta(fixtures.default, sectionedArgTypes('Counter', {}));
 const meta = {
   title: 'Molecules/Counter',
   tags: ['autodocs'],
+  args: sourceMeta.args,
   parameters: {
+    layout: 'centered',
     docs: {
       description: {
         component:
-          'Counter matching React minimum, maximum, initial value, external change handling, disabled state, and accessible native controls.',
+          'Counter with minimum, maximum, initial value, external change handling, disabled state, and accessible native controls.',
       },
     },
   },
-  args: { min: 1, max: 5, initial: 1, isDisabled: false },
-  argTypes: sectionedArgTypes('Counter', {}),
-  render: (args: Args) => observed(element('gd-counter', args), 'gd-change', { value: args.initial }),
-} satisfies Meta<Args>;
+  argTypes: sourceMeta.argTypes,
+  render: sourceMeta.render,
+};
 export default meta;
-type Story = StoryObj<Args>;
-export const Default: Story = {};
-export const AtMaximum: Story = { args: { initial: 5 } };
-export const Disabled: Story = { args: { isDisabled: true } };
-export const AdjustedMaximum: Story = { args: { max: 10, initial: 8 } };
-export const AdjustedMinimum: Story = { args: { min: 3, initial: 3 } };
-export const CustomRange: Story = { args: { min: 2, max: 10, initial: 5 } };
-export const AdjustedMaxValue5: Story = { args: { max: 5, initial: 5 } };
-export const AdjustedMinValue3: Story = { args: { min: 3, initial: 3 } };
-export const AdjustedMin2MaxValue10: Story = CustomRange;
-export const WithExternalCounterChangeHandler: Story = Default;
-export const DefaultTokens: Story = { render: () => defaultTokenViewer('counter') };
+export const Default = { ...nativeStory(fixtures.Default, meta) };
+export const AdjustedMaxValue5 = { ...nativeStory(fixtures.AdjustedMaxValue5, meta) };
+export const AdjustedMinValue3 = { ...nativeStory(fixtures.AdjustedMinValue3, meta) };
+export const AdjustedMin2MaxValue10 = { ...nativeStory(fixtures.AdjustedMin2MaxValue10, meta) };
+export const WithExternalCounterChangeHandler = { ...nativeStory(fixtures.WithExternalCounterChangeHandler, meta) };
+export const Disabled = { ...nativeStory(fixtures.Disabled, meta) };
+export const DefaultTokens = { ...nativeStory(fixtures.DefaultTokens, meta) };

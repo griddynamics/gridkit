@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GridKitIconName } from 'gd-design-core';
 import type { GdToggle } from '../src';
-import { defaultTokenViewer, element, observed, sectionedArgTypes } from './helpers';
+import { defaultTokenViewer, element, sectionedArgTypes } from './helpers';
 
 type Args = Pick<GdToggle, 'items' | 'value' | 'disabled' | 'renderItemContent' | 'styles'>;
 const items = ['Option 1', 'Option 2', 'Option 3'];
@@ -25,7 +25,7 @@ const meta = {
     renderItemContent: { description: 'Optional item render function', control: false },
     styles: { description: 'Custom group styles', control: 'object' },
   }),
-  render: (args: Args) => observed(element('gd-toggle', args), 'gd-change', { value: args.value }),
+  render: (args: Args) => element('gd-toggle', args),
 } satisfies Meta<Args>;
 export default meta;
 type Story = StoryObj<Args>;
@@ -49,7 +49,20 @@ export const WithCustomRender: Story = {
   parameters: { docs: { description: { story: 'Object items can supply values and consumer-rendered content.' } } },
 };
 export const WithAccessibility: Story = {
-  args: { 'aria-label': 'Toggle options' } as never,
+  render: (args) => {
+    const root = document.createElement('div');
+    const label = document.createElement('label');
+    label.textContent = 'Select an option:';
+    label.htmlFor = 'toggle-group';
+    label.style.cssText = 'display:block;margin-bottom:10px;font-weight:bold';
+    const group = document.createElement('div');
+    group.id = 'toggle-group';
+    group.setAttribute('role', 'group');
+    group.setAttribute('aria-label', 'Toggle options');
+    group.append(element('gd-toggle', args));
+    root.append(label, group);
+    return root;
+  },
   parameters: { a11y: { test: 'error' }, docs: { disable: true } },
   tags: ['a11y'],
 };

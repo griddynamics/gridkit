@@ -1,77 +1,32 @@
-import type { Meta, StoryObj } from '@storybook/web-components-vite';
-import type { GdAvatar } from '../src';
-import { defaultTokenViewer, element, portrait, sectionedArgTypes } from './helpers';
+// Generated from libs/ui/src/components/atoms/Avatar/Avatar.stories.tsx; edit the source example or native-story adapter.
+import * as fixtures from './fixtures/Avatar.generated.js';
+import { nativeMeta, nativeStory } from './native-story';
+import { sectionedArgTypes } from './helpers';
 
-type Args = Pick<GdAvatar, 'src' | 'alt' | 'sizeVariant' | 'withBadge' | 'badgeColor' | 'backgroundColor'> & {
-  fallbackComponent: string;
-};
+const sourceMeta = nativeMeta(fixtures.default, sectionedArgTypes('Avatar', {}));
 const meta = {
   title: 'Atoms/Avatar',
   tags: ['autodocs'],
+  args: sourceMeta.args,
   parameters: {
+    layout: 'centered',
     docs: {
       description: {
-        component:
-          'Avatar matching the React image, fallback initials or icon, badge, color, size, and accessibility states.',
+        component: 'Avatar with image, fallback initials or icon, badge, color, size, and accessible labeling.',
       },
     },
   },
-  args: {
-    src: '',
-    alt: 'Ada Lovelace',
-    fallbackComponent: 'AL',
-    sizeVariant: 'md',
-    withBadge: false,
-    badgeColor: 'bg.fill.success.primary.default',
-    backgroundColor: undefined,
-  },
-  argTypes: sectionedArgTypes('Avatar', {
-    sizeVariant: { control: 'select', options: ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'] },
-    badgeColor: { control: 'color' },
-    backgroundColor: { control: 'color' },
-  }),
-  render: ({ fallbackComponent, ...args }: Args) => element('gd-avatar', { ...args, fallback: fallbackComponent }),
-} satisfies Meta<Args>;
+  argTypes: sourceMeta.argTypes,
+  render: sourceMeta.render,
+};
 export default meta;
-type Story = StoryObj<Args>;
-export const Default: Story = {};
-export const Image: Story = { args: { src: portrait } };
-export const Badge: Story = { args: { withBadge: true, sizeVariant: 'xl' } };
-export const Small: Story = { args: { sizeVariant: 'sm' } };
-export const Large: Story = { args: { sizeVariant: 'lg' } };
-export const AllSizes: Story = {
-  render: (args) => {
-    const row = document.createElement('div');
-    row.style.cssText = 'display:flex;gap:16px;align-items:center';
-    for (const size of ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'] as const)
-      row.append(
-        element('gd-avatar', { ...args, fallback: args.fallbackComponent, sizeVariant: size, alt: `${size} avatar` })
-      );
-    return row;
-  },
-};
-export const CustomColors: Story = { args: { withBadge: true, backgroundColor: '#6b46c1', badgeColor: '#22c55e' } };
-export const SlottedFallback: Story = {
-  render: () => {
-    const avatar = element('gd-avatar', {
-      alt: 'Custom fallback',
-      sizeVariant: 'xl',
-      backgroundColor: '#E0E0E0',
-    });
-    const fallback = element('gd-icon', { name: 'star', width: 40, height: 40, fill: '#646464' });
-    fallback.slot = 'fallback';
-    avatar.append(fallback);
-    return avatar;
-  },
-};
-export const WithBadge: Story = { args: { withBadge: true } };
-export const WithCustomBadgeColor: Story = { args: { withBadge: true, badgeColor: '#22c55e' } };
-export const WithInitials: Story = { args: { src: '', fallbackComponent: 'AL' } };
-export const WithCustomBackgroundColor: Story = {
-  args: { src: '', fallbackComponent: 'AL', backgroundColor: '#6b46c1' },
-};
-export const WithIcon: Story = SlottedFallback;
-export const WithImageAndFallback: Story = { args: { src: portrait, fallbackComponent: 'AL' } };
-export const WithDifferentSize: Story = AllSizes;
-export const WithAccessibility: Story = { args: { alt: 'Ada Lovelace profile photo' } };
-export const DefaultTokens: Story = { render: () => defaultTokenViewer('avatar') };
+export const Default = { ...nativeStory(fixtures.Default, meta) };
+export const WithBadge = { ...nativeStory(fixtures.WithBadge, meta) };
+export const WithCustomBadgeColor = { ...nativeStory(fixtures.WithCustomBadgeColor, meta) };
+export const WithInitials = { ...nativeStory(fixtures.WithInitials, meta) };
+export const WithCustomBackgroundColor = { ...nativeStory(fixtures.WithCustomBackgroundColor, meta) };
+export const WithIcon = { ...nativeStory(fixtures.WithIcon, meta) };
+export const WithImageAndFallback = { ...nativeStory(fixtures.WithImageAndFallback, meta) };
+export const WithDifferentSize = { ...nativeStory(fixtures.WithDifferentSize, meta) };
+export const WithAccessibility = { ...nativeStory(fixtures.WithAccessibility, meta) };
+export const DefaultTokens = { ...nativeStory(fixtures.DefaultTokens, meta) };

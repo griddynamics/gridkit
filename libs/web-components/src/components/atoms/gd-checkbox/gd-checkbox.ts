@@ -63,7 +63,7 @@ function resolveCheckboxTokens(theme: DesignCoreTheme, size: CheckboxSizeName): 
 export class GdCheckbox extends LitElement {
   static styles = css`
     :host {
-      display: inline-block;
+      display: inline-flex;
     }
     label {
       display: inline-flex;

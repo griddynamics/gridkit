@@ -52,6 +52,18 @@ describe('Storybook custom-element source', () => {
     expect(generated).toContain('name="success"');
     expect(generated).toContain('size="md"');
     expect(generated).not.toContain("document.querySelector('gd-icon')");
-    expect(generated).not.toContain('const component2');
+    expect(generated.match(/const component2 =/g)).toHaveLength(1);
+    expect(generated).toContain('component2.theme = defaultTheme;');
+  });
+
+  it('preserves layout wrappers and initializes nested property-only inputs', () => {
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = 'display: flex; gap: 24px;';
+    wrapper.append(element('gd-select', { items, multiple: true }));
+    const generated = source(wrapper);
+    expect(generated).toContain('<div style="display: flex; gap: 24px;">');
+    expect(generated).toContain('component.items = [');
+    expect(generated).toContain('component.theme = defaultTheme;');
+    expect(generated.match(/<gd-select/g)).toHaveLength(1);
   });
 });

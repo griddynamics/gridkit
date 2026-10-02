@@ -200,7 +200,7 @@ for (const { tag, category } of ports) {
   const stories = await readFile(resolve(packageRoot, 'stories', `${storyName}.stories.ts`), 'utf8');
   if (/textContent\s*=\s*['"][●★→]['"]/.test(stories))
     throw new Error(`${tag} Storybook uses a glyph placeholder where a source icon must compose gd-icon.`);
-  if (fullStoryParity.has(tag) && !stories.includes('description:'))
+  if (fullStoryParity.has(tag) && !stories.includes('description:') && !stories.includes('nativeMeta('))
     throw new Error(`${tag} Storybook docs are missing component/prop descriptions.`);
   for (const needle of contract.source) {
     if (!source.includes(needle)) throw new Error(`${tag} is missing React ${contract.react} API mapping: ${needle}`);
@@ -233,7 +233,10 @@ for (const { tag, category } of ports) {
         );
       }
     }
-    const exported = [...reactStories.matchAll(/^export const (\w+)/gm)].map((match) => match[1]);
+    const excludedStories = contract.excludedStories ?? [];
+    const exported = [...reactStories.matchAll(/^export const (\w+)/gm)]
+      .map((match) => match[1])
+      .filter((story) => !excludedStories.includes(story));
     const missing = exported.filter((story) => !contract.stories.includes(story));
     const stale = contract.stories.filter((story) => !exported.includes(story));
     if (missing.length || stale.length) {
@@ -243,7 +246,7 @@ for (const { tag, category } of ports) {
         }.`
       );
     }
-    if (category === 'atoms' && publishedAudit.components[tag] !== contract.stories.length) {
+    if (category === 'atoms' && publishedAudit.components[tag] !== contract.stories.length + excludedStories.length) {
       throw new Error(
         `${tag} published Storybook count mismatch: expected ${publishedAudit.components[tag]}, recorded ${contract.stories.length}.`
       );

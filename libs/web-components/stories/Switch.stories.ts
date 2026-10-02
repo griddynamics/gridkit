@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdSwitch } from '../src';
-import { defaultTokenViewer, element, observed, sectionedArgTypes } from './helpers';
+import { defaultTokenViewer, element, stack, sectionedArgTypes } from './helpers';
 
-type Args = Pick<GdSwitch, 'checked' | 'disabled' | 'isLoading' | 'label' | 'name' | 'styles'>;
+type Args = Pick<GdSwitch, 'checked' | 'disabled' | 'isLoading' | 'label' | 'name' | 'styles'> & { children: string };
 const meta = {
   title: 'Atoms/Switch',
   tags: ['autodocs'],
@@ -15,7 +15,7 @@ const meta = {
       },
     },
   },
-  args: { name: 'switch', checked: false, disabled: false, isLoading: false, label: 'right' },
+  args: { name: 'switch', checked: false, disabled: false, isLoading: false, label: 'right', children: 'Label' },
   argTypes: sectionedArgTypes('Switch', {
     checked: { description: 'Checked state', control: 'boolean' },
     disabled: { description: 'Disables interaction', control: 'boolean' },
@@ -24,7 +24,7 @@ const meta = {
     name: { description: 'Native checkbox name', control: 'text' },
     styles: { description: 'Custom wrapper styles', control: 'object' },
   }),
-  render: (args: Args) => observed(element('gd-switch', args, 'Label'), 'gd-change', { checked: args.checked }),
+  render: ({ children, ...args }: Args) => element('gd-switch', args, children),
 } satisfies Meta<Args>;
 export default meta;
 type Story = StoryObj<Args>;
@@ -32,31 +32,52 @@ export const Default: Story = {};
 export const Checked: Story = { args: { checked: true } };
 export const Disabled: Story = { args: { disabled: true } };
 export const LabelLeft: Story = {
-  args: { label: 'left' },
-  render: (args) => element('gd-switch', args, 'Label on the left'),
+  args: { label: 'left', children: 'Label on the left' },
 };
-export const Controlled: Story = {
-  render: () => {
-    const sw = element('gd-switch', { checked: false }, 'Controlled Switch, with 1.5 seconds delay');
-    sw.addEventListener('gd-change', (e) =>
-      setTimeout(() => (sw.checked = (e as CustomEvent<{ checked: boolean }>).detail.checked), 1500)
-    );
-    return observed(sw, 'gd-change', { checked: false });
-  },
-  parameters: { docs: { description: { story: 'Controlled state is written back externally after a delay.' } } },
-};
+function controlledSwitch(delay: number, withLoading = false) {
+  const state = element('gd-typography', {}, 'Current state: OFF');
+  const loading = element('gd-typography', {}, 'Loading: No');
+  const control = element(
+    'gd-switch',
+    { checked: false },
+    withLoading ? 'Switch with Loading State (3 seconds)' : 'Controlled Switch, with 1.5 seconds delay'
+  );
+  let checked = false;
+  control.addEventListener('gd-change', (event) => {
+    const next = (event as CustomEvent<{ checked: boolean }>).detail.checked;
+    control.checked = checked;
+    if (withLoading) {
+      control.isLoading = true;
+      loading.textContent = 'Loading: Yes (3 seconds)';
+    }
+    setTimeout(() => {
+      if (!control.isConnected) return;
+      checked = next;
+      control.checked = next;
+      control.isLoading = false;
+      state.textContent = `Current state: ${next ? 'ON' : 'OFF'}`;
+      loading.textContent = 'Loading: No';
+    }, delay);
+  });
+  return stack('column', '16px', state, ...(withLoading ? [loading] : []), control);
+}
+export const Controlled: Story = { render: () => controlledSwitch(1500) };
 export const Uncontrolled: Story = {
-  render: () => observed(element('gd-switch', {}, 'Uncontrolled Switch'), 'gd-change', { checked: false }),
-  parameters: { docs: { description: { story: 'The element manages its checked state and emits each change.' } } },
+  render: () =>
+    stack(
+      'column',
+      '16px',
+      element(
+        'gd-typography',
+        {},
+        'Uncontrolled Switch - state is managed internally. Check the Actions panel to see onChange events.'
+      ),
+      element('gd-switch', {}, 'Uncontrolled Switch')
+    ),
 };
-export const WithLoading: Story = {
-  args: { isLoading: true },
-  render: (args) => element('gd-switch', args, 'Switch with Loading State (3 seconds)'),
-  parameters: { docs: { description: { story: 'Loading composes gd-loader and disables the native checkbox.' } } },
-};
+export const WithLoading: Story = { render: () => controlledSwitch(3000, true) };
 export const WithAccessibility: Story = {
-  args: { name: 'notifications' },
-  render: (args) => element('gd-switch', args, 'Enable notifications'),
+  args: { name: 'notifications', children: 'Enable notifications' },
   parameters: { a11y: { test: 'error' }, docs: { disable: true } },
   tags: ['a11y'],
 };

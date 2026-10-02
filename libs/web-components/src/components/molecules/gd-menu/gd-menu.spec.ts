@@ -22,6 +22,21 @@ function mount() {
 }
 
 describe('gd-menu', () => {
+  it('closes on an outside pointer target after reopening', async () => {
+    const menu = mount();
+    const outside = document.createElement('button');
+    outside.textContent = 'Outside';
+    host.append(outside);
+    await settle(menu);
+    for (let attempt = 0; attempt < 2; attempt++) {
+      menu.openMenu();
+      await settle(menu);
+      await userEvent.click(outside);
+      await settle(menu);
+      expect(menu.open).toBe(false);
+      expect(menu.shadowRoot!.querySelector('[popover]')!.matches(':popover-open')).toBe(false);
+    }
+  });
   it('exposes the trigger and content slots through stable CSS parts', async () => {
     const menu = mount();
     await settle(menu);

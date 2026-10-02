@@ -4,7 +4,8 @@ import { defaultTokenViewer, element, sectionedArgTypes } from './helpers';
 
 type Args = Partial<
   Pick<GdImage, 'as' | 'captionAs' | 'src' | 'alt' | 'width' | 'height' | 'caption' | 'placeholder' | 'objectFit'>
->;
+> &
+  Record<string, unknown>;
 const COMMON_ARGS: Args = {
   src: 'https://picsum.photos/150/150',
   alt: 'Test image',
@@ -33,71 +34,16 @@ const meta = {
     height: 300,
     objectFit: 'cover',
   },
-  argTypes: {
-    ...sectionedArgTypes('Image', {}),
-    as: {
-      description: 'Semantic element used by the internal image wrapper',
-      control: 'select',
-      options: ['div', 'figure'],
-      table: { type: { summary: `'div' | 'figure'` }, defaultValue: { summary: 'div' }, category: 'Core Properties' },
-    },
-    captionAs: {
-      description: 'Semantic element used for the caption',
-      control: 'select',
-      options: ['figcaption', 'p', 'span'],
-      table: {
-        type: { summary: `'figcaption' | 'p' | 'span'` },
-        defaultValue: { summary: 'figcaption' },
-        category: 'Core Properties',
-      },
-    },
-    placeholder: {
-      description: 'Text displayed in a Skeleton while the image loads',
-      control: 'text',
-      table: { type: { summary: 'string' }, category: 'Content & Display' },
-    },
-    fallbackComponent: {
-      description: 'Element assigned to the fallback slot and displayed when the source is missing or fails to load',
-      control: { disable: true },
-      table: { type: { summary: 'HTMLElement (slot="fallback")' }, category: 'Content & Display' },
-    },
-    styles: {
-      description: 'CSS property values applied to the internal image element',
-      control: { disable: true },
-      table: { type: { summary: 'Record<string, string | number>' }, category: 'Styling' },
-    },
-    onClick: {
-      description: 'Listen for the native click event on gd-image',
-      control: { disable: true },
-      table: { type: { summary: 'EventListener' }, category: 'Events' },
-    },
-    onError: {
-      description: 'Listen for the gd-error custom event',
-      control: { disable: true },
-      table: { type: { summary: 'EventListener<CustomEvent>' }, category: 'Events' },
-    },
-    onLoad: {
-      description: 'Listen for the gd-load custom event',
-      control: { disable: true },
-      table: { type: { summary: 'EventListener<CustomEvent>' }, category: 'Events' },
-    },
-    objectFit: {
-      description: 'Native object-fit behavior',
-      control: 'select',
-      options: ['cover', 'contain', 'fill', 'none', 'scale-down'],
-    },
-  },
+  argTypes: sectionedArgTypes('Image', {}),
   render: (args: Args) => element('gd-image', args),
 } satisfies Meta<Args>;
 export default meta;
 type Story = StoryObj<Args>;
-export const Default: Story = { name: 'Default Image', args: COMMON_ARGS };
+export const Default: Story = { args: COMMON_ARGS };
 export const WithCaption: Story = {
-  name: 'Image With Caption',
   args: { ...COMMON_ARGS, caption: 'This is a sample caption below the image.' },
 };
 export const WithPlaceholder: Story = {
-  name: 'Image With Placeholder',
   args: { ...COMMON_ARGS, placeholder: 'Loading image...' },
 };
 export const FallbackImage: Story = {
@@ -120,7 +66,6 @@ export const FallbackImage: Story = {
   },
 };
 export const Clickable: Story = {
-  name: 'Clickable Image',
   args: { ...COMMON_ARGS, caption: 'Click me!' },
   render: (args) => {
     const image = element('gd-image', args);
@@ -131,7 +76,6 @@ export const Clickable: Story = {
   },
 };
 export const WithAsProp: Story = {
-  name: 'Image With As Prop',
   args: { ...COMMON_ARGS, as: 'figure', caption: 'Image with semantic figure wrapper' },
   parameters: {
     docs: {
@@ -142,7 +86,6 @@ export const WithAsProp: Story = {
   },
 };
 export const WithCaptionAsProp: Story = {
-  name: 'Image With captionAs Prop',
   args: { ...COMMON_ARGS, caption: 'Image with custom caption element (p tag)', captionAs: 'p' },
   parameters: {
     docs: {
@@ -153,7 +96,6 @@ export const WithCaptionAsProp: Story = {
   },
 };
 export const WithAccessibility: Story = {
-  name: 'Image With Accessibility',
   args: { ...COMMON_ARGS, alt: 'Test image' },
 };
 export const DefaultTokens: Story = {

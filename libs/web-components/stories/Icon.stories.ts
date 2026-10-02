@@ -104,11 +104,7 @@ export const RegisteringCustomIcons: Story = {
   },
 };
 export const WithAccessibility: Story = {
-  render: (args) => {
-    const icon = element('gd-icon', args);
-    icon.setAttribute('aria-label', 'Favorite');
-    return icon;
-  },
+  render: AllIcons.render,
 };
 export const DefaultTokens: Story = {
   render: () => defaultTokenViewer('icon'),

@@ -1,5 +1,6 @@
 import { LitElement, html, css, nothing, type PropertyValues } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
+import { html as staticHtml, unsafeStatic } from 'lit/static-html.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { input } from 'gd-design-library/tokens';
 import {
@@ -115,12 +116,13 @@ function resolveInputTokens(theme: DesignCoreTheme, color: InputColorVariantName
 export class GdInput extends LitElement {
   static styles = css`
     :host {
-      display: inline-block;
+      display: inline-flex;
     }
     .outer {
       display: inline-flex;
       flex-direction: column;
       align-items: flex-start;
+      justify-content: center;
     }
     .row {
       position: relative;
@@ -182,6 +184,7 @@ export class GdInput extends LitElement {
   @property({ type: Boolean }) checked = false;
   @property({ type: Boolean, attribute: 'default-checked' }) defaultChecked = false;
   @property({ type: String }) width?: string;
+  @property({ type: String, attribute: 'wrapper-as' }) wrapperAs: 'div' | 'span' | 'label' = 'div';
   /** Component-token layout overrides for composed ports; never consumer literal CSS. */
   @property({ attribute: false }) styles: Record<string, string | number> = {};
   @property({ attribute: false }) inputStyles: Record<string, string | number> = {};
@@ -303,11 +306,14 @@ export class GdInput extends LitElement {
 
   firstUpdated() {
     this._input.value = this.value;
-    if (this.defaultChecked && !this.checked) this.checked = true;
     this._syncFormState();
   }
 
   willUpdate(changed: PropertyValues<this>) {
+    if (!this.hasUpdated) {
+      if (this.defaultValue !== undefined && !this.value) this.value = this.defaultValue;
+      if (this.defaultChecked && !this.checked) this.checked = true;
+    }
     if (changed.has('debounceCallbackTime')) {
       this._store.getState().setDebounceCallbackTime(this.debounceCallbackTime);
       this._debouncedDispatch = undefined;
@@ -316,7 +322,9 @@ export class GdInput extends LitElement {
   }
 
   updated(changed: PropertyValues<this>) {
-    const cssText = buttonCssBlockToText('input', this.inputStyleRules);
+    const tokens = resolveThemeTree(input, this.theme) as unknown as { input: { default: ButtonCssBlock } };
+    const cssText =
+      buttonCssBlockToText('input', tokens.input.default) + buttonCssBlockToText('input', this.inputStyleRules);
     if (this.shadowRoot && cssText !== this._ruleText) {
       this._ruleText = cssText;
       const sheet = new CSSStyleSheet();
@@ -357,6 +365,23 @@ export class GdInput extends LitElement {
     const control = event.target as HTMLInputElement;
     const newValue = control.value;
     this.checked = control.checked;
+    // Native radios in separate shadow roots do not share a group. Keep the
+    // public name/form contract consistent across custom-element boundaries.
+    if (control.type === 'radio' && control.checked && this.name) {
+      const peers = this.form
+        ? Array.from(this.form.elements)
+        : Array.from((this.getRootNode() as Document | ShadowRoot).querySelectorAll('gd-input'));
+      for (const peer of peers) {
+        if (
+          peer instanceof GdInput &&
+          peer !== this &&
+          peer.name === this.name &&
+          peer.form === this.form &&
+          (peer.variant ?? peer.type) === 'radio'
+        )
+          peer.checked = false;
+      }
+    }
     this._lastInternalValue = newValue;
     this.value = newValue;
     this._getDebouncedDispatch()(newValue);
@@ -388,17 +413,22 @@ export class GdInput extends LitElement {
 
   render() {
     const inputType = this.variant ?? this.type;
+    const hasBorder = !['checkbox', 'radio', 'range'].includes(inputType);
     const resolved = resolveInputTokens(this.theme, this.color);
     const focusColor = (this.theme.colors as { border?: { focus?: string } } | undefined)?.border?.focus ?? '#0069B4';
     const textColor = this.disabled ? resolved.disabledColor : resolved.color;
 
-    const outerStyle = { gap: `${resolved.wrapperGap}`, ...this.styles };
+    const outerStyle = {
+      gap: this.label || this.helperText ? `${resolved.wrapperGap}` : '0',
+      width: this.width ? '100%' : undefined,
+      ...this.styles,
+    };
     const rowStyle = {
       fontFamily: `${resolved.fontFamily}`,
       fontSize: `${resolved.fontSize}`,
       color: textColor,
       zIndex: `${resolved.zIndex}`,
-      padding: `0 ${resolved.horizontalPadding}`,
+      padding: '0',
       '--gd-input-placeholder-color': resolved.disabledColor,
     };
     const borderStyle = {
@@ -424,20 +454,24 @@ export class GdInput extends LitElement {
       lineHeight: `${resolved.helperLineHeight}`,
     };
 
+    const wrapperTag = unsafeStatic(['label', 'span'].includes(this.wrapperAs) ? this.wrapperAs : 'div');
+
     // `part` attributes (CTORNDSD-646b) expose these internals to consumer CSS via
     // `gd-input::part(input)` etc. This is the only sanctioned way to style inside a shadow root
     // from outside it; without it, a consumer's only escape hatch is the `theme` property.
-    return html`
-      <div class="outer" part="outer" style=${styleMap(outerStyle)}>
-        ${this.label
-          ? html`<label
-              class="label"
-              part="label"
-              for=${this.id ? `${this.id}-control` : 'control'}
-              style=${styleMap(labelStyle)}
-              >${this.label}</label
-            >`
-          : nothing}
+    return staticHtml`
+      <${wrapperTag} class="outer" part="outer" style=${styleMap(outerStyle)}>
+        ${
+          this.label
+            ? html`<label
+                class="label"
+                part="label"
+                for=${this.id ? `${this.id}-control` : 'control'}
+                style=${styleMap(labelStyle)}
+                >${this.label}</label
+              >`
+            : nothing
+        }
         <div class="row" part="row" style=${styleMap(rowStyle)}>
           <slot name="adornment-start"></slot>
           <input
@@ -464,14 +498,20 @@ export class GdInput extends LitElement {
             @keydown=${this._onKeyDown}
             @blur=${this._onBlur}
           />
-          <span class="border" part="border" style=${styleMap(borderStyle)}></span>
-          <span class="outline" part="outline" style=${styleMap(outlineStyle)}></span>
+          ${
+            hasBorder
+              ? html`<span class="border" part="border" style=${styleMap(borderStyle)}></span>
+                  <span class="outline" part="outline" style=${styleMap(outlineStyle)}></span>`
+              : nothing
+          }
           <slot name="adornment-end"></slot>
         </div>
-        ${this.helperText
-          ? html`<span class="helper" part="helper" style=${styleMap(helperStyle)}>${this.helperText}</span>`
-          : nothing}
-      </div>
+        ${
+          this.helperText
+            ? html`<span class="helper" part="helper" style=${styleMap(helperStyle)}>${this.helperText}</span>`
+            : nothing
+        }
+      </${wrapperTag}>
     `;
   }
 }

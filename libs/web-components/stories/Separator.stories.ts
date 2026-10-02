@@ -80,14 +80,22 @@ export const WithLabel: Story = {
     return wrapper;
   },
 };
+function cardExample(index: number) {
+  const card = element('gd-box', { isBordered: true, styles: { padding: '20px' } });
+  card.append(
+    element('gd-typography', { variant: 'h5', styles: { margin: '0', padding: '0' } }, `Title ${index}`),
+    element('gd-typography', { variant: 'p', styles: { margin: '0', padding: '0' } }, `Description ${index}`)
+  );
+  return card;
+}
 export const Vertical: Story = {
   render: () => {
     const wrapper = document.createElement('div');
     wrapper.style.cssText = 'display:flex;gap:20px;align-items:center';
     wrapper.append(
-      'Title 1 — Description 1',
+      cardExample(1),
       element('gd-separator', { size: 'md', length: '200px', variant: 'solid', orientation: 'vertical' }),
-      'Title 2 — Description 2'
+      cardExample(2)
     );
     return wrapper;
   },
@@ -97,9 +105,9 @@ export const VerticalWithLabel: Story = {
     const wrapper = document.createElement('div');
     wrapper.style.cssText = 'display:flex;gap:20px;align-items:center';
     wrapper.append(
-      'Title 1 — Description 1',
+      cardExample(1),
       element('gd-separator', { size: 'md', length: '200px', variant: 'solid', orientation: 'vertical', label: 'Or' }),
-      'Title 2 — Description 2'
+      cardExample(2)
     );
     return wrapper;
   },

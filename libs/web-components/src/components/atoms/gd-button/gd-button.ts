@@ -314,6 +314,7 @@ export class GdButton extends LitElement {
         ...resolvedTree.default,
         fontFamily: get(this.theme, 'font.family', '"Fira Sans", sans-serif'),
         fontSize: get(this.theme, 'font.size.p', '16px'),
+        lineHeight: get(this.theme, 'font.line.height.p', '24px'),
       },
     };
     const radius = resolveButtonRadius(this.theme, this.rounded);

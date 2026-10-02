@@ -67,12 +67,30 @@ if (built) {
     errors.push('Shared documentation must appear before React in the built sidebar order');
 }
 if (!indexes.webComponents.entries['introduction-overview--overview']) errors.push('Missing Web Components overview');
+
+// Docs is the component landing format in both catalogs: it keeps the overview,
+// controls, source, and initial example together. Default remains an example
+// story only where the source component defines one.
+for (const [catalog, index] of Object.entries(indexes)) {
+  const componentEntries = Object.values(index.entries).filter((entry) => {
+    const title = entry.title.replace(/^React\//, '');
+    return /^(Atoms|Molecules|Organisms|Layout & Structure|Templates)\//.test(title);
+  });
+  const titles = [...new Set(componentEntries.map((entry) => entry.title))];
+  for (const title of titles) {
+    const entries = componentEntries.filter((entry) => entry.title === title);
+    const docs = entries.find((entry) => entry.type === 'docs');
+    if (!docs) errors.push(`${catalog}: ${title} is missing its Docs landing entry`);
+    if (built && docs && entries[0]?.id !== docs.id)
+      errors.push(`${catalog}: ${title} must open with Docs before its example stories`);
+  }
+}
 for (const [group, names] of [
   ['atoms', ['avatar', 'button', 'checkbox', 'input', 'select', 'typography']],
   ['molecules', ['counter', 'menu']],
 ]) {
   for (const name of names) {
-    for (const variant of ['docs', 'default']) {
+    for (const variant of ['docs']) {
       const id = `${group}-${name}--${variant}`;
       if (!indexes.webComponents.entries[id]) errors.push(`Missing native Web Components entry: ${id}`);
     }

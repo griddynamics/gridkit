@@ -1463,7 +1463,7 @@ export const reactStorybookArgTypes = {
     },
     className: {
       name: 'className',
-      description: 'Provides a way to apply custom CSS classes, such as Tailwind utility classes for animations.',
+      description: 'Provides a way to apply custom CSS classes, such as utility CSS utility classes for animations.',
       table: {
         type: {
           summary: 'string',

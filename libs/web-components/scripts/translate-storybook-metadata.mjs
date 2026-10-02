@@ -37,6 +37,7 @@ function translateString(value) {
     .replace(/React elements?/gi, 'DOM elements')
     .replace(/React content/gi, 'slotted content')
     .replace(/React nodes?/gi, 'DOM nodes')
+    .replace(/Tailwind CSS|Tailwind/g, 'utility CSS')
     .replaceAll('keyof HTMLElementTagNameMap | keyof HTMLElementTagNameMap', 'keyof HTMLElementTagNameMap');
 }
 
