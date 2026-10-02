@@ -84,7 +84,7 @@ try {
   await page.waitForURL((url) => url.searchParams.get('path') === '/docs/react-introduction-theme-tokens-usage--docs');
 
   await page.goto(`${base}/?path=/docs/react-introduction-ai-integration-overview--docs`);
-  await docs().getByRole('heading', { name: 'AI Integration', exact: true }).waitFor();
+  await docs().getByText('AI Integration', { exact: true }).first().waitFor();
 
   await page.goto(`${base}/?path=/docs/react-theme-tokens-colors--docs`);
   await page.waitForURL((url) => url.searchParams.get('path') === '/docs/theme-tokens-colors--docs');
@@ -93,15 +93,23 @@ try {
     .waitFor();
 
   await page.goto(`${base}/?path=/docs/patterns-best-practices-cross-device-ux-notes--docs`);
-  await docs().getByRole('heading', { name: 'Cross-Device UX Notes', exact: true }).waitFor();
+  await docs().getByText('Cross-Device UX Notes', { exact: true }).first().waitFor();
 
   // Composition must load the child's own native renderer, not a React wrapper.
   await page.goto(`${base}/?path=/story/web-components_introduction-overview--overview`);
   const nativeFrame = page.frameLocator('#storybook-ref-web-components');
   await nativeFrame.getByRole('heading', { name: 'Using Web Components', exact: true }).waitFor();
 
-  await page.goto(`${base}/?path=/story/web-components_atoms-button--default`);
+  await page.goto(`${base}/?path=/story/web-components_atoms-button--default&panel=addon-controls`);
   await nativeFrame.getByRole('button', { name: 'Button', exact: true }).waitFor();
+  await page.getByText('variant', { exact: true }).first().waitFor();
+  await page.getByRole('combobox', { name: 'variant', exact: true }).selectOption('secondary');
+  await page.waitForFunction(
+    () =>
+      document.querySelector('#storybook-ref-web-components')?.contentDocument?.querySelector('gd-button')?.variant ===
+      'secondary'
+  );
+  assert.equal(await nativeFrame.locator('gd-button').evaluate((element) => element.variant), 'secondary');
   await page.goto(`${base}/?path=/docs/web-components_atoms-button--docs`);
   await nativeFrame.getByRole('heading', { name: 'Button', exact: true }).first().waitFor();
 
