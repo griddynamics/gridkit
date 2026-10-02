@@ -393,6 +393,39 @@ export async function checkNativeStories(page, base, webBase = `${base}/web-comp
   assert.equal(await page.locator('input').getAttribute('type'), 'text');
   await open('atoms-select--default');
   await page.getByRole('button', { name: 'Select', exact: true }).click();
+  const selectAnchorBefore = await page.locator('gd-select').evaluate((select) => {
+    const trigger = select.shadowRoot.querySelector('.trigger').getBoundingClientRect();
+    const dropdown = select.shadowRoot.querySelector('.dropdown').getBoundingClientRect();
+    return {
+      placement: dropdown.top >= trigger.bottom ? 'bottom' : 'top',
+      gap: dropdown.top >= trigger.bottom ? dropdown.top - trigger.bottom : trigger.top - dropdown.bottom,
+      widthDelta: dropdown.width - trigger.width,
+    };
+  });
+  assert.ok(Math.abs(selectAnchorBefore.gap - 1) < 0.25, "Select dropdown must preserve React's 1px gap");
+  assert.ok(Math.abs(selectAnchorBefore.widthDelta) < 0.25, 'Select dropdown width must match its trigger');
+  await page.locator('gd-select').evaluate((select) => {
+    const scroller = select.parentElement;
+    const spacer = document.createElement('div');
+    spacer.style.height = '120px';
+    spacer.style.flex = '0 0 120px';
+    scroller.prepend(spacer);
+    scroller.style.height = '140px';
+    scroller.style.overflow = 'auto';
+    scroller.scrollTop = 40;
+    scroller.dispatchEvent(new Event('scroll'));
+  });
+  const selectAnchorAfter = await page.locator('gd-select').evaluate((select) => {
+    const trigger = select.shadowRoot.querySelector('.trigger').getBoundingClientRect();
+    const dropdown = select.shadowRoot.querySelector('.dropdown').getBoundingClientRect();
+    return {
+      placement: dropdown.top >= trigger.bottom ? 'bottom' : 'top',
+      gap: dropdown.top >= trigger.bottom ? dropdown.top - trigger.bottom : trigger.top - dropdown.bottom,
+      widthDelta: dropdown.width - trigger.width,
+    };
+  });
+  assert.ok(Math.abs(selectAnchorAfter.gap - 1) < 0.25, 'Select dropdown must stay anchored during ancestor scroll');
+  assert.ok(Math.abs(selectAnchorAfter.widthDelta) < 0.25, 'Select dropdown width must track its scrolled trigger');
   await page.getByRole('option', { name: 'Option 2', exact: true }).click();
   await event({ value: { name: 'Option 2', value: { test: 'option2' } } });
   await page.getByRole('listbox').waitFor({ state: 'hidden' });
