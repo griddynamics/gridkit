@@ -9,6 +9,7 @@ const meta = {
   title: 'Atoms/Icon',
   tags: ['autodocs'],
   parameters: {
+    layout: 'centered',
     docs: {
       description: {
         component:
@@ -35,14 +36,34 @@ export const WithDefinedSize: Story = { args: { size: 'xl' } };
 export const AllIcons: Story = {
   name: 'Icons Library',
   render: () => {
+    const container = document.createElement('div');
+    container.className = 'icon-library';
+    container.style.cssText = 'display:flex;min-width:480px;max-width:800px;width:100%';
     const grid = document.createElement('div');
-    grid.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:16px';
+    grid.className = 'icon-library-grid';
+    grid.style.cssText = 'display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px;width:100%';
     for (const name of names) {
-      const item = document.createElement('label');
-      item.append(element('gd-icon', { name, size: 'lg' }), document.createTextNode(name));
+      const item = document.createElement('div');
+      item.className = 'icon-library-item';
+      item.style.cssText =
+        'display:flex;flex-direction:column;flex-wrap:wrap;align-items:center;justify-content:flex-start;min-width:80px;max-width:100%;gap:10px;margin-bottom:10px;padding:5px;box-sizing:border-box';
+      item.append(
+        element('gd-icon', { name, size: 'md' }),
+        element('gd-typography', { variant: 'small', as: 'small' }, name)
+      );
       grid.append(item);
     }
-    return grid;
+    container.append(grid);
+    return container;
+  },
+  parameters: {
+    controls: { hideNoControlsWarning: true },
+    docs: {
+      description: {
+        story:
+          'Browse every built-in icon with its registered name. Each icon uses the standard medium size and can be copied by name into component properties or markup.',
+      },
+    },
   },
 };
 export const RegisteringCustomIcons: Story = {

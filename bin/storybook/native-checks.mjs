@@ -63,6 +63,57 @@ export async function checkNativeStories(page, base) {
   assert.equal(customIconExample.hasCircle, true, 'Custom icon example must render its registered SVG');
   assert.match(customIconExample.source, /registerCustomIcons/);
   assert.match(customIconExample.source, /<gd-icon name="projectOrbit"/);
+  await page.goto(`${base}/web-components/iframe.html?id=atoms-icon--all-icons&viewMode=story`);
+  await page.locator('.icon-library-item').first().waitFor({ state: 'attached' });
+  const webIconLibrary = await page.evaluate(() => {
+    const rect = (element) => {
+      const bounds = element.getBoundingClientRect();
+      return { x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height };
+    };
+    return {
+      container: rect(document.querySelector('.icon-library')),
+      names: [...document.querySelectorAll('.icon-library-item gd-typography')].map((label) => label.textContent),
+      items: [...document.querySelectorAll('.icon-library-item')].map(rect),
+      icons: [...document.querySelectorAll('.icon-library-item gd-icon')].map((icon) =>
+        rect(icon.shadowRoot.querySelector('svg'))
+      ),
+      labels: [...document.querySelectorAll('.icon-library-item gd-typography')].map((label) =>
+        rect(label.shadowRoot.querySelector('small'))
+      ),
+    };
+  });
+  await page.goto(`${base}/iframe.html?id=react-atoms-icon--all-icons&viewMode=story`);
+  await page.locator('[data-testid="Column"]').first().waitFor({ state: 'attached' });
+  const reactIconLibrary = await page.evaluate(() => {
+    const rect = (element) => {
+      const bounds = element.getBoundingClientRect();
+      return { x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height };
+    };
+    return {
+      container: rect(document.querySelector('[data-testid="FlexContainer"]')),
+      names: [...document.querySelectorAll('[data-testid="Column"] [data-testid="typography"]')].map(
+        (label) => label.textContent
+      ),
+      items: [...document.querySelectorAll('[data-testid="Column"]')].map(rect),
+      icons: [...document.querySelectorAll('[data-testid="Column"] svg')].map(rect),
+      labels: [...document.querySelectorAll('[data-testid="Column"] [data-testid="typography"]')].map(rect),
+    };
+  });
+  assert.deepEqual(webIconLibrary.names, reactIconLibrary.names, 'Icon library names and order must match React');
+  const assertRects = (webRects, reactRects, label) => {
+    assert.equal(webRects.length, reactRects.length, `${label} count must match React`);
+    webRects.forEach((webRect, index) => {
+      for (const key of ['x', 'y', 'width', 'height'])
+        assert.ok(
+          Math.abs(webRect[key] - reactRects[index][key]) < 0.25,
+          `${label} ${index + 1} ${key} must match React`
+        );
+    });
+  };
+  assertRects([webIconLibrary.container], [reactIconLibrary.container], 'Icon library container');
+  assertRects(webIconLibrary.items, reactIconLibrary.items, 'Icon library item');
+  assertRects(webIconLibrary.icons, reactIconLibrary.icons, 'Icon library SVG');
+  assertRects(webIconLibrary.labels, reactIconLibrary.labels, 'Icon library label');
   const badgeIcons = index.entries['atoms-badge--with-icons'];
   assert.ok(badgeIcons, 'Atoms/Badge WithIcons must exist');
   await page.goto(`${base}/web-components/iframe.html?id=${badgeIcons.id}&viewMode=story`);
