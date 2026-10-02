@@ -9,8 +9,7 @@ const meta = {
   parameters: {
     docs: {
       description: {
-        component:
-          'Checkbox matching React controlled, indeterminate, disabled, size, native form, and change-event behavior.',
+        component: 'Checkbox with controlled, indeterminate, disabled, size, native form, and change-event behavior.',
       },
     },
   },

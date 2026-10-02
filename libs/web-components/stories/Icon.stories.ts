@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
-import { iconCatalog, type GridKitIconName } from 'gd-design-core';
+import { iconCatalog, registerCustomIcons, type GridKitIconName } from 'gd-design-core';
 import type { GdIcon } from '../src';
 import { defaultTokenViewer, element, sectionedArgTypes } from './helpers';
 
@@ -12,13 +12,13 @@ const meta = {
     docs: {
       description: {
         component:
-          'The same built-in SVG icon catalog used by React Icon. Supports theme sizes, exact dimensions, path and SVG fills, native click events, and accessible names.',
+          'SVG icons with built-in names, theme sizes, exact dimensions, path and SVG fills, native click events, accessible names, and runtime registration for application-owned icons.',
       },
     },
   },
   args: { name: 'star', size: 'md', fill: 'currentColor' },
   argTypes: sectionedArgTypes('Icon', {
-    name: { description: 'Icon name from the shared React/Web Components catalog', control: 'select', options: names },
+    name: { description: 'Registered icon name', control: 'select', options: names },
     size: {
       description: 'Theme size applied to width and height',
       control: 'select',
@@ -47,15 +47,40 @@ export const AllIcons: Story = {
 };
 export const RegisteringCustomIcons: Story = {
   name: 'Registering a Custom Icon',
+  args: { name: 'projectOrbit', size: 'lg', fill: '#0069b4' },
+  argTypes: { name: { control: 'select', options: [...names, 'projectOrbit'] } },
+  render: (args) => {
+    registerCustomIcons({
+      projectOrbit: {
+        viewBox: '0 0 24 24',
+        body: '<circle cx="12" cy="12" r="3" fill="var(--gd-icon-fill)"></circle><path d="M4.5 12c0-3.1 3.4-5.5 7.5-5.5s7.5 2.4 7.5 5.5-3.4 5.5-7.5 5.5S4.5 15.1 4.5 12Z" fill="none" stroke="var(--gd-icon-fill)" stroke-width="1.5" transform="rotate(-25 12 12)"></path>',
+      },
+    });
+    return element('gd-icon', args);
+  },
   parameters: {
     docs: {
       description: {
-        story:
-          'Built-in icons use the shared catalog. Application-specific SVGs should be registered in that catalog generator so React and Web Components retain one source.',
+        story: 'Register an application-owned SVG definition once, then render it by name anywhere in the application.',
+      },
+      source: {
+        language: 'html',
+        code: `<!-- Render after registration -->
+<gd-icon name="projectOrbit" size="lg" fill="#0069b4"></gd-icon>
+
+<script type="module">
+  import { registerCustomIcons } from 'web-components';
+
+  registerCustomIcons({
+    projectOrbit: {
+      viewBox: '0 0 24 24',
+      body: '<circle cx="12" cy="12" r="3" fill="var(--gd-icon-fill)"></circle><path d="M4.5 12c0-3.1 3.4-5.5 7.5-5.5s7.5 2.4 7.5 5.5-3.4 5.5-7.5 5.5S4.5 15.1 4.5 12Z" fill="none" stroke="var(--gd-icon-fill)" stroke-width="1.5" transform="rotate(-25 12 12)"></path>',
+    },
+  });
+</script>`,
       },
     },
   },
-  args: { name: 'star' },
 };
 export const WithAccessibility: Story = {
   render: (args) => {

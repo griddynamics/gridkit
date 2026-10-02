@@ -5756,6 +5756,13 @@
       "name": "children",
       "type": {
         "name": "string"
+      },
+      "description": "Label content displayed next to the checkbox",
+      "table": {
+        "type": {
+          "summary": "ReactNode"
+        },
+        "category": "Content"
       }
     },
     "onValueChange": {

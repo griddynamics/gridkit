@@ -5852,11 +5852,13 @@ export const reactStorybookArgTypes = {
         name: 'other',
         value: 'default slot',
       },
-      description: 'Content rendered by the component. Web Components provide this content through the default slot.',
+      description:
+        'Label content displayed next to the checkbox Web Components provide this content through the default slot.',
       table: {
         type: {
           summary: 'default slot',
         },
+        category: 'Content',
       },
     },
     onValueChange: {

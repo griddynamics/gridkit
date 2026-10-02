@@ -3,7 +3,7 @@ import { customElement, property } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import { icon } from 'gd-design-library/tokens';
-import { get, iconCatalog, resolveThemeTree, type DesignCoreTheme, type GridKitIconName } from 'gd-design-core';
+import { get, iconCatalog, resolveThemeTree, type DesignCoreTheme } from 'gd-design-core';
 
 type IconSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 
@@ -21,7 +21,7 @@ export class GdIcon extends LitElement {
     }
   `;
 
-  @property({ type: String, reflect: true }) name: GridKitIconName = 'star';
+  @property({ type: String, reflect: true }) name = 'star';
   @property({ type: Number, reflect: true }) width = 18;
   @property({ type: Number, reflect: true }) height = 18;
   @property({ type: String, reflect: true }) size?: IconSize;
@@ -30,7 +30,7 @@ export class GdIcon extends LitElement {
   @property({ attribute: false }) theme: DesignCoreTheme = {};
 
   render() {
-    const definition = iconCatalog[this.name];
+    const definition = (iconCatalog as Record<string, { viewBox: string; body: string }>)[this.name];
     if (!definition) return html``;
     const tokens = resolveThemeTree(icon, this.theme) as { size: Record<IconSize, { width: number; height: number }> };
     const dimensions = this.size ? tokens.size[this.size] : { width: this.width, height: this.height };

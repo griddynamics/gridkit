@@ -40,6 +40,29 @@ export async function checkNativeStories(page, base) {
       assert.deepEqual(target.if, source.if, `${title}.${name} conditional visibility must match React`);
     }
   }
+  assert.equal(
+    reactArgTypes.Checkbox.children.table.category,
+    'Content',
+    'Checkbox children must remain in the Content group'
+  );
+  await page.goto(`${base}/web-components/iframe.html?id=atoms-icon--registering-custom-icons&viewMode=story`);
+  await page.locator('gd-icon[name="projectOrbit"]').waitFor({ state: 'attached' });
+  const customIconExample = await page.evaluate(async () => {
+    const icon = document.querySelector('gd-icon[name="projectOrbit"]');
+    await icon.updateComplete;
+    const preview = window.__STORYBOOK_PREVIEW__;
+    await preview.storeInitializationPromise;
+    const story = await preview.storyStoreValue.loadStory({ storyId: 'atoms-icon--registering-custom-icons' });
+    return {
+      viewBox: icon.shadowRoot.querySelector('svg')?.getAttribute('viewBox'),
+      hasCircle: Boolean(icon.shadowRoot.querySelector('circle')),
+      source: story.parameters.docs.source.code,
+    };
+  });
+  assert.equal(customIconExample.viewBox, '0 0 24 24');
+  assert.equal(customIconExample.hasCircle, true, 'Custom icon example must render its registered SVG');
+  assert.match(customIconExample.source, /registerCustomIcons/);
+  assert.match(customIconExample.source, /<gd-icon name="projectOrbit"/);
   const badgeIcons = index.entries['atoms-badge--with-icons'];
   assert.ok(badgeIcons, 'Atoms/Badge WithIcons must exist');
   await page.goto(`${base}/web-components/iframe.html?id=${badgeIcons.id}&viewMode=story`);

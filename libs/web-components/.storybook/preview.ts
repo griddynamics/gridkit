@@ -14,8 +14,10 @@ const preview: Preview = {
     docs: {
       source: {
         language: 'html',
-        transform: (source: string, context: { canvasElement?: HTMLElement }) =>
-          storySource(context.canvasElement, source),
+        transform: (
+          source: string,
+          context: { canvasElement?: HTMLElement; parameters?: { docs?: { source?: { code?: string } } } }
+        ) => (context.parameters?.docs?.source?.code ? source : storySource(context.canvasElement, source)),
       },
     },
   },
