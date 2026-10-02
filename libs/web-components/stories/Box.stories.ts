@@ -8,15 +8,7 @@ const meta = {
   title: 'Atoms/Box',
   tags: ['autodocs'],
   args: sourceMeta.args,
-  parameters: {
-    layout: 'centered',
-    docs: {
-      description: {
-        component:
-          'Layout container with orientation, border, hover highlight, shadow, accessibility, and custom styling.',
-      },
-    },
-  },
+  parameters: sourceMeta.parameters,
   argTypes: sourceMeta.argTypes,
   render: sourceMeta.render,
 };

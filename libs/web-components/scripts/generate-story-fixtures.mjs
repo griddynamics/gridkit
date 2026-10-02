@@ -21,28 +21,6 @@ export const fixtureComponents = [
   'Typography',
   'Wrapper',
 ];
-const nativeDescriptions = {
-  Avatar: 'Avatar with image, fallback initials or icon, badge, color, size, and accessible labeling.',
-  Badge: 'Status badge with variants, appearances, sizes, disabled state, icon positions, and style overrides.',
-  Box: 'Layout container with orientation, border, hover highlight, shadow, accessibility, and custom styling.',
-  Button:
-    'Button with variants, icons, loading state, width, rounding, disabled behavior, custom styling, and accessibility.',
-  Counter:
-    'Counter with minimum, maximum, initial value, external change handling, disabled state, and accessible native controls.',
-  InputFile:
-    'File picker with accepted file types, capture, multiple selection, disabled and icon-label states, button customization, native events, and accessible controls.',
-  Label:
-    'Native label with slotted content, child icons, custom styling, control association, and accessibility semantics.',
-  Link: 'Native anchor with variants, sizes, underline modes, colors, disabled behavior, targets, custom styling, accessibility, and child composition.',
-  Loader:
-    'Loading indicator with circle and dots animations, five sizes, rounding, inline, section and full-page layouts, custom timing, content, styling, and status accessibility.',
-  Skeleton:
-    'Loading placeholder with rounded, rectangular and circular variants, theme colors, child content, composed layouts, and accessibility semantics.',
-  Typography:
-    'Typography with semantic overrides, combined style variants, disclaimer, display, heading, body, color, alignment, and accessibility options.',
-  Wrapper:
-    'Layout wrapper with inline, section and full-page variants, semantic element selection, slotted content, and custom styling.',
-};
 const componentFiles = await readdir(resolve(root, 'libs/ui/src/components'), { recursive: true });
 const enums = new Map();
 for (const file of await readdir(resolve(root, 'libs/ui/src/types'))) {
@@ -112,23 +90,6 @@ for (const component of fixtureComponents) {
           const text = node.text.replace(/tailwind(?: css)?/gi, 'utility CSS');
           if (text !== node.text) return ts.factory.createStringLiteral(text);
         }
-        if (
-          component === 'Loader' &&
-          ts.isVariableDeclaration(node) &&
-          ['LoaderSectionVariant', 'SectionLoaderButtonVariant', 'InlineLoaderButtonVariant'].includes(
-            node.name.getText(source)
-          )
-        )
-          return ts.factory.updateVariableDeclaration(
-            node,
-            node.name,
-            undefined,
-            undefined,
-            ts.factory.createPropertyAccessExpression(
-              ts.factory.createIdentifier('loaderStories'),
-              node.name.getText(source)
-            )
-          );
         if (ts.isPropertyAssignment(node) && ['argTypes', 'play', 'code'].includes(node.name.getText(source)))
           return undefined;
         if (
@@ -181,16 +142,12 @@ for (const component of fixtureComponents) {
         }';`
     )
     .join('\n');
-  const result = `// Generated from ${sourcePath}. Run npm run generate:web-component-stories.\n// Native DOM recipes only: no React runtime or React component implementation is imported.\nimport { demo, Fragment } from '../native-story';\nimport { defaultTheme } from 'gd-design-library/tokens';\nimport { fn } from 'storybook/test';\nimport { action } from 'storybook/actions';\n${
-    component === 'Loader' ? "import { loaderStories } from '../loader-examples';\n" : ''
-  }const COMPONENT_NAME = '${component}';\n${tagDeclarations}\n${code}`;
+  const result = `// Generated from ${sourcePath}. Run npm run generate:web-component-stories.\n// Native DOM recipes only: no React runtime or React component implementation is imported.\nimport { demo, Fragment } from '../native-story';\nimport { defaultTheme } from 'gd-design-library/tokens';\nimport { fn } from 'storybook/test';\nimport { action } from 'storybook/actions';\nconst COMPONENT_NAME = '${component}';\n${tagDeclarations}\n${code}`;
   // CSF indexes static object-literal names. Hiding name inside nativeStory()
   // preserves runtime metadata but silently changes the sidebar's published name.
   const wrapper = `// Generated from ${sourcePath}; edit the source example or native-story adapter.\nimport * as fixtures from './fixtures/${component}.generated.js';\nimport { nativeMeta, nativeStory } from './native-story';\nimport { sectionedArgTypes } from './helpers';\n\nconst sourceMeta = nativeMeta(fixtures.default, sectionedArgTypes('${component}', {}));\nconst meta = {\n  title: '${
     component === 'Counter' ? 'Molecules' : 'Atoms'
-  }/${component}',\n  tags: ['autodocs'],\n  args: sourceMeta.args,\n  parameters: {\n    layout: 'centered',\n    docs: {\n      description: { component: ${JSON.stringify(
-    nativeDescriptions[component]
-  )} },\n    },\n  },\n  argTypes: sourceMeta.argTypes,\n  render: sourceMeta.render,\n};\nexport default meta;\n${names
+  }/${component}',\n  tags: ['autodocs'],\n  args: sourceMeta.args,\n  parameters: sourceMeta.parameters,\n  argTypes: sourceMeta.argTypes,\n  render: sourceMeta.render,\n};\nexport default meta;\n${names
     .map(
       (name) =>
         `export const ${name} = { ...nativeStory(fixtures.${name}, meta)${

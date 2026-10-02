@@ -8,21 +8,13 @@ const meta = {
   title: 'Atoms/Button',
   tags: ['autodocs'],
   args: sourceMeta.args,
-  parameters: {
-    layout: 'centered',
-    docs: {
-      description: {
-        component:
-          'Button with variants, icons, loading state, width, rounding, disabled behavior, custom styling, and accessibility.',
-      },
-    },
-  },
+  parameters: sourceMeta.parameters,
   argTypes: sourceMeta.argTypes,
   render: sourceMeta.render,
 };
 export default meta;
-export const AllVariants = { ...nativeStory(fixtures.AllVariants, meta) };
 export const Default = { ...nativeStory(fixtures.Default, meta) };
+export const AllVariants = { ...nativeStory(fixtures.AllVariants, meta) };
 export const WithIcons = { ...nativeStory(fixtures.WithIcons, meta) };
 export const IconOnly = { ...nativeStory(fixtures.IconOnly, meta) };
 export const FullWidthButton = { ...nativeStory(fixtures.FullWidthButton, meta) };

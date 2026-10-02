@@ -28,13 +28,19 @@ export class GdLoader extends LitElement {
   }
 
   render() {
-    const tokens = resolveThemeTree(loader, this.theme) as unknown as Record<string, CssBlock> & {
+    const loaderTokens = get(this.theme, 'loader', loader) as typeof loader;
+    const animationTokens = get(this.theme, 'animations', animations) as typeof animations;
+    const tokens = resolveThemeTree(loaderTokens, this.theme) as unknown as Record<string, CssBlock> & {
       circle: Record<string, CssBlock>;
       dots: Record<string, CssBlock>;
     };
-    const resolvedAnimations = resolveThemeTree(animations, this.theme) as unknown as Record<string, CssBlock>;
-    const animationName = this.name === 'circle' ? 'spinKeyframes' : 'bounceKeyframes';
-    const frames = resolvedAnimations[animationName];
+    const resolvedAnimations = resolveThemeTree(animationTokens, this.theme) as unknown as Record<string, CssBlock>;
+    const animationTokenName = get(tokens, ['animation', this.name, 'name'], '');
+    const frames = resolvedAnimations[animationTokenName] ?? {};
+    const localAnimationName = `gd-loader-${this.name}`;
+    const keyframes = Object.entries(frames)
+      .map(([step, block]) => buttonCssBlockToText(step, block as CssBlock))
+      .join('');
     const radius = get(this.theme, `radius.${this.rounded}`, '0px');
     const cssText = [
       buttonCssBlockToText('.loader', tokens.default),
@@ -42,13 +48,16 @@ export class GdLoader extends LitElement {
       buttonCssBlockToText('.loader', tokens[this.name].default),
       buttonCssBlockToText('.loader', tokens[this.name][this.size]),
       this.name === 'circle'
-        ? buttonCssBlockToText('.loader', { animation: `gd-loader-spin ${this.animationProps}` })
+        ? buttonCssBlockToText('.loader', { animation: `${localAnimationName} ${this.animationProps}` })
         : '',
       this.name === 'dots'
-        ? buttonCssBlockToText('.dot', { borderRadius: radius, animation: `gd-loader-bounce ${this.animationProps}` })
+        ? buttonCssBlockToText('.dot', {
+            borderRadius: radius,
+            animation: `${localAnimationName} ${this.animationProps}`,
+          })
         : '',
       buttonCssBlockToText('.loader', this.styles),
-      buttonCssBlockToText(`@keyframes gd-loader-${this.name === 'circle' ? 'spin' : 'bounce'}`, frames),
+      keyframes ? `@keyframes ${localAnimationName} {\n${keyframes}}` : '',
     ].join('\n');
     const root = this.shadowRoot;
     if (root && typeof CSSStyleSheet !== 'undefined') {

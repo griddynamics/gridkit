@@ -8,14 +8,7 @@ const meta = {
   title: 'Atoms/Avatar',
   tags: ['autodocs'],
   args: sourceMeta.args,
-  parameters: {
-    layout: 'centered',
-    docs: {
-      description: {
-        component: 'Avatar with image, fallback initials or icon, badge, color, size, and accessible labeling.',
-      },
-    },
-  },
+  parameters: sourceMeta.parameters,
   argTypes: sourceMeta.argTypes,
   render: sourceMeta.render,
 };

@@ -8,15 +8,7 @@ const meta = {
   title: 'Atoms/Typography',
   tags: ['autodocs'],
   args: sourceMeta.args,
-  parameters: {
-    layout: 'centered',
-    docs: {
-      description: {
-        component:
-          'Typography with semantic overrides, combined style variants, disclaimer, display, heading, body, color, alignment, and accessibility options.',
-      },
-    },
-  },
+  parameters: sourceMeta.parameters,
   argTypes: sourceMeta.argTypes,
   render: sourceMeta.render,
 };

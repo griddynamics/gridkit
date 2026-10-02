@@ -8,15 +8,7 @@ const meta = {
   title: 'Atoms/Loader',
   tags: ['autodocs'],
   args: sourceMeta.args,
-  parameters: {
-    layout: 'centered',
-    docs: {
-      description: {
-        component:
-          'Loading indicator with circle and dots animations, five sizes, rounding, inline, section and full-page layouts, custom timing, content, styling, and status accessibility.',
-      },
-    },
-  },
+  parameters: sourceMeta.parameters,
   argTypes: sourceMeta.argTypes,
   render: sourceMeta.render,
 };
@@ -28,8 +20,5 @@ export const LoaderRounded = { ...nativeStory(fixtures.LoaderRounded, meta) };
 export const LoaderVariantsWithWrapperViewAsHeaderTag = {
   ...nativeStory(fixtures.LoaderVariantsWithWrapperViewAsHeaderTag, meta),
 };
-export const LoaderSectionVariant = { ...nativeStory(fixtures.LoaderSectionVariant, meta) };
-export const SectionLoaderButtonVariant = { ...nativeStory(fixtures.SectionLoaderButtonVariant, meta) };
-export const InlineLoaderButtonVariant = { ...nativeStory(fixtures.InlineLoaderButtonVariant, meta) };
 export const WithAccessibility = { ...nativeStory(fixtures.WithAccessibility, meta) };
 export const DefaultTokens = { ...nativeStory(fixtures.DefaultTokens, meta) };

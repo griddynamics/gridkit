@@ -8,15 +8,7 @@ const meta = {
   title: 'Atoms/InputFile',
   tags: ['autodocs'],
   args: sourceMeta.args,
-  parameters: {
-    layout: 'centered',
-    docs: {
-      description: {
-        component:
-          'File picker with accepted file types, capture, multiple selection, disabled and icon-label states, button customization, native events, and accessible controls.',
-      },
-    },
-  },
+  parameters: sourceMeta.parameters,
   argTypes: sourceMeta.argTypes,
   render: sourceMeta.render,
 };

@@ -141,7 +141,18 @@ function nativeParameters(parameters: Props | undefined) {
       description: Object.fromEntries(
         Object.entries(descriptions).map(([key, text]) => [
           key,
-          text.replace(/\s*(?:<br\/?>\s*)*<h3>🧩[\s\S]*$/, '').replace(/React component/g, 'component'),
+          text
+            .replace(/\s*(?:<br\/?>\s*)*<h3>[🔧🧩][\s\S]*$/u, '')
+            .replace(/React component/g, 'component')
+            .replace(/`iconStart`/g, '`slot="icon-start"`')
+            .replace(/`iconEnd`/g, '`slot="icon-end"`')
+            .replace(/`isIcon`/g, '`is-icon`')
+            .replace(/`fullWidth`/g, '`full-width`')
+            .replace(/`ariaLabel`/g, '`aria-label`')
+            .replace(/`className`/g, '`class`')
+            .replace(/\bchildren\b/g, 'the default slot')
+            .replace(/\bprops\b/g, 'properties')
+            .replace(/\bprop\b/g, 'property'),
         ])
       ),
     },

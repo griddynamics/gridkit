@@ -8,15 +8,7 @@ const meta = {
   title: 'Atoms/Label',
   tags: ['autodocs'],
   args: sourceMeta.args,
-  parameters: {
-    layout: 'centered',
-    docs: {
-      description: {
-        component:
-          'Native label with slotted content, child icons, custom styling, control association, and accessibility semantics.',
-      },
-    },
-  },
+  parameters: sourceMeta.parameters,
   argTypes: sourceMeta.argTypes,
   render: sourceMeta.render,
 };

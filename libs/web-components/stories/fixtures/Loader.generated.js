@@ -4,7 +4,6 @@ import { demo, Fragment } from '../native-story';
 import { defaultTheme } from 'gd-design-library/tokens';
 import { fn } from 'storybook/test';
 import { action } from 'storybook/actions';
-import { loaderStories } from '../loader-examples';
 const COMPONENT_NAME = 'Loader';
 const Loader = 'gd-loader';
 const Row = 'Row';
@@ -250,9 +249,6 @@ LoaderVariantsWithWrapperViewAsHeaderTag.parameters = {
     },
   },
 };
-export const LoaderSectionVariant = loaderStories.LoaderSectionVariant;
-export const SectionLoaderButtonVariant = loaderStories.SectionLoaderButtonVariant;
-export const InlineLoaderButtonVariant = loaderStories.InlineLoaderButtonVariant;
 export const WithAccessibility = () => {
   return demo(
     'div',

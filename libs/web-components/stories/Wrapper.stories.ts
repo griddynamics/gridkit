@@ -8,15 +8,7 @@ const meta = {
   title: 'Atoms/Wrapper',
   tags: ['autodocs'],
   args: sourceMeta.args,
-  parameters: {
-    layout: 'centered',
-    docs: {
-      description: {
-        component:
-          'Layout wrapper with inline, section and full-page variants, semantic element selection, slotted content, and custom styling.',
-      },
-    },
-  },
+  parameters: sourceMeta.parameters,
   argTypes: sourceMeta.argTypes,
   render: sourceMeta.render,
 };

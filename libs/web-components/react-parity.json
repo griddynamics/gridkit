@@ -224,9 +224,6 @@
       "LoaderSizes",
       "LoaderRounded",
       "LoaderVariantsWithWrapperViewAsHeaderTag",
-      "LoaderSectionVariant",
-      "SectionLoaderButtonVariant",
-      "InlineLoaderButtonVariant",
       "WithAccessibility",
       "DefaultTokens"
     ]
@@ -340,8 +337,8 @@
       "slot name=\"icon-end\""
     ],
     "stories": [
-      "AllVariants",
       "Default",
+      "AllVariants",
       "WithIcons",
       "IconOnly",
       "FullWidthButton",

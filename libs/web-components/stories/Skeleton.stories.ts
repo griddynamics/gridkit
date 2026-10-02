@@ -8,15 +8,7 @@ const meta = {
   title: 'Atoms/Skeleton',
   tags: ['autodocs'],
   args: sourceMeta.args,
-  parameters: {
-    layout: 'centered',
-    docs: {
-      description: {
-        component:
-          'Loading placeholder with rounded, rectangular and circular variants, theme colors, child content, composed layouts, and accessibility semantics.',
-      },
-    },
-  },
+  parameters: sourceMeta.parameters,
   argTypes: sourceMeta.argTypes,
   render: sourceMeta.render,
 };

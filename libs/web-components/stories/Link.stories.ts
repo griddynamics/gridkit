@@ -8,15 +8,7 @@ const meta = {
   title: 'Atoms/Link',
   tags: ['autodocs'],
   args: sourceMeta.args,
-  parameters: {
-    layout: 'centered',
-    docs: {
-      description: {
-        component:
-          'Native anchor with variants, sizes, underline modes, colors, disabled behavior, targets, custom styling, accessibility, and child composition.',
-      },
-    },
-  },
+  parameters: sourceMeta.parameters,
   argTypes: sourceMeta.argTypes,
   render: sourceMeta.render,
 };

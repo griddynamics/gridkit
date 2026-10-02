@@ -8,15 +8,7 @@ const meta = {
   title: 'Atoms/Badge',
   tags: ['autodocs'],
   args: sourceMeta.args,
-  parameters: {
-    layout: 'centered',
-    docs: {
-      description: {
-        component:
-          'Status badge with variants, appearances, sizes, disabled state, icon positions, and style overrides.',
-      },
-    },
-  },
+  parameters: sourceMeta.parameters,
   argTypes: sourceMeta.argTypes,
   render: sourceMeta.render,
 };

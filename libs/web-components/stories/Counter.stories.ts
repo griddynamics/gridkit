@@ -8,15 +8,7 @@ const meta = {
   title: 'Molecules/Counter',
   tags: ['autodocs'],
   args: sourceMeta.args,
-  parameters: {
-    layout: 'centered',
-    docs: {
-      description: {
-        component:
-          'Counter with minimum, maximum, initial value, external change handling, disabled state, and accessible native controls.',
-      },
-    },
-  },
+  parameters: sourceMeta.parameters,
   argTypes: sourceMeta.argTypes,
   render: sourceMeta.render,
 };
