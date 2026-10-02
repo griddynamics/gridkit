@@ -1,6 +1,7 @@
 import { LitElement, html, css, type PropertyValues } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
+import '../gd-icon/gd-icon';
 import { select } from 'gd-design-library/tokens';
 import {
   resolveThemeTree,
@@ -351,15 +352,7 @@ export class GdSelect extends LitElement {
           </span>
           <slot name="adornment-end"></slot>
           <span class="arrow" ?data-open=${state.isOpen} aria-hidden="true">
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-              <path
-                d="M4.5 7L9 11.5L13.5 7"
-                stroke="currentColor"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
+            <gd-icon name="keyboardArrowDown" width="18" height="18" fill="icon.default" .theme=${this.theme}></gd-icon>
           </span>
         </button>
         <div

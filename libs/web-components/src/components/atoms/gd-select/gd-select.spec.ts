@@ -31,6 +31,10 @@ describe('gd-select React parity', () => {
     expect(el.value).toEqual([items[0], items[1]]);
     expect(changes).toEqual([[items[0], items[1]]]);
   });
+  it('uses the shared icon catalog for the trigger arrow', async () => {
+    const el = await mount();
+    expect(el.shadowRoot!.querySelector('gd-icon')?.getAttribute('name')).toBe('keyboardArrowDown');
+  });
   it('filters searchable options with the configured stringifier', async () => {
     const el = await mount({ searchable: true, searchPlaceholder: 'Find' });
     const search = el.shadowRoot!.querySelector<HTMLInputElement>('input[type="search"]')!;

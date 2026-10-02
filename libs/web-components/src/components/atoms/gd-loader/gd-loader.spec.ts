@@ -6,7 +6,8 @@ describe('gd-loader', () => {
     const el = document.createElement('gd-loader');
     document.body.append(el);
     await el.updateComplete;
-    expect(el.shadowRoot!.querySelector('[part="wrapper"]')!.hasAttribute('popover')).toBe(false);
+    expect(el.shadowRoot!.querySelector('gd-wrapper')).not.toBeNull();
+    expect(el.shadowRoot!.querySelector('gd-wrapper')!.getAttribute('part')).toBe('wrapper');
     expect(el.shadowRoot!.querySelectorAll('.dot')).toHaveLength(0);
     el.name = 'dots';
     await el.updateComplete;
@@ -14,6 +15,7 @@ describe('gd-loader', () => {
     expect(el.shadowRoot!.querySelector('[role="status"]')).not.toBeNull();
     el.variant = 'fullPage';
     await el.updateComplete;
+    expect(el.shadowRoot!.querySelector('gd-wrapper')).toBeNull();
     expect(el.shadowRoot!.querySelector('[part="wrapper"]')!.getAttribute('popover')).toBe('manual');
     el.remove();
   });

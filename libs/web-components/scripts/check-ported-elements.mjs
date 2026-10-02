@@ -2,6 +2,7 @@
 import { readdir, readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import ts from 'typescript';
+import { translateStorybookMetadata } from './translate-storybook-metadata.mjs';
 
 const packageRoot = resolve(import.meta.dirname, '..');
 const componentsRoot = resolve(packageRoot, 'src/components');
@@ -144,8 +145,30 @@ const generatedArgTypesSource = generatedArgTypesText.match(/reactStorybookArgTy
 const generatedArgTypes = generatedArgTypesSource
   ? Function(`"use strict"; return (${generatedArgTypesSource});`)()
   : {};
-if (JSON.stringify(generatedArgTypes) !== JSON.stringify(JSON.parse(sourceArgTypesText)))
-  throw new Error('Generated React Storybook metadata does not match the published source snapshot.');
+const translatedArgTypes = translateStorybookMetadata(JSON.parse(sourceArgTypesText));
+if (JSON.stringify(generatedArgTypes) !== JSON.stringify(translatedArgTypes))
+  throw new Error('Generated Web Component Storybook metadata does not match the translated React source snapshot.');
+const reactOnlyMetadata = JSON.stringify(generatedArgTypes).match(
+  /ReactNode|ReactElement|ElementType|React\.|CSSProperties/g
+);
+if (reactOnlyMetadata)
+  throw new Error(
+    `Generated Web Component Storybook metadata contains React-only types: ${[...new Set(reactOnlyMetadata)].join(
+      ', '
+    )}.`
+  );
+
+const requiredComposition = {
+  'gd-button': ['<gd-loader'],
+  'gd-checkbox': ['<gd-icon'],
+  'gd-select': ['<gd-icon'],
+  'gd-separator': ['<gd-typography'],
+  'gd-switch': ['<gd-loader'],
+  'gd-toggle': ['<gd-button'],
+  'gd-counter': ['<gd-button', '<gd-input', '<gd-icon'],
+  'gd-input-file': ['<gd-button'],
+  'gd-loader': ['<gd-wrapper'],
+};
 const atomTags = ports.filter(({ category }) => category === 'atoms').map(({ tag }) => tag);
 const publishedAtomTags = Object.keys(publishedAudit.components);
 const missingPublishedAtoms = publishedAtomTags.filter((tag) => !atomTags.includes(tag));
@@ -167,6 +190,12 @@ for (const { tag, category } of ports) {
   const contract = parity[tag];
   if (!contract) throw new Error(`Missing React parity contract for ${tag}.`);
   const source = await readFile(resolve(componentsRoot, category, tag, `${tag}.ts`), 'utf8');
+  for (const dependency of requiredComposition[tag] ?? []) {
+    if (!source.includes(dependency))
+      throw new Error(`${tag} must compose the migrated ${dependency.slice(1)} component.`);
+  }
+  if (tag !== 'gd-icon' && source.includes('<svg'))
+    throw new Error(`${tag} embeds SVG markup instead of composing gd-icon.`);
   const storyName = tag.slice(3).replace(/(^|-)([a-z])/g, (_match, _separator, letter) => letter.toUpperCase());
   const stories = await readFile(resolve(packageRoot, 'stories', `${storyName}.stories.ts`), 'utf8');
   if (fullStoryParity.has(tag) && !stories.includes('description:'))
@@ -196,7 +225,9 @@ for (const { tag, category } of ports) {
         const targetSection = targetMetadata.table?.[section];
         if (sourceSection === targetSection) continue;
         throw new Error(
-          `${tag} Storybook ${section} mismatch for ${control}: React=${sourceSection ?? 'unsectioned'}, Web Component=${targetSection ?? 'unsectioned'}.`
+          `${tag} Storybook ${section} mismatch for ${control}: React=${
+            sourceSection ?? 'unsectioned'
+          }, Web Component=${targetSection ?? 'unsectioned'}.`
         );
       }
     }

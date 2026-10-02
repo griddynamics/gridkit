@@ -68,19 +68,22 @@ export const reactStorybookArgTypes = {
       name: 'onValueChange',
       type: {
         name: 'function',
-        required: false,
-        raw: '(value: T) => void',
+        value: 'EventListener<CustomEvent>',
       },
-      description: 'Function triggered when the value changes',
+      description:
+        'Function triggered when the value changes Listen for the CustomEvent dispatched as "gd-change" with addEventListener().',
       table: {
         type: {
-          summary: '(value: unknown) => void',
+          summary: 'CustomEvent ("gd-change")',
         },
         defaultValue: {
           summary: 'undefined',
         },
       },
       action: 'value changed',
+      control: {
+        disable: true,
+      },
     },
     disabled: {
       control: {
@@ -107,12 +110,12 @@ export const reactStorybookArgTypes = {
       description: 'Custom render function for each item',
       type: {
         required: false,
-        raw: '(item: ToggleItem | string, index: number) => ReactNode',
+        raw: '(item: ToggleItem | string, index: number) => Node | string',
         name: 'function',
       },
       table: {
         type: {
-          summary: '(item: unknown) => ReactNode',
+          summary: '(item: unknown) => Node | string',
         },
         defaultValue: {
           summary: 'undefined',
@@ -135,17 +138,21 @@ export const reactStorybookArgTypes = {
   Truncate: {
     children: {
       control: {
-        type: 'text',
         disable: true,
       },
       name: 'children',
       type: {
-        name: 'string',
+        name: 'other',
+        value: 'default slot',
       },
       table: {
         category: 'Content',
+        type: {
+          summary: 'default slot',
+        },
       },
-      description: 'ReactNode content to display. Accepts string text or any ReactNode for flexible content.',
+      description:
+        'Node | string content to display. Accepts string text or any Node | string for flexible content. Web Components provide this content through the default slot.',
     },
     lines: {
       control: {
@@ -228,17 +235,18 @@ export const reactStorybookArgTypes = {
     },
     children: {
       control: {
-        type: 'text',
-        disable: false,
+        disable: true,
       },
       name: 'children',
       type: {
-        name: 'string',
+        name: 'other',
+        value: 'default slot',
       },
-      description: 'Content to be rendered inside the wrapper. Can be text, components, or other elements.',
+      description:
+        'Content to be rendered inside the wrapper. Can be text, components, or other elements. Web Components provide this content through the default slot.',
       table: {
         type: {
-          summary: 'ReactNode',
+          summary: 'default slot',
         },
       },
     },
@@ -268,7 +276,7 @@ export const reactStorybookArgTypes = {
       description: 'Custom CSS styles object to override or extend default wrapper styling.',
       table: {
         type: {
-          summary: 'CSSProperties',
+          summary: 'Partial<CSSStyleDeclaration>',
         },
       },
     },
@@ -278,10 +286,11 @@ export const reactStorybookArgTypes = {
         disable: false,
       },
       name: 'as',
-      description: 'Overrides the default wrapper HTML element used for rendering (e.g., "div", "section", "article").',
+      description:
+        'Overrides the default wrapper HTML element used for rendering (e.g., "div", "section", "article"). Use a native HTML tag name in the Web Component API.',
       type: {
         required: false,
-        raw: 'keyof HTMLElementTagNameMap | ElementType',
+        raw: 'keyof HTMLElementTagNameMap',
         name: 'union',
         value: [
           {
@@ -290,13 +299,13 @@ export const reactStorybookArgTypes = {
           },
           {
             name: 'other',
-            value: 'ElementType',
+            value: 'keyof HTMLElementTagNameMap',
           },
         ],
       },
       table: {
         type: {
-          summary: 'keyof HTMLElementTagNameMap | ElementType',
+          summary: 'keyof HTMLElementTagNameMap',
         },
       },
     },
@@ -412,7 +421,7 @@ export const reactStorybookArgTypes = {
       description: 'Custom styles to apply to the slider component',
       table: {
         type: {
-          summary: 'React.CSSProperties',
+          summary: 'Partial<CSSStyleDeclaration>',
         },
         defaultValue: {
           summary: '{}',
@@ -442,17 +451,20 @@ export const reactStorybookArgTypes = {
       name: 'onChange',
       type: {
         name: 'function',
-        required: false,
-        raw: '(value: number) => void',
+        value: 'EventListener<CustomEvent>',
       },
-      description: 'Callback function triggered when slider value changes',
+      description:
+        'Callback function triggered when slider value changes Listen for the CustomEvent dispatched as "gd-change" with addEventListener().',
       table: {
         type: {
-          summary: '(value: number) => void',
+          summary: 'CustomEvent ("gd-change")',
         },
         defaultValue: {
           summary: 'undefined',
         },
+      },
+      control: {
+        disable: true,
       },
     },
     step: {
@@ -519,13 +531,13 @@ export const reactStorybookArgTypes = {
       name: 'onDotClick',
       type: {
         name: 'function',
-        required: false,
-        raw: '(index: number) => void',
+        value: 'EventListener<CustomEvent>',
       },
-      description: 'Callback fired when a dot is clicked, receives the dot index',
+      description:
+        'Callback fired when a dot is clicked, receives the dot index Listen for the CustomEvent dispatched as "gd-change" with addEventListener().',
       table: {
         type: {
-          summary: '(index: number) => void',
+          summary: 'CustomEvent ("gd-change")',
         },
         defaultValue: {
           summary: 'undefined',
@@ -533,6 +545,9 @@ export const reactStorybookArgTypes = {
         category: 'Events',
       },
       action: 'Dot clicked',
+      control: {
+        disable: true,
+      },
     },
   },
   Switch: {
@@ -579,16 +594,17 @@ export const reactStorybookArgTypes = {
     },
     children: {
       control: {
-        type: 'text',
+        disable: true,
       },
       name: 'children',
       type: {
-        name: 'string',
+        name: 'other',
+        value: 'default slot',
       },
-      description: 'Label content for the switch',
+      description: 'Label content for the switch Web Components provide this content through the default slot.',
       table: {
         type: {
-          summary: 'ReactNode',
+          summary: 'default slot',
         },
         defaultValue: {
           summary: 'Label',
@@ -600,13 +616,13 @@ export const reactStorybookArgTypes = {
       name: 'onValueChange',
       type: {
         name: 'function',
-        required: false,
-        raw: '(value: boolean) => void',
+        value: 'EventListener<CustomEvent>',
       },
-      description: 'Callback fired when the switch value changes',
+      description:
+        'Callback fired when the switch value changes Listen for the CustomEvent dispatched as "gd-change" with addEventListener().',
       table: {
         type: {
-          summary: '(checked: boolean) => void',
+          summary: 'CustomEvent ("gd-change")',
         },
         defaultValue: {
           summary: 'undefined',
@@ -614,6 +630,9 @@ export const reactStorybookArgTypes = {
         category: 'Events',
       },
       action: 'Switch value changed',
+      control: {
+        disable: true,
+      },
     },
     label: {
       control: {
@@ -705,17 +724,17 @@ export const reactStorybookArgTypes = {
     },
     placeholder: {
       control: {
-        type: 'text',
-        disable: false,
+        disable: true,
       },
       name: 'placeholder',
       type: {
-        name: 'string',
+        name: 'other',
+        value: 'slot="placeholder"',
       },
-      description: 'Placeholder text',
+      description: 'Placeholder text Web Components provide this content through the slot="placeholder".',
       table: {
         type: {
-          summary: 'string',
+          summary: 'slot="placeholder"',
         },
         defaultValue: {
           summary: 'undefined',
@@ -747,17 +766,22 @@ export const reactStorybookArgTypes = {
       name: 'onChange',
       type: {
         name: 'function',
+        value: 'EventListener<CustomEvent>',
       },
       action: 'changed',
-      description: 'Callback when textarea content changes',
+      description:
+        'Callback when textarea content changes Listen for the CustomEvent dispatched as "gd-change" with addEventListener().',
       table: {
         type: {
-          summary: '(event: ChangeEvent<HTMLTextAreaElement>) => void',
+          summary: 'CustomEvent ("gd-change")',
         },
         defaultValue: {
           summary: 'undefined',
         },
         category: 'Events',
+      },
+      control: {
+        disable: true,
       },
     },
     resize: {
@@ -1061,7 +1085,7 @@ export const reactStorybookArgTypes = {
       description: 'Custom CSS styles to override default styling',
       table: {
         type: {
-          summary: 'CSSProperties',
+          summary: 'Partial<CSSStyleDeclaration>',
         },
         defaultValue: {
           summary: 'undefined',
@@ -1180,7 +1204,7 @@ export const reactStorybookArgTypes = {
       },
       options: ['div', 'hr', 'span'],
       name: 'as',
-      description: 'The HTML element to render the separator as.',
+      description: 'The HTML element to render the separator as. Use a native HTML tag name in the Web Component API.',
       type: {
         required: false,
         raw: "'div' | 'hr' | 'span'",
@@ -1189,7 +1213,7 @@ export const reactStorybookArgTypes = {
       },
       table: {
         type: {
-          summary: "'div' | 'hr' | 'span'",
+          summary: 'keyof HTMLElementTagNameMap',
         },
         defaultValue: {
           summary: 'div',
@@ -1259,7 +1283,7 @@ export const reactStorybookArgTypes = {
       description: 'Custom styles for the separator.',
       table: {
         type: {
-          summary: 'CSSProperties',
+          summary: 'Partial<CSSStyleDeclaration>',
         },
       },
       subControls: {
@@ -1455,18 +1479,22 @@ export const reactStorybookArgTypes = {
     },
     children: {
       name: 'children',
-      description: 'Content to be rendered inside the skeleton wrapper.',
+      description:
+        'Content to be rendered inside the skeleton wrapper. Web Components provide this content through the default slot.',
       table: {
         type: {
-          summary: 'ReactNode',
+          summary: 'default slot',
         },
         defaultValue: {
           summary: 'undefined',
         },
       },
       control: {
-        type: 'object',
-        disable: false,
+        disable: true,
+      },
+      type: {
+        name: 'other',
+        value: 'default slot',
       },
     },
     styles: {
@@ -1474,7 +1502,7 @@ export const reactStorybookArgTypes = {
       description: 'Custom CSS properties to apply to the skeleton.',
       table: {
         type: {
-          summary: 'CSSProperties',
+          summary: 'Partial<CSSStyleDeclaration>',
         },
         defaultValue: {
           summary: '{}',
@@ -1680,16 +1708,15 @@ export const reactStorybookArgTypes = {
     },
     onClick: {
       name: 'onClick',
-      description: 'Event handler for click events on the icon.',
+      description:
+        'Event handler for click events on the icon. Listen for the native "click" event with addEventListener().',
       type: {
-        required: false,
-        raw: 'MouseEventHandler<SVGElement>',
-        name: 'other',
-        value: 'MouseEventHandler',
+        name: 'function',
+        value: 'EventListener',
       },
       table: {
         type: {
-          summary: 'MouseEventHandler<SVGElement>',
+          summary: 'Event ("click")',
         },
         defaultValue: {
           summary: 'undefined',
@@ -1697,6 +1724,9 @@ export const reactStorybookArgTypes = {
         category: 'Interactions',
       },
       action: 'clicked',
+      control: {
+        disable: true,
+      },
     },
     size: {
       name: 'size',
@@ -2218,7 +2248,7 @@ export const reactStorybookArgTypes = {
       table: {
         category: 'Custom Styling',
         type: {
-          summary: 'CSSProperties',
+          summary: 'Partial<CSSStyleDeclaration>',
         },
       },
       control: {
@@ -2333,33 +2363,40 @@ export const reactStorybookArgTypes = {
       name: 'onClick',
       type: {
         name: 'function',
+        value: 'EventListener',
       },
       action: 'button clicked',
-      description: 'Called when the button is clicked',
+      description: 'Called when the button is clicked Listen for the native "click" event with addEventListener().',
       table: {
         disable: true,
         type: {
-          summary: '(event: MouseEvent<HTMLInputElement>) => void',
+          summary: 'Event ("click")',
         },
         category: 'Events',
+      },
+      control: {
+        disable: true,
       },
     },
     onChange: {
       name: 'onChange',
       type: {
         name: 'function',
-        required: false,
-        raw: '(event: ChangeEvent<HTMLInputElement>) => void',
+        value: 'EventListener<CustomEvent>',
       },
-      description: 'Called when files are selected',
+      description:
+        'Called when files are selected Listen for the CustomEvent dispatched as "gd-change" with addEventListener().',
       table: {
         type: {
-          summary: '(event: ChangeEvent<HTMLInputElement>) => void',
+          summary: 'CustomEvent ("gd-change")',
         },
         disable: true,
         category: 'Events',
       },
       action: 'file(s) selected',
+      control: {
+        disable: true,
+      },
     },
     buttonProps: {
       control: {
@@ -2377,7 +2414,7 @@ export const reactStorybookArgTypes = {
         type: {
           summary: 'ButtonProps',
           detail:
-            "ButtonProps {\n            variant?: 'text' | 'outlined' | 'contained';\n            color?: 'primary' | 'secondary' | 'error';\n            iconStart?: ReactNode;\n            iconEnd?: ReactNode;\n            onClick?: (event: MouseEvent<HTMLButtonElement>) => void;\n            type?: 'button' | 'submit' | 'reset';\n            disabled?: boolean;\n            fullWidth?: boolean;\n            isIcon?: boolean;\n            ariaLabel?: string;\n            ariaPressed?: boolean;\n            role?: 'button' | 'menuitem' | 'switch';\n            tabIndex?: number;\n          }",
+            "ButtonProps {\n            variant?: 'text' | 'outlined' | 'contained';\n            color?: 'primary' | 'secondary' | 'error';\n            iconStart?: Node | string;\n            iconEnd?: Node | string;\n            onClick?: (event: Event) => void;\n            type?: 'button' | 'submit' | 'reset';\n            disabled?: boolean;\n            fullWidth?: boolean;\n            isIcon?: boolean;\n            ariaLabel?: string;\n            ariaPressed?: boolean;\n            role?: 'button' | 'menuitem' | 'switch';\n            tabIndex?: number;\n          }",
         },
         defaultValue: {
           summary: '{}',
@@ -2418,7 +2455,7 @@ export const reactStorybookArgTypes = {
       },
       table: {
         type: {
-          summary: 'CSSProperties',
+          summary: 'Partial<CSSStyleDeclaration>',
         },
         defaultValue: {
           summary: '{}',
@@ -2428,17 +2465,18 @@ export const reactStorybookArgTypes = {
     },
     children: {
       control: {
-        type: 'text',
-        disable: false,
+        disable: true,
       },
       name: 'children',
-      description: 'Content for the button label (text or components)',
+      description:
+        'Content for the button label (text or components) Web Components provide this content through the default slot.',
       type: {
-        required: false,
+        name: 'other',
+        value: 'default slot',
       },
       table: {
         type: {
-          summary: 'ReactNode',
+          summary: 'default slot',
         },
         defaultValue: {
           summary: 'Browse Files',
@@ -2450,18 +2488,19 @@ export const reactStorybookArgTypes = {
   Label: {
     children: {
       control: {
-        type: 'text',
-        disable: false,
+        disable: true,
       },
       name: 'children',
       type: {
-        name: 'string',
+        name: 'other',
+        value: 'default slot',
       },
-      description: 'Content to be rendered inside the label',
+      description:
+        'Content to be rendered inside the label Web Components provide this content through the default slot.',
       table: {
         category: 'Content',
         type: {
-          summary: 'ReactNode',
+          summary: 'default slot',
         },
         defaultValue: {
           summary: 'undefined',
@@ -2470,15 +2509,14 @@ export const reactStorybookArgTypes = {
     },
     onClick: {
       name: 'onClick',
-      description: 'Click event handler for the label',
+      description: 'Click event handler for the label Listen for the native "click" event with addEventListener().',
       type: {
-        required: false,
-        raw: '(event: MouseEvent<HTMLLabelElement>) => void',
         name: 'function',
+        value: 'EventListener',
       },
       table: {
         type: {
-          summary: '(event: React.MouseEvent) => void',
+          summary: 'Event ("click")',
         },
         defaultValue: {
           summary: 'undefined',
@@ -2486,6 +2524,9 @@ export const reactStorybookArgTypes = {
         category: 'Events',
       },
       action: 'clicked',
+      control: {
+        disable: true,
+      },
     },
     ariaLabel: {
       control: {
@@ -2568,7 +2609,7 @@ export const reactStorybookArgTypes = {
       table: {
         category: 'Styling',
         type: {
-          summary: 'CSSProperties',
+          summary: 'Partial<CSSStyleDeclaration>',
         },
         defaultValue: {
           summary: '{}',
@@ -2639,18 +2680,19 @@ export const reactStorybookArgTypes = {
     },
     children: {
       control: {
-        type: 'text',
-        disable: false,
+        disable: true,
       },
       name: 'children',
       type: {
-        name: 'string',
+        name: 'other',
+        value: 'default slot',
       },
-      description: 'Content to be rendered inside the link',
+      description:
+        'Content to be rendered inside the link Web Components provide this content through the default slot.',
       table: {
         category: 'Content',
         type: {
-          summary: 'ReactNode',
+          summary: 'default slot',
         },
         defaultValue: {
           summary: 'undefined',
@@ -2661,17 +2703,19 @@ export const reactStorybookArgTypes = {
       name: 'onClick',
       type: {
         name: 'function',
-        required: false,
-        raw: '(event: MouseEvent<HTMLAnchorElement>) => void',
+        value: 'EventListener',
       },
-      description: 'Click handler for the anchor element.',
+      description: 'Click handler for the anchor element. Listen for the native "click" event with addEventListener().',
       table: {
         type: {
-          summary: '(event: MouseEvent<HTMLAnchorElement>) => void',
+          summary: 'Event ("click")',
         },
         category: 'Events',
       },
       action: 'clicked',
+      control: {
+        disable: true,
+      },
     },
     size: {
       control: {
@@ -2894,7 +2938,7 @@ export const reactStorybookArgTypes = {
       table: {
         category: 'Styling',
         type: {
-          summary: 'CSSProperties',
+          summary: 'Partial<CSSStyleDeclaration>',
         },
         defaultValue: {
           summary: '{}',
@@ -3055,10 +3099,10 @@ export const reactStorybookArgTypes = {
       },
       name: 'WrapperView',
       description:
-        'HTML element type or React component to use for the wrapper container. Defaults to "span" for inline usage. Use semantic elements like "div", "section", or custom components for better accessibility',
+        'HTML element type or custom elements to use for the wrapper container. Defaults to "span" for inline usage. Use semantic elements like "div", "section", or custom components for better accessibility Use a native HTML tag name in the Web Component API.',
       type: {
         required: false,
-        raw: 'keyof HTMLElementTagNameMap | ElementType',
+        raw: 'keyof HTMLElementTagNameMap',
         name: 'union',
         value: [
           {
@@ -3067,13 +3111,13 @@ export const reactStorybookArgTypes = {
           },
           {
             name: 'other',
-            value: 'ElementType',
+            value: 'keyof HTMLElementTagNameMap',
           },
         ],
       },
       table: {
         type: {
-          summary: 'keyof HTMLElementTagNameMap | ElementType',
+          summary: 'keyof HTMLElementTagNameMap',
         },
         defaultValue: {
           summary: 'span',
@@ -3084,15 +3128,22 @@ export const reactStorybookArgTypes = {
     children: {
       name: 'children',
       description:
-        'Custom React content to replace the default loader animation. Use this to create custom loading indicators while maintaining Loader wrapper and positioning functionality',
+        'Custom slotted content to replace the default loader animation. Use this to create custom loading indicators while maintaining Loader wrapper and positioning functionality Web Components provide this content through the default slot.',
       table: {
         category: 'Content & Customization',
         type: {
-          summary: 'ReactNode',
+          summary: 'default slot',
         },
         defaultValue: {
           summary: 'undefined',
         },
+      },
+      control: {
+        disable: true,
+      },
+      type: {
+        name: 'other',
+        value: 'default slot',
       },
     },
     styles: {
@@ -3102,7 +3153,7 @@ export const reactStorybookArgTypes = {
       table: {
         category: 'Custom Styling',
         type: {
-          summary: 'CSSProperties',
+          summary: 'Partial<CSSStyleDeclaration>',
         },
         defaultValue: {
           summary: '{}',
@@ -3127,18 +3178,18 @@ export const reactStorybookArgTypes = {
   Badge: {
     children: {
       control: {
-        type: 'text',
-        disable: false,
+        disable: true,
       },
       name: 'children',
       type: {
-        name: 'string',
+        name: 'other',
+        value: 'default slot',
       },
-      description: 'Badge content (text or elements)',
+      description: 'Badge content (text or elements) Web Components provide this content through the default slot.',
       table: {
         category: 'Content',
         type: {
-          summary: 'ReactNode',
+          summary: 'default slot',
         },
       },
     },
@@ -3237,38 +3288,36 @@ export const reactStorybookArgTypes = {
     },
     iconStart: {
       control: {
-        type: 'object',
         disable: true,
       },
       name: 'iconStart',
-      description: 'Icon element to display at the start of the badge',
+      description:
+        'Icon element to display at the start of the badge Web Components provide this content through the slot="icon-start".',
       type: {
-        required: false,
         name: 'other',
-        value: 'ReactNode',
+        value: 'slot="icon-start"',
       },
       table: {
         type: {
-          summary: 'ReactNode',
+          summary: 'slot="icon-start"',
         },
         category: 'Icons',
       },
     },
     iconEnd: {
       control: {
-        type: 'object',
         disable: true,
       },
       name: 'iconEnd',
-      description: 'Icon element to display at the end of the badge',
+      description:
+        'Icon element to display at the end of the badge Web Components provide this content through the slot="icon-end".',
       type: {
-        required: false,
         name: 'other',
-        value: 'ReactNode',
+        value: 'slot="icon-end"',
       },
       table: {
         type: {
-          summary: 'ReactNode',
+          summary: 'slot="icon-end"',
         },
         category: 'Icons',
       },
@@ -3832,18 +3881,18 @@ export const reactStorybookArgTypes = {
     },
     children: {
       control: {
-        type: 'text',
-        disable: false,
+        disable: true,
       },
       name: 'children',
       type: {
-        name: 'string',
+        name: 'other',
+        value: 'default slot',
       },
-      description: 'Box content (any React node)',
+      description: 'Box content (any DOM nodes) Web Components provide this content through the default slot.',
       table: {
         category: 'Core Props',
         type: {
-          summary: 'ReactNode',
+          summary: 'default slot',
         },
       },
     },
@@ -4337,7 +4386,7 @@ export const reactStorybookArgTypes = {
       table: {
         category: 'Custom Styling',
         type: {
-          summary: 'CSSProperties',
+          summary: 'Partial<CSSStyleDeclaration>',
         },
       },
       control: {
@@ -4468,18 +4517,18 @@ export const reactStorybookArgTypes = {
     },
     placeholder: {
       control: {
-        type: 'object',
+        disable: true,
       },
       name: 'placeholder',
       type: {
         name: 'other',
-        required: false,
-        value: 'ReactNode',
+        value: 'slot="placeholder"',
       },
-      description: 'Text to display while image is loading',
+      description:
+        'Text to display while image is loading Web Components provide this content through the slot="placeholder".',
       table: {
         type: {
-          summary: 'string',
+          summary: 'slot="placeholder"',
         },
         defaultValue: {
           summary: 'undefined',
@@ -4509,20 +4558,22 @@ export const reactStorybookArgTypes = {
     },
     onClick: {
       name: 'onClick',
-      description: 'Click event handler for the image',
+      description: 'Click event handler for the image Listen for the native "click" event with addEventListener().',
       type: {
-        required: false,
-        raw: '() => void',
         name: 'function',
+        value: 'EventListener',
       },
       table: {
         type: {
-          summary: '(event: React.MouseEvent) => void',
+          summary: 'Event ("click")',
         },
         defaultValue: {
           summary: 'undefined',
         },
         category: 'Events',
+      },
+      control: {
+        disable: true,
       },
     },
     onError: {
@@ -4563,18 +4614,18 @@ export const reactStorybookArgTypes = {
     },
     fallbackComponent: {
       control: {
-        type: 'object',
+        disable: true,
       },
       name: 'fallbackComponent',
-      description: 'Component to display when image fails to load',
+      description:
+        'Component to display when image fails to load Web Components provide this content through the slot="fallback".',
       type: {
-        required: false,
         name: 'other',
-        value: 'ReactNode',
+        value: 'slot="fallback"',
       },
       table: {
         type: {
-          summary: 'ReactNode',
+          summary: 'slot="fallback"',
         },
         defaultValue: {
           summary: 'undefined',
@@ -4612,10 +4663,10 @@ export const reactStorybookArgTypes = {
       },
       name: 'as',
       description:
-        'Polymorphic prop that changes the rendered wrapper element while preserving all Image styles. Accepts HTML tag names (e.g., "div", "span", "figure") or React components. Useful for semantic HTML and accessibility.',
+        'Polymorphic prop that changes the rendered wrapper element while preserving all Image styles. Accepts HTML tag names (e.g., "div", "span", "figure") or custom elements. Useful for semantic HTML and accessibility. Use a native HTML tag name in the Web Component API.',
       type: {
         required: false,
-        raw: 'keyof HTMLElementTagNameMap | ElementType',
+        raw: 'keyof HTMLElementTagNameMap',
         name: 'union',
         value: [
           {
@@ -4624,13 +4675,13 @@ export const reactStorybookArgTypes = {
           },
           {
             name: 'other',
-            value: 'ElementType',
+            value: 'keyof HTMLElementTagNameMap',
           },
         ],
       },
       table: {
         type: {
-          summary: 'keyof HTMLElementTagNameMap | ElementType',
+          summary: 'keyof HTMLElementTagNameMap',
         },
         defaultValue: {
           summary: 'div',
@@ -4645,10 +4696,10 @@ export const reactStorybookArgTypes = {
       },
       name: 'captionAs',
       description:
-        'Polymorphic prop that changes the rendered caption element while preserving all Image caption styles. Accepts HTML tag names (e.g., "figcaption", "p", "span") or React components. Defaults to "figcaption" for semantic HTML. Useful for custom caption styling or when not using semantic figure/caption structure.',
+        'Polymorphic prop that changes the rendered caption element while preserving all Image caption styles. Accepts HTML tag names (e.g., "figcaption", "p", "span") or custom elements. Defaults to "figcaption" for semantic HTML. Useful for custom caption styling or when not using semantic figure/caption structure. Use a native HTML tag name in the Web Component API.',
       type: {
         required: false,
-        raw: 'keyof HTMLElementTagNameMap | ElementType',
+        raw: 'keyof HTMLElementTagNameMap',
         name: 'union',
         value: [
           {
@@ -4657,13 +4708,13 @@ export const reactStorybookArgTypes = {
           },
           {
             name: 'other',
-            value: 'ElementType',
+            value: 'keyof HTMLElementTagNameMap',
           },
         ],
       },
       table: {
         type: {
-          summary: 'keyof HTMLElementTagNameMap | ElementType',
+          summary: 'keyof HTMLElementTagNameMap',
         },
         defaultValue: {
           summary: 'figcaption',
@@ -4799,35 +4850,33 @@ export const reactStorybookArgTypes = {
     },
     fallbackComponent: {
       control: {
-        type: 'text',
-        disable: false,
+        disable: true,
       },
       name: 'fallbackComponent',
       description:
-        'Content to display when `src` is not provided or the image fails to load. Can be a string, number, or any ReactNode (e.g., an icon, initials, or a custom component).',
+        'Content to display when `src` is not provided or the image fails to load. Can be a string, number, or any Node | string (e.g., an icon, initials, or a custom component). Web Components provide this content through the slot="fallback".',
       type: {
-        required: false,
         name: 'other',
-        value: 'ReactNode',
+        value: 'slot="fallback"',
       },
       table: {
         type: {
-          summary: 'ReactNode',
+          summary: 'slot="fallback"',
         },
         category: 'Fallback',
       },
     },
     onClick: {
       name: 'onClick',
-      description: 'Callback function triggered when the avatar is clicked.',
+      description:
+        'Callback function triggered when the avatar is clicked. Listen for the native "click" event with addEventListener().',
       type: {
-        required: false,
-        raw: '() => void',
         name: 'function',
+        value: 'EventListener',
       },
       table: {
         type: {
-          summary: '() => void',
+          summary: 'Event ("click")',
         },
         defaultValue: {
           summary: 'undefined',
@@ -4835,6 +4884,9 @@ export const reactStorybookArgTypes = {
         category: 'Events',
       },
       action: 'clicked',
+      control: {
+        disable: true,
+      },
     },
     alt: {
       name: 'alt',
@@ -4890,16 +4942,20 @@ export const reactStorybookArgTypes = {
     },
     placeholder: {
       name: 'placeholder',
-      description: 'Passed to the internal `Image` component.',
+      description:
+        'Passed to the internal `Image` component. Web Components provide this content through the slot="placeholder".',
       table: {
         type: {
-          summary: 'string',
+          summary: 'slot="placeholder"',
         },
         category: 'Image',
       },
       control: {
-        type: 'text',
-        disable: false,
+        disable: true,
+      },
+      type: {
+        name: 'other',
+        value: 'slot="placeholder"',
       },
     },
     styles: {
@@ -4970,49 +5026,57 @@ export const reactStorybookArgTypes = {
     },
     iconStart: {
       name: 'iconStart',
-      description: 'Icon element to display at the start of the button',
+      description:
+        'Icon element to display at the start of the button Web Components provide this content through the slot="icon-start".',
       type: {
-        required: false,
         name: 'other',
-        value: 'ReactNode',
+        value: 'slot="icon-start"',
       },
       table: {
         type: {
-          summary: 'ReactNode',
+          summary: 'slot="icon-start"',
         },
         category: 'Icons',
+      },
+      control: {
+        disable: true,
       },
     },
     iconEnd: {
       name: 'iconEnd',
-      description: 'Icon element to display at the end of the button',
+      description:
+        'Icon element to display at the end of the button Web Components provide this content through the slot="icon-end".',
       type: {
-        required: false,
         name: 'other',
-        value: 'ReactNode',
+        value: 'slot="icon-end"',
       },
       table: {
         type: {
-          summary: 'ReactNode',
+          summary: 'slot="icon-end"',
         },
         category: 'Icons',
+      },
+      control: {
+        disable: true,
       },
     },
     onClick: {
       name: 'onClick',
-      description: 'Click event handler',
+      description: 'Click event handler Listen for the native "click" event with addEventListener().',
       type: {
-        required: false,
-        raw: '(event: MouseEvent<HTMLButtonElement>) => void',
         name: 'function',
+        value: 'EventListener',
       },
       table: {
         type: {
-          summary: '(event: MouseEvent<HTMLButtonElement>) => void',
+          summary: 'Event ("click")',
         },
         category: 'Content & Behavior',
       },
       action: 'clicked',
+      control: {
+        disable: true,
+      },
     },
     type: {
       name: 'type',
@@ -5215,16 +5279,19 @@ export const reactStorybookArgTypes = {
     },
     children: {
       name: 'children',
-      description: 'Button content (text or elements)',
+      description: 'Button content (text or elements) Web Components provide this content through the default slot.',
       table: {
         category: 'Content & Behavior',
         type: {
-          summary: 'ReactNode',
+          summary: 'default slot',
         },
       },
       control: {
-        type: 'text',
-        disable: false,
+        disable: true,
+      },
+      type: {
+        name: 'other',
+        value: 'default slot',
       },
     },
     width: {
@@ -5778,24 +5845,31 @@ export const reactStorybookArgTypes = {
   Checkbox: {
     children: {
       control: {
-        type: 'text',
+        disable: true,
       },
       name: 'children',
       type: {
-        name: 'string',
+        name: 'other',
+        value: 'default slot',
+      },
+      description: 'Content rendered by the component. Web Components provide this content through the default slot.',
+      table: {
+        type: {
+          summary: 'default slot',
+        },
       },
     },
     onValueChange: {
       name: 'onValueChange',
       type: {
         name: 'function',
-        required: false,
-        raw: '(checked: boolean) => void',
+        value: 'EventListener<CustomEvent>',
       },
-      description: 'Callback fired when the checkbox value changes',
+      description:
+        'Callback fired when the checkbox value changes Listen for the CustomEvent dispatched as "gd-change" with addEventListener().',
       table: {
         type: {
-          summary: '(checked: boolean) => void',
+          summary: 'CustomEvent ("gd-change")',
         },
         defaultValue: {
           summary: 'undefined',
@@ -5803,6 +5877,9 @@ export const reactStorybookArgTypes = {
         category: 'Events',
       },
       action: 'Checkbox value changed',
+      control: {
+        disable: true,
+      },
     },
     checked: {
       control: {
@@ -6136,20 +6213,21 @@ export const reactStorybookArgTypes = {
     },
     placeholder: {
       control: {
-        type: 'text',
+        disable: true,
       },
       name: 'placeholder',
       type: {
-        name: 'string',
+        name: 'other',
+        value: 'slot="placeholder"',
       },
-      description: 'Placeholder text',
+      description: 'Placeholder text Web Components provide this content through the slot="placeholder".',
       table: {
         category: 'Content & Labels',
         defaultValue: {
           summary: 'placeholder',
         },
         type: {
-          summary: 'string',
+          summary: 'slot="placeholder"',
         },
       },
     },
@@ -6264,7 +6342,7 @@ export const reactStorybookArgTypes = {
       description: 'Custom styles object',
       table: {
         type: {
-          summary: 'React.CSSProperties',
+          summary: 'Partial<CSSStyleDeclaration>',
         },
         defaultValue: {
           summary: '{}',
@@ -6274,18 +6352,17 @@ export const reactStorybookArgTypes = {
     },
     adornmentStart: {
       control: {
-        type: 'object',
+        disable: true,
       },
       name: 'adornmentStart',
       type: {
         name: 'other',
-        required: false,
-        value: 'ReactNode',
+        value: 'slot="adornment-start"',
       },
-      description: 'Start adornment element',
+      description: 'Start adornment element Web Components provide this content through the slot="adornment-start".',
       table: {
         type: {
-          summary: 'ReactNode',
+          summary: 'slot="adornment-start"',
         },
         defaultValue: {
           summary: '',
@@ -6295,18 +6372,17 @@ export const reactStorybookArgTypes = {
     },
     adornmentEnd: {
       control: {
-        type: 'object',
+        disable: true,
       },
       name: 'adornmentEnd',
       type: {
         name: 'other',
-        required: false,
-        value: 'ReactNode',
+        value: 'slot="adornment-end"',
       },
-      description: 'End adornment element',
+      description: 'End adornment element Web Components provide this content through the slot="adornment-end".',
       table: {
         type: {
-          summary: 'ReactNode',
+          summary: 'slot="adornment-end"',
         },
         defaultValue: {
           summary: '',
@@ -6322,7 +6398,7 @@ export const reactStorybookArgTypes = {
       type: {
         name: 'other',
         required: false,
-        value: 'ReactNode',
+        value: 'Node | string',
       },
       description: 'Input label text',
       table: {
@@ -6343,7 +6419,7 @@ export const reactStorybookArgTypes = {
       type: {
         name: 'other',
         required: false,
-        value: 'ReactNode',
+        value: 'Node | string',
       },
       description: 'Helper text below input',
       table: {
@@ -6360,52 +6436,69 @@ export const reactStorybookArgTypes = {
       name: 'onChange',
       type: {
         name: 'function',
+        value: 'EventListener<CustomEvent>',
       },
-      description: 'onChange event handler',
+      description:
+        'onChange event handler Listen for the CustomEvent dispatched as "gd-change" with addEventListener().',
       table: {
         category: 'Events',
         type: {
-          summary: '(event: ChangeEvent<HTMLInputElement>) => void',
+          summary: 'CustomEvent ("gd-change")',
         },
+      },
+      control: {
+        disable: true,
       },
     },
     onFocus: {
       name: 'onFocus',
       type: {
         name: 'function',
+        value: 'EventListener',
       },
-      description: 'onFocus event handler',
+      description: 'onFocus event handler Listen for the native "focus" event with addEventListener().',
       table: {
         category: 'Events',
         type: {
-          summary: '(event: FocusEvent<HTMLInputElement>) => void',
+          summary: 'Event ("focus")',
         },
+      },
+      control: {
+        disable: true,
       },
     },
     onBlur: {
       name: 'onBlur',
       type: {
         name: 'function',
+        value: 'EventListener',
       },
-      description: 'onBlur event handler',
+      description: 'onBlur event handler Listen for the native "blur" event with addEventListener().',
       table: {
         category: 'Events',
         type: {
-          summary: '(event: FocusEvent<HTMLInputElement>) => void',
+          summary: 'Event ("blur")',
         },
+      },
+      control: {
+        disable: true,
       },
     },
     onClick: {
       name: 'onClick',
       type: {
         name: 'function',
+        value: 'EventListener',
       },
-      description: 'onClick event handler',
+      description: 'onClick event handler Listen for the native "click" event with addEventListener().',
       table: {
         category: 'Events',
         type: {
-          summary: '(event: MouseEvent<HTMLInputElement>) => void',
+          summary: 'Event ("click")',
         },
+      },
+      control: {
+        disable: true,
       },
     },
     wrapperAs: {
@@ -6413,10 +6506,10 @@ export const reactStorybookArgTypes = {
         type: 'object',
       },
       name: 'wrapperAs',
-      description: 'HTML element or component to wrap the input',
+      description: 'HTML element or component to wrap the input Use a native HTML tag name in the Web Component API.',
       type: {
         required: false,
-        raw: 'keyof HTMLElementTagNameMap | ElementType',
+        raw: 'keyof HTMLElementTagNameMap',
         name: 'union',
         value: [
           {
@@ -6425,13 +6518,13 @@ export const reactStorybookArgTypes = {
           },
           {
             name: 'other',
-            value: 'ElementType',
+            value: 'keyof HTMLElementTagNameMap',
           },
         ],
       },
       table: {
         type: {
-          summary: 'keyof HTMLElementTagNameMap | ElementType',
+          summary: 'keyof HTMLElementTagNameMap',
         },
         defaultValue: {
           summary: 'label',
@@ -6497,50 +6590,77 @@ export const reactStorybookArgTypes = {
     },
     placeholder: {
       name: 'placeholder',
-      description: 'Text to display when no value is selected',
+      description:
+        'Text to display when no value is selected Web Components provide this content through the slot="placeholder".',
       table: {
         category: 'Core',
         type: {
-          summary: 'string',
+          summary: 'slot="placeholder"',
         },
         defaultValue: {
           summary: 'Select',
         },
       },
+      control: {
+        disable: true,
+      },
+      type: {
+        name: 'other',
+        value: 'slot="placeholder"',
+      },
     },
     onSelect: {
       name: 'onSelect',
-      description: 'Callback when item is selected',
+      description:
+        'Callback when item is selected Listen for the CustomEvent dispatched as "gd-change" with addEventListener().',
       action: 'selected',
       table: {
         category: 'Events',
         type: {
-          summary: 'SelectOnSelect = <T = HTMLDivElement>(props: OnSelectProps<T>) => void',
-          detail:
-            'OnSelectProps<T = HTMLDivElement> {\n  event: MouseEvent<T> | KeyboardEvent<T> | ChangeEvent<T>;\n  data?: Option;\n  index?: number;\n}',
+          summary: 'CustomEvent ("gd-change")',
         },
+      },
+      control: {
+        disable: true,
+      },
+      type: {
+        name: 'function',
+        value: 'EventListener<CustomEvent>',
       },
     },
     onChange: {
       name: 'onChange',
       description:
-        'Callback fired when value changes (receives Option for single select, Option[] for multiple select)',
+        'Callback fired when value changes (receives Option for single select, Option[] for multiple select) Listen for the CustomEvent dispatched as "gd-change" with addEventListener().',
       table: {
         category: 'Events',
         type: {
-          summary: '(data: Option | Option[]) => void',
-          detail: 'Option { name: string;  value: unknown; }',
+          summary: 'CustomEvent ("gd-change")',
         },
+      },
+      control: {
+        disable: true,
+      },
+      type: {
+        name: 'function',
+        value: 'EventListener<CustomEvent>',
       },
     },
     onKeyDown: {
       name: 'onKeyDown',
-      description: 'Callback fired on keyboard events',
+      description: 'Callback fired on keyboard events Listen for the native "keydown" event with addEventListener().',
       table: {
         category: 'Events',
         type: {
-          summary: 'ReactEventHandler<HTMLElement>',
+          summary: 'Event ("keydown")',
         },
+      },
+      control: {
+        disable: true,
+      },
+      type: {
+        name: 'function',
+        value: 'EventListener',
       },
     },
     onInitiatorClick: {
@@ -6549,7 +6669,7 @@ export const reactStorybookArgTypes = {
       table: {
         category: 'Events',
         type: {
-          summary: '(event: MouseEvent<HTMLElement>) => void',
+          summary: '(event: Event) => void',
         },
       },
     },
@@ -6559,7 +6679,7 @@ export const reactStorybookArgTypes = {
       table: {
         category: 'Customization',
         type: {
-          summary: '(value: renderOptionType) => ReactNode',
+          summary: '(value: renderOptionType) => Node | string',
           detail:
             'renderOptionType = {\n  item: Option;\n  index: number;\n  isActiveItem: boolean;\n  className: string;\n};',
         },
@@ -6641,22 +6761,38 @@ export const reactStorybookArgTypes = {
     },
     adornmentStart: {
       name: 'adornmentStart',
-      description: 'Element to be rendered at the start of the select',
+      description:
+        'Element to be rendered at the start of the select Web Components provide this content through the slot="adornment-start".',
       table: {
         category: 'Layout',
         type: {
-          summary: 'ReactNode',
+          summary: 'slot="adornment-start"',
         },
+      },
+      control: {
+        disable: true,
+      },
+      type: {
+        name: 'other',
+        value: 'slot="adornment-start"',
       },
     },
     adornmentEnd: {
       name: 'adornmentEnd',
-      description: 'Element to be rendered at the end of the select',
+      description:
+        'Element to be rendered at the end of the select Web Components provide this content through the slot="adornment-end".',
       table: {
         category: 'Layout',
         type: {
-          summary: 'ReactNode',
+          summary: 'slot="adornment-end"',
         },
+      },
+      control: {
+        disable: true,
+      },
+      type: {
+        name: 'other',
+        value: 'slot="adornment-end"',
       },
     },
     disabled: {
@@ -6707,41 +6843,65 @@ export const reactStorybookArgTypes = {
         type: {
           summary: 'Ref<SelectRef>',
           detail:
-            '{ isOpen: boolean; open: () => void; close: () => void; toggle: () => void;  onSelect: <T = HTMLDivElement>(event: MouseEvent<T> | KeyboardEvent<T> | ChangeEvent<T>, data: Option) => void}',
+            '{ isOpen: boolean; open: () => void; close: () => void; toggle: () => void;  onSelect: <T = HTMLDivElement>(event: Event | Event | Event, data: Option) => void}',
         },
       },
     },
     initiator: {
       name: 'initiator',
-      description: 'Custom initiator element to trigger the dropdown',
+      description:
+        'Custom initiator element to trigger the dropdown Web Components provide this content through the slot="initiator".',
       table: {
         category: 'Advanced',
         type: {
-          summary: 'ReactNode',
+          summary: 'slot="initiator"',
         },
+      },
+      control: {
+        disable: true,
+      },
+      type: {
+        name: 'other',
+        value: 'slot="initiator"',
       },
     },
     children: {
       name: 'children',
-      description: 'Child elements of the select component',
+      description:
+        'Child elements of the select component Web Components provide this content through the default slot.',
       table: {
         category: 'Advanced',
         type: {
-          summary: 'ReactNode',
+          summary: 'default slot',
         },
+      },
+      control: {
+        disable: true,
+      },
+      type: {
+        name: 'other',
+        value: 'default slot',
       },
     },
     emptyItemsResult: {
       name: 'emptyItemsResult',
-      description: 'Text or Component to display when no items are available',
+      description:
+        'Text or Component to display when no items are available Web Components provide this content through the slot="empty-items-result".',
       table: {
         category: 'Advanced',
         type: {
-          summary: 'ReactNode',
+          summary: 'slot="empty-items-result"',
         },
         defaultValue: {
           summary: 'undefined',
         },
+      },
+      control: {
+        disable: true,
+      },
+      type: {
+        name: 'other',
+        value: 'slot="empty-items-result"',
       },
     },
     itemsCount: {
@@ -6793,18 +6953,21 @@ export const reactStorybookArgTypes = {
   Typography: {
     children: {
       control: {
-        type: 'text',
-        disable: false,
+        disable: true,
       },
       name: 'children',
       type: {
-        name: 'string',
+        name: 'other',
+        value: 'default slot',
       },
       table: {
         category: 'Content',
+        type: {
+          summary: 'default slot',
+        },
       },
       description:
-        'The content to render inside the Typography component. Accepts text strings, numbers, React elements, or other Typography components for nested styling. Typography components can be nested to create rich text formatting with different styles.',
+        'The content to render inside the Typography component. Accepts text strings, numbers, DOM elements, or other Typography components for nested styling. Typography components can be nested to create rich text formatting with different styles. Web Components provide this content through the default slot.',
     },
     variant: {
       control: {
@@ -6895,10 +7058,10 @@ export const reactStorybookArgTypes = {
       },
       name: 'as',
       description:
-        'Polymorphic prop that changes the rendered element/component while preserving all Typography styles. Accepts HTML tag names ("div", "span", "label") or React components (Row, Column, Link). Useful for maintaining visual consistency across different semantic elements (e.g., h1 styles on a div for SEO flexibility).',
+        'Polymorphic prop that changes the rendered element/component while preserving all Typography styles. Accepts HTML tag names ("div", "span", "label") or custom elements (Row, Column, Link). Useful for maintaining visual consistency across different semantic elements (e.g., h1 styles on a div for SEO flexibility). Use a native HTML tag name in the Web Component API.',
       type: {
         required: false,
-        raw: 'keyof HTMLElementTagNameMap | ElementType',
+        raw: 'keyof HTMLElementTagNameMap',
         name: 'union',
         value: [
           {
@@ -6907,13 +7070,13 @@ export const reactStorybookArgTypes = {
           },
           {
             name: 'other',
-            value: 'ElementType',
+            value: 'keyof HTMLElementTagNameMap',
           },
         ],
       },
       table: {
         type: {
-          summary: 'union',
+          summary: 'keyof HTMLElementTagNameMap',
         },
         category: 'Behavior',
       },
@@ -7118,20 +7281,23 @@ export const reactStorybookArgTypes = {
     },
     onCounterChange: {
       name: 'onCounterChange',
-      description: 'Callback function triggered when counter value changes',
+      description:
+        'Callback function triggered when counter value changes Listen for the CustomEvent dispatched as "gd-change" with addEventListener().',
       type: {
-        required: false,
-        raw: '(qty: number) => void',
         name: 'function',
+        value: 'EventListener<CustomEvent>',
       },
       table: {
         type: {
-          summary: '(value: number) => void',
+          summary: 'CustomEvent ("gd-change")',
         },
         defaultValue: {
           summary: 'undefined',
         },
         category: 'Events',
+      },
+      control: {
+        disable: true,
       },
     },
     styles: {
@@ -7140,7 +7306,7 @@ export const reactStorybookArgTypes = {
       table: {
         category: 'Styling',
         type: {
-          summary: 'React.CSSProperties',
+          summary: 'Partial<CSSStyleDeclaration>',
         },
         defaultValue: {
           summary: '{}',
@@ -7151,19 +7317,18 @@ export const reactStorybookArgTypes = {
   Menu: {
     onSelect: {
       control: {
-        type: 'object',
+        disable: true,
       },
       name: 'onSelect',
       type: {
-        name: 'other',
-        required: false,
-        value: 'SelectOnSelect',
+        name: 'function',
+        value: 'EventListener<CustomEvent>',
       },
-      description: 'Callback fired when a menu item is selected. Receives the selected item data',
+      description:
+        'Callback fired when a menu item is selected. Receives the selected item data Listen for the CustomEvent dispatched as "gd-change" with addEventListener().',
       table: {
         type: {
-          summary: '(props: OnSelectProps) => void',
-          detail: 'OnSelectProps = { event: SyntheticBaseEvent, data: { name: string, value: unknown }',
+          summary: 'CustomEvent ("gd-change")',
         },
         defaultValue: {
           summary: 'undefined',
@@ -7196,18 +7361,18 @@ export const reactStorybookArgTypes = {
     },
     content: {
       control: {
-        type: 'object',
+        disable: true,
       },
       name: 'content',
-      description: 'Menu content to be rendered inside the dropdown (typically DropdownItem components)',
+      description:
+        'Menu content to be rendered inside the dropdown (typically DropdownItem components) Web Components provide this content through the slot="content".',
       type: {
-        required: false,
         name: 'other',
-        value: 'ReactNode',
+        value: 'slot="content"',
       },
       table: {
         type: {
-          summary: 'ReactNode',
+          summary: 'slot="content"',
         },
         defaultValue: {
           summary: 'undefined',
@@ -7351,19 +7516,23 @@ export const reactStorybookArgTypes = {
     },
     children: {
       name: 'children',
-      description: 'Trigger element that opens the menu when clicked (button, text, icon, etc.)',
+      description:
+        'Trigger element that opens the menu when clicked (button, text, icon, etc.) Web Components provide this content through the default slot.',
       table: {
         category: 'Content & Trigger',
         type: {
-          summary: 'ReactNode',
+          summary: 'default slot',
         },
         defaultValue: {
           summary: 'undefined',
         },
       },
       control: {
-        type: 'text',
-        disable: false,
+        disable: true,
+      },
+      type: {
+        name: 'other',
+        value: 'default slot',
       },
     },
     width: {

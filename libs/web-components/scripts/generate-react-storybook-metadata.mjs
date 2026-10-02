@@ -2,6 +2,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import ts from 'typescript';
+import { translateStorybookMetadata } from './translate-storybook-metadata.mjs';
 
 const packageRoot = resolve(import.meta.dirname, '..');
 const repoRoot = resolve(packageRoot, '../..');
@@ -122,7 +123,7 @@ function extractArgTypes(fileName, source) {
   );
 }
 
-const metadata = JSON.parse(await readFile(snapshotPath, 'utf8'));
+const sourceMetadata = JSON.parse(await readFile(snapshotPath, 'utf8'));
 for (const [tag, contract] of Object.entries(parity)) {
   const category = tag === 'gd-counter' || tag === 'gd-menu' ? 'molecules' : 'atoms';
   const fileName = resolve(
@@ -133,12 +134,13 @@ for (const [tag, contract] of Object.entries(parity)) {
     `${contract.react}.stories.tsx`
   );
   const explicitArgTypes = extractArgTypes(fileName, await readFile(fileName, 'utf8'));
-  const publishedArgTypes = metadata[contract.react];
+  const publishedArgTypes = sourceMetadata[contract.react];
   if (!publishedArgTypes) throw new Error(`${contract.react} is missing from the published Storybook snapshot.`);
   const missing = Object.keys(explicitArgTypes).filter((control) => !(control in publishedArgTypes));
   if (missing.length)
     throw new Error(`${contract.react} published Storybook snapshot is missing controls: ${missing.join(', ')}.`);
 }
+const metadata = translateStorybookMetadata(sourceMetadata);
 
 const output = `/* This file is generated from the React Storybook metadata. Do not edit it by hand. */\nexport const reactStorybookArgTypes = ${JSON.stringify(
   metadata,

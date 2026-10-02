@@ -1,7 +1,8 @@
-import { LitElement, html, nothing } from 'lit';
+import { LitElement, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { loader, animations } from 'gd-design-library/tokens';
 import { buttonCssBlockToText, get, resolveThemeTree, type ButtonCssBlock, type DesignCoreTheme } from 'gd-design-core';
+import '../gd-wrapper/gd-wrapper';
 
 type LoaderName = 'circle' | 'dots';
 type LoaderVariant = 'inline' | 'section' | 'fullPage';
@@ -16,6 +17,7 @@ export class GdLoader extends LitElement {
   @property({ type: String, reflect: true }) rounded = 'none';
   @property({ type: String, attribute: 'animation-props' }) animationProps = '1000ms ease-in-out infinite';
   @property({ type: Boolean, attribute: 'with-wrapper' }) withWrapper = true;
+  @property({ type: String, attribute: 'wrapper-as' }) wrapperAs: keyof HTMLElementTagNameMap = 'span';
   @property({ attribute: false }) styles: CssBlock = {};
   @property({ attribute: false }) theme: DesignCoreTheme = {};
 
@@ -64,9 +66,11 @@ export class GdLoader extends LitElement {
             ><span class="dot" part="dot"></span>`
         : ''}<slot></slot
     ></span>`;
-    return this.withWrapper
-      ? html`<span part="wrapper" popover=${this.variant === 'fullPage' ? 'manual' : nothing}>${content}</span>`
-      : content;
+    if (!this.withWrapper) return content;
+    if (this.variant === 'fullPage') return html`<span part="wrapper" popover="manual">${content}</span>`;
+    return html`<gd-wrapper part="wrapper" .variant=${this.variant} .as=${this.wrapperAs} .theme=${this.theme}
+      >${content}</gd-wrapper
+    >`;
   }
 }
 declare global {

@@ -2,7 +2,10 @@ import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdLoader } from '../src';
 import { defaultTokenViewer, element, sectionedArgTypes } from './helpers';
 
-type Args = Pick<GdLoader, 'name' | 'variant' | 'size' | 'rounded' | 'withWrapper' | 'animationProps' | 'styles'>;
+type Args = Pick<
+  GdLoader,
+  'name' | 'variant' | 'size' | 'rounded' | 'withWrapper' | 'wrapperAs' | 'animationProps' | 'styles'
+> & { WrapperView?: keyof HTMLElementTagNameMap };
 const meta = {
   title: 'Atoms/Loader',
   tags: ['autodocs'],
@@ -28,7 +31,8 @@ const meta = {
     animationProps: { description: 'CSS animation timing, easing, and iteration values', control: 'text' },
     styles: { description: 'Custom loader style overrides', control: 'object' },
   }),
-  render: (args: Args) => element('gd-loader', args),
+  render: ({ WrapperView, ...args }: Args) =>
+    element('gd-loader', { ...args, wrapperAs: WrapperView ?? args.wrapperAs }),
 } satisfies Meta<Args>;
 export default meta;
 type Story = StoryObj<Args>;
@@ -38,11 +42,12 @@ export const LoaderSizes: Story = { args: { size: 'xl' } };
 export const LoaderRounded: Story = { args: { name: 'dots', rounded: 'round' } };
 export const LoaderSectionVariant: Story = { args: { variant: 'section' } };
 export const LoaderVariantsWithWrapperViewAsHeaderTag: Story = {
-  args: { variant: 'inline' },
+  args: { variant: 'inline', WrapperView: 'header' },
   parameters: {
     docs: {
       description: {
-        story: 'Custom Elements retain a stable gd-loader host; withWrapper controls the internal native span wrapper.',
+        story:
+          'The React WrapperView prop maps to the Web Component wrapperAs property and composes gd-wrapper with a semantic header element.',
       },
     },
   },

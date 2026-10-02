@@ -1,10 +1,13 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { translateStorybookMetadata } from '../../libs/web-components/scripts/translate-storybook-metadata.mjs';
 
-const reactArgTypes = JSON.parse(
-  await readFile(
-    new URL('../../libs/web-components/stories/react-storybook-arg-types.snapshot.json', import.meta.url),
-    'utf8'
+const reactArgTypes = translateStorybookMetadata(
+  JSON.parse(
+    await readFile(
+      new URL('../../libs/web-components/stories/react-storybook-arg-types.snapshot.json', import.meta.url),
+      'utf8'
+    )
   )
 );
 
