@@ -198,6 +198,8 @@ for (const { tag, category } of ports) {
     throw new Error(`${tag} embeds SVG markup instead of composing gd-icon.`);
   const storyName = tag.slice(3).replace(/(^|-)([a-z])/g, (_match, _separator, letter) => letter.toUpperCase());
   const stories = await readFile(resolve(packageRoot, 'stories', `${storyName}.stories.ts`), 'utf8');
+  if (/textContent\s*=\s*['"][●★→]['"]/.test(stories))
+    throw new Error(`${tag} Storybook uses a glyph placeholder where a source icon must compose gd-icon.`);
   if (fullStoryParity.has(tag) && !stories.includes('description:'))
     throw new Error(`${tag} Storybook docs are missing component/prop descriptions.`);
   for (const needle of contract.source) {

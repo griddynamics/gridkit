@@ -75,19 +75,35 @@ export const Rounded: Story = {
   },
 };
 export const FullWidth: Story = { args: { fullWidth: true, children: 'Full-width action' } };
-export const IconOnly: Story = { args: { isIcon: true, ariaLabel: 'Add item', children: '+' } };
-export const IconSlots: Story = {
+export const IconOnly: Story = {
   render: (args) => {
-    const button = buttonElement(args, 'Continue');
-    const icon = document.createElement('span');
-    icon.slot = 'icon-end';
-    icon.setAttribute('aria-hidden', 'true');
-    icon.textContent = '→';
+    const button = buttonElement({ ...args, isIcon: true, ariaLabel: 'Close' }, '');
+    const icon = element('gd-icon', { name: 'cross' });
+    icon.slot = 'icon-start';
     button.append(icon);
     return button;
   },
 };
-export const WithIcons: Story = IconSlots;
+export const WithIcons: Story = {
+  render: (args) => {
+    const button = buttonElement({ ...args, variant: 'primary' }, 'Save Changes');
+    const start = element('gd-icon', { name: 'check' });
+    start.slot = 'icon-start';
+    const end = element('gd-icon', { name: 'arrowRight' });
+    end.slot = 'icon-end';
+    button.append(start, end);
+    return button;
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Buttons can include catalog-backed gd-icon elements in the icon-start and icon-end slots for visual context.',
+      },
+    },
+  },
+};
+export const IconSlots: Story = WithIcons;
 export const FullWidthButton: Story = FullWidth;
 export const RoundedButton: Story = Rounded;
 export const DisabledButton: Story = Disabled;

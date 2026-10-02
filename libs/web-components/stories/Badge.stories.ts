@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
-import type { GdBadge } from '../src';
+import type { GdBadge, GdIcon } from '../src';
 import { defaultTokenViewer, element, sectionedArgTypes } from './helpers';
 
 type Args = Pick<GdBadge, 'variant' | 'appearance' | 'size' | 'disabled'>;
@@ -37,14 +37,41 @@ export const Default: Story = {};
 export const Sizes: Story = { args: { size: 'lg' } };
 export const Variants: Story = { args: { variant: 'tertiary' } };
 export const WithIcons: Story = {
-  render: (args) => {
-    const badge = element('gd-badge', args, 'Status');
-    const icon = document.createElement('span');
-    icon.slot = 'icon-start';
-    icon.textContent = '●';
-    badge.prepend(icon);
-    return badge;
+  render: () => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;gap:16px;align-items:center;flex-wrap:wrap';
+
+    const withIcons = (
+      text: string,
+      options: Partial<GdBadge> & { iconStart?: GdIcon['name']; iconEnd?: GdIcon['name'] } = {}
+    ) => {
+      const { iconStart, iconEnd, ...badgeProps } = options;
+      const badge = element('gd-badge', badgeProps, text);
+      const appendIcon = (name: GdIcon['name'], slot: 'icon-start' | 'icon-end') => {
+        const icon = element('gd-icon', { name, size: 'md' });
+        icon.slot = slot;
+        badge.append(icon);
+      };
+      if (iconStart) appendIcon(iconStart, 'icon-start');
+      if (iconEnd) appendIcon(iconEnd, 'icon-end');
+      return badge;
+    };
+
+    row.append(
+      withIcons('With Start Icon', { iconStart: 'success' }),
+      withIcons('With End Icon', { variant: 'secondary', iconEnd: 'warning' }),
+      withIcons('Both Icons', {
+        variant: 'tertiary',
+        appearance: 'filled',
+        iconStart: 'info',
+        iconEnd: 'arrowRight',
+      }),
+      withIcons('Quaternary with Icon', { variant: 'quaternary', iconStart: 'error' }),
+      withIcons('Quinary with Icon', { variant: 'quinary', iconStart: 'accountCircle' })
+    );
+    return row;
   },
+  parameters: { docs: { description: { story: 'Badges with start and end icons.' } } },
 };
 export const Disabled: Story = { args: { disabled: true } };
 export const WithBoxStyles: Story = {

@@ -53,10 +53,13 @@ export const AllSizes: Story = {
 export const CustomColors: Story = { args: { withBadge: true, backgroundColor: '#6b46c1', badgeColor: '#22c55e' } };
 export const SlottedFallback: Story = {
   render: () => {
-    const avatar = element('gd-avatar', { alt: 'Custom fallback', size: 'sm' });
-    const fallback = document.createElement('span');
+    const avatar = element('gd-avatar', {
+      alt: 'Custom fallback',
+      sizeVariant: 'xl',
+      backgroundColor: '#E0E0E0',
+    });
+    const fallback = element('gd-icon', { name: 'star', width: 40, height: 40, fill: '#646464' });
     fallback.slot = 'fallback';
-    fallback.textContent = '★';
     avatar.append(fallback);
     return avatar;
   },

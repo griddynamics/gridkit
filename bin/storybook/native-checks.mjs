@@ -40,6 +40,42 @@ export async function checkNativeStories(page, base) {
       assert.deepEqual(target.if, source.if, `${title}.${name} conditional visibility must match React`);
     }
   }
+  const badgeIcons = index.entries['atoms-badge--with-icons'];
+  assert.ok(badgeIcons, 'Atoms/Badge WithIcons must exist');
+  await page.goto(`${base}/web-components/iframe.html?id=${badgeIcons.id}&viewMode=story`);
+  await page.locator('gd-badge').first().waitFor({ state: 'attached' });
+  await page.waitForFunction(() => document.querySelectorAll('gd-badge').length === 5);
+  const badgeIconParity = await page.evaluate(() => ({
+    labels: [...document.querySelectorAll('gd-badge')].map((badge) =>
+      [...badge.childNodes]
+        .filter((node) => node.nodeType === Node.TEXT_NODE)
+        .map((node) => node.textContent)
+        .join('')
+        .trim()
+    ),
+    variants: [...document.querySelectorAll('gd-badge')].map((badge) => badge.getAttribute('variant') ?? 'primary'),
+    icons: [...document.querySelectorAll('gd-badge')].map((badge) =>
+      [...badge.querySelectorAll('gd-icon')].map((icon) => ({
+        name: icon.getAttribute('name'),
+        size: icon.getAttribute('size'),
+        slot: icon.getAttribute('slot'),
+      }))
+    ),
+  }));
+  assert.deepEqual(badgeIconParity, {
+    labels: ['With Start Icon', 'With End Icon', 'Both Icons', 'Quaternary with Icon', 'Quinary with Icon'],
+    variants: ['primary', 'secondary', 'tertiary', 'quaternary', 'quinary'],
+    icons: [
+      [{ name: 'success', size: 'md', slot: 'icon-start' }],
+      [{ name: 'warning', size: 'md', slot: 'icon-end' }],
+      [
+        { name: 'info', size: 'md', slot: 'icon-start' },
+        { name: 'arrowRight', size: 'md', slot: 'icon-end' },
+      ],
+      [{ name: 'error', size: 'md', slot: 'icon-start' }],
+      [{ name: 'accountCircle', size: 'md', slot: 'icon-start' }],
+    ],
+  });
   const stories = Object.values(index.entries).filter(
     (entry) =>
       entry.type === 'story' && /^(Atoms|Molecules)\//.test(entry.title) && !entry.id.endsWith('--default-tokens')

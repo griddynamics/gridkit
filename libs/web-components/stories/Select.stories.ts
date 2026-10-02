@@ -72,12 +72,11 @@ export const ValidationColors: Story = {
 export const WithAdornments: Story = {
   render: (args) => {
     const select = element('gd-select', args);
-    const start = document.createElement('span');
+    const start = element('gd-icon', { name: 'folder', fill: "green['50']" });
     start.slot = 'adornment-start';
-    start.textContent = '★';
     const end = document.createElement('span');
     end.slot = 'adornment-end';
-    end.textContent = 'Required';
+    end.textContent = '(k)';
     select.append(start, end);
     return select;
   },
