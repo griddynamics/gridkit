@@ -3,6 +3,7 @@ import { customElement, property, query } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { checkbox } from 'gd-design-library/tokens';
 import { resolveThemeTree, createCheckboxStore, type CheckboxSizeName, type DesignCoreTheme } from 'gd-design-core';
+import '../gd-icon/gd-icon';
 
 interface ResolvedCheckboxTokens {
   indicatorSize: number;
@@ -62,7 +63,7 @@ function resolveCheckboxTokens(theme: DesignCoreTheme, size: CheckboxSizeName): 
 export class GdCheckbox extends LitElement {
   static styles = css`
     :host {
-      display: inline-block;
+      display: inline-flex;
     }
     label {
       display: inline-flex;
@@ -85,9 +86,6 @@ export class GdCheckbox extends LitElement {
       align-items: center;
       justify-content: center;
       box-sizing: border-box;
-    }
-    svg {
-      display: block;
     }
   `;
 
@@ -293,19 +291,21 @@ export class GdCheckbox extends LitElement {
         />
         <span class="indicator" part="indicator" style=${styleMap(indicatorStyle)}>
           ${this.indeterminate
-            ? html`<svg width=${resolved.iconSize} height=${resolved.iconSize} viewBox="0 0 10 10" fill="none">
-                <path d="M1 5H9" stroke="white" stroke-width="1.5" stroke-linecap="round" />
-              </svg>`
+            ? html`<gd-icon
+                name="minus"
+                .width=${resolved.iconSize}
+                .height=${resolved.iconSize}
+                fill="neutral.white"
+                .theme=${this.theme}
+              ></gd-icon>`
             : currentChecked
-              ? html`<svg width=${resolved.iconSize} height=${resolved.iconSize} viewBox="0 0 10 10" fill="none">
-                  <path
-                    d="M1.5 5L4 7.5L8.5 2.5"
-                    stroke="white"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>`
+              ? html`<gd-icon
+                  name="check"
+                  .width=${resolved.iconSize}
+                  .height=${resolved.iconSize}
+                  fill="neutral.white"
+                  .theme=${this.theme}
+                ></gd-icon>`
               : nothing}
         </span>
         <!-- Bare span, no style — matches Checkbox.tsx's real unstyled label span exactly:

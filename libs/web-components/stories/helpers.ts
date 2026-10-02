@@ -1,8 +1,34 @@
 import { defaultTheme } from 'gd-design-library/tokens';
 import type { DesignCoreTheme } from 'gd-design-core';
+import type { ArgTypes as StorybookArgTypes } from '@storybook/web-components-vite';
+import { action } from 'storybook/actions';
 import type {} from '../src/index';
+import { reactStorybookArgTypes } from './react-storybook-arg-types.generated';
 
 type Tag = Extract<keyof HTMLElementTagNameMap, `gd-${string}`>;
+
+type ArgType = {
+  table?: Record<string, unknown>;
+  [key: string]: unknown;
+};
+
+/** Preserve the complete control table defined by the corresponding React story. */
+export function sectionedArgTypes<
+  Component extends keyof typeof reactStorybookArgTypes,
+  ArgTypes extends Record<string, ArgType>,
+>(component: Component, _argTypes: ArgTypes): StorybookArgTypes {
+  void _argTypes;
+  const source = reactStorybookArgTypes[component] as Record<string, ArgType>;
+  return Object.fromEntries(
+    Object.keys(source).map((name) => {
+      const sourceArgType = source[name];
+      return [
+        name,
+        sourceArgType.control === undefined ? { ...sourceArgType, control: { disable: true } } : sourceArgType,
+      ];
+    })
+  ) as StorybookArgTypes;
+}
 
 const sourceKeyProperties: Partial<Record<Tag, readonly string[]>> = {
   'gd-avatar': ['sizeVariant'],
@@ -64,11 +90,51 @@ function equivalent(left: unknown, right: unknown) {
   return false;
 }
 
+function sourceElement(node: Element) {
+  const clone = node.cloneNode(true) as Element;
+  const applyEffectiveAttributes = (source: Element, target: Element) => {
+    if (source.localName.startsWith('gd-')) {
+      const tag = source.localName as Tag;
+      const current = source as unknown as HTMLElement & Record<string, unknown>;
+      const baseline = document.createElement(tag) as unknown as HTMLElement & Record<string, unknown>;
+      const constructor = customElements.get(tag) as
+        | (CustomElementConstructor & {
+            elementProperties?: Map<PropertyKey, { attribute?: boolean | string; state?: boolean }>;
+          })
+        | undefined;
+      for (const [property, options] of constructor?.elementProperties ?? []) {
+        if (typeof property !== 'string' || property === 'theme' || options.state || property.startsWith('_')) continue;
+        const value = current[property];
+        const requiredForUnderstanding = sourceKeyProperties[tag]?.includes(property) ?? false;
+        if (!requiredForUnderstanding && equivalent(value, baseline[property])) continue;
+        const attribute =
+          options.attribute === false
+            ? false
+            : typeof options.attribute === 'string'
+              ? options.attribute
+              : kebab(property);
+        if (!attribute || !['string', 'number', 'boolean'].includes(typeof value)) continue;
+        if (typeof value === 'boolean') {
+          if (value) target.setAttribute(attribute, '');
+        } else target.setAttribute(attribute, String(value));
+      }
+    }
+    const sourceChildren = Array.from(source.children);
+    const targetChildren = Array.from(target.children);
+    sourceChildren.forEach((child, index) => {
+      const targetChild = targetChildren[index];
+      if (targetChild) applyEffectiveAttributes(child, targetChild);
+    });
+  };
+  applyEffectiveAttributes(node, clone);
+  return clone.outerHTML;
+}
+
 function lightDom(node: Element) {
   return Array.from(node.childNodes)
     .map((child) => {
       if (child.nodeType === Node.TEXT_NODE) return escapeHtml(child.textContent ?? '');
-      return child instanceof Element ? child.outerHTML : '';
+      return child instanceof Element ? sourceElement(child) : '';
     })
     .join('')
     .trim();
@@ -83,7 +149,7 @@ export function storySource(canvas: HTMLElement | undefined, fallback: string) {
   );
   if (!nodes.length) return fallback;
 
-  const markup: string[] = [];
+  const markup = lightDom(canvas);
   const setup: string[] = ["import 'web-components';", "import { defaultTheme } from 'gd-design-library/tokens';", ''];
   nodes.forEach((node, index) => {
     const tag = node.localName as Tag;
@@ -114,12 +180,6 @@ export function storySource(canvas: HTMLElement | undefined, fallback: string) {
         } else attributes.set(attribute, String(value));
       } else if (typeof value !== 'function' && value !== undefined) assignments.push([property, value]);
     }
-    const attributeText = [...attributes]
-      .map(([name, value]) => (value === '' ? name : `${name}="${escapeHtml(value)}"`))
-      .join(' ');
-    const content = lightDom(node);
-    markup.push(`<${tag}${attributeText ? ` ${attributeText}` : ''}>${content}</${tag}>`);
-
     const variable = nodes.length === 1 ? 'component' : `component${index + 1}`;
     const sameTagIndex = nodes.slice(0, index).filter((candidate) => candidate.localName === tag).length;
     setup.push(
@@ -136,9 +196,7 @@ export function storySource(canvas: HTMLElement | undefined, fallback: string) {
     setup.push('');
   });
 
-  return `${markup.join('\n\n')}\n\n<script type="module">\n${setup
-    .map((line) => (line ? `  ${line}` : ''))
-    .join('\n')}\n</script>`;
+  return `${markup}\n\n<script type="module">\n${setup.map((line) => (line ? `  ${line}` : '')).join('\n')}\n</script>`;
 }
 
 /** Use the same property-based theme contract as application consumers. */
@@ -146,6 +204,9 @@ export function element<T extends Tag>(tag: T, props: Partial<HTMLElementTagName
   const node = document.createElement(tag);
   Object.assign(node, { theme: defaultTheme as DesignCoreTheme }, props);
   node.textContent = text;
+  for (const eventName of sourceEvents[tag] ?? []) {
+    node.addEventListener(eventName, (event) => action(eventName)((event as CustomEvent<unknown>).detail));
+  }
   return node;
 }
 
@@ -252,3 +313,14 @@ export const items = [
 
 export const portrait =
   'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"%3E%3Crect width="64" height="64" fill="%2391b8d8"/%3E%3Ccircle cx="32" cy="24" r="13" fill="%23f1c7a5"/%3E%3Cpath d="M8 64c3-18 14-27 24-27s21 9 24 27" fill="%233e6184"/%3E%3C/svg%3E';
+
+/** Framework-neutral equivalent of the React stories' Row / Column layout. */
+export function stack(direction: 'row' | 'column', gap: string, ...children: Node[]) {
+  const node = document.createElement('div');
+  node.style.display = 'flex';
+  node.style.flexDirection = direction;
+  node.style.gap = gap;
+  if (direction === 'row') node.style.alignItems = 'center';
+  node.append(...children);
+  return node;
+}

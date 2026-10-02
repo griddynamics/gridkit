@@ -128,6 +128,7 @@
   },
   "gd-skeleton": {
     "react": "Skeleton",
+    "excludedStories": ["WithCustomAnimation"],
     "source": [
       "variant",
       "width",
@@ -144,7 +145,6 @@
       "Circular",
       "Rectangular",
       "WithThemeColor",
-      "WithCustomAnimation",
       "WithChildren",
       "ComposedLayout",
       "WithAccessibility",
@@ -180,18 +180,13 @@
   },
   "gd-label": {
     "react": "Label",
+    "excludedStories": ["DefaultWithTailwind"],
     "source": ["htmlFor", "styles", "slot", "part=\"label\""],
-    "stories": [
-      "LabelDefault",
-      "LabelWithChildIcon",
-      "CustomStyles",
-      "DefaultWithTailwind",
-      "WithAccessibility",
-      "DefaultTokens"
-    ]
+    "stories": ["LabelDefault", "LabelWithChildIcon", "CustomStyles", "WithAccessibility", "DefaultTokens"]
   },
   "gd-link": {
     "react": "Link",
+    "excludedStories": ["InheritWithTailwind"],
     "source": [
       "variant",
       "size",
@@ -212,7 +207,6 @@
       "InheritWithButtonAsChild",
       "Inverted",
       "InheritWithTypographyAsChild",
-      "InheritWithTailwind",
       "CustomStyles",
       "WithUnderline",
       "WithSizes",
@@ -222,6 +216,7 @@
   },
   "gd-loader": {
     "react": "Loader",
+    "excludedStories": ["CustomLoaderTailwindClassBounceAnimation"],
     "source": ["name", "variant", "size", "rounded", "animationProps", "withWrapper", "styles", "popover", "slot"],
     "stories": [
       "Default",
@@ -229,10 +224,6 @@
       "LoaderSizes",
       "LoaderRounded",
       "LoaderVariantsWithWrapperViewAsHeaderTag",
-      "CustomLoaderTailwindClassBounceAnimation",
-      "LoaderSectionVariant",
-      "SectionLoaderButtonVariant",
-      "InlineLoaderButtonVariant",
       "WithAccessibility",
       "DefaultTokens"
     ]
@@ -346,8 +337,8 @@
       "slot name=\"icon-end\""
     ],
     "stories": [
-      "AllVariants",
       "Default",
+      "AllVariants",
       "WithIcons",
       "IconOnly",
       "FullWidthButton",
@@ -368,6 +359,7 @@
   },
   "gd-input": {
     "react": "Input",
+    "excludedStories": ["DefaultWithTailwind"],
     "source": [
       "variant",
       "color",
@@ -406,7 +398,6 @@
       "WithAdornments",
       "WithStartAdornment",
       "WithEndAdornmentAsIcon",
-      "DefaultWithTailwind",
       "CustomStyles",
       "CheckboxWithLabel",
       "RadioControlledWithLabel",

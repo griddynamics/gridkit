@@ -3,6 +3,7 @@ import { get } from '@utils';
 export const badge = {
   default: {
     display: 'inline-flex',
+    boxSizing: 'border-box',
     alignItems: 'center',
     justifyContent: 'center',
     whiteSpace: 'nowrap',
@@ -52,10 +53,18 @@ export const badge = {
     default: {},
   },
   startIcon: {
-    default: {},
+    default: {
+      display: 'inline-flex',
+      alignItems: 'center',
+      lineHeight: 0,
+    },
   },
   endIcon: {
-    default: {},
+    default: {
+      display: 'inline-flex',
+      alignItems: 'center',
+      lineHeight: 0,
+    },
   },
 
   primary: {

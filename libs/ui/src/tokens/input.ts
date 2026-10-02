@@ -38,6 +38,8 @@ export const input = {
   },
   input: {
     default: {
+      // Shadow-root inputs need the same reset as light-DOM inputs.
+      margin: 0,
       padding: (theme: Record<symbol, unknown>) => get(theme, 'spacing.sm', 'theme.spacing.sm'),
       outline: 'none',
       position: 'relative',
