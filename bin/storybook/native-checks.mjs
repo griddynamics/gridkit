@@ -81,7 +81,7 @@ export async function checkNativeStories(page, base) {
       const root = badge.shadowRoot.querySelector('[part="root"]').getBoundingClientRect();
       const content = badge.shadowRoot.querySelector('[part="content"]').getBoundingClientRect();
       const icons = [...badge.querySelectorAll('gd-icon')].map((icon) => {
-        const rect = icon.getBoundingClientRect();
+        const rect = icon.shadowRoot.querySelector('svg').getBoundingClientRect();
         return {
           width: rect.width,
           height: rect.height,
@@ -135,7 +135,10 @@ export async function checkNativeStories(page, base) {
     for (let iconIndex = 0; iconIndex < react.icons.length; iconIndex += 1) {
       assert.ok(Math.abs(web.icons[iconIndex].width - react.icons[iconIndex].width) < 0.5);
       assert.ok(Math.abs(web.icons[iconIndex].height - react.icons[iconIndex].height) < 0.5);
-      assert.ok(Math.abs(web.icons[iconIndex].centerOffset) < 1, `Badge ${index + 1} icon must be vertically centered`);
+      assert.ok(
+        Math.abs(web.icons[iconIndex].centerOffset - react.icons[iconIndex].centerOffset) < 0.25,
+        `Badge ${index + 1} inner SVG must match the React SVG vertical center`
+      );
     }
   }
   const stories = Object.values(index.entries).filter(

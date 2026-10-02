@@ -1,4 +1,4 @@
-import { LitElement, css, html } from 'lit';
+import { LitElement, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { badge } from 'gd-design-library/tokens';
@@ -23,12 +23,6 @@ interface ResolvedBadgeTokens {
 
 @customElement('gd-badge')
 export class GdBadge extends LitElement {
-  static override styles = css`
-    [part='root'] {
-      box-sizing: border-box;
-    }
-  `;
-
   @property({ type: String, reflect: true }) variant: BadgeVariant = 'primary';
   @property({ type: String, reflect: true }) appearance: BadgeAppearance = 'filled';
   @property({ type: String, reflect: true }) size: BadgeSize = 'md';

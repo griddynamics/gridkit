@@ -89,11 +89,51 @@ function equivalent(left: unknown, right: unknown) {
   return false;
 }
 
+function sourceElement(node: Element) {
+  const clone = node.cloneNode(true) as Element;
+  const applyEffectiveAttributes = (source: Element, target: Element) => {
+    if (source.localName.startsWith('gd-')) {
+      const tag = source.localName as Tag;
+      const current = source as unknown as HTMLElement & Record<string, unknown>;
+      const baseline = document.createElement(tag) as unknown as HTMLElement & Record<string, unknown>;
+      const constructor = customElements.get(tag) as
+        | (CustomElementConstructor & {
+            elementProperties?: Map<PropertyKey, { attribute?: boolean | string; state?: boolean }>;
+          })
+        | undefined;
+      for (const [property, options] of constructor?.elementProperties ?? []) {
+        if (typeof property !== 'string' || property === 'theme' || options.state || property.startsWith('_')) continue;
+        const value = current[property];
+        const requiredForUnderstanding = sourceKeyProperties[tag]?.includes(property) ?? false;
+        if (!requiredForUnderstanding && equivalent(value, baseline[property])) continue;
+        const attribute =
+          options.attribute === false
+            ? false
+            : typeof options.attribute === 'string'
+              ? options.attribute
+              : kebab(property);
+        if (!attribute || !['string', 'number', 'boolean'].includes(typeof value)) continue;
+        if (typeof value === 'boolean') {
+          if (value) target.setAttribute(attribute, '');
+        } else target.setAttribute(attribute, String(value));
+      }
+    }
+    const sourceChildren = Array.from(source.children);
+    const targetChildren = Array.from(target.children);
+    sourceChildren.forEach((child, index) => {
+      const targetChild = targetChildren[index];
+      if (targetChild) applyEffectiveAttributes(child, targetChild);
+    });
+  };
+  applyEffectiveAttributes(node, clone);
+  return clone.outerHTML;
+}
+
 function lightDom(node: Element) {
   return Array.from(node.childNodes)
     .map((child) => {
       if (child.nodeType === Node.TEXT_NODE) return escapeHtml(child.textContent ?? '');
-      return child instanceof Element ? child.outerHTML : '';
+      return child instanceof Element ? sourceElement(child) : '';
     })
     .join('')
     .trim();
@@ -103,8 +143,16 @@ function lightDom(node: Element) {
  * Storybook cannot infer useful source from our imperative DOM render functions. */
 export function storySource(canvas: HTMLElement | undefined, fallback: string) {
   if (!canvas) return fallback;
-  const nodes = Array.from(canvas.querySelectorAll<HTMLElement>('*')).filter((node) =>
-    node.localName.startsWith('gd-')
+  const isNestedCustomElement = (node: HTMLElement) => {
+    let parent = node.parentElement;
+    while (parent && parent !== canvas) {
+      if (parent.localName.startsWith('gd-')) return true;
+      parent = parent.parentElement;
+    }
+    return false;
+  };
+  const nodes = Array.from(canvas.querySelectorAll<HTMLElement>('*')).filter(
+    (node) => node.localName.startsWith('gd-') && !isNestedCustomElement(node)
   );
   if (!nodes.length) return fallback;
 

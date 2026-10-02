@@ -3,7 +3,7 @@
 exports[`Badge > SHOULD match snapshot 1`] = `
 <div>
   <span
-    class="test-badge-class css-t1iwku"
+    class="test-badge-class css-1qdekmf"
     data-testid="Badge"
   >
     <span
