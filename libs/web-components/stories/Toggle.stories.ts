@@ -38,7 +38,7 @@ export const WithCustomRender: Story = {
       { label: 'Water', value: 'accountCircle' },
       { label: 'Earth', value: 'success' },
     ],
-    value: 'home',
+    value: 'fire',
     renderItemContent: (item) =>
       typeof item === 'string'
         ? item

@@ -1,4 +1,4 @@
-import { LitElement, html } from 'lit';
+import { LitElement, css, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
@@ -9,6 +9,18 @@ type IconSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 
 @customElement('gd-icon')
 export class GdIcon extends LitElement {
+  static styles = css`
+    :host {
+      display: inline-flex;
+      line-height: 0;
+      vertical-align: middle;
+    }
+    svg {
+      display: block;
+      flex: none;
+    }
+  `;
+
   @property({ type: String, reflect: true }) name: GridKitIconName = 'star';
   @property({ type: Number, reflect: true }) width = 18;
   @property({ type: Number, reflect: true }) height = 18;

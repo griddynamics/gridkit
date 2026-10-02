@@ -76,6 +76,68 @@ export async function checkNativeStories(page, base) {
       [{ name: 'accountCircle', size: 'md', slot: 'icon-start' }],
     ],
   });
+  const webBadgeGeometry = await page.evaluate(() =>
+    [...document.querySelectorAll('gd-badge')].map((badge) => {
+      const root = badge.shadowRoot.querySelector('[part="root"]').getBoundingClientRect();
+      const content = badge.shadowRoot.querySelector('[part="content"]').getBoundingClientRect();
+      const icons = [...badge.querySelectorAll('gd-icon')].map((icon) => {
+        const rect = icon.getBoundingClientRect();
+        return {
+          width: rect.width,
+          height: rect.height,
+          centerOffset: rect.top + rect.height / 2 - (root.top + root.height / 2),
+        };
+      });
+      return {
+        width: root.width,
+        height: root.height,
+        contentCenterOffset: content.top + content.height / 2 - (root.top + root.height / 2),
+        icons,
+      };
+    })
+  );
+  await page.goto(`${base}/iframe.html?id=react-atoms-badge--with-icons&viewMode=story`);
+  await page.locator('[data-testid="Badge"]').first().waitFor({ state: 'attached' });
+  const reactBadgeGeometry = await page.evaluate(() =>
+    [...document.querySelectorAll('[data-testid="Badge"]')].map((badge) => {
+      const root = badge.getBoundingClientRect();
+      const content = badge.querySelector('[data-testid="Badge-content"]').getBoundingClientRect();
+      const icons = [...badge.querySelectorAll('svg')].map((icon) => {
+        const rect = icon.getBoundingClientRect();
+        return {
+          width: rect.width,
+          height: rect.height,
+          centerOffset: rect.top + rect.height / 2 - (root.top + root.height / 2),
+        };
+      });
+      return {
+        width: root.width,
+        height: root.height,
+        contentCenterOffset: content.top + content.height / 2 - (root.top + root.height / 2),
+        icons,
+      };
+    })
+  );
+  assert.equal(webBadgeGeometry.length, reactBadgeGeometry.length, 'Badge WithIcons example count must match React');
+  for (let index = 0; index < reactBadgeGeometry.length; index += 1) {
+    const web = webBadgeGeometry[index];
+    const react = reactBadgeGeometry[index];
+    assert.ok(
+      Math.abs(web.width - react.width) < 1,
+      `Badge ${index + 1} width must match React within 1px (Web ${web.width}px, React ${react.width}px)`
+    );
+    assert.ok(
+      Math.abs(web.height - react.height) < 1,
+      `Badge ${index + 1} height must match React within 1px (Web ${web.height}px, React ${react.height}px)`
+    );
+    assert.ok(Math.abs(web.contentCenterOffset) < 1, `Badge ${index + 1} text must be vertically centered`);
+    assert.equal(web.icons.length, react.icons.length, `Badge ${index + 1} icon count must match React`);
+    for (let iconIndex = 0; iconIndex < react.icons.length; iconIndex += 1) {
+      assert.ok(Math.abs(web.icons[iconIndex].width - react.icons[iconIndex].width) < 0.5);
+      assert.ok(Math.abs(web.icons[iconIndex].height - react.icons[iconIndex].height) < 0.5);
+      assert.ok(Math.abs(web.icons[iconIndex].centerOffset) < 1, `Badge ${index + 1} icon must be vertically centered`);
+    }
+  }
   const stories = Object.values(index.entries).filter(
     (entry) =>
       entry.type === 'story' && /^(Atoms|Molecules)\//.test(entry.title) && !entry.id.endsWith('--default-tokens')

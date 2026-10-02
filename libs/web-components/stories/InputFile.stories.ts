@@ -48,8 +48,10 @@ export const WithAccept: Story = { args: { accept: 'image/*' } };
 export const CustomLabel: Story = { render: (args) => element('gd-input-file', args, 'Choose documents') };
 export const IconLabel: Story = {
   render: (args) => {
-    const input = element('gd-input-file', { ...args, isIcon: true });
-    input.append(element('gd-icon', { name: 'upload' }));
+    const { buttonProps, ...props } = args;
+    void buttonProps;
+    const input = element('gd-input-file', { ...props, isIcon: false, buttonVariant: 'text' });
+    input.append(element('gd-icon', { name: 'attachment' }));
     return input;
   },
 };

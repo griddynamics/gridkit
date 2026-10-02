@@ -27,7 +27,7 @@ export const LabelDefault: Story = {};
 export const LabelWithChildIcon: Story = {
   render: (args) => {
     const label = element('gd-label', args, 'Label ');
-    label.append(element('gd-icon', { name: 'info' }));
+    label.prepend(element('gd-icon', { name: 'star' }), document.createTextNode(' '));
     return label;
   },
 };
