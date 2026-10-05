@@ -181,7 +181,7 @@
   "gd-label": {
     "react": "Label",
     "excludedStories": ["DefaultWithTailwind"],
-    "source": ["htmlFor", "styles", "slot", "part=\"label\""],
+    "source": ["htmlFor", "color", "ariaLabel", "styles", "slot", "part=\"label\""],
     "stories": ["LabelDefault", "LabelWithChildIcon", "CustomStyles", "WithAccessibility", "DefaultTokens"]
   },
   "gd-link": {

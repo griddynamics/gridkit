@@ -2546,6 +2546,7 @@ export const reactStorybookArgTypes = {
         defaultValue: {
           summary: 'undefined',
         },
+        category: 'Accessibility',
       },
     },
     htmlFor: {
@@ -2618,6 +2619,23 @@ export const reactStorybookArgTypes = {
       control: {
         type: 'object',
         disable: false,
+      },
+    },
+    color: {
+      control: {
+        type: 'color',
+        disable: false,
+      },
+      name: 'color',
+      description: 'Text color applied to the label',
+      table: {
+        category: 'Styling',
+        type: {
+          summary: 'string',
+        },
+        defaultValue: {
+          summary: 'undefined',
+        },
       },
     },
   },
@@ -5176,7 +5194,7 @@ export const reactStorybookArgTypes = {
     },
     isLoading: {
       name: 'isLoading',
-      description: '',
+      description: 'Displays a loading indicator and prevents interaction',
       type: {
         required: false,
         name: 'boolean',
@@ -5185,6 +5203,14 @@ export const reactStorybookArgTypes = {
         type: {
           summary: 'boolean',
         },
+        defaultValue: {
+          summary: 'false',
+        },
+        category: 'Content & Behavior',
+      },
+      control: {
+        type: 'boolean',
+        disable: false,
       },
     },
     ariaLabel: {

@@ -18,7 +18,9 @@ try {
   for (const [tag, contract] of Object.entries(parity)) {
     const group = tag === 'gd-counter' || tag === 'gd-menu' ? 'Molecules' : 'Atoms';
     const title = `${group}/${contract.react}`;
-    const entry = entries.find((candidate) => candidate.type === 'story' && candidate.title === title);
+    const entry = entries.find(
+      (candidate) => candidate.type === 'story' && (candidate.title === title || candidate.title === `React/${title}`)
+    );
     if (!entry) throw new Error(`The source Storybook does not contain ${title}.`);
     const storyUrl = new URL('/iframe.html', sourceUrl);
     storyUrl.searchParams.set('id', entry.id);

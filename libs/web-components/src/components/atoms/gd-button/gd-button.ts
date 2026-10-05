@@ -173,7 +173,7 @@ export class GdButton extends LitElement {
   @property({ type: String }) variant: ButtonVariantName = 'primary';
   @property({ type: String }) rounded: ButtonRounded = 'none';
   @property({ type: Boolean, reflect: true }) disabled = false;
-  @property({ type: Boolean }) isLoading = false;
+  @property({ type: Boolean, attribute: 'is-loading', reflect: true }) isLoading = false;
   @property({ type: Boolean }) isIcon = false;
   @property({ type: Boolean }) fullWidth = false;
   @property({ type: String }) type: ButtonType = 'button';

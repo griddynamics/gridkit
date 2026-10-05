@@ -62,6 +62,15 @@ const meta: Meta<typeof Button> = {
         type: { summary: 'boolean' },
       },
     },
+    isLoading: {
+      description: 'Displays a loading indicator and prevents interaction',
+      control: 'boolean',
+      table: {
+        category: 'Content & Behavior',
+        defaultValue: { summary: 'false' },
+        type: { summary: 'boolean' },
+      },
+    },
 
     // ============================================================================
     // Visual Style
