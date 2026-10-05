@@ -7,15 +7,19 @@ import '../src/index';
 import { storySource } from '../stories/helpers';
 
 const preview: Preview = {
+  tags: ['autodocs'],
   parameters: {
     layout: 'padded',
     options: { storySort: { order: ['Introduction', 'Atoms', 'Molecules'] } },
     a11y: { test: 'todo' },
     docs: {
+      defaultName: 'Docs',
       source: {
         language: 'html',
-        transform: (source: string, context: { canvasElement?: HTMLElement }) =>
-          storySource(context.canvasElement, source),
+        transform: (
+          source: string,
+          context: { canvasElement?: HTMLElement; parameters?: { docs?: { source?: { code?: string } } } }
+        ) => (context.parameters?.docs?.source?.code ? source : storySource(context.canvasElement, source)),
       },
     },
   },

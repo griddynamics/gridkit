@@ -1,7 +1,15 @@
-import { LitElement, html, nothing } from 'lit';
+import { LitElement, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { loader, animations } from 'gd-design-library/tokens';
-import { buttonCssBlockToText, get, resolveThemeTree, type ButtonCssBlock, type DesignCoreTheme } from 'gd-design-core';
+import {
+  buttonCssBlockToText,
+  get,
+  keyframesCssBlockToText,
+  resolveThemeTree,
+  type ButtonCssBlock,
+  type DesignCoreTheme,
+} from 'gd-design-core';
+import '../gd-wrapper/gd-wrapper';
 
 type LoaderName = 'circle' | 'dots';
 type LoaderVariant = 'inline' | 'section' | 'fullPage';
@@ -16,6 +24,7 @@ export class GdLoader extends LitElement {
   @property({ type: String, reflect: true }) rounded = 'none';
   @property({ type: String, attribute: 'animation-props' }) animationProps = '1000ms ease-in-out infinite';
   @property({ type: Boolean, attribute: 'with-wrapper' }) withWrapper = true;
+  @property({ type: String, attribute: 'wrapper-as' }) wrapperAs: keyof HTMLElementTagNameMap = 'span';
   @property({ attribute: false }) styles: CssBlock = {};
   @property({ attribute: false }) theme: DesignCoreTheme = {};
 
@@ -26,13 +35,16 @@ export class GdLoader extends LitElement {
   }
 
   render() {
-    const tokens = resolveThemeTree(loader, this.theme) as unknown as Record<string, CssBlock> & {
+    const loaderTokens = get(this.theme, 'loader', loader) as typeof loader;
+    const animationTokens = get(this.theme, 'animations', animations) as typeof animations;
+    const tokens = resolveThemeTree(loaderTokens, this.theme) as unknown as Record<string, CssBlock> & {
       circle: Record<string, CssBlock>;
       dots: Record<string, CssBlock>;
     };
-    const resolvedAnimations = resolveThemeTree(animations, this.theme) as unknown as Record<string, CssBlock>;
-    const animationName = this.name === 'circle' ? 'spinKeyframes' : 'bounceKeyframes';
-    const frames = resolvedAnimations[animationName];
+    const resolvedAnimations = resolveThemeTree(animationTokens, this.theme) as unknown as Record<string, CssBlock>;
+    const animationTokenName = get(tokens, ['animation', this.name, 'name'], '');
+    const frames = resolvedAnimations[animationTokenName] ?? {};
+    const localAnimationName = `gd-loader-${this.name}`;
     const radius = get(this.theme, `radius.${this.rounded}`, '0px');
     const cssText = [
       buttonCssBlockToText('.loader', tokens.default),
@@ -40,13 +52,16 @@ export class GdLoader extends LitElement {
       buttonCssBlockToText('.loader', tokens[this.name].default),
       buttonCssBlockToText('.loader', tokens[this.name][this.size]),
       this.name === 'circle'
-        ? buttonCssBlockToText('.loader', { animation: `gd-loader-spin ${this.animationProps}` })
+        ? buttonCssBlockToText('.loader', { animation: `${localAnimationName} ${this.animationProps}` })
         : '',
       this.name === 'dots'
-        ? buttonCssBlockToText('.dot', { borderRadius: radius, animation: `gd-loader-bounce ${this.animationProps}` })
+        ? buttonCssBlockToText('.dot', {
+            borderRadius: radius,
+            animation: `${localAnimationName} ${this.animationProps}`,
+          })
         : '',
       buttonCssBlockToText('.loader', this.styles),
-      buttonCssBlockToText(`@keyframes gd-loader-${this.name === 'circle' ? 'spin' : 'bounce'}`, frames),
+      keyframesCssBlockToText(localAnimationName, frames),
     ].join('\n');
     const root = this.shadowRoot;
     if (root && typeof CSSStyleSheet !== 'undefined') {
@@ -64,9 +79,11 @@ export class GdLoader extends LitElement {
             ><span class="dot" part="dot"></span>`
         : ''}<slot></slot
     ></span>`;
-    return this.withWrapper
-      ? html`<span part="wrapper" popover=${this.variant === 'fullPage' ? 'manual' : nothing}>${content}</span>`
-      : content;
+    if (!this.withWrapper) return content;
+    if (this.variant === 'fullPage') return html`<span part="wrapper" popover="manual">${content}</span>`;
+    return html`<gd-wrapper part="wrapper" .variant=${this.variant} .as=${this.wrapperAs} .theme=${this.theme}
+      >${content}</gd-wrapper
+    >`;
   }
 }
 declare global {
