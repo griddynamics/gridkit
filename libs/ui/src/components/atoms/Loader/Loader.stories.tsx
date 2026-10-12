@@ -1,8 +1,8 @@
-import { PropsWithChildren, useState } from 'react';
+import { PropsWithChildren } from 'react';
 import { Meta, StoryFn } from '@storybook/react-vite';
 
 import { TokenViewer } from '@stories/components/TokenViewer';
-import { Loader, LoaderProps, Button, Column, FlexContainer, Link, Row, Typography } from '@components';
+import { Loader, LoaderProps, Column, Row, Typography } from '@components';
 import { SizeVariant, TypographyVariant, WrapperVariant } from '@types';
 import { defaultTheme } from '@tokens';
 
@@ -386,76 +386,6 @@ CustomLoaderTailwindClassBounceAnimation.parameters = {
         'Replace default animation with custom React content via children prop. This example uses a custom ping animation while maintaining Loader wrapper and positioning functionality.',
     },
   },
-};
-
-export const LoaderSectionVariant: StoryFn = () => {
-  const [showLoader, setShowLoader] = useState(false);
-  return (
-    <FlexContainer styles={{ backgroundColor: '#a5ffb4', padding: '10px', position: 'relative' }}>
-      <Typography variant={TypographyVariant.H3}>Section 1</Typography>
-      <Link onClick={() => setShowLoader((prevState) => !prevState)}>
-        {showLoader ? 'Hide' : 'Show'} Loader in section 2
-      </Link>
-      <FlexContainer
-        styles={{
-          marginTop: '20px',
-          backgroundColor: '#ffa5a5',
-          padding: '10px',
-          position: 'relative',
-        }}
-      >
-        <Row>
-          <Typography variant={TypographyVariant.H3}>Section 2</Typography>
-        </Row>
-        <Row>
-          <Link onClick={() => setShowLoader((prevState) => !prevState)}>{showLoader ? 'Hide' : 'Show'} Loader</Link>
-        </Row>
-        {showLoader ? <Loader variant={WrapperVariant.Section} name="dots" /> : null}
-      </FlexContainer>
-    </FlexContainer>
-  );
-};
-
-export const SectionLoaderButtonVariant: StoryFn = () => {
-  const [showLoader, setShowLoader] = useState(false);
-  return (
-    <FlexContainer styles={{ backgroundColor: '#a5ffb4', padding: '10px', position: 'relative' }}>
-      <Typography variant={TypographyVariant.H3}>Section 1</Typography>
-      <Row>
-        <Link onClick={() => setShowLoader((prevState) => !prevState)}>
-          {showLoader ? 'Hide' : 'Show'} Loader in button
-        </Link>
-      </Row>
-      <Row>
-        <Button
-          onClick={() => setShowLoader((prevState) => !prevState)}
-          variant="outlined"
-          styles={{ position: 'relative' }}
-        >
-          {showLoader ? 'Loading...' : 'Click me!'}
-          {showLoader ? <Loader variant={WrapperVariant.Section} name="dots" size={SizeVariant.Sm} /> : null}
-        </Button>
-      </Row>
-    </FlexContainer>
-  );
-};
-
-export const InlineLoaderButtonVariant: StoryFn = () => {
-  const [showLoader, setShowLoader] = useState(false);
-  return (
-    <FlexContainer styles={{ backgroundColor: '#a5ffb4', padding: '10px', position: 'relative' }}>
-      <Typography variant={TypographyVariant.H3}>Section 1</Typography>
-      <Row>
-        <Button
-          onClick={() => setShowLoader((prevState) => !prevState)}
-          variant="outlined"
-          iconEnd={showLoader ? <Loader size={SizeVariant.Sm} name="circle" withWrapper={false} /> : null}
-        >
-          {showLoader ? 'Loading...' : 'Click me!'}
-        </Button>
-      </Row>
-    </FlexContainer>
-  );
 };
 
 export const WithAccessibility: StoryFn<PropsWithChildren<LoaderProps>> = () => {

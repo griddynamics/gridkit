@@ -23,10 +23,9 @@ const meta = {
       <article class="overview">
         <h1>Using Web Components</h1>
         <p>
-          GridKit Web Components are framework-independent custom HTML elements built with Lit. They expose the
-          same design tokens, variants, states, and interaction patterns as the React components while using
-          standard browser APIs. Use them in plain HTML or inside Angular, Vue, React, and other web frameworks
-          without a framework-specific GridKit adapter.
+          GridKit Web Components are framework-independent custom HTML elements built with Lit. They provide
+          GridKit design tokens, variants, states, and interaction patterns through standard browser APIs. Use
+          them in plain HTML or inside any web framework without a framework-specific GridKit adapter.
         </p>
         <p>
           Component names start with <code>gd-</code>, for example <code>&lt;gd-button&gt;</code>,

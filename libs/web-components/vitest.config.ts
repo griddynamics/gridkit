@@ -41,7 +41,7 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['lit/directives/repeat.js'],
+    include: ['lit/directives/repeat.js', 'storybook/actions'],
   },
   test: {
     name: 'web-components',

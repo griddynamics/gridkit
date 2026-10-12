@@ -23,4 +23,27 @@ describe('gd-image', () => {
     expect(element.shadowRoot!.querySelector('figcaption')?.textContent).toBe('Portrait');
     element.remove();
   });
+
+  it('matches React wrapper, caption, and placeholder semantics', async () => {
+    const element = document.createElement('gd-image');
+    element.src = '/portrait.png';
+    element.placeholder = 'Loading image...';
+    element.caption = 'Caption';
+    document.body.append(element);
+    await element.updateComplete;
+    expect(element.shadowRoot!.querySelector('[part="root"]')?.tagName).toBe('DIV');
+    expect(element.shadowRoot!.querySelector('gd-skeleton')?.textContent).toContain('Loading image...');
+    const image = element.shadowRoot!.querySelector('img')!;
+    expect(image.getAttribute('src')).toBe('/portrait.png');
+    image.dispatchEvent(new Event('load'));
+    await element.updateComplete;
+    expect(image.style.opacity).toBe('1');
+    expect(element.shadowRoot!.querySelector('gd-skeleton')).toBeNull();
+    element.as = 'figure';
+    element.captionAs = 'p';
+    await element.updateComplete;
+    expect(element.shadowRoot!.querySelector('[part="root"]')?.tagName).toBe('FIGURE');
+    expect(element.shadowRoot!.querySelector('[part="caption"]')?.tagName).toBe('P');
+    element.remove();
+  });
 });

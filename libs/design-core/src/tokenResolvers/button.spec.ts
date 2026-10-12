@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { resolveButtonVariantStyle, resolveButtonRadius, buttonCssBlockToText } from './button';
+import {
+  resolveButtonVariantStyle,
+  resolveButtonRadius,
+  buttonCssBlockToText,
+  keyframesCssBlockToText,
+} from './button';
 import type { DesignCoreTheme } from '../types';
 
 const theme: DesignCoreTheme = {
@@ -164,5 +169,21 @@ describe('buttonCssBlockToText', () => {
   it("emits nothing for a selector-only key with an empty nested object (matches inherit's '&:hover, &.hover': {})", () => {
     const css = buttonCssBlockToText('button', { '&:hover, &.hover': {} });
     expect(css).toBe('');
+  });
+});
+
+describe('keyframesCssBlockToText', () => {
+  it('wraps token steps in a valid named keyframes rule', () => {
+    expect(
+      keyframesCssBlockToText('gd-fade', {
+        '0%': { opacity: 0 },
+        '100%': { opacity: 1 },
+      })
+    ).toBe('@keyframes gd-fade {\n0% {\nopacity: 0;\n}\n100% {\nopacity: 1;\n}\n}\n');
+  });
+
+  it('omits empty or unnamed keyframes', () => {
+    expect(keyframesCssBlockToText('', { to: { opacity: 1 } })).toBe('');
+    expect(keyframesCssBlockToText('gd-empty', {})).toBe('');
   });
 });

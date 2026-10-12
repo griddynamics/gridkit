@@ -1,4 +1,9 @@
-export { resolveButtonVariantStyle, resolveButtonRadius, buttonCssBlockToText } from './button';
+export {
+  resolveButtonVariantStyle,
+  resolveButtonRadius,
+  buttonCssBlockToText,
+  keyframesCssBlockToText,
+} from './button';
 export type {
   ButtonVariantName,
   ButtonRoundedName,

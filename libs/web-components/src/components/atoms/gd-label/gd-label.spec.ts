@@ -15,4 +15,17 @@ describe('gd-label', () => {
     el.remove();
     input.remove();
   });
+
+  it('maps color and ariaLabel to the rendered label', async () => {
+    const el = document.createElement('gd-label');
+    el.color = '#123456';
+    el.ariaLabel = 'Account name';
+    document.body.append(el);
+    await el.updateComplete;
+
+    const label = el.shadowRoot!.querySelector('label')!;
+    expect(label.style.color).toBe('rgb(18, 52, 86)');
+    expect(label.getAttribute('aria-label')).toBe('Account name');
+    el.remove();
+  });
 });

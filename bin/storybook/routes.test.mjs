@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { legacyReactIds, sharedDocIds, legacyRedirect, legacyRedirectHead } from './routes.mjs';
+import { legacyReactIds, legacyRouteAliases, sharedDocIds, legacyRedirect, legacyRedirectHead } from './routes.mjs';
 
 const origin = 'https://storybook.example';
 
@@ -8,11 +8,24 @@ test('every legacy story and docs route resolves to its canonical root', () => {
   for (const id of legacyReactIds) {
     const kind = id.endsWith('--docs') ? 'docs' : 'story';
     const href = `${origin}/?path=/${kind}/${id}&args=size:sm&globals=theme:dark#example`;
-    const result = new URL(legacyRedirect(href, legacyReactIds, sharedDocIds) || href);
-    assert.equal(result.searchParams.get('path'), `/${kind}/${sharedDocIds.includes(id) ? id : `react-${id}`}`);
+    const result = new URL(legacyRedirect(href, legacyReactIds, sharedDocIds, legacyRouteAliases) || href);
+    const canonical = legacyRouteAliases[id] ?? (sharedDocIds.includes(id) ? id : `react-${id}`);
+    assert.equal(result.searchParams.get('path'), `/${kind}/${canonical}`);
     assert.equal(result.searchParams.get('args'), 'size:sm');
     assert.equal(result.searchParams.get('globals'), 'theme:dark');
     assert.equal(result.hash, '#example');
+  }
+});
+
+test('retired Loader scenes redirect to the current default scene', () => {
+  for (const id of Object.keys(legacyRouteAliases)) {
+    for (const route of [`/?path=/story/${id}`, `/?path=/story/react-${id}`, `/iframe.html?id=${id}`]) {
+      const result = new URL(legacyRedirect(origin + route, legacyReactIds, sharedDocIds, legacyRouteAliases));
+      assert.equal(
+        (result.searchParams.get('path') || result.searchParams.get('id')).replace(/^\/story\//, ''),
+        'react-atoms-loader--default'
+      );
+    }
   }
 });
 

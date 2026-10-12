@@ -5,7 +5,8 @@
     "moduleResolution": "Bundler",
     "target": "ES2022",
     "types": ["node", "vite/client"],
-    "noEmit": true
+    "noEmit": true,
+    "allowJs": true
   },
-  "include": [".storybook/**/*.ts", "stories/**/*.ts"]
+  "include": [".storybook/**/*.ts", "stories/**/*.ts", "stories/**/*.js"]
 }

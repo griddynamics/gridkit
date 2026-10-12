@@ -19,7 +19,7 @@
     "test:design-core": "vitest --config=libs/design-core/vitest.config.ts --run",
     "type-check": "nx run-many --target=typecheck --projects=ui",
     "type-check:design-core": "tsc -p libs/design-core/tsconfig.lib.json --noEmit",
-    "type-check:web-components": "tsc -p libs/web-components/tsconfig.lib.json --noEmit && tsc -p libs/web-components/tsconfig.harness.json",
+    "type-check:web-components": "tsc -p libs/web-components/tsconfig.lib.json --noEmit && tsc -p libs/web-components/tsconfig.harness.json && tsc -p libs/web-components/tsconfig.storybook.json",
     "build:web-components": "npm run type-check:web-components && nx lint web-components && nx build web-components",
     "measure:web-components-size": "npm run build:web-components && node libs/web-components/scripts/measure-bundle-size.mjs --json",
     "check:web-components-ssr": "node libs/web-components/scripts/run-ssr-dsd-check.mjs",
@@ -50,14 +50,17 @@
     "version:form-configurator": "npm version patch --prefix libs/form-configurator/core --no-git-tag-version && npm version patch --prefix libs/form-configurator/adapter-react --no-git-tag-version",
     "version:form-configurator:minor": "npm version minor --prefix libs/form-configurator/core --no-git-tag-version && npm version patch --prefix libs/form-configurator/adapter-react --no-git-tag-version",
     "version:form-configurator:major": "npm version major --prefix libs/form-configurator/core --no-git-tag-version && npm version major --prefix libs/form-configurator/adapter-react --no-git-tag-version",
-    "build-storybook": "npm run export-theme && tsc -p libs/web-components/tsconfig.storybook.json && nx run ui:build-storybook && nx run web-components:build-storybook && node bin/storybook/package-build.mjs && npm run storybook:check-links",
+    "build-storybook": "npm run check:story-parity && npm run export-theme && tsc -p libs/web-components/tsconfig.storybook.json && nx run ui:build-storybook && nx run web-components:build-storybook && node bin/storybook/package-build.mjs && npm run storybook:check-links",
     "export-theme": "nx build ui && node ./bin/export-theme.js",
     "generate-ai-docs": "npx tsx ./bin/generate-ai-docs.mjs",
     "prepare": "husky",
     "test:web-components": "vitest --config=libs/web-components/vitest.config.ts --run",
     "check:web-components-size": "npm run measure:web-components-size && node libs/web-components/scripts/check-bundle-size.mjs",
     "check:web-components-ports": "node libs/web-components/scripts/check-ported-elements.mjs",
-    "verify:web-components": "npm run check:web-components-ports && npm run type-check:web-components && nx lint web-components && npm run test:design-core && npm run test:web-components && npm run check:web-components-ssr && npm run check:web-components-size"
+    "verify:web-components": "npm run check:story-parity && npm run check:web-components-ports && npm run type-check:web-components && nx lint web-components && npm run test:design-core && npm run test:web-components && npm run check:web-components-ssr && npm run check:web-components-size",
+    "generate:web-component-stories": "node libs/web-components/scripts/generate-story-fixtures.mjs",
+    "check:story-parity": "node libs/web-components/scripts/generate-story-fixtures.mjs --check && node bin/storybook/check-story-parity.mjs",
+    "check:story-parity:browser": "npm run check:story-parity && node bin/storybook/check-story-parity.mjs --browser"
   },
   "overrides": {
     "@types/react": "^18.3.18"

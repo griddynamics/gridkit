@@ -46,6 +46,7 @@ describe('gd-checkbox', () => {
     const indicator = el.shadowRoot!.querySelector('.indicator')!;
     // #FFB800 — the real brand gold from libs/ui/src/tokens/checkbox.ts
     expect(getComputedStyle(indicator).backgroundColor).toBe('rgb(255, 184, 0)');
+    expect(el.shadowRoot!.querySelector('gd-icon')?.getAttribute('name')).toBe('check');
   });
 
   it('exposes label/input/indicator as CSS parts (CTORNDSD-646b)', async () => {
@@ -192,5 +193,6 @@ describe('gd-checkbox', () => {
 
     expect(el.shadowRoot!.querySelector<HTMLInputElement>('input')!.indeterminate).toBe(true);
     expect(el.shadowRoot!.querySelector('input')!.getAttribute('aria-checked')).toBe('mixed');
+    expect(el.shadowRoot!.querySelector('gd-icon')?.getAttribute('name')).toBe('minus');
   });
 });

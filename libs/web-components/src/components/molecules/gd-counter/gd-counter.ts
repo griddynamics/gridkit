@@ -5,11 +5,13 @@ import { counter } from 'gd-design-library/tokens';
 import { resolveThemeTree, type DesignCoreTheme, type ButtonCssBlock } from 'gd-design-core';
 import '../../atoms/gd-button/gd-button';
 import '../../atoms/gd-input/gd-input';
+import '../../atoms/gd-icon/gd-icon';
 
 type Styles = Record<string, string | number>;
 type Tokens = {
   default: Styles;
   navButton: { default: ButtonCssBlock };
+  icons: Record<'plus' | 'minus', { name: 'plus' | 'minus'; width: number; height: number }>;
   webComponent: { host: Styles; root: Styles; inputHost: Styles; inputOuter: Styles; inputControl: ButtonCssBlock };
 };
 const tokens = (theme: DesignCoreTheme) => resolveThemeTree(counter, theme) as unknown as Tokens;
@@ -76,8 +78,13 @@ export class GdCounter extends LitElement {
         ?disabled=${this.isDisabled || this.value <= this.min}
         aria-label="Decrement counter"
         @click=${() => this.value > this.min && this.commit(this.value - 1)}
-        ><svg part="decrement-icon" aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-          <path d="M19 13H5V11H19V13Z"></path></svg
+        ><gd-icon
+          part="decrement-icon"
+          .name=${t.icons.minus.name}
+          .width=${t.icons.minus.width}
+          .height=${t.icons.minus.height}
+          .theme=${this.theme}
+        ></gd-icon
       ></gd-button>
       <gd-input
         part="input"
@@ -103,8 +110,13 @@ export class GdCounter extends LitElement {
         ?disabled=${this.isDisabled || this.value >= this.max}
         aria-label="Increment counter"
         @click=${() => this.value < this.max && this.commit(this.value + 1)}
-        ><svg part="increment-icon" aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-          <path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z"></path></svg
+        ><gd-icon
+          part="increment-icon"
+          .name=${t.icons.plus.name}
+          .width=${t.icons.plus.width}
+          .height=${t.icons.plus.height}
+          .theme=${this.theme}
+        ></gd-icon
       ></gd-button>
     </div>`;
   }

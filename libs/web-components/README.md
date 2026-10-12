@@ -144,6 +144,13 @@ component's `styles` property rather than reproduced as React-only prop names.
 missing. Unit tests cover the programmatic property/event contract; the Storybook smoke test also
 checks representative interactions, semantic output, and visual state for the interactive ports in Chromium.
 
+The Web Component controls tables use a snapshot of the resolved React Storybook metadata, including
+props inferred by React docgen. Refresh it with
+`node libs/web-components/scripts/capture-react-storybook-metadata.mjs`, then run
+`node libs/web-components/scripts/generate-react-storybook-metadata.mjs`. The port check and browser
+smoke test reject missing or extra controls and changes to descriptions, options, defaults, conditions,
+types, or semantic sections.
+
 There is no separate Web Components Storybook command. Run `npm run build-storybook`
 then `node bin/storybook/smoke-test.mjs` to verify every native story and representative
 interactions in Chromium. The Angular and Vue harnesses cover the complete supported catalog.

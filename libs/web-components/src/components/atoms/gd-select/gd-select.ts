@@ -1,6 +1,7 @@
 import { LitElement, html, css, type PropertyValues } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
+import '../gd-icon/gd-icon';
 import { select } from 'gd-design-library/tokens';
 import {
   resolveThemeTree,
@@ -77,8 +78,9 @@ function resolveSelectTokens(theme: DesignCoreTheme, color: InputColorVariantNam
  * Platform-native replacement evaluated here: the HTML `popover` attribute gives native
  * top-layer rendering plus light-dismiss (outside-click/Escape close) for free, replacing
  * the React original's hand-rolled Portal + `document.addEventListener` outside-click
- * logic. Positioning is still computed manually via `getBoundingClientRect()` on open
- * (fixed-below only, no top-flip) — CSS Anchor Positioning could replace that too, but
+ * logic. Positioning is still computed manually via `getBoundingClientRect()` while open,
+ * including source-equivalent ancestor-scroll tracking, viewport resizing, top/bottom
+ * placement, and available-height constraints. CSS Anchor Positioning could replace that, but
  * its browser-support bar is higher than `popover`'s; record which one this repo's actual
  * browser-support matrix can rely on rather than assuming evergreen-only support.
  *
@@ -202,6 +204,19 @@ export class GdSelect extends LitElement {
 
   private _store = createSelectStore({ disabled: this.disabled, value: this.value });
   private _unsubscribe?: () => void;
+  private _ownsBodyScrollLock = false;
+
+  private readonly _onViewportChange = () => this._positionDropdown();
+  private readonly _onDocumentKeyDown = (event: KeyboardEvent) => {
+    if (!this._store.getState().isOpen || this.disabled) return;
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      this.close();
+      this._trigger?.focus();
+    } else if (event.key === 'Tab') {
+      this.close();
+    }
+  };
 
   connectedCallback() {
     super.connectedCallback();
@@ -213,6 +228,7 @@ export class GdSelect extends LitElement {
 
   disconnectedCallback() {
     this._unsubscribe?.();
+    this._stopOpenStateEffects();
     super.disconnectedCallback();
   }
 
@@ -240,19 +256,67 @@ export class GdSelect extends LitElement {
     if (isOpen) {
       this._positionDropdown();
       if (!this._dropdown.matches(':popover-open')) this._dropdown.showPopover();
+      this._startOpenStateEffects();
+      if (this.searchable) queueMicrotask(() => this.shadowRoot?.querySelector<HTMLInputElement>('.search')?.focus());
     } else if (this._dropdown.matches(':popover-open')) {
       this._dropdown.hidePopover();
+      this._stopOpenStateEffects();
+    } else {
+      this._stopOpenStateEffects();
+    }
+  }
+
+  private _startOpenStateEffects() {
+    window.addEventListener('resize', this._onViewportChange);
+    // Capture is required because scroll does not bubble and the trigger may live in any
+    // nested scroll container. This is the same listener contract as the React Select.
+    window.addEventListener('scroll', this._onViewportChange, true);
+    document.addEventListener('keydown', this._onDocumentKeyDown);
+    if (document.body.style.overflow !== 'hidden') {
+      document.body.style.overflow = 'hidden';
+      this._ownsBodyScrollLock = true;
+    }
+  }
+
+  private _stopOpenStateEffects() {
+    window.removeEventListener('resize', this._onViewportChange);
+    window.removeEventListener('scroll', this._onViewportChange, true);
+    document.removeEventListener('keydown', this._onDocumentKeyDown);
+    if (this._ownsBodyScrollLock) {
+      document.body.style.overflow = '';
+      this._ownsBodyScrollLock = false;
     }
   }
 
   private _positionDropdown() {
+    if (!this._trigger || !this._dropdown) return;
     const rect = this._trigger.getBoundingClientRect();
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+    const requestedMax = Number.parseFloat(String(this.dropdownMaxHeight));
+    const gap = 1;
+    const spaceBelow = viewportHeight - rect.bottom;
+    const spaceAbove = rect.top;
+    const canFitBelow = spaceBelow >= requestedMax + gap;
+    const canFitAbove = spaceAbove >= requestedMax + gap;
+    const placement = !canFitBelow && (canFitAbove || spaceAbove > spaceBelow) ? 'top' : 'bottom';
+    const available = (placement === 'bottom' ? spaceBelow : spaceAbove) - gap;
+    const computedMaxHeight = Math.max(0, Math.min(requestedMax, available));
+
     this._dropdown.style.position = 'fixed';
-    this._dropdown.style.top = `${rect.bottom + 2}px`;
-    this._dropdown.style.left = `${rect.left}px`;
+    this._dropdown.style.left = `${Math.floor(rect.left)}px`;
     this._dropdown.style.width = `${rect.width}px`;
     this._dropdown.style.maxWidth = this.maxWidth;
     this._dropdown.style.minWidth = this.minWidth ?? '';
+    this._dropdown.style.maxHeight = `${Math.floor(computedMaxHeight)}px`;
+    if (placement === 'bottom') {
+      this._dropdown.style.top = `${Math.floor(rect.bottom + gap)}px`;
+      this._dropdown.style.bottom = 'auto';
+    } else {
+      // Native popovers have a UA `inset: 0`; explicit `auto` is required or the unused
+      // top edge wins and pins an above-trigger dropdown to the viewport origin.
+      this._dropdown.style.top = 'auto';
+      this._dropdown.style.bottom = `${Math.floor(viewportHeight - rect.top + gap)}px`;
+    }
   }
 
   /** Native light-dismiss (outside-click/Escape) fires this without going through `_toggle()`. */
@@ -284,11 +348,33 @@ export class GdSelect extends LitElement {
   }
 
   private _onTriggerKeyDown(event: KeyboardEvent) {
-    if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
+      const wasOpen = this._store.getState().isOpen;
       this.open();
+      if (wasOpen && (event.key === 'ArrowDown' || event.key === 'ArrowUp')) {
+        const options = Array.from(this.shadowRoot!.querySelectorAll<HTMLElement>('.option'));
+        options[event.key === 'ArrowDown' ? 0 : options.length - 1]?.focus();
+      }
     }
-    if (event.key === 'Escape') this.close();
+  }
+
+  private _onDropdownKeyDown(event: KeyboardEvent) {
+    if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
+    event.preventDefault();
+    const options = Array.from(this.shadowRoot!.querySelectorAll<HTMLElement>('.option'));
+    if (!options.length) return;
+    const current = options.indexOf(this.shadowRoot!.activeElement as HTMLElement);
+    const direction = event.key === 'ArrowDown' ? 1 : -1;
+    const next =
+      current < 0 ? (direction > 0 ? 0 : options.length - 1) : (current + direction + options.length) % options.length;
+    options[next].focus();
+  }
+
+  private _onOptionKeyDown(event: KeyboardEvent, option: SelectOption) {
+    if (event.key !== 'Enter') return;
+    event.preventDefault();
+    this._select(option);
   }
 
   render() {
@@ -351,15 +437,7 @@ export class GdSelect extends LitElement {
           </span>
           <slot name="adornment-end"></slot>
           <span class="arrow" ?data-open=${state.isOpen} aria-hidden="true">
-            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-              <path
-                d="M4.5 7L9 11.5L13.5 7"
-                stroke="currentColor"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
+            <gd-icon name="keyboardArrowDown" width="18" height="18" fill="icon.default" .theme=${this.theme}></gd-icon>
           </span>
         </button>
         <div
@@ -369,6 +447,7 @@ export class GdSelect extends LitElement {
           aria-multiselectable=${this.multiple}
           style=${styleMap(dropdownStyle)}
           @toggle=${this._onDropdownToggle}
+          @keydown=${this._onDropdownKeyDown}
         >
           ${this.searchable
             ? html`<input
@@ -391,8 +470,10 @@ export class GdSelect extends LitElement {
                     class="option"
                     role="option"
                     aria-selected=${isSelected}
+                    tabindex="0"
                     data-active=${String(this.activeIndex) === String(index)}
                     @click=${() => this._select(item)}
+                    @keydown=${(event: KeyboardEvent) => this._onOptionKeyDown(event, item)}
                   >
                     ${custom ?? this.itemStringifier(item)}
                   </div>

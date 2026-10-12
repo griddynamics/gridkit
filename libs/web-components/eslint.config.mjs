@@ -2,6 +2,7 @@ import baseConfig from '../../eslint.config.mjs';
 
 export default [
   ...baseConfig,
+  { ignores: ['stories/fixtures/*.generated.js'] },
   {
     files: ['**/*.json'],
     rules: {

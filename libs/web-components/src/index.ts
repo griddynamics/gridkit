@@ -8,6 +8,7 @@ export { GdBox } from './components/atoms/gd-box/gd-box';
 export { GdBadge } from './components/atoms/gd-badge/gd-badge';
 export { GdImage } from './components/atoms/gd-image/gd-image';
 export { GdIcon } from './components/atoms/gd-icon/gd-icon';
+export { registerCustomIcons, type IconDefinition } from 'gd-design-core';
 export { GdInputFile } from './components/atoms/gd-input-file/gd-input-file';
 export { GdLabel } from './components/atoms/gd-label/gd-label';
 export { GdLink } from './components/atoms/gd-link/gd-link';

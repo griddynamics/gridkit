@@ -31,6 +31,10 @@ describe('gd-select React parity', () => {
     expect(el.value).toEqual([items[0], items[1]]);
     expect(changes).toEqual([[items[0], items[1]]]);
   });
+  it('uses the shared icon catalog for the trigger arrow', async () => {
+    const el = await mount();
+    expect(el.shadowRoot!.querySelector('gd-icon')?.getAttribute('name')).toBe('keyboardArrowDown');
+  });
   it('filters searchable options with the configured stringifier', async () => {
     const el = await mount({ searchable: true, searchPlaceholder: 'Find' });
     const search = el.shadowRoot!.querySelector<HTMLInputElement>('input[type="search"]')!;
@@ -52,6 +56,58 @@ describe('gd-select React parity', () => {
     expect(manual.shadowRoot!.querySelector('.dropdown')!.matches(':popover-open')).toBe(false);
     manual.open();
     expect(manual.shadowRoot!.querySelector('.dropdown')!.matches(':popover-open')).toBe(true);
+  });
+  it('keeps the open dropdown anchored while a scroll ancestor moves the trigger', async () => {
+    host.style.cssText = 'height:120px;overflow:auto;width:360px';
+    const before = document.createElement('div');
+    before.style.height = '160px';
+    host.append(before);
+    const el = await mount({ width: '300px' });
+    const after = document.createElement('div');
+    after.style.height = '300px';
+    host.append(after);
+    host.scrollTop = 100;
+    el.open();
+    await el.updateComplete;
+
+    const trigger = el.shadowRoot!.querySelector<HTMLElement>('.trigger')!;
+    const dropdown = el.shadowRoot!.querySelector<HTMLElement>('.dropdown')!;
+    const initialGap = dropdown.getBoundingClientRect().top - trigger.getBoundingClientRect().bottom;
+    host.scrollTop += 24;
+    host.dispatchEvent(new Event('scroll'));
+    const movedGap = dropdown.getBoundingClientRect().top - trigger.getBoundingClientRect().bottom;
+
+    expect(initialGap).toBeCloseTo(1, 0);
+    expect(movedGap).toBeCloseTo(initialGap, 0);
+    expect(dropdown.getBoundingClientRect().width).toBeCloseTo(trigger.getBoundingClientRect().width, 0);
+    el.close();
+    expect(document.body.style.overflow).toBe('');
+  });
+  it('matches React viewport placement and flips above when there is more room', async () => {
+    const el = await mount({ width: '300px', dropdownMaxHeight: '240px' });
+    el.style.cssText += ';position:fixed;bottom:8px;left:8px';
+    el.open();
+    await el.updateComplete;
+
+    const trigger = el.shadowRoot!.querySelector<HTMLElement>('.trigger')!;
+    const dropdown = el.shadowRoot!.querySelector<HTMLElement>('.dropdown')!;
+    expect(trigger.getBoundingClientRect().top - dropdown.getBoundingClientRect().bottom).toBeCloseTo(1, 0);
+    expect(Number.parseFloat(dropdown.style.maxHeight)).toBeLessThanOrEqual(240);
+  });
+  it('supports the React keyboard path through opening, option navigation, and selection', async () => {
+    const el = await mount();
+    const trigger = el.shadowRoot!.querySelector<HTMLButtonElement>('.trigger')!;
+    trigger.focus();
+    trigger.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    await el.updateComplete;
+    trigger.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+    const options = [...el.shadowRoot!.querySelectorAll<HTMLElement>('.option')];
+    options[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+    expect(el.shadowRoot!.activeElement).toBe(options[1]);
+    options[1].dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    await el.updateComplete;
+    expect(el.value).toEqual(items[1]);
+    expect(el.shadowRoot!.querySelector('.dropdown')!.matches(':popover-open')).toBe(false);
   });
   it('supports placeholder, adornment, initiator, empty, and custom option extension points', async () => {
     const el = await mount({ items: [], placeholder: 'Choose', renderOption: ({ item }) => `Custom ${item.name}` });

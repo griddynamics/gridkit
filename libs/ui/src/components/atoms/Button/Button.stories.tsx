@@ -19,6 +19,10 @@ const meta: Meta<typeof Button> = {
   title: 'Atoms/Button',
   component: Button,
   tags: ['autodocs'],
+  args: {
+    children: 'Button',
+    variant: ButtonVariant.Primary,
+  },
   argTypes: {
     // ============================================================================
     // Content & Behavior
@@ -51,6 +55,15 @@ const meta: Meta<typeof Button> = {
     },
     disabled: {
       description: 'Disables the button and prevents interaction',
+      control: 'boolean',
+      table: {
+        category: 'Content & Behavior',
+        defaultValue: { summary: 'false' },
+        type: { summary: 'boolean' },
+      },
+    },
+    isLoading: {
+      description: 'Displays a loading indicator and prevents interaction',
       control: 'boolean',
       table: {
         category: 'Content & Behavior',
@@ -557,15 +570,6 @@ The Button component offers six distinct visual styles to accommodate different 
 
 <h3>🔧 Technical Implementation</h3>
 Built with React's \`forwardRef\` for proper ref handling, the component integrates seamlessly with the theme system via \`useTheme\` hook. It extends Box component props for flexible layout control and uses styled-components for dynamic theming.
-        
-
-  <br/>
-  <br/>
-
-<h3>🧩 Web Components track (CTORNDSD-646)</h3>
-<b>Verdict — Lit custom element.</b> Owns variant, loading and focus-ring state, and CTORNDSD-286 was a button style-collision bug — Shadow DOM isolation is the reason. Ported as &lt;gd-button&gt;: 1.87 kB gzip vs 19.07 kB.
-<br/>
-Decision rule and full rationale: <code>docs/webcomponents-migration/05-native-html-guidelines.md</code>.
 `,
       },
     },
@@ -579,6 +583,26 @@ type Story = StoryObj<typeof Button>;
 // ============================================================================
 // Interactive Stories (with Controls)
 // ============================================================================
+
+export const Default: Story = {
+  args: {
+    children: 'Button',
+    variant: 'primary',
+    onClick: fn(),
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `<Button variant="primary">Button</Button>`,
+      },
+      description: {
+        story:
+          'This is the default interactive story. Use the controls panel to experiment with different props and see how the Button component behaves. Try changing the variant, adding icons, adjusting rounded corners, and toggling states.',
+      },
+    },
+  },
+};
+Default.play = defaultActions;
 
 export const AllVariants: StoryFn = () => {
   return (
@@ -732,26 +756,6 @@ AllVariants.parameters = {
     },
   },
 };
-
-export const Default: Story = {
-  args: {
-    children: 'Button',
-    variant: 'primary',
-    onClick: fn(),
-  },
-  parameters: {
-    docs: {
-      source: {
-        code: `<Button variant="primary">Button</Button>`,
-      },
-      description: {
-        story:
-          'This is the default interactive story. Use the controls panel to experiment with different props and see how the Button component behaves. Try changing the variant, adding icons, adjusting rounded corners, and toggling states.',
-      },
-    },
-  },
-};
-Default.play = defaultActions;
 
 export const WithIcons: Story = {
   args: {

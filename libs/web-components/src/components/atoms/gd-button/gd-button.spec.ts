@@ -43,6 +43,25 @@ afterEach(() => {
 });
 
 describe('gd-button', () => {
+  it('composes gd-loader for the React loading state', async () => {
+    const el = add('primary');
+    el.setAttribute('is-loading', '');
+    await settle(el);
+    const inner = el.shadowRoot!.querySelector('button')!;
+    const loader = el.shadowRoot!.querySelector<
+      HTMLElement & { size: string; withWrapper: boolean; updateComplete: Promise<unknown> }
+    >('gd-loader');
+
+    await loader?.updateComplete;
+
+    expect((el as unknown as { isLoading: boolean }).isLoading).toBe(true);
+    expect(inner.disabled).toBe(true);
+    expect(inner.getAttribute('aria-busy')).toBe('true');
+    expect(loader?.size).toBe('sm');
+    expect(loader?.withWrapper).toBe(false);
+    expect(getComputedStyle(loader!.shadowRoot!.querySelector('.loader')!).width).toBe('24px');
+  });
+
   it('resolves the real primary token colour, not a placeholder string', async () => {
     const el = add('primary');
     await settle(el);

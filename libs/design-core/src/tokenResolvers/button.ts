@@ -259,3 +259,15 @@ export function buttonCssBlockToText(selector: string, block: ButtonCssBlock | u
 
   return (declarations ? `${selector} {\n${declarations}}\n` : '') + nested;
 }
+
+/** Serializes token keyframe steps into a complete, valid CSS @keyframes rule. */
+export function keyframesCssBlockToText(name: string, frames: ButtonCssBlock | undefined): string {
+  if (!name || !frames) return '';
+
+  const steps = Object.entries(frames)
+    .filter((entry): entry is [string, ButtonCssBlock] => typeof entry[1] === 'object' && entry[1] !== null)
+    .map(([step, block]) => buttonCssBlockToText(step, block))
+    .join('');
+
+  return steps ? `@keyframes ${name} {\n${steps}}\n` : '';
+}

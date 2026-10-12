@@ -27,6 +27,63 @@ afterEach(() => {
 });
 
 describe('gd-input', () => {
+  it('keeps same-name radios mutually exclusive within their form', async () => {
+    mount(
+      '<form><gd-input variant="radio" name="choice" value="a"></gd-input><gd-input variant="radio" name="choice" value="b"></gd-input></form><form><gd-input variant="radio" name="choice" value="c"></gd-input></form>'
+    );
+    const [first, second, otherForm] = Array.from(host.querySelectorAll<GdInput>('gd-input'));
+    await Promise.all([first, second, otherForm].map(settle));
+    const input = (element: GdInput) => element.shadowRoot!.querySelector('input')!;
+    input(first).click();
+    input(otherForm).click();
+    await Promise.all([first, second, otherForm].map(settle));
+    expect(input(first).checked).toBe(true);
+    input(second).click();
+    await Promise.all([first, second, otherForm].map(settle));
+    expect(input(first).checked).toBe(false);
+    expect(input(second).checked).toBe(true);
+    expect(input(otherForm).checked).toBe(true);
+  });
+
+  it.each([
+    ['checkbox', 18],
+    ['radio', 20],
+  ] as const)('uses the %s token artwork and dimensions instead of text-field chrome', async (variant, size) => {
+    mount(`<gd-input variant="${variant}"></gd-input>`);
+    const element = host.querySelector<GdInput>('gd-input')!;
+    await settle(element);
+    const control = element.shadowRoot!.querySelector('input')!;
+    const before = getComputedStyle(control);
+    expect(before.appearance).toBe('none');
+    expect(before.width).toBe(`${size}px`);
+    expect(before.height).toBe(`${size}px`);
+    const artwork = before.backgroundImage;
+    expect(artwork).toContain('data:image/svg+xml');
+    expect(element.shadowRoot!.querySelector('[part="border"]')).toBeNull();
+    expect(element.shadowRoot!.querySelector('[part="outline"]')).toBeNull();
+    control.click();
+    await settle(element);
+    expect(control.checked).toBe(true);
+    expect(getComputedStyle(control).backgroundImage).not.toBe(artwork);
+    element.disabled = true;
+    await settle(element);
+    expect(control.disabled).toBe(true);
+  });
+
+  it('renders defaultValue on first mount and restores it on form reset', async () => {
+    host.innerHTML = '<form><gd-input name="example" default-value="Initial example"></gd-input></form>';
+    const element = host.querySelector<GdInput>('gd-input')!;
+    element.theme = defaultTheme;
+    await settle(element);
+    const control = element.shadowRoot!.querySelector('input')!;
+    expect(control.value).toBe('Initial example');
+    control.value = 'Edited';
+    control.dispatchEvent(new InputEvent('input', { bubbles: true }));
+    host.querySelector('form')!.reset();
+    await settle(element);
+    expect(control.value).toBe('Initial example');
+  });
+
   it('renders label and helper text with the same resolved font family as the input', async () => {
     mount('<gd-input id="i" label="Email" helper-text="Required"></gd-input>');
     const el = host.querySelector<GdInput>('#i')!;

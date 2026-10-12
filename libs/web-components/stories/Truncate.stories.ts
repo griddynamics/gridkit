@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdTruncate } from '../src';
-import { element } from './helpers';
+import { element, sectionedArgTypes } from './helpers';
 
-type Args = Pick<GdTruncate, 'lines' | 'styles'> & { text: string };
+type Args = Pick<GdTruncate, 'lines' | 'styles'> & { children: string };
 const long =
-  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
+  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.';
 const meta = {
   title: 'Atoms/Truncate',
   tags: ['autodocs'],
@@ -17,16 +17,15 @@ const meta = {
       },
     },
   },
-  args: { lines: 1, text: long },
-  argTypes: {
-    text: { description: 'Text or slotted content to display', control: 'text' },
+  args: { lines: 1, children: long },
+  argTypes: sectionedArgTypes('Truncate', {
+    children: { description: 'Text or slotted content to display', control: 'text' },
     lines: { description: 'Maximum visible line count', control: 'number' },
     styles: { description: 'Custom content styles', control: 'object' },
-  },
-  render: ({ text, ...args }: Args) => {
-    const box = document.createElement('div');
-    box.style.width = '240px';
-    box.append(element('gd-truncate', args, text));
+  }),
+  render: ({ children, ...args }: Args) => {
+    const box = element('gd-box', { styles: { width: '50%', margin: '0 auto' } });
+    box.append(element('gd-truncate', args, children));
     return box;
   },
 } satisfies Meta<Args>;
@@ -36,29 +35,51 @@ export const Default: Story = {
   parameters: { docs: { description: { story: 'One-line truncation within a constrained container.' } } },
 };
 export const LineTruncation: Story = {
-  args: { lines: 2, text: 'This is a very long text that will wrap to multiple lines' },
+  args: { lines: 2, children: 'This is a very long text that will wrap to multiple ' },
   parameters: { docs: { description: { story: 'CSS line-clamp limits content to two lines.' } } },
 };
 export const WithCustomStyling: Story = {
   args: {
     styles: { color: '#dc2626', fontWeight: 600, fontSize: '18px' },
-    text: 'This text has custom styling applied via the styles property.',
+    children:
+      'This text has custom styling applied via the styles prop. Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   },
 };
 export const RefAPIWithTooltipOnOverflow: Story = {
   render: () => {
-    const section = document.createElement('section');
-    section.style.width = '220px';
-    const output = document.createElement('output');
+    const section = element('gd-box', { styles: { width: '100%', margin: '0 auto' } });
     const value = element(
       'gd-truncate',
       { lines: 1 },
-      '(Resize window): Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+      '(Resize window): Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt'
     );
-    const update = () => (output.textContent = `isTruncated: ${value.isTruncated}`);
-    new ResizeObserver(update).observe(value);
-    setTimeout(update);
-    section.append(value, output);
+    const stateBox = element('gd-box', {
+      styles: { padding: '12px', backgroundColor: '#f0f0f0', borderRadius: '4px' },
+    });
+    const text = element('gd-typography', { variant: 'small' });
+    const output = document.createElement('span');
+    text.append(
+      element('gd-typography', { variant: 'strong' }, 'Ref API State:'),
+      document.createElement('br'),
+      output
+    );
+    stateBox.append(text);
+    const update = () => {
+      output.textContent = `isTruncated: ${value.isTruncated}`;
+      value.title = value.isTruncated ? 'Content is truncated' : '';
+    };
+    const observer = new ResizeObserver(() => {
+      if (!value.isConnected) {
+        observer.disconnect();
+        return;
+      }
+      update();
+    });
+    requestAnimationFrame(() => {
+      observer.observe(value);
+      update();
+    });
+    section.append(value, stateBox);
     return section;
   },
   parameters: {
@@ -66,7 +87,7 @@ export const RefAPIWithTooltipOnOverflow: Story = {
   },
 };
 export const WithAccessibility: Story = {
-  args: { 'aria-label': 'Truncated summary' } as never,
+  ...Default,
   parameters: { a11y: { test: 'error' }, docs: { disable: true } },
   tags: ['a11y'],
 };

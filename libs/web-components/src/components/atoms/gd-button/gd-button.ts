@@ -12,6 +12,7 @@ import {
   get,
   type DesignCoreTheme,
 } from 'gd-design-core';
+import '../gd-loader/gd-loader';
 
 /** Mirrors `Button.types.ts`'s `ButtonStyledProps['$rounded']`. Button's own default is
  *  `rounded="none"` (`button.ts`'s `attrs.rounded: 'none'`), i.e. square corners. */
@@ -32,7 +33,7 @@ export type ButtonRoleName = 'button' | 'link' | 'checkbox' | 'switch' | 'tab';
  *   <StartIconStyled>{iconStart}</StartIconStyled>    -->     <span class="gd-button__icon-start">
  *   <ContentStyled>{children}</ContentStyled>         -->     <span class="gd-button__content">
  *   <EndIconStyled>{iconEnd}</EndIconStyled>          -->     <span class="gd-button__icon-end">
- *   {isLoading && <Loader/>}                          -->     <span class="spinner">
+ *   {isLoading && <Loader/>}                          -->     <gd-loader name="circle" size="sm">
  * ```
  *
  * Each of the three child spans is only rendered when its slot actually has assigned content
@@ -70,9 +71,9 @@ export type ButtonRoleName = 'button' | 'link' | 'checkbox' | 'switch' | 'tab';
  * `transition` is additionally applied directly to `.gd-button__content`/`.gd-button__icon-*`,
  * since a CSS `transition` only animates an element's OWN computed-style changes — a child span
  * whose `color` merely inherits the button's animated color still needs its own `transition`
- * declaration to animate in step. Truly static, non-token structural CSS (`display`, `cursor`
- * mechanics, the loading-spinner keyframes) stays in Lit's normal shared `static styles`, since
- * it never varies per instance or theme.
+ * declaration to animate in step. Truly static, non-token structural CSS (`display` and cursor
+ * mechanics) stays in Lit's normal shared `static styles`, since it never varies per instance or
+ * theme. Loading composes the migrated `gd-loader`, matching the React component dependency.
  *
  * The focus ring matches the real component's actual mechanism — `getFocusStyles` in
  * `libs/ui/src/tokens/utils.ts` is a `::after` pseudo-element positioned with `inset: -4px`
@@ -167,26 +168,12 @@ export class GdButton extends LitElement {
     button:focus-visible {
       outline: none;
     }
-    .spinner {
-      display: inline-block;
-      width: 14px;
-      height: 14px;
-      border: 2px solid currentColor;
-      border-right-color: transparent;
-      border-radius: 9999px;
-      animation: gd-button-spin 0.6s linear infinite;
-    }
-    @keyframes gd-button-spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
   `;
 
   @property({ type: String }) variant: ButtonVariantName = 'primary';
   @property({ type: String }) rounded: ButtonRounded = 'none';
   @property({ type: Boolean, reflect: true }) disabled = false;
-  @property({ type: Boolean }) isLoading = false;
+  @property({ type: Boolean, attribute: 'is-loading', reflect: true }) isLoading = false;
   @property({ type: Boolean }) isIcon = false;
   @property({ type: Boolean }) fullWidth = false;
   @property({ type: String }) type: ButtonType = 'button';
@@ -327,6 +314,7 @@ export class GdButton extends LitElement {
         ...resolvedTree.default,
         fontFamily: get(this.theme, 'font.family', '"Fira Sans", sans-serif'),
         fontSize: get(this.theme, 'font.size.p', '16px'),
+        lineHeight: get(this.theme, 'font.line.height.p', '24px'),
       },
     };
     const radius = resolveButtonRadius(this.theme, this.rounded);
@@ -382,7 +370,16 @@ export class GdButton extends LitElement {
               ><slot name="icon-end" @slotchange=${this._onSlotChange}></slot
             ></span>`
           : html`<slot name="icon-end" @slotchange=${this._onSlotChange}></slot>`}
-        ${this.isLoading ? html`<span class="spinner" part="spinner" aria-hidden="true"></span>` : nothing}
+        ${this.isLoading
+          ? html`<gd-loader
+              part="spinner"
+              name="circle"
+              size="sm"
+              .withWrapper=${false}
+              .theme=${this.theme}
+              aria-label="Loading"
+            ></gd-loader>`
+          : nothing}
       </button>
     `;
   }

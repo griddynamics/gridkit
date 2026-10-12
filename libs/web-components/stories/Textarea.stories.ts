@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdTextarea } from '../src';
-import { defaultTokenViewer, element, observed } from './helpers';
+import { defaultTokenViewer, element, sectionedArgTypes } from './helpers';
 
 type Args = Pick<
   GdTextarea,
@@ -43,7 +43,7 @@ const meta = {
     readOnly: false,
     dynamicHeightAdjustment: false,
   },
-  argTypes: {
+  argTypes: sectionedArgTypes('Textarea', {
     name: { description: 'Native field name', control: 'text' },
     placeholder: { description: 'Placeholder text', control: 'text' },
     value: { description: 'Controlled value', control: 'text' },
@@ -65,9 +65,8 @@ const meta = {
     maxLength: { description: 'Native hard character limit', control: 'number' },
     maxCharacters: { description: 'Visual character counter threshold', control: 'number' },
     styles: { description: 'Custom textarea styles', control: 'object' },
-  },
-  render: (args: Args) =>
-    observed(element('gd-textarea', args), 'gd-input', { value: args.value ?? args.defaultValue ?? '' }),
+  }),
+  render: (args: Args) => element('gd-textarea', args),
 } satisfies Meta<Args>;
 export default meta;
 type Story = StoryObj<Args>;
@@ -103,7 +102,11 @@ export const ColorError: Story = {
 };
 export const AutoFocus: Story = { args: { autoFocus: true, placeholder: 'This will be focused on load' } };
 export const DynamicHeight: Story = {
-  args: { dynamicHeightAdjustment: true, placeholder: 'Start typing to expand... Start typing to expand...' },
+  args: {
+    dynamicHeightAdjustment: true,
+    placeholder:
+      'Start typing to expand... Start typing to expand... Start typing to expand... Start typing to expand...',
+  },
 };
 export const WithCharLimit: Story = { args: { maxLength: 50, placeholder: 'Max 50 characters...' } };
 export const Resizable: Story = { args: { placeholder: 'Resizable Textarea placeholder text...', resize: 'both' } };

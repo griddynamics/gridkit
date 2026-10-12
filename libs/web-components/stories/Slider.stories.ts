@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdSlider } from '../src';
-import { defaultTokenViewer, element, observed } from './helpers';
+import { defaultTokenViewer, element, sectionedArgTypes } from './helpers';
 
 type Args = Pick<GdSlider, 'min' | 'max' | 'value' | 'step' | 'disabled' | 'styles'>;
 const meta = {
@@ -16,15 +16,15 @@ const meta = {
     },
   },
   args: { min: 1, max: 100, value: 1, step: 1, disabled: false },
-  argTypes: {
+  argTypes: sectionedArgTypes('Slider', {
     min: { description: 'Minimum value of the slider range', control: 'number' },
     max: { description: 'Maximum value of the slider range', control: 'number' },
     value: { description: 'Current slider value', control: 'number' },
     step: { description: 'Increment between permitted values', control: 'number' },
     disabled: { description: 'Whether the slider is disabled', control: 'boolean' },
     styles: { description: 'Custom slider style overrides', control: 'object' },
-  },
-  render: (args: Args) => observed(element('gd-slider', args), 'gd-change', { value: args.value }),
+  }),
+  render: (args: Args) => element('gd-slider', args),
 } satisfies Meta<Args>;
 export default meta;
 type Story = StoryObj<Args>;
@@ -38,7 +38,7 @@ export const Controlled: Story = {
   render: (args) => {
     const slider = element('gd-slider', { ...args, value: 25 });
     slider.addEventListener('gd-change', (e) => (slider.value = (e as CustomEvent<{ value: number }>).detail.value));
-    return observed(slider, 'gd-change', { value: 25 });
+    return slider;
   },
   parameters: {
     docs: { description: { story: 'The value property is updated externally from each gd-change event.' } },
