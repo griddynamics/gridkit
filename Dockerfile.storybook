@@ -1,7 +1,7 @@
 FROM node:24-alpine AS build
 WORKDIR /app
 
-COPY package.json package-lock.json nx.json tsconfig.base.json .npmrc eslint.config.mjs ./
+COPY package.json package-lock.json nx.json tsconfig.base.json .npmrc .prettierrc eslint.config.mjs ./
 COPY libs/ui/ libs/ui/
 COPY libs/design-core/ libs/design-core/
 COPY libs/web-components/ libs/web-components/
