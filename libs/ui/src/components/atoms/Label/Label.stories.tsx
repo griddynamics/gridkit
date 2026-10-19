@@ -63,6 +63,15 @@ const meta: Meta<typeof Label> = {
         defaultValue: { summary: '{}' },
       },
     },
+    color: {
+      control: 'color',
+      description: 'Text color applied to the label',
+      table: {
+        category: 'Styling',
+        type: { summary: 'string' },
+        defaultValue: { summary: 'undefined' },
+      },
+    },
 
     // Events
     onClick: {
@@ -78,6 +87,7 @@ const meta: Meta<typeof Label> = {
       control: 'text',
       description: 'Accessible label for screen readers',
       table: {
+        category: 'Accessibility',
         type: { summary: 'string' },
         defaultValue: { summary: 'undefined' },
       },

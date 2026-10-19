@@ -1,1 +1,1 @@
-export { iconCatalog, type GridKitIconName } from './catalog';
+export { iconCatalog, registerCustomIcons, type GridKitIconName, type IconDefinition } from './catalog';

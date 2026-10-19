@@ -20,6 +20,16 @@ const meta: Meta<typeof Checkbox> = {
   title: 'Atoms/Checkbox',
   component: Checkbox,
   argTypes: {
+    // Content
+    children: {
+      description: 'Label content displayed next to the checkbox',
+      control: { type: 'text' },
+      table: {
+        type: { summary: 'ReactNode' },
+        category: 'Content',
+      },
+    },
+
     // State Controls
     checked: {
       description: 'Controls the checked state of the checkbox',

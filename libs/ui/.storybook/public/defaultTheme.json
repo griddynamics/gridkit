@@ -1220,6 +1220,7 @@
   "badge": {
     "default": {
       "display": "inline-flex",
+      "boxSizing": "border-box",
       "alignItems": "center",
       "justifyContent": "center",
       "whiteSpace": "nowrap"
@@ -1242,10 +1243,18 @@
       "default": {}
     },
     "startIcon": {
-      "default": {}
+      "default": {
+        "display": "inline-flex",
+        "alignItems": "center",
+        "lineHeight": 0
+      }
     },
     "endIcon": {
-      "default": {}
+      "default": {
+        "display": "inline-flex",
+        "alignItems": "center",
+        "lineHeight": 0
+      }
     },
     "primary": {
       "filled": {
@@ -1394,6 +1403,7 @@
     },
     "input": {
       "default": {
+        "margin": 0,
         "outline": "none",
         "position": "relative",
         "cursor": "text",

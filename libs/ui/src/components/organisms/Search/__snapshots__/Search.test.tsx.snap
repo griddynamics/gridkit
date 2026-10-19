@@ -21,7 +21,7 @@ exports[`Search > SHOULD match snapshot 1`] = `
           <input
             aria-expanded="false"
             aria-required="false"
-            class="css-1ojf3jn"
+            class="css-f4xd5q"
             data-testid="Input"
             placeholder="Search"
             role="combobox"

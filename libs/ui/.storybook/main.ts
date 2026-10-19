@@ -6,6 +6,16 @@ import remarkGfm from 'remark-gfm';
 import { legacyRedirectHead, sharedDocs } from '../../../bin/storybook/routes.mjs';
 
 const sharedNames = Object.keys(sharedDocs).join('|');
+const catalogHeadingStyles = `<style>
+  #react > button[data-action='collapse-root'] {
+    color: #2e3338;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 16px;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+</style>`;
 
 const config: StorybookConfig = {
   stories: [
@@ -19,7 +29,7 @@ const config: StorybookConfig = {
       url: configType === 'DEVELOPMENT' ? 'http://localhost:6007' : './web-components/',
     },
   }),
-  managerHead: (head) => `${legacyRedirectHead()}${head}`,
+  managerHead: (head) => `${legacyRedirectHead()}${catalogHeadingStyles}${head}`,
   previewHead: (head) => `${legacyRedirectHead()}${head}`,
   staticDirs: ['public', '../src/assets'],
   addons: [

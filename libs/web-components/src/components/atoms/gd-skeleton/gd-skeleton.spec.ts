@@ -17,7 +17,8 @@ describe('gd-skeleton', () => {
     expect(getComputedStyle(skeleton).animationName).toBe('gd-skeleton-animation');
     expect(getComputedStyle(skeleton).animationDuration).toBe('2s');
     expect(getComputedStyle(skeleton).animationDelay).toBe('0.5s');
-    expect(getComputedStyle(skeleton).backgroundColor).toBe('rgba(0, 0, 0, 0.7)');
+    // `skeleton.default.backgroundColor` = `colors.neutral["grey.30"]` (#E5E5E5) at 0.7 alpha.
+    expect(getComputedStyle(skeleton).backgroundColor).toBe('rgba(229, 229, 229, 0.7)');
     expect(el.textContent).toBe('Loading Content...');
     el.remove();
   });

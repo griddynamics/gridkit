@@ -19,6 +19,10 @@ const meta: Meta<typeof Button> = {
   title: 'Atoms/Button',
   component: Button,
   tags: ['autodocs'],
+  args: {
+    children: 'Button',
+    variant: ButtonVariant.Primary,
+  },
   argTypes: {
     // ============================================================================
     // Content & Behavior
@@ -51,6 +55,15 @@ const meta: Meta<typeof Button> = {
     },
     disabled: {
       description: 'Disables the button and prevents interaction',
+      control: 'boolean',
+      table: {
+        category: 'Content & Behavior',
+        defaultValue: { summary: 'false' },
+        type: { summary: 'boolean' },
+      },
+    },
+    isLoading: {
+      description: 'Displays a loading indicator and prevents interaction',
       control: 'boolean',
       table: {
         category: 'Content & Behavior',
@@ -573,6 +586,26 @@ type Story = StoryObj<typeof Button>;
 // Interactive Stories (with Controls)
 // ============================================================================
 
+export const Default: Story = {
+  args: {
+    children: 'Button',
+    variant: 'primary',
+    onClick: fn(),
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `<Button variant="primary">Button</Button>`,
+      },
+      description: {
+        story:
+          'This is the default interactive story. Use the controls panel to experiment with different props and see how the Button component behaves. Try changing the variant, adding icons, adjusting rounded corners, and toggling states.',
+      },
+    },
+  },
+};
+Default.play = defaultActions;
+
 export const AllVariants: StoryFn = () => {
   return (
     <Column gap="30px">
@@ -725,26 +758,6 @@ AllVariants.parameters = {
     },
   },
 };
-
-export const Default: Story = {
-  args: {
-    children: 'Button',
-    variant: 'primary',
-    onClick: fn(),
-  },
-  parameters: {
-    docs: {
-      source: {
-        code: `<Button variant="primary">Button</Button>`,
-      },
-      description: {
-        story:
-          'This is the default interactive story. Use the controls panel to experiment with different props and see how the Button component behaves. Try changing the variant, adding icons, adjusting rounded corners, and toggling states.',
-      },
-    },
-  },
-};
-Default.play = defaultActions;
 
 export const WithIcons: Story = {
   args: {

@@ -224,3 +224,10 @@ export const iconCatalog = {
 } as const;
 
 export type GridKitIconName = keyof typeof iconCatalog;
+
+export type IconDefinition = { viewBox: string; body: string };
+
+/** Register application-owned SVG definitions before rendering an icon. */
+export function registerCustomIcons(icons: Record<string, IconDefinition>) {
+  Object.assign(iconCatalog, icons);
+}
