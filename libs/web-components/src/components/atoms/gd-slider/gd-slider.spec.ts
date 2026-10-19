@@ -19,4 +19,15 @@ describe('gd-slider', () => {
     expect(listener).toHaveBeenCalledWith(expect.objectContaining({ detail: { value: 20 } }));
     el.remove();
   });
+
+  it('lays the range input out like a bare input, without a host box or default input margin', async () => {
+    const el = document.createElement('gd-slider');
+    Object.assign(el, { theme: defaultTheme });
+    document.body.append(el);
+    await el.updateComplete;
+    const input = el.shadowRoot!.querySelector('input')!;
+    expect(getComputedStyle(el).display).toBe('contents');
+    expect(getComputedStyle(input).margin).toBe('0px');
+    el.remove();
+  });
 });

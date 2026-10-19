@@ -193,4 +193,14 @@ describe('gd-checkbox', () => {
     expect(el.shadowRoot!.querySelector<HTMLInputElement>('input')!.indeterminate).toBe(true);
     expect(el.shadowRoot!.querySelector('input')!.getAttribute('aria-checked')).toBe('mixed');
   });
+
+  it('generates no host box and lays out the visually hidden input like the source component', async () => {
+    mount('<gd-checkbox>Accept</gd-checkbox>');
+    const el = host.querySelector('gd-checkbox')!;
+    await settle(el);
+    expect(getComputedStyle(el).display).toBe('contents');
+    const input = el.shadowRoot!.querySelector('input')!;
+    const style = getComputedStyle(input);
+    expect([style.position, style.width, style.height, style.margin]).toEqual(['absolute', '1px', '1px', '-1px']);
+  });
 });
