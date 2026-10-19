@@ -36,6 +36,11 @@
       "types": "./tokens/index.d.ts",
       "import": "./tokens/index.js",
       "require": "./tokens/index.cjs"
+    },
+    "./icons": {
+      "types": "./icons/index.d.ts",
+      "import": "./icons/index.js",
+      "require": "./icons/index.cjs"
     }
   },
   "typesVersions": {
@@ -58,7 +63,6 @@
     }
   },
   "dependencies": {
-    "gd-design-core": "*",
     "@react-spring/web": "^10.1.2",
     "@visx/curve": "^3.12.0",
     "embla-carousel-react": "^8.6.0",

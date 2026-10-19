@@ -1,4 +1,4 @@
-import { LitElement, html, css, type PropertyValues } from 'lit';
+import { html, css, type PropertyValues } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { select } from 'gd-design-library/tokens';
@@ -9,8 +9,9 @@ import {
   type SelectOption,
   type SelectItemIdentifier,
   type InputColorVariantName,
-  type DesignCoreTheme,
-} from 'gd-design-core';
+  type ThemeLike,
+} from '../../../core';
+import { GdThemedElement } from '../../../core/themed-element';
 
 interface ResolvedSelectTokens {
   fontFamily: string | number;
@@ -28,13 +29,13 @@ interface ResolvedSelectTokens {
 /**
  * Resolves the REAL `select` object (`gd-design-library/tokens`) against `theme` — the
  * single-source-of-truth replacement for the old, hand-mirrored `resolveSelectStyle` in
- * `gd-design-core` (deleted; see that package's `tokenResolvers/select.ts` history). Reads
+ * the removed `gd-design-core` package. Reads
  * `select.dropdown.*` for surface/typography, `select.button.<variant>.border` (falling back to
  * `select.button.default`, which is itself the `primary`-equivalent border) for the trigger
  * border, and `select.item.default['&:hover, &.active'].backgroundColor` for the hover/selected
  * background — the exact paths `resolveSelectStyle` used to hand-duplicate.
  */
-function resolveSelectTokens(theme: DesignCoreTheme, color: InputColorVariantName): ResolvedSelectTokens {
+function resolveSelectTokens(theme: ThemeLike, color: InputColorVariantName): ResolvedSelectTokens {
   const resolved = resolveThemeTree(select, theme) as unknown as {
     dropdown: {
       color: string;
@@ -91,7 +92,7 @@ function resolveSelectTokens(theme: DesignCoreTheme, color: InputColorVariantNam
  * consumer-supplied content in the real component — no default "No options" text here.
  */
 @customElement('gd-select')
-export class GdSelect extends LitElement {
+export class GdSelect extends GdThemedElement {
   static styles = css`
     :host {
       display: inline-block;
@@ -195,7 +196,6 @@ export class GdSelect extends LitElement {
   @property({ type: String, attribute: 'min-width' }) minWidth?: string;
   @property({ type: String, attribute: 'max-width' }) maxWidth = 'initial';
   @property({ attribute: false }) styles: Record<string, string | number> = {};
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
 
   @query('.trigger') private _trigger!: HTMLButtonElement;
   @query('.dropdown') private _dropdown!: HTMLElement;
@@ -302,8 +302,7 @@ export class GdSelect extends LitElement {
     // `'&:focus-visible'` color path (`colors.border.focus`).
     const focusColor = (this.theme.colors as { border?: { focus?: string } } | undefined)?.border?.focus ?? '#0069B4';
 
-    // Sizing itself (`width`/`maxWidth`/`minWidth`) is applied directly to the host in
-    // `willUpdate` — this just fills the now-definite host content box.
+    // Sizing itself (`width`/`maxWidth`/`minWidth`) is applied directly to the host in    // `willUpdate` — this just fills the now-definite host content box.
     const wrapperStyle = { width: '100%' };
 
     const triggerStyle = {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { iconCatalog } from 'gd-design-core';
+import { iconCatalog } from 'gd-design-library/icons';
 import './gd-icon';
 
 describe('gd-icon', () => {

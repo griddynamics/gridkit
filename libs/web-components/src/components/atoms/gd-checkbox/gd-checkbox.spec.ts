@@ -145,7 +145,7 @@ describe('gd-checkbox', () => {
      * deliberately PRESERVES the current value (faithful to React's controlled → uncontrolled
      * behavior) and is exactly wrong for form reset. The symptom was subtle: `.checked` returned to
      * `undefined`, so it looked reset, while the box stayed visually checked and kept submitting
-     * `'on'`. Fixed by adding a distinct `resetTo` action to gd-design-core.
+     * `'on'`. Fixed by adding a distinct `resetTo` action to the checkbox store.
      *
      * This asserts the FormData outcome, not just the property, because the property was the
      * misleading signal.

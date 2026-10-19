@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Runner for ssr-dsd-render.ts — boots a Vite SSR module graph (reusing this package's own
- * vite.config.ts, so `gd-design-core` resolves via nxViteTsPaths() exactly as it does in
+ * vite.config.ts, so `gd-design-library/*` resolves via the serve aliases exactly as it does in
  * real dev/build) and invokes the render check.
  *
  * Usage: node libs/web-components/scripts/run-ssr-dsd-check.mjs

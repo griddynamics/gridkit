@@ -1,5 +1,5 @@
 /**
- * gd-design-core's resolvers return `fontFamily` as a **web CSS font stack** — e.g.
+ * `src/core`'s resolvers return `fontFamily` as a **web CSS font stack** — e.g.
  * `'"Fira Sans", sans-serif'` — because every token value in that package is CSS-shaped (the same
  * reason `pxToNumber()` and `toFontWeight()` exist). React Native's `fontFamily` on iOS/Android is
  * not CSS: it is a single lookup key into the native font registry, so a stack string matches
@@ -74,7 +74,7 @@ function nearestWeight(available: Readonly<Record<number, string>>, target: numb
 }
 
 /**
- * Resolves a gd-design-core `fontFamily` value into a React Native font-face name.
+ * Resolves a `src/core` `fontFamily` value into a React Native font-face name.
  *
  * Falls back, in order: exact face → nearest registered weight in the same family → the bare
  * parsed family name (correct for any face the host app happens to have registered itself, and

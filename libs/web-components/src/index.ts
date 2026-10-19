@@ -33,3 +33,5 @@ export { GdPortal, type PortalStyles, type PortalWrapperVariant } from './compon
 export { GdRow, type RowAlign, type RowJustify } from './components/layout/gd-row/gd-row';
 export { GdScroll, type ScrollbarVisibility } from './components/layout/gd-scroll/gd-scroll';
 export type { BoxStyleValue, LayoutStyles } from './components/layout/layout-element';
+export { GdThemeProvider, type ThemeChangeDetail } from './components/providers/gd-theme-provider/gd-theme-provider';
+export { GdThemedElement, ThemeConsumerController, type ThemeLike } from './core';

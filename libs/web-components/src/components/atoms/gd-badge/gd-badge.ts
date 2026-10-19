@@ -1,8 +1,9 @@
-import { LitElement, html } from 'lit';
+import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { badge } from 'gd-design-library/tokens';
-import { resolveThemeTree, type DesignCoreTheme } from 'gd-design-core';
+import { resolveThemeTree } from '../../../core';
+import { GdThemedElement } from '../../../core/themed-element';
 
 export type BadgeVariant = 'primary' | 'secondary' | 'tertiary' | 'quaternary' | 'quinary';
 export type BadgeAppearance = 'outline' | 'outlineFilledLight' | 'filled' | 'filledLight';
@@ -22,13 +23,12 @@ interface ResolvedBadgeTokens {
 }
 
 @customElement('gd-badge')
-export class GdBadge extends LitElement {
+export class GdBadge extends GdThemedElement {
   @property({ type: String, reflect: true }) variant: BadgeVariant = 'primary';
   @property({ type: String, reflect: true }) appearance: BadgeAppearance = 'filled';
   @property({ type: String, reflect: true }) size: BadgeSize = 'md';
   @property({ type: Boolean, reflect: true }) disabled = false;
   @property({ attribute: false }) styles: CssValues = {};
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
 
   render() {
     const tokens = resolveThemeTree(badge, this.theme) as unknown as ResolvedBadgeTokens;

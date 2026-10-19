@@ -3,7 +3,7 @@
  * Lit's own SSR tooling (`@lit-labs/ssr`), added only to this package's own package.json.
  *
  * Loaded via Vite's `ssrLoadModule` (see run-ssr-dsd-check.mjs) rather than run directly
- * under a generic Node/TS runner, so the `gd-design-core` bare-specifier import resolves
+ * under a generic Node/TS runner, so the `gd-design-library/tokens` bare-specifier import resolves
  * exactly the way it does in this package's real dev/build (via `nxViteTsPaths()` in
  * vite.config.ts) instead of falling back to a plain Node module-resolution algorithm that
  * doesn't understand the Nx workspace's TS path mappings.

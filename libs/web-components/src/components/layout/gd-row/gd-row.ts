@@ -1,7 +1,7 @@
 import { customElement, property } from 'lit/decorators.js';
 import { html, unsafeStatic } from 'lit/static-html.js';
 import { row } from 'gd-design-library/tokens';
-import { buttonCssBlockToText, resolveThemeTree, type ButtonCssBlock } from 'gd-design-core';
+import { buttonCssBlockToText, resolveThemeTree, type ButtonCssBlock } from '../../../core';
 import { GdLayoutElement } from '../layout-element';
 
 export type RowAlign = 'start' | 'center' | 'end' | 'stretch' | 'flex-start' | 'flex-end';

@@ -1,5 +1,5 @@
 /**
- * gd-design-core's token resolvers return CSS unit strings (e.g. `'1px'`) for size-shaped
+ * `src/core`'s token resolvers return CSS unit strings (e.g. `'1px'`) for size-shaped
  * fields even in their RN-consumable branch — a themed override can supply either a raw
  * number or a CSS string, and the resolver's own type (`string | number`) reflects that. RN's
  * `StyleSheet`/`ViewStyle`/`TextStyle` numeric fields (`borderWidth`, `borderRadius`, `gap`,

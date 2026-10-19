@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { resolveTypographyStyle } from './typography';
 import type { DesignCoreTheme } from '../types';
 

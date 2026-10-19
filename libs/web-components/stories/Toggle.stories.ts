@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
-import type { GridKitIconName } from 'gd-design-core';
+import type { GridKitIconName } from 'gd-design-library/icons';
 import type { GdToggle } from '../src';
 import { defaultTokenViewer, element, observed } from './helpers';
 

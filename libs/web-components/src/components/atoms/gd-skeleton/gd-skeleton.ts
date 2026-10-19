@@ -1,19 +1,14 @@
-import { LitElement, html } from 'lit';
+import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { animations, resolveThemeColor, skeleton } from 'gd-design-library/tokens';
-import {
-  buttonCssBlockToText,
-  cssKeyframesToText,
-  resolveThemeTree,
-  type ButtonCssBlock,
-  type DesignCoreTheme,
-} from 'gd-design-core';
+import { buttonCssBlockToText, cssKeyframesToText, resolveThemeTree, type ButtonCssBlock } from '../../../core';
+import { GdThemedElement } from '../../../core/themed-element';
 
 type SkeletonVariant = 'rounded' | 'rectangular' | 'circular';
 type CssBlock = ButtonCssBlock;
 
 @customElement('gd-skeleton')
-export class GdSkeleton extends LitElement {
+export class GdSkeleton extends GdThemedElement {
   @property({ type: String, reflect: true }) variant: SkeletonVariant = 'rounded';
   @property({ type: String, reflect: true }) width?: string;
   @property({ type: String, reflect: true }) height?: string;
@@ -21,7 +16,6 @@ export class GdSkeleton extends LitElement {
   @property({ type: String, attribute: 'animation-name' }) animationName: string | null = 'blinkKeyframes';
   @property({ type: String, attribute: 'animation-props' }) animationProps = '2000ms ease-in-out 500ms infinite';
   @property({ attribute: false }) styles: CssBlock = {};
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
 
   render() {
     const skeletonTokens = (this.theme.skeleton as typeof skeleton | undefined) ?? skeleton;

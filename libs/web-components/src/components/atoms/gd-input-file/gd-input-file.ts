@@ -1,8 +1,9 @@
-import { LitElement, html } from 'lit';
+import { html } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { inputfile } from 'gd-design-library/tokens';
-import { resolveThemeTree, type DesignCoreTheme } from 'gd-design-core';
+import { resolveThemeTree } from '../../../core';
+import { GdThemedElement } from '../../../core/themed-element';
 import '../gd-button/gd-button';
 
 export interface GdInputFileChangeDetail {
@@ -10,7 +11,7 @@ export interface GdInputFileChangeDetail {
 }
 
 @customElement('gd-input-file')
-export class GdInputFile extends LitElement {
+export class GdInputFile extends GdThemedElement {
   @property({ type: String, reflect: true }) accept?: string;
   @property({ type: String, reflect: true }) capture?: 'user' | 'environment';
   @property({ type: Boolean, reflect: true }) multiple = false;
@@ -19,7 +20,6 @@ export class GdInputFile extends LitElement {
   @property({ type: String, attribute: 'button-variant' }) buttonVariant = 'outlined';
   @property({ type: String, attribute: 'input-aria-label' }) inputAriaLabel = 'Upload a file';
   @property({ attribute: false }) styles: Record<string, string | number> = {};
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
   @query('input') input!: HTMLInputElement;
 
   private _change() {

@@ -1,21 +1,22 @@
-import { LitElement, html } from 'lit';
+import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import { icon } from 'gd-design-library/tokens';
-import { get, iconCatalog, resolveThemeTree, type DesignCoreTheme, type GridKitIconName } from 'gd-design-core';
+import { iconCatalog, type GridKitIconName } from 'gd-design-library/icons';
+import { get, resolveThemeTree } from '../../../core';
+import { GdThemedElement } from '../../../core/themed-element';
 
 type IconSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 
 @customElement('gd-icon')
-export class GdIcon extends LitElement {
+export class GdIcon extends GdThemedElement {
   @property({ type: String, reflect: true }) name: GridKitIconName = 'star';
   @property({ type: Number, reflect: true }) width = 18;
   @property({ type: Number, reflect: true }) height = 18;
   @property({ type: String, reflect: true }) size?: IconSize;
   @property({ type: String, reflect: true }) fill = 'currentColor';
   @property({ type: String, attribute: 'fill-svg', reflect: true }) fillSvg = 'none';
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
 
   render() {
     const definition = iconCatalog[this.name];

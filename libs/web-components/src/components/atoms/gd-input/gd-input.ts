@@ -1,4 +1,4 @@
-import { LitElement, html, css, nothing, type PropertyValues } from 'lit';
+import { html, css, nothing, type PropertyValues } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { input } from 'gd-design-library/tokens';
@@ -10,8 +10,9 @@ import {
   buttonCssBlockToText,
   type ButtonCssBlock,
   type InputColorVariantName,
-  type DesignCoreTheme,
-} from 'gd-design-core';
+  type ThemeLike,
+} from '../../../core';
+import { GdThemedElement } from '../../../core/themed-element';
 
 interface ResolvedInputTokens {
   fontFamily: string | number;
@@ -34,7 +35,7 @@ interface ResolvedInputTokens {
 /**
  * Resolves the REAL `input` object (`gd-design-library/tokens`) against `theme` — the
  * single-source-of-truth replacement for the old, hand-mirrored `resolveInputStyle` in
- * `gd-design-core` (deleted; see that package's `tokenResolvers/input.ts` for the exact real
+ * the removed `gd-design-core` package; the exact real
  * paths this reads: `input.wrapper.withGap.gap`, `input.helper.default.{sm,md}`,
  * `input.helper.<variant>.sm.color`, `input.input.default.padding`,
  * `input.input.defaultInteraction['& + .Input__border'].borderRadius`,
@@ -43,7 +44,7 @@ interface ResolvedInputTokens {
  * app's global CSS reset), so those two are resolved from the same shared `font.*` theme tokens
  * every other component uses, same as `gd-button.ts`.
  */
-function resolveInputTokens(theme: DesignCoreTheme, color: InputColorVariantName): ResolvedInputTokens {
+function resolveInputTokens(theme: ThemeLike, color: InputColorVariantName): ResolvedInputTokens {
   const resolved = resolveThemeTree(input, theme) as unknown as {
     wrapper: { withGap: { gap: string | number } };
     input: {
@@ -112,7 +113,7 @@ function resolveInputTokens(theme: DesignCoreTheme, color: InputColorVariantName
  * broad `:focus-visible` support), which is a closer, simpler equivalent, not a lesser one.
  */
 @customElement('gd-input')
-export class GdInput extends LitElement {
+export class GdInput extends GdThemedElement {
   static styles = css`
     :host {
       display: inline-block;
@@ -201,7 +202,6 @@ export class GdInput extends LitElement {
   @property({ type: Boolean, reflect: true }) disabled = false;
   @property({ type: String }) color: InputColorVariantName = 'primary';
   @property({ type: Number, attribute: 'debounce-callback-time' }) debounceCallbackTime?: number;
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
   /** Submitted under this key in `FormData`. No `name` means no form submission, same as native. */
   @property({ type: String }) name = '';
   @property({ type: Boolean, reflect: true }) required = false;

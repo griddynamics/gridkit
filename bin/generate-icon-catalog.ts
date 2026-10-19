@@ -25,4 +25,4 @@ const output =
   `export const iconCatalog = ${JSON.stringify(catalog, null, 2)} as const;\n\n` +
   `export type GridKitIconName = keyof typeof iconCatalog;\n`;
 
-writeFileSync(resolve(import.meta.dirname, '../libs/design-core/src/icons/catalog.ts'), output);
+writeFileSync(resolve(import.meta.dirname, '../libs/ui/src/icons/catalog.ts'), output);

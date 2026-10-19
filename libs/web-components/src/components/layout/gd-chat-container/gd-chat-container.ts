@@ -1,7 +1,7 @@
 import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { chat } from 'gd-design-library/tokens';
-import { buttonCssBlockToText, resolveThemeTree, type ButtonCssBlock } from 'gd-design-core';
+import { buttonCssBlockToText, resolveThemeTree, type ButtonCssBlock } from '../../../core';
 import '../../atoms/gd-button/gd-button';
 import '../../atoms/gd-icon/gd-icon';
 import { GdLayoutElement } from '../layout-element';

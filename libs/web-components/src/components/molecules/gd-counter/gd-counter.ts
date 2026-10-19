@@ -1,8 +1,9 @@
-import { LitElement, html, nothing, type PropertyValues } from 'lit';
+import { html, nothing, type PropertyValues } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { counter } from 'gd-design-library/tokens';
-import { resolveThemeTree, type DesignCoreTheme, type ButtonCssBlock } from 'gd-design-core';
+import { resolveThemeTree, type ThemeLike, type ButtonCssBlock } from '../../../core';
+import { GdThemedElement } from '../../../core/themed-element';
 import '../../atoms/gd-button/gd-button';
 import '../../atoms/gd-input/gd-input';
 
@@ -12,15 +13,14 @@ type Tokens = {
   navButton: { default: ButtonCssBlock };
   webComponent: { host: Styles; root: Styles; inputHost: Styles; inputOuter: Styles; inputControl: ButtonCssBlock };
 };
-const tokens = (theme: DesignCoreTheme) => resolveThemeTree(counter, theme) as unknown as Tokens;
+const tokens = (theme: ThemeLike) => resolveThemeTree(counter, theme) as unknown as Tokens;
 
 @customElement('gd-counter')
-export class GdCounter extends LitElement {
+export class GdCounter extends GdThemedElement {
   @property({ type: Number }) min = 1;
   @property({ type: Number }) max = 999;
   @property({ type: Number }) initial = 1;
   @property({ type: Boolean, attribute: 'is-disabled', reflect: true }) isDisabled = false;
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
   @property({ attribute: false }) styles: Styles = {};
   private value = 1;
   private draft = '1';

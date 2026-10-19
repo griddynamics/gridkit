@@ -32,6 +32,31 @@ document.querySelectorAll<HTMLElement & { theme: unknown }>('gd-button, gd-check
 
 Use attributes for strings and booleans, such as `variant`, `label`, and `disabled`. Pass objects, arrays, and controlled values as JavaScript properties. Components emit native custom events: `gd-input` returns `{ value }`, while `gd-change` returns the selected value or checkbox state.
 
+## Theming
+
+`<gd-theme-provider>` is the counterpart of React's `ThemeProvider` + `useTheme()`. Every `gd-*` element
+below it — including inside other elements' shadow roots — uses its theme and re-renders when it changes.
+Tokens come from the same `gd-design-library/tokens` as React, so one theme object drives both.
+
+```html
+<gd-theme-provider is-default>
+  <gd-button>Save</gd-button>
+</gd-theme-provider>
+```
+
+```ts
+const provider = document.querySelector('gd-theme-provider')!;
+provider.addTheme('dark', darkTheme); // like addTheme() from useTheme(); skips an existing name
+provider.setTheme('dark'); // like setTheme(); unknown names revert to the initial theme
+provider.setAttribute('theme-name', 'dark'); // declarative equivalent
+provider.addEventListener('gd-theme-change', (e) => console.log(e.detail.name));
+```
+
+- `is-default` (or no `initialTheme`) starts from `defaultTheme`; otherwise set `provider.initialTheme`, whose `name` registers it.
+- A theme assigned directly (`el.theme = x`) always wins over the provider for that element.
+- Without a provider, `theme` stays `{}` as before. Nested providers: the nearest one wins.
+- Custom elements that extend `GdThemedElement` get the same behavior.
+
 ## Angular
 
 Register the elements once (for example, in `main.ts`), then allow custom elements in the consuming component or module.

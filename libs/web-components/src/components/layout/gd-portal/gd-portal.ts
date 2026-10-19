@@ -1,7 +1,8 @@
-import { LitElement, html, type PropertyValues } from 'lit';
+import { html, type PropertyValues } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { wrapper } from 'gd-design-library/tokens';
-import { buttonCssBlockToText, resolveThemeTree, type ButtonCssBlock, type DesignCoreTheme } from 'gd-design-core';
+import { buttonCssBlockToText, resolveThemeTree, type ButtonCssBlock } from '../../../core';
+import { GdThemedElement } from '../../../core/themed-element';
 
 export type PortalWrapperVariant = 'inline' | 'section' | 'fullPage';
 export type PortalStyles = Record<string, string | number>;
@@ -18,7 +19,7 @@ const scrollLocks = new WeakMap<Document, { count: number; previousOverflow: str
  * so element identity and native listeners are preserved across targets.
  */
 @customElement('gd-portal')
-export class GdPortal extends LitElement {
+export class GdPortal extends GdThemedElement {
   @property({ attribute: false }) container: PortalTarget | null = null;
   @property({ type: String, attribute: 'wrapper-variant', reflect: true })
   wrapperVariant: PortalWrapperVariant = 'fullPage';
@@ -26,7 +27,6 @@ export class GdPortal extends LitElement {
   @property({ type: Boolean, attribute: 'blocks-scroll', reflect: true }) blocksScroll = false;
   @property({ type: String, attribute: 'wrapper-view' }) WrapperView: keyof HTMLElementTagNameMap = 'div';
   @property({ attribute: false }) styles: PortalStyles = {};
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
 
   /** The generated semantic wrapper, or null when `withWrapper` is false. */
   get portalRoot(): HTMLElement | null {

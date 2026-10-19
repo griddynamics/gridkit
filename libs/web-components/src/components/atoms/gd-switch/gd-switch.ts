@@ -1,18 +1,18 @@
-import { LitElement, html, nothing } from 'lit';
+import { html, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { switchToken } from 'gd-design-library/tokens';
-import { buttonCssBlockToText, resolveThemeTree, type ButtonCssBlock, type DesignCoreTheme } from 'gd-design-core';
+import { buttonCssBlockToText, resolveThemeTree, type ButtonCssBlock } from '../../../core';
+import { GdThemedElement } from '../../../core/themed-element';
 import '../gd-loader/gd-loader';
 
 @customElement('gd-switch')
-export class GdSwitch extends LitElement {
+export class GdSwitch extends GdThemedElement {
   @property({ type: String, reflect: true }) label: 'left' | 'right' = 'right';
   @property({ type: String, reflect: true }) name = 'switch';
   @property({ type: Boolean, reflect: true }) disabled = false;
   @property({ type: Boolean, attribute: 'is-loading', reflect: true }) isLoading = false;
   @property({ type: Boolean, reflect: true }) checked = false;
   @property({ attribute: false }) styles: ButtonCssBlock = {};
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
 
   private change(event: Event) {
     if (this.disabled || this.isLoading) return;

@@ -1,7 +1,8 @@
-import { LitElement, html, nothing } from 'lit';
+import { html, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { link } from 'gd-design-library/tokens';
-import { buttonCssBlockToText, get, resolveThemeTree, type ButtonCssBlock, type DesignCoreTheme } from 'gd-design-core';
+import { buttonCssBlockToText, get, resolveThemeTree, type ButtonCssBlock } from '../../../core';
+import { GdThemedElement } from '../../../core/themed-element';
 
 type LinkVariant = 'primary' | 'secondary' | 'inverted' | 'inherit';
 type LinkSize = 'sm' | 'md' | 'lg';
@@ -9,7 +10,7 @@ type LinkUnderline = 'default' | 'highlight' | 'none';
 type CssBlock = ButtonCssBlock;
 
 @customElement('gd-link')
-export class GdLink extends LitElement {
+export class GdLink extends GdThemedElement {
   @property({ type: String, reflect: true }) variant: LinkVariant = 'primary';
   @property({ type: String, reflect: true }) size?: LinkSize;
   @property({ type: String, reflect: true }) underline: LinkUnderline = 'default';
@@ -20,7 +21,6 @@ export class GdLink extends LitElement {
   @property({ type: String, reflect: true }) href?: string;
   @property({ type: String, reflect: true }) rel?: string;
   @property({ attribute: false }) styles: CssBlock = {};
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
 
   render() {
     const tokens = resolveThemeTree(link, this.theme) as unknown as Record<string, CssBlock> & {
@@ -29,6 +29,9 @@ export class GdLink extends LitElement {
     };
     const color = this.color ? get(this.theme, `colors.${this.color}`, this.color) : undefined;
     const cssText =
+      // React gets `a { text-decoration: inherit }` from the global reset in styles.css, which does not
+      // reach a shadow root; without it the UA underline of an `a[href]` doubles the token underline.
+      buttonCssBlockToText('a', { textDecoration: 'inherit' }) +
       [
         tokens.default,
         tokens[this.variant],
@@ -38,7 +41,8 @@ export class GdLink extends LitElement {
         color ? { color } : {},
       ]
         .map((block) => buttonCssBlockToText('a', block))
-        .join('\n') + buttonCssBlockToText('a', { cursor: this.disabled ? 'default' : this.cursor });
+        .join('\n') +
+      buttonCssBlockToText('a', { cursor: this.disabled ? 'default' : this.cursor });
     const root = this.shadowRoot;
     if (root && typeof CSSStyleSheet !== 'undefined') {
       const sheet = new CSSStyleSheet();

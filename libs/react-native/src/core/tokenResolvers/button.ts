@@ -218,7 +218,7 @@ export interface ButtonTokenTree {
  * same data, exactly the "not a single source of truth" problem this shape exists to solve.
  * `gd-button.ts` instead imports the REAL `button` object from `gd-design-library/tokens` and
  * resolves it directly with `resolveThemeTree` (below), so any edit to
- * `libs/ui/src/tokens/button.ts` is picked up automatically — no gd-design-core change
+ * `libs/ui/src/tokens/button.ts` is picked up automatically — no `src/core` change
  * required. This package still can't depend on `gd-design-library` itself (see the README's
  * "Theme parameter" section — RN and any other zero-React-dep consumer must stay unaffected),
  * so the real import only happens in the one adapter (Lit/web) that both needs this

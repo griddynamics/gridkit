@@ -1,13 +1,13 @@
-import { LitElement, html } from 'lit';
+import { html } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import { truncate } from 'gd-design-library/tokens';
-import { buttonCssBlockToText, resolveThemeTree, type ButtonCssBlock, type DesignCoreTheme } from 'gd-design-core';
+import { buttonCssBlockToText, resolveThemeTree, type ButtonCssBlock } from '../../../core';
+import { GdThemedElement } from '../../../core/themed-element';
 
 @customElement('gd-truncate')
-export class GdTruncate extends LitElement {
+export class GdTruncate extends GdThemedElement {
   @property({ type: Number, reflect: true }) lines = 1;
   @property({ attribute: false }) styles: ButtonCssBlock = {};
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
   @state() isTruncated = false;
   @query('[part="content"]') private content!: HTMLElement;
   private observer?: ResizeObserver;

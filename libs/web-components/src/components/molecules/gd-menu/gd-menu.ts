@@ -1,8 +1,9 @@
-import { LitElement, css, html, type PropertyValues } from 'lit';
+import { css, html, type PropertyValues } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { menu } from 'gd-design-library/tokens';
-import { resolveThemeTree, type DesignCoreTheme } from 'gd-design-core';
+import { resolveThemeTree, type ThemeLike } from '../../../core';
+import { GdThemedElement } from '../../../core/themed-element';
 
 export type MenuPlacement = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 
@@ -23,7 +24,7 @@ export interface MenuOption {
   value: unknown;
 }
 
-function resolveMenuTokens(theme: DesignCoreTheme): {
+function resolveMenuTokens(theme: ThemeLike): {
   content: ResolvedMenuTokens;
   webComponent: ResolvedWebComponentTokens;
 } {
@@ -42,7 +43,7 @@ function resolveMenuTokens(theme: DesignCoreTheme): {
  * the React Menu-compatible `{ data: { name?, value }, value }` `gd-change` detail.
  */
 @customElement('gd-menu')
-export class GdMenu extends LitElement {
+export class GdMenu extends GdThemedElement {
   static styles = css`
     /* The menu token intentionally gives the open surface an inline-block display.
        Because it is applied as an inline style, it otherwise overrides Chromium's
@@ -66,7 +67,6 @@ export class GdMenu extends LitElement {
   @property({ type: Number, attribute: 'offset-y' }) offsetY = 4;
   @property({ type: String }) placement: MenuPlacement = 'bottom-right';
   @property({ attribute: false }) selectedValue: unknown = undefined;
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
   @property({ attribute: false }) styles: Record<string, string | number> = {};
 
   @query('.trigger') private _trigger!: HTMLButtonElement;

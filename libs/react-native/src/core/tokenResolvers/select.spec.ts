@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { resolveSelectStyle } from './select';
 import type { DesignCoreTheme } from '../types';
 

@@ -1,11 +1,11 @@
 'use client';
 import { forwardRef, ComponentType, type CSSProperties, type Ref, type RefAttributes } from 'react';
-import { iconCatalog, type GridKitIconName } from 'gd-design-core';
 
 import { get } from '@utils';
 import { useTheme } from '@hooks/useTheme';
 import { getBoxStyles, resolveThemeColor } from '@tokens/utils';
 import type { BoxStyles } from '@types';
+import { iconCatalog, type GridKitIconName } from '../../../icons';
 
 import { COMPONENT_NAME } from './constants';
 import { IconProps } from './Icon.types';

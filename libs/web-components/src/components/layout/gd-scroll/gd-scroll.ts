@@ -1,14 +1,9 @@
-import { LitElement, html } from 'lit';
+import { html } from 'lit';
 import { styleMap } from 'lit/directives/style-map.js';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import { scroll } from 'gd-design-library/tokens';
-import {
-  buttonCssBlockToText,
-  cssPropertyValueToText,
-  resolveThemeTree,
-  type ButtonCssBlock,
-  type DesignCoreTheme,
-} from 'gd-design-core';
+import { buttonCssBlockToText, cssPropertyValueToText, resolveThemeTree, type ButtonCssBlock } from '../../../core';
+import { GdThemedElement } from '../../../core/themed-element';
 
 export type ScrollbarVisibility = 'auto' | 'hidden' | 'visible';
 type ScrollDirection = 'vertical' | 'horizontal';
@@ -25,12 +20,11 @@ const OVERFLOW_MEASUREMENT_MS = 300;
 const toKebabCase = (property: string) => property.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`);
 
 @customElement('gd-scroll')
-export class GdScroll extends LitElement {
+export class GdScroll extends GdThemedElement {
   @property({ type: String, reflect: true }) vertical: ScrollbarVisibility = 'auto';
   @property({ type: String, reflect: true }) horizontal: ScrollbarVisibility = 'auto';
   @property({ type: Boolean, attribute: 'auto-hide', reflect: true }) autoHide = false;
   @property({ attribute: false }) styles: ButtonCssBlock = {};
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
 
   @state() private _showVertical = false;
   @state() private _showHorizontal = false;

@@ -13,7 +13,7 @@ import { FIRA_CODE_FACES, FIRA_SANS_FACES, FIRA_SANS_ITALIC_FACES } from './util
  * Keys here MUST match the face names in `toFontFamily`'s tables exactly — that is the contract
  * between the two files, and `toFontFamily.test.ts` asserts it holds.
  *
- * Weight coverage is deliberately partial. gd-design-core only emits 300/400/500/700, and each
+ * Weight coverage is deliberately partial. `src/core` only emits 300/400/500/700, and each
  * TTF is ~430 kB, so registering all nine weights (plus italics) would add several megabytes to a
  * spike harness for faces nothing requests. `toFontFamily` snaps any unregistered weight to the
  * nearest registered one, so the family is always right even when the weight is approximated.

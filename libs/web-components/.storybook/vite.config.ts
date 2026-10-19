@@ -1,11 +1,32 @@
 import { defineConfig } from 'vite';
 import { fileURLToPath } from 'node:url';
 
-export default defineConfig({
+const fromHere = (relative: string) => fileURLToPath(new URL(relative, import.meta.url));
+
+export default defineConfig(({ command }) => ({
   resolve: {
-    alias: {
-      'gd-design-core': fileURLToPath(new URL('../../design-core/src/index.ts', import.meta.url)),
-      'gd-design-library/tokens': fileURLToPath(new URL('../../../dist/libs/ui/tokens/index.js', import.meta.url)),
-    },
+    alias:
+      command === 'serve'
+        ? {
+            // Storybook dev server: resolve tokens/icons straight from libs/ui source so that
+            // editing libs/ui/src/tokens/*.ts hot-reloads the web-components stories, without
+            // rebuilding dist/libs/ui. Same approach as libs/web-components/vite.config.ts.
+            'gd-design-library/tokens': fromHere('../../ui/src/tokens/index.ts'),
+            'gd-design-library/icons': fromHere('../../ui/src/icons/index.ts'),
+            // libs/ui token files resolve their own internal imports via libs/ui path aliases.
+            '@utils': fromHere('../../ui/src/utils'),
+            '@types': fromHere('../../ui/src/types'),
+            '@constants': fromHere('../../ui/src/constants'),
+            '@hooks': fromHere('../../ui/src/hooks'),
+            '@tokens': fromHere('../../ui/src/tokens'),
+            '@components': fromHere('../../ui/src/components'),
+            '@assets': fromHere('../../ui/src/assets'),
+          }
+        : {
+            // Static build (`build-storybook`): use the production UI build, which
+            // `npm run build-storybook` produces first via `export-theme`.
+            'gd-design-library/tokens': fromHere('../../../dist/libs/ui/tokens/index.js'),
+            'gd-design-library/icons': fromHere('../../../dist/libs/ui/icons/index.js'),
+          },
   },
-});
+}));

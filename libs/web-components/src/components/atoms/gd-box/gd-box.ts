@@ -1,7 +1,8 @@
-import { LitElement, html } from 'lit';
+import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { box } from 'gd-design-library/tokens';
-import { buttonCssBlockToText, resolveThemeTree, type DesignCoreTheme } from 'gd-design-core';
+import { buttonCssBlockToText, resolveThemeTree } from '../../../core';
+import { GdThemedElement } from '../../../core/themed-element';
 
 export type BoxVariant = 'horizontal' | 'vertical';
 type CssValues = Record<string, string | number>;
@@ -13,14 +14,13 @@ interface ResolvedBoxTokens {
 }
 
 @customElement('gd-box')
-export class GdBox extends LitElement {
+export class GdBox extends GdThemedElement {
   @property({ type: String, reflect: true }) variant: BoxVariant = 'vertical';
   @property({ type: Boolean, attribute: 'is-bordered', reflect: true }) isBordered = false;
   @property({ type: Boolean, attribute: 'is-highlighted', reflect: true }) isHighlighted = false;
   @property({ type: Boolean, attribute: 'with-shadow-hover', reflect: true }) withShadowHover = false;
   @property({ type: Number, attribute: 'tabindex', reflect: true }) override tabIndex = -1;
   @property({ attribute: false }) styles: CssValues = {};
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
 
   render() {
     const tokens = resolveThemeTree(box, this.theme) as unknown as ResolvedBoxTokens;

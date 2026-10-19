@@ -1,5 +1,5 @@
 import { defaultTheme } from 'gd-design-library/tokens';
-import type { DesignCoreTheme } from 'gd-design-core';
+import type { ThemeLike } from '../src/core';
 import type {} from '../src/index';
 
 type Tag = Extract<keyof HTMLElementTagNameMap, `gd-${string}`>;
@@ -183,7 +183,7 @@ export function storySource(canvas: HTMLElement | undefined, fallback: string) {
 /** Use the same property-based theme contract as application consumers. */
 export function element<T extends Tag>(tag: T, props: Partial<HTMLElementTagNameMap[T]> = {}, text = '') {
   const node = document.createElement(tag);
-  Object.assign(node, { theme: defaultTheme as DesignCoreTheme }, props);
+  Object.assign(node, { theme: defaultTheme as ThemeLike }, props);
   node.textContent = text;
   return node;
 }

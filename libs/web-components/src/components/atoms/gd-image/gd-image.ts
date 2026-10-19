@@ -1,15 +1,16 @@
-import { LitElement, html, nothing } from 'lit';
+import { html, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { image } from 'gd-design-library/tokens';
-import { resolveThemeTree, type DesignCoreTheme } from 'gd-design-core';
+import { resolveThemeTree } from '../../../core';
+import { GdThemedElement } from '../../../core/themed-element';
 import '../gd-skeleton/gd-skeleton';
 
 export type ImageObjectFit = 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
 type CssValues = Record<string, string | number>;
 
 @customElement('gd-image')
-export class GdImage extends LitElement {
+export class GdImage extends GdThemedElement {
   @property({ type: String, reflect: true }) src?: string;
   @property({ type: String, reflect: true }) alt = '';
   @property({ type: Number, reflect: true }) width?: number;
@@ -17,7 +18,6 @@ export class GdImage extends LitElement {
   @property({ type: String, reflect: true }) caption?: string;
   @property({ type: String, attribute: 'object-fit', reflect: true }) objectFit: ImageObjectFit = 'cover';
   @property({ attribute: false }) styles: CssValues = {};
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
 
   @state() private _loading = true;
   @state() private _failed = false;

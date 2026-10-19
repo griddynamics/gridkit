@@ -1,6 +1,6 @@
-import { LitElement } from 'lit';
 import { property } from 'lit/decorators.js';
-import type { ButtonCssBlock, DesignCoreTheme } from 'gd-design-core';
+import type { ButtonCssBlock } from '../../core';
+import { GdThemedElement } from '../../core/themed-element';
 
 export type BoxStyleValue = string | number;
 export type LayoutStyles = Record<string, string | number>;
@@ -50,7 +50,7 @@ type BoxStyleProperty = (typeof boxStyleProperties)[number];
 const unitlessProperties = new Set<BoxStyleProperty>(['zIndex', 'flexGrow', 'flexShrink', 'order']);
 
 /** Shared implementation of the React BoxCssComponentProps contract. */
-export abstract class GdLayoutElement extends LitElement {
+export abstract class GdLayoutElement extends GdThemedElement {
   @property({ type: String, reflect: true }) display?: BoxStyleValue;
   @property({ type: String, reflect: true }) overflow?: BoxStyleValue;
   @property({ type: String, reflect: true }) border?: BoxStyleValue;
@@ -90,7 +90,6 @@ export abstract class GdLayoutElement extends LitElement {
   @property({ type: String, reflect: true }) order?: BoxStyleValue;
   @property({ type: String, reflect: true }) gap?: BoxStyleValue;
   @property({ attribute: false }) styles: LayoutStyles = {};
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
 
   protected get boxStyles(): ButtonCssBlock {
     const styles: LayoutStyles = {};

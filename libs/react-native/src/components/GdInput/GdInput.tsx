@@ -6,7 +6,7 @@ import {
   resolveInputStyle,
   type DesignCoreTheme,
   type InputColorVariantName,
-} from 'gd-design-core';
+} from '../../core';
 import { pxToNumber } from '../../utils/pxToNumber';
 import { toFontFamily } from '../../utils/toFontFamily';
 
@@ -37,7 +37,7 @@ export interface GdInputProps {
  * typing is dropped, exactly like the Lit port's `activeElement` guard, and reconciled on blur
  * instead. `onChangeText` (RN's bare-string callback, unlike web's `ChangeEvent<HTMLInputElement>`
  * — the one confirmed permanent per-platform fork per `createInputStore.ts`'s own doc comment)
- * is wrapped with `gd-design-core`'s `debounce()` before calling `onValueChange`.
+ * is wrapped with `src/core`'s `debounce()` before calling `onValueChange`.
  *
  * NOT ported from `createInputStore`: `registerMouseDown`/`registerKeyDown`'s
  * `isMouseInteraction` tracking. That state exists solely to pick a focus-ring style for

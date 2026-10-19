@@ -1,8 +1,9 @@
-import { LitElement, html, css, nothing } from 'lit';
+import { html, css, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { avatar } from 'gd-design-library/tokens';
-import { get, resolveThemeTree, type DesignCoreTheme } from 'gd-design-core';
+import { get, resolveThemeTree, type ThemeLike } from '../../../core';
+import { GdThemedElement } from '../../../core/themed-element';
 
 export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 
@@ -24,7 +25,7 @@ interface ResolvedAvatarTokens {
   };
 }
 
-function resolveAvatarTokens(theme: DesignCoreTheme, size: AvatarSize): ResolvedAvatarTokens {
+function resolveAvatarTokens(theme: ThemeLike, size: AvatarSize): ResolvedAvatarTokens {
   const resolved = resolveThemeTree(avatar, theme) as unknown as ResolvedAvatarTokens & {
     size: Partial<Record<AvatarSize, { width: number; height: number }>>;
   };
@@ -33,7 +34,7 @@ function resolveAvatarTokens(theme: DesignCoreTheme, size: AvatarSize): Resolved
 }
 
 /** Resolves GridKit token paths while leaving ordinary CSS colours untouched. */
-function resolveColor(theme: DesignCoreTheme, color: string | undefined, fallback: string): string {
+function resolveColor(theme: ThemeLike, color: string | undefined, fallback: string): string {
   return color ? (get(theme, `colors.${color}`, color) as string) : fallback;
 }
 
@@ -50,7 +51,7 @@ function cssLengths(values: Record<string, string | number>): Record<string, str
  * browser-owned and causes fallback content to replace it, matching the React component.
  */
 @customElement('gd-avatar')
-export class GdAvatar extends LitElement {
+export class GdAvatar extends GdThemedElement {
   static styles = css`
     :host {
       display: inline-block;
@@ -99,7 +100,6 @@ export class GdAvatar extends LitElement {
   @property({ type: String, attribute: 'background-color', reflect: true }) backgroundColor?: string;
   @property({ type: String, reflect: true }) fallback?: string;
   @property({ attribute: false }) styles: Record<string, string | number> = {};
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
 
   @state() private _failed = false;
   @state() private _hasFallbackSlot = false;

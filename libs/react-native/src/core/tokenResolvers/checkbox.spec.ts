@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { resolveCheckboxStyle } from './checkbox';
 import type { DesignCoreTheme } from '../types';
 

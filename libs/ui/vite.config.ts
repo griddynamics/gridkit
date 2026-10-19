@@ -102,6 +102,7 @@ export default defineConfig(() => {
           index: 'src/index.ts',
           'ai/index': 'src/ai/index.ts',
           'utils/a2ui/index': 'src/utils/a2ui/index.tsx',
+          'icons/index': 'src/icons/index.ts',
         },
       },
       rollupOptions: {

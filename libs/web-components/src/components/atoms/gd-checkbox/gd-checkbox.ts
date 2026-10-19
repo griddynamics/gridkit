@@ -1,8 +1,9 @@
-import { LitElement, html, css, nothing, type PropertyValues } from 'lit';
+import { html, css, nothing, type PropertyValues } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { checkbox } from 'gd-design-library/tokens';
-import { resolveThemeTree, createCheckboxStore, type CheckboxSizeName, type DesignCoreTheme } from 'gd-design-core';
+import { resolveThemeTree, createCheckboxStore, type CheckboxSizeName, type ThemeLike } from '../../../core';
+import { GdThemedElement } from '../../../core/themed-element';
 
 interface ResolvedCheckboxTokens {
   indicatorSize: number;
@@ -16,11 +17,11 @@ interface ResolvedCheckboxTokens {
 /**
  * Resolves the REAL `checkbox` object (`gd-design-library/tokens`) against `theme` — the
  * single-source-of-truth replacement for the old, hand-mirrored `resolveCheckboxStyle` in
- * `gd-design-core` (deleted; see that package's `tokenResolvers/checkbox.ts`). `size` reads the
+ * the removed `gd-design-core` package. `size` reads the
  * real `checkbox.size.<sm|md>` scale directly instead of a hand-copied `SIZE_PX` table. No
  * `label` fields are read — `Checkbox.tsx` renders its label as a bare, unstyled span.
  */
-function resolveCheckboxTokens(theme: DesignCoreTheme, size: CheckboxSizeName): ResolvedCheckboxTokens {
+function resolveCheckboxTokens(theme: ThemeLike, size: CheckboxSizeName): ResolvedCheckboxTokens {
   const resolved = resolveThemeTree(checkbox, theme) as unknown as {
     wrapper: { default: { gap: string | number } };
     indicator: {
@@ -44,7 +45,7 @@ function resolveCheckboxTokens(theme: DesignCoreTheme, size: CheckboxSizeName): 
 
 /**
  * Checkbox port (per the implementation plan's Migration Example). Delegates all
- * controlled/uncontrolled + indeterminate state to gd-design-core's `createCheckboxStore`
+ * controlled/uncontrolled + indeterminate state to `createCheckboxStore` (`src/core/stores`)
  * (subscribed in `connectedCallback`) instead of re-deriving it here — the store already
  * collapses `Checkbox.tsx`'s `isControlled` branch into one always-owned `checked` value;
  * a "controlled" consumer just listens for `gd-change` and writes `.checked` back.
@@ -59,7 +60,7 @@ function resolveCheckboxTokens(theme: DesignCoreTheme, size: CheckboxSizeName): 
  * React 19 native property-assignment heuristic path) can.
  */
 @customElement('gd-checkbox')
-export class GdCheckbox extends LitElement {
+export class GdCheckbox extends GdThemedElement {
   static styles = css`
     :host {
       display: inline-block;
@@ -101,7 +102,6 @@ export class GdCheckbox extends LitElement {
   @property({ type: Boolean, reflect: true }) indeterminate = false;
   @property({ type: Boolean, reflect: true }) disabled = false;
   @property({ type: String }) size: CheckboxSizeName = 'md';
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
   @property({ attribute: false }) styles: Record<string, string | number> = {};
   /** Submitted under this key in `FormData`. No `name` means no form submission, same as native. */
   @property({ type: String }) name = '';

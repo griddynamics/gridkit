@@ -324,10 +324,6 @@
       "LoaderSizes",
       "LoaderRounded",
       "LoaderVariantsWithWrapperViewAsHeaderTag",
-      "CustomLoaderTailwindClassBounceAnimation",
-      "LoaderSectionVariant",
-      "SectionLoaderButtonVariant",
-      "InlineLoaderButtonVariant",
       "WithAccessibility",
       "DefaultTokens"
     ]

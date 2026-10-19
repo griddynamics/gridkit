@@ -1,10 +1,11 @@
-import { LitElement, html, nothing } from 'lit';
+import { html, nothing } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import { textarea } from 'gd-design-library/tokens';
-import { buttonCssBlockToText, resolveThemeTree, type ButtonCssBlock, type DesignCoreTheme } from 'gd-design-core';
+import { buttonCssBlockToText, resolveThemeTree, type ButtonCssBlock } from '../../../core';
+import { GdThemedElement } from '../../../core/themed-element';
 
 @customElement('gd-textarea')
-export class GdTextarea extends LitElement {
+export class GdTextarea extends GdThemedElement {
   @property({ type: String }) value?: string;
   @property({ type: String, attribute: 'default-value' }) defaultValue = '';
   @property({ type: String, reflect: true }) name = 'textarea';
@@ -23,7 +24,6 @@ export class GdTextarea extends LitElement {
   @property({ type: String, attribute: 'min-height' }) minHeight?: string;
   @property({ type: String, attribute: 'max-height' }) maxHeight?: string;
   @property({ attribute: false }) styles: ButtonCssBlock = {};
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
   @state() private internalValue = '';
   @query('textarea') private control!: HTMLTextAreaElement;
 

@@ -1,4 +1,4 @@
-import { LitElement, css } from 'lit';
+import { css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { literal, html as staticHtml, type StaticValue } from 'lit/static-html.js';
 import { styleMap } from 'lit/directives/style-map.js';
@@ -8,8 +8,9 @@ import {
   get,
   type TypographyVariantName as CoreTypographyVariantName,
   type TypographyStyleVariantName,
-  type DesignCoreTheme,
-} from 'gd-design-core';
+  type ThemeLike,
+} from '../../../core';
+import { GdThemedElement } from '../../../core/themed-element';
 
 const MONOSPACE_VARIANTS: ReadonlySet<TypographyVariantName> = new Set(['code', 'kbd']);
 
@@ -46,13 +47,13 @@ type TextAlign =
 /**
  * Resolves the REAL `typography` object (`gd-design-library/tokens`) against `theme` — the
  * single-source-of-truth replacement for the old, hand-mirrored `resolveTypographyStyle` in
- * `gd-design-core` (deleted; see that package's `tokenResolvers/typography.ts`). Mirrors
+ * the removed `gd-design-core` package. Mirrors
  * `Typography.tsx`'s own merge order exactly: base font family, then the variant's own block
  * (or `span`'s fully-inherited values), then the monospace family override for `code`/`kbd`,
  * then each `styleVariant` overlaid in array order.
  */
 function resolveTypographyTokens(
-  theme: DesignCoreTheme,
+  theme: ThemeLike,
   variant: TypographyVariantName,
   size: TypographySize,
   styleVariant?: TypographyStyleVariantName | TypographyStyleVariantName[]
@@ -102,7 +103,7 @@ function resolveTypographyTokens(
  * tag concept at all).
  */
 @customElement('gd-typography')
-export class GdTypography extends LitElement {
+export class GdTypography extends GdThemedElement {
   static styles = css`
     :host {
       display: contents;
@@ -116,7 +117,6 @@ export class GdTypography extends LitElement {
   @property({ type: String }) color?: string;
   @property({ attribute: 'style-variant' }) styleVariant?: TypographyStyleVariantName | TypographyStyleVariantName[];
   @property({ attribute: false }) styles: Record<string, string | number> = {};
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
 
   private static readonly TAG_MAP: Partial<Record<keyof HTMLElementTagNameMap, StaticValue>> = {
     span: literal`span`,

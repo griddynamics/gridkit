@@ -1,4 +1,4 @@
-import { LitElement, html, css, nothing } from 'lit';
+import { html, css, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { button } from 'gd-design-library/tokens';
 import '../gd-loader/gd-loader';
@@ -11,8 +11,8 @@ import {
   type ButtonTokenTree,
   resolveThemeTree,
   get,
-  type DesignCoreTheme,
-} from 'gd-design-core';
+} from '../../../core';
+import { GdThemedElement } from '../../../core/themed-element';
 
 /** Mirrors `Button.types.ts`'s `ButtonStyledProps['$rounded']`. Button's own default is
  *  `rounded="none"` (`button.ts`'s `attrs.rounded: 'none'`), i.e. square corners. */
@@ -59,7 +59,7 @@ type ResolvedButtonTokenTree = ButtonTokenTree & {
  * *directly*, not hand-flattened, and not from a hand-copied mirror either: `render()` imports
  * the REAL `button` object straight from `gd-design-library/tokens` (the same file
  * `ButtonStyled.tsx` itself reads) and resolves every `(theme) => value` leaf with
- * `gd-design-core`'s generic `resolveThemeTree(button, theme)` — so any edit to
+ * the local generic `resolveThemeTree(button, theme)` — so any edit to
  * `libs/ui/src/tokens/button.ts` is picked up automatically, with no second copy of the data to
  * keep in sync. `buttonCssBlockToText(selector, block)` then compiles a resolved slice of it
  * into real CSS text — the same two-step "resolve a token slice by path, then compile it" the
@@ -96,8 +96,8 @@ type ResolvedButtonTokenTree = ButtonTokenTree & {
  *
  * Every variant/state/theme-driven value in `tokens` IS `libs/ui/src/tokens/button.ts`'s real
  * `button` export, resolved against `this.theme` — not a hand-copied mirror of it. `radius`
- * still comes from `gd-design-core`'s `resolveButtonRadius` (shared with React web/React
- * Native's flattened `resolveButtonVariantStyle`), since `borderRadius` is deliberately absent
+ * still comes from `resolveButtonRadius` (`src/core/button.ts`, which reads the real `radius` token)
+ * since `borderRadius` is deliberately absent
  * from the real `button` object — the real component composes it as its own separate, later
  * array entry because it depends on the `rounded` prop, not on anything in `button.ts` itself;
  * reproduced the same way below. `fontFamily`/`fontSize` are likewise not part of the real
@@ -161,7 +161,7 @@ export function __sharedSheetCacheSize(): number {
 }
 
 @customElement('gd-button')
-export class GdButton extends LitElement {
+export class GdButton extends GdThemedElement {
   static styles = css`
     :host {
       display: inline-block;
@@ -171,6 +171,9 @@ export class GdButton extends LitElement {
       align-items: center;
       position: relative;
       cursor: pointer;
+      /* React gets this from the form-control reset in styles.css (it does not reach a shadow root);
+         the native button's UA default is line-height: normal, which makes it shorter than React's. */
+      line-height: inherit;
     }
     button:disabled {
       cursor: default;
@@ -200,7 +203,6 @@ export class GdButton extends LitElement {
   @property({ type: String, attribute: 'aria-pressed' }) ariaPressed: string | null = null;
   @property({ type: String }) justifyContent?: string;
   @property({ attribute: false }) styles: ButtonCssBlock = {};
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
 
   /** Tracks whether each named/default slot actually has assigned content — mirrors
    *  `Button.tsx`'s `{iconStart ? <StartIconStyled>... : null}` conditionals, which a bare

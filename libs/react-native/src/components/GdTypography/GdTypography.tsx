@@ -4,7 +4,7 @@ import {
   type DesignCoreTheme,
   type TypographyStyleVariantName,
   type TypographyVariantName,
-} from 'gd-design-core';
+} from '../../core';
 import { pxToNumber } from '../../utils/pxToNumber';
 import { toFontFamily } from '../../utils/toFontFamily';
 import { toFontWeight } from '../../utils/toFontWeight';
