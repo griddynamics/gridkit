@@ -1,5 +1,6 @@
 import { html, nothing, type PropertyValues } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+import { live } from 'lit/directives/live.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { counter } from 'gd-design-library/tokens';
 import { resolveThemeTree, type ThemeLike, type ButtonCssBlock } from '../../../core';
@@ -18,7 +19,7 @@ const tokens = (theme: ThemeLike) => resolveThemeTree(counter, theme) as unknown
 @customElement('gd-counter')
 export class GdCounter extends GdThemedElement {
   @property({ type: Number }) min = 1;
-  @property({ type: Number }) max = 999;
+  @property({ type: Number }) max = Infinity;
   @property({ type: Number }) initial = 1;
   @property({ type: Boolean, attribute: 'is-disabled', reflect: true }) isDisabled = false;
   @property({ attribute: false }) styles: Styles = {};
@@ -82,7 +83,7 @@ export class GdCounter extends GdThemedElement {
       <gd-input
         part="input"
         type="number"
-        .value=${this.draft}
+        .value=${live(this.draft)}
         .disabled=${this.isDisabled}
         .styles=${{ ...t.webComponent.inputHost, ...t.webComponent.inputOuter }}
         .inputStyles=${inputStyles}

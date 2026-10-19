@@ -356,4 +356,25 @@ describe('gd-button', () => {
 
     expect(innerBg(el)).toBe('rgb(255, 184, 0)');
   });
+  it('applies the hover/active/disabled state classes set on the host, like className on the source button', async () => {
+    const el = add('primary');
+    await settle(el);
+    const rules = el.shadowRoot!.adoptedStyleSheets.flatMap((sheet) =>
+      Array.from(sheet.cssRules, (rule) => rule.cssText)
+    );
+    for (const state of ['hover', 'active', 'disabled']) {
+      expect(rules.some((rule) => rule.includes(`:host(.${state}) button`))).toBe(true);
+      // The source selector for the same state is kept for a class set on the button itself.
+      expect(rules.some((rule) => rule.includes(`button.${state}`))).toBe(true);
+    }
+  });
+
+  it('resets the native button chrome that the shared stylesheet removes for the source button', async () => {
+    const el = add('inherit');
+    await settle(el);
+    const inner = getComputedStyle(el.shadowRoot!.querySelector('button')!);
+    expect(inner.backgroundColor).toBe('rgba(0, 0, 0, 0)');
+    expect(inner.textTransform).toBe('none');
+    expect(inner.boxSizing).toBe('border-box');
+  });
 });

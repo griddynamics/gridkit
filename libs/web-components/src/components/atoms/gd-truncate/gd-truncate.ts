@@ -29,6 +29,9 @@ export class GdTruncate extends GdThemedElement {
   render() {
     const t = resolveThemeTree(truncate, this.theme) as unknown as { default: ButtonCssBlock };
     const css = [
+      // The content span is the root of the source Truncate: the host must not add a box of its own.
+      ':host { display: contents; }',
+      buttonCssBlockToText('.content', { boxSizing: 'border-box', borderWidth: 0, borderStyle: 'solid' }),
       buttonCssBlockToText('.content', t.default),
       buttonCssBlockToText('.content', { lineClamp: this.lines, WebkitLineClamp: this.lines }),
       buttonCssBlockToText('.content', this.styles),
@@ -38,7 +41,9 @@ export class GdTruncate extends GdThemedElement {
       s.replaceSync(css);
       this.shadowRoot.adoptedStyleSheets = [s];
     }
-    return html`<span class="content" part="content"><slot @slotchange=${this.measure}></slot></span>`;
+    return html`<span class="content" part="content" data-testid="Truncate"
+      ><slot @slotchange=${this.measure}></slot
+    ></span>`;
   }
 }
 declare global {

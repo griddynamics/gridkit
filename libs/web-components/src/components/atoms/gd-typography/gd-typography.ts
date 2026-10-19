@@ -59,7 +59,8 @@ function resolveTypographyTokens(
   styleVariant?: TypographyStyleVariantName | TypographyStyleVariantName[]
 ): ResolvedTypographyStyle {
   const resolved = resolveThemeTree(typography, theme) as unknown as Record<string, Record<string, unknown>>;
-  const variantStyles = resolved[variant] ?? resolved.span;
+  // Variants without their own token block (`sup`, `sub`) get no variant styles, as in the source component.
+  const variantStyles = resolved[variant] ?? {};
   const sizeStyles = variant === 'div' ? ((variantStyles[size] as Record<string, unknown> | undefined) ?? {}) : {};
   const style: Record<string, unknown> = {
     fontFamily: resolved.base.fontFamily,
@@ -104,9 +105,45 @@ function resolveTypographyTokens(
  */
 @customElement('gd-typography')
 export class GdTypography extends GdThemedElement {
+  // The document-level reset in `libs/ui/src/styles.css` does not reach a shadow root, so the typography-related
+  // part of it is repeated here. Inline token styles on the rendered element take precedence over these rules,
+  // exactly like the `:where(...)` token styles take precedence over the reset in the source component.
   static styles = css`
     :host {
       display: contents;
+    }
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-size: inherit;
+      font-weight: inherit;
+    }
+    b,
+    strong {
+      font-weight: bolder;
+    }
+    code,
+    kbd {
+      font-size: 1em;
+    }
+    small {
+      font-size: 80%;
+    }
+    sub,
+    sup {
+      font-size: 75%;
+      line-height: 0;
+      position: relative;
+      vertical-align: baseline;
+    }
+    sub {
+      bottom: -0.25em;
+    }
+    sup {
+      top: -0.5em;
     }
   `;
 

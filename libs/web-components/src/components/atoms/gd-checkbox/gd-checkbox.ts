@@ -63,7 +63,8 @@ function resolveCheckboxTokens(theme: ThemeLike, size: CheckboxSizeName): Resolv
 export class GdCheckbox extends GdThemedElement {
   static styles = css`
     :host {
-      display: inline-block;
+      /* The label is the component root: the host adds no box (and no line-box strut) around it. */
+      display: contents;
     }
     label {
       display: inline-flex;
@@ -74,12 +75,18 @@ export class GdCheckbox extends GdThemedElement {
       cursor: default;
       opacity: 0.5;
     }
+    /* Visually hidden, but laid out exactly like the visually-hidden native input of the source component. */
     input {
+      border: 0;
+      clip: rect(0 0 0 0);
+      height: 1px;
+      margin: -1px;
+      overflow: hidden;
+      padding: 0;
       position: absolute;
+      white-space: nowrap;
+      width: 1px;
       opacity: 0;
-      width: 0;
-      height: 0;
-      margin: 0;
     }
     .indicator {
       display: inline-flex;

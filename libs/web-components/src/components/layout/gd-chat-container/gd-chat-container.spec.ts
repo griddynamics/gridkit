@@ -37,6 +37,17 @@ describe('gd-chat-container', () => {
     element.remove();
   });
 
+  it('applies the global reset inside the shadow root so the 56px headers include their border', async () => {
+    const element = await fixture(true);
+    const header = element.shadowRoot!.querySelector<HTMLElement>('header[part="main-header"]')!;
+    expect(getComputedStyle(header).boxSizing).toBe('border-box');
+    expect(header.getBoundingClientRect().height).toBe(56);
+    expect(
+      element.shadowRoot!.querySelector<HTMLElement>('header[part="sidebar-header"]')!.getBoundingClientRect().height
+    ).toBe(56);
+    element.remove();
+  });
+
   it('opens, closes, and toggles through the imperative element API', async () => {
     const element = await fixture();
     expect(element.isOpen).toBe(false);

@@ -21,4 +21,29 @@ describe('gd-badge', () => {
     expect(element.querySelector('[slot="icon-start"]')?.textContent).toBe('!');
     element.remove();
   });
+  it('only renders icon wrappers for slotted icons so empty slots add no flex gap', async () => {
+    const element = document.createElement('gd-badge');
+    element.theme = defaultTheme;
+    element.textContent = 'Plain';
+    document.body.append(element);
+    await element.updateComplete;
+    expect(element.shadowRoot!.querySelector('[part="icon-start"]')).toBeNull();
+    expect(element.shadowRoot!.querySelector('[part="icon-end"]')).toBeNull();
+    const root = element.shadowRoot!.querySelector<HTMLElement>('[part="root"]')!;
+    // padding 0 + 8px each side + the text only: no gap tracks around the content.
+    expect(root.getBoundingClientRect().width).toBe(
+      element.shadowRoot!.querySelector('[part="content"]')!.getBoundingClientRect().width + 16
+    );
+
+    const end = document.createElement('span');
+    end.slot = 'icon-end';
+    end.textContent = '!';
+    element.append(end);
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    await element.updateComplete;
+    expect(element.shadowRoot!.querySelector('[part="icon-end"]')).not.toBeNull();
+    expect(element.shadowRoot!.querySelector('[part="icon-start"]')).toBeNull();
+    expect(getComputedStyle(element).display).toBe('contents');
+    element.remove();
+  });
 });

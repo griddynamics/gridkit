@@ -166,14 +166,33 @@ export class GdButton extends GdThemedElement {
     :host {
       display: inline-block;
     }
+    /* The global reset (box-sizing, border) does not reach a shadow root. */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      border-width: 0;
+      border-style: solid;
+    }
+    /* Form-control reset of the shared stylesheet, which does not reach a shadow root either. Without it
+       the native button keeps its UA background, text transform, font and line-height: normal, which makes
+       it grey (variants that set no background, like inherit) and shorter than the source button. */
     button {
       display: inline-flex;
       align-items: center;
       position: relative;
       cursor: pointer;
-      /* React gets this from the form-control reset in styles.css (it does not reach a shadow root);
-         the native button's UA default is line-height: normal, which makes it shorter than React's. */
+      font-family: inherit;
+      font-size: 100%;
+      font-weight: inherit;
       line-height: inherit;
+      color: inherit;
+      margin: 0;
+      padding: 0;
+      text-transform: none;
+      -webkit-appearance: button;
+      background-color: transparent;
+      background-image: none;
     }
     button:disabled {
       cursor: default;
@@ -301,24 +320,31 @@ export class GdButton extends GdThemedElement {
   private _buildCssText(tokens: ResolvedButtonTokenTree, radius: string): string {
     const variantTokens = tokens[this.variant] ?? tokens.primary;
 
-    return [
-      buttonCssBlockToText('button', tokens.default),
-      buttonCssBlockToText('button', variantTokens),
-      this.isIcon ? buttonCssBlockToText('button', tokens.icon) : '',
-      this.fullWidth ? buttonCssBlockToText('button', tokens.fullWidth) : '',
-      buttonCssBlockToText('button', {
-        borderRadius: radius,
-        '&:focus-visible::after': { borderRadius: radius },
-      }),
-      buttonCssBlockToText('button', this.styles),
-      buttonCssBlockToText('.gd-button__content', tokens.content.default),
-      this.justifyContent ? buttonCssBlockToText('.gd-button__content', { justifyContent: this.justifyContent }) : '',
-      buttonCssBlockToText('.gd-button__icon-start', tokens.startIcon.default),
-      buttonCssBlockToText('.gd-button__icon-end', tokens.endIcon.default),
-      buttonCssBlockToText('.gd-button__content, .gd-button__icon-start, .gd-button__icon-end', {
-        transition: tokens.default.transition,
-      }),
-    ].join('\n');
+    return (
+      [
+        buttonCssBlockToText('button', tokens.default),
+        buttonCssBlockToText('button', variantTokens),
+        this.isIcon ? buttonCssBlockToText('button', tokens.icon) : '',
+        this.fullWidth ? buttonCssBlockToText('button', tokens.fullWidth) : '',
+        buttonCssBlockToText('button', {
+          borderRadius: radius,
+          '&:focus-visible::after': { borderRadius: radius },
+        }),
+        buttonCssBlockToText('button', this.styles),
+        buttonCssBlockToText('.gd-button__content', tokens.content.default),
+        this.justifyContent ? buttonCssBlockToText('.gd-button__content', { justifyContent: this.justifyContent }) : '',
+        buttonCssBlockToText('.gd-button__icon-start', tokens.startIcon.default),
+        buttonCssBlockToText('.gd-button__icon-end', tokens.endIcon.default),
+        buttonCssBlockToText('.gd-button__content, .gd-button__icon-start, .gd-button__icon-end', {
+          transition: tokens.default.transition,
+        }),
+      ]
+        .join('\n')
+        // The source component's `className` lands on the button itself, so `&.hover`, `&.active` and
+        // `&.disabled` token selectors match it. Here a consumer sets the class on the `gd-button` host,
+        // so the same selectors also have to match through `:host(.state)`.
+        .replace(/button\.(hover|active|disabled)\b/g, 'button.$1, :host(.$1) button')
+    );
   }
 
   render() {

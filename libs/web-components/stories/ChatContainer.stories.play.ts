@@ -32,23 +32,29 @@ async function verifyMainContent(canvas: HTMLElement) {
   await expect(bubbles[0]).toHaveTextContent('Hi! Can you help me generate an SVG');
   await expect(canvas.querySelector('[data-testid="Snackbar"]')).toHaveTextContent('Click the button below to retry');
   await expect(canvas.querySelector('gd-loader')).toBeVisible();
-  for (const label of ['Voice', 'Copy', 'Like', 'Dislike']) {
+  for (const label of ['Read response aloud', 'Copy response', 'Like response', 'Dislike response']) {
     await click(lightButton(canvas, label));
   }
   await click(textButton(canvas, 'Retry'));
 }
 
-async function verifySidebar(canvas: HTMLElement) {
+async function verifySidebarContent(canvas: HTMLElement) {
   const items = canvas.querySelectorAll('gd-box');
   expect(items).toHaveLength(3);
   await expect(items[0]).toHaveTextContent('Recent conversation 1');
   await expect(items[1]).toHaveTextContent('Recent conversation 2');
   await expect(items[2]).toHaveTextContent('Recent conversation 3');
+  return items;
+}
+
+async function verifySidebar(canvas: HTMLElement) {
+  const items = await verifySidebarContent(canvas);
+  await expect(items[0].shadowRoot?.querySelector('[part="root"]')).toHaveAttribute('tabindex', '0');
   await userEvent.click(items[0]);
 }
 
 async function verifyMinified(canvas: HTMLElement) {
-  for (const label of ['New Chat', 'History', 'Edit']) {
+  for (const label of ['New chat', 'Chat history', 'Edit chat']) {
     await click(lightButton(canvas, label));
   }
 }
@@ -72,7 +78,7 @@ export async function minimalLayoutWithRefControlActions({ canvasElement, step }
   await step('Should toggle through the imperative element method', async () => {
     await click(textButton(canvasElement, 'Toggle Sidebar Programmatically'));
     await expectOpen(canvasElement, true);
-    await verifySidebar(canvasElement);
+    await verifySidebarContent(canvasElement);
   });
 }
 

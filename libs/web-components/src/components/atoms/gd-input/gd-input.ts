@@ -1,4 +1,6 @@
-import { html, css, nothing, type PropertyValues } from 'lit';
+import { css, nothing, type PropertyValues } from 'lit';
+import { html as staticHtml, unsafeStatic } from 'lit/static-html.js';
+import { html } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { input } from 'gd-design-library/tokens';
@@ -8,83 +10,53 @@ import {
   createInputStore,
   debounce,
   buttonCssBlockToText,
+  cssPropertyValueToText,
   type ButtonCssBlock,
   type InputColorVariantName,
   type ThemeLike,
 } from '../../../core';
 import { GdThemedElement } from '../../../core/themed-element';
 
-interface ResolvedInputTokens {
-  fontFamily: string | number;
-  fontSize: string | number;
-  color: string;
-  disabledColor: string;
-  border: string;
-  labelColor: string;
-  helperTextColor: string;
-  wrapperGap: string | number;
-  labelFontSize: string | number;
-  labelLineHeight: string | number;
-  helperFontSize: string | number;
-  helperLineHeight: string | number;
-  zIndex: string | number;
-  horizontalPadding: string | number;
-  borderRadius: string | number;
+type CssBlock = ButtonCssBlock;
+
+interface InputTokenTree {
+  wrapper: { default: CssBlock; withGap: CssBlock };
+  input: { default: CssBlock; defaultInteraction: CssBlock; mouseInteraction: CssBlock } & Record<
+    InputColorVariantName,
+    CssBlock
+  >;
+  helper: {
+    default: { sm: CssBlock; md: CssBlock };
+  } & Record<InputColorVariantName, { sm: CssBlock; md: CssBlock }>;
+  adornment: { default: CssBlock };
 }
 
+/** Variants without a focus border/outline: native-looking controls draw their own focus ring. */
+const FOCUS_EXCLUDED_VARIANTS = ['checkbox', 'radio', 'range'];
+
 /**
- * Resolves the REAL `input` object (`gd-design-library/tokens`) against `theme` — the
- * single-source-of-truth replacement for the old, hand-mirrored `resolveInputStyle` in
- * the removed `gd-design-core` package; the exact real
- * paths this reads: `input.wrapper.withGap.gap`, `input.helper.default.{sm,md}`,
- * `input.helper.<variant>.sm.color`, `input.input.default.padding`,
- * `input.input.defaultInteraction['& + .Input__border'].borderRadius`,
- * `input.input.<variant>['& + .Input__border'].border`). `fontFamily`/`fontSize` are the one
- * exception — the real `input.ts` object has neither (the real `<input>` inherits both from the
- * app's global CSS reset), so those two are resolved from the same shared `font.*` theme tokens
- * every other component uses, same as `gd-button.ts`.
+ * The real `Input` draws everything through the `input` token tree (`gd-design-library/tokens`).
+ * The shadow root renders the same DOM shape (wrapper, optional label, field row, native control
+ * followed by the `Input__border` and `Input__outline` siblings, optional helper text) and the
+ * resolved token tree is serialised verbatim, so values never drift from the shared design tokens.
+ * Document-level resets do not reach a shadow root, so the equivalent reset lives in `static styles`
+ * with zero specificity (`:where`) to let token rules win exactly as they do in the document.
  */
-function resolveInputTokens(theme: ThemeLike, color: InputColorVariantName): ResolvedInputTokens {
-  const resolved = resolveThemeTree(input, theme) as unknown as {
-    wrapper: { withGap: { gap: string | number } };
-    input: {
-      default: {
-        color: string;
-        padding: string | number;
-        '&:not([type="radio"], [type="checkbox"], [type="range"])': { zIndex: string | number };
-        '&[readonly], &:disabled': { color: string };
-      };
-      defaultInteraction: { '& + .Input__border': { borderRadius: string | number } };
-    } & Record<InputColorVariantName, { '& + .Input__border': { border: string } }>;
-    helper: {
-      default: {
-        sm: { fontSize: string | number; lineHeight: string | number };
-        md: { color: string; fontSize: string | number; lineHeight: string | number };
-      };
-    } & Record<InputColorVariantName, { sm: { color?: string } }>;
-  };
-
-  const inputDefault = resolved.input.default;
-  const colorTokens = resolved.input[color] ?? resolved.input.primary;
-  const helperColorTokens = resolved.helper[color] ?? resolved.helper.primary;
-
-  return {
-    fontFamily: get(theme, 'font.family', '"Fira Sans", sans-serif'),
-    fontSize: get(theme, 'font.size.p', '16px'),
-    color: inputDefault.color,
-    disabledColor: inputDefault['&[readonly], &:disabled'].color,
-    border: colorTokens['& + .Input__border'].border,
-    labelColor: resolved.helper.default.md.color,
-    helperTextColor: helperColorTokens.sm.color ?? resolved.helper.default.md.color,
-    wrapperGap: resolved.wrapper.withGap.gap,
-    labelFontSize: resolved.helper.default.md.fontSize,
-    labelLineHeight: resolved.helper.default.md.lineHeight,
-    helperFontSize: resolved.helper.default.sm.fontSize,
-    helperLineHeight: resolved.helper.default.sm.lineHeight,
-    zIndex: inputDefault['&:not([type="radio"], [type="checkbox"], [type="range"])'].zIndex,
-    horizontalPadding: inputDefault.padding,
-    borderRadius: resolved.input.defaultInteraction['& + .Input__border'].borderRadius,
-  };
+function inputStyleText(theme: ThemeLike, color: InputColorVariantName, isMouseInteraction: boolean): string {
+  const tokens = resolveThemeTree(input, theme) as unknown as InputTokenTree;
+  const colorKey = tokens.input[color] ? color : 'primary';
+  return [
+    buttonCssBlockToText('.wrapper', tokens.wrapper.default),
+    buttonCssBlockToText('.wrapper.with-gap', tokens.wrapper.withGap),
+    buttonCssBlockToText('input', tokens.input.default),
+    buttonCssBlockToText('input', isMouseInteraction ? tokens.input.mouseInteraction : tokens.input.defaultInteraction),
+    buttonCssBlockToText('input', tokens.input[colorKey]),
+    buttonCssBlockToText('.label', tokens.helper.default.md),
+    buttonCssBlockToText('.label', tokens.helper.primary.md),
+    buttonCssBlockToText('.helper', tokens.helper.default.sm),
+    buttonCssBlockToText('.helper', tokens.helper[colorKey].sm),
+    buttonCssBlockToText('.adornment', tokens.adornment.default),
+  ].join('');
 }
 
 /**
@@ -116,54 +88,40 @@ function resolveInputTokens(theme: ThemeLike, color: InputColorVariantName): Res
 export class GdInput extends GdThemedElement {
   static styles = css`
     :host {
-      display: inline-block;
+      display: contents;
     }
-    .outer {
-      display: inline-flex;
-      flex-direction: column;
-      align-items: flex-start;
-    }
-    .row {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      width: 100%;
+    :where(*, ::before, ::after) {
       box-sizing: border-box;
-    }
-    input {
-      position: relative;
-      border: none;
-      outline: none;
-      background: transparent;
-      font: inherit;
-      color: inherit;
-      width: 100%;
-      height: 40px;
-      box-sizing: border-box;
-    }
-    input:disabled {
-      cursor: default;
-    }
-    input::placeholder {
-      color: var(--gd-input-placeholder-color, #a3a3a3);
-    }
-    .border,
-    .outline {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      box-sizing: border-box;
-    }
-    .border {
+      border-width: 0;
       border-style: solid;
     }
-    .outline {
-      outline-style: none;
+    :where(input) {
+      font-family: inherit;
+      font-size: 100%;
+      font-weight: inherit;
+      line-height: inherit;
+      color: inherit;
+      margin: 0;
+      padding: 0;
     }
-    input:focus-visible ~ .outline {
-      outline-style: solid;
-      outline-width: 2px;
-      outline-offset: 3px;
+    :where([type='search']) {
+      -webkit-appearance: textfield;
+      outline-offset: -2px;
+    }
+    :where(::-webkit-search-decoration) {
+      -webkit-appearance: none;
+    }
+    :where(::-webkit-inner-spin-button, ::-webkit-outer-spin-button) {
+      height: auto;
+    }
+    :where(input)::placeholder {
+      opacity: 1;
+    }
+    :where(:disabled) {
+      cursor: default;
+    }
+    :where(label) {
+      cursor: auto;
     }
   `;
 
@@ -183,6 +141,10 @@ export class GdInput extends GdThemedElement {
   @property({ type: Boolean }) checked = false;
   @property({ type: Boolean, attribute: 'default-checked' }) defaultChecked = false;
   @property({ type: String }) width?: string;
+  /** Element rendered as the outer wrapper: a `label` (default) or a plain `span`. */
+  @property({ type: String, attribute: 'wrapper-as' }) wrapperAs: 'label' | 'span' = 'label';
+  /** Extra class names applied to the wrapper element (React's `className`). */
+  @property({ type: String, attribute: 'wrapper-class' }) wrapperClass = '';
   /** Component-token layout overrides for composed ports; never consumer literal CSS. */
   @property({ attribute: false }) styles: Record<string, string | number> = {};
   @property({ attribute: false }) inputStyles: Record<string, string | number> = {};
@@ -209,6 +171,9 @@ export class GdInput extends GdThemedElement {
   @query('input') private _input!: HTMLInputElement;
   private _ruleSheet?: CSSStyleSheet;
   private _ruleText = '';
+  private _tokenSheet?: CSSStyleSheet;
+  private _tokenText = '';
+  private _slotObserver?: MutationObserver;
 
   private _store = createInputStore({ debounceCallbackTime: this.debounceCallbackTime });
   private _unsubscribe?: () => void;
@@ -293,11 +258,19 @@ export class GdInput extends GdThemedElement {
   connectedCallback() {
     super.connectedCallback();
     this._unsubscribe = this._store.subscribe(() => this.requestUpdate());
-    if (this._defaultValue === undefined) this._defaultValue = this.defaultValue ?? this.value;
+    // Adornments are optional slotted children; the adornment wrappers only render when one exists.
+    this._slotObserver = new MutationObserver(() => this.requestUpdate());
+    this._slotObserver.observe(this, { childList: true, attributes: true, attributeFilter: ['slot'], subtree: false });
+    if (this._defaultValue === undefined) {
+      this._defaultValue = this.defaultValue ?? this.value;
+      // Uncontrolled initial content (React's `defaultValue`): shown until a `value` is supplied.
+      if (!this.value && this.defaultValue) this.value = this._lastInternalValue = this.defaultValue;
+    }
   }
 
   disconnectedCallback() {
     this._unsubscribe?.();
+    this._slotObserver?.disconnect();
     super.disconnectedCallback();
   }
 
@@ -312,7 +285,22 @@ export class GdInput extends GdThemedElement {
       this._store.getState().setDebounceCallbackTime(this.debounceCallbackTime);
       this._debouncedDispatch = undefined;
     }
-    if (this.style && changed.has('width')) this.style.width = this.width ?? '';
+    const type = this.variant ?? this.type;
+    const tokenText = inputStyleText(
+      this.theme,
+      this.color,
+      this._store.getState().isMouseInteraction && !FOCUS_EXCLUDED_VARIANTS.includes(type)
+    );
+    if (this.shadowRoot && tokenText !== this._tokenText) {
+      this._tokenText = tokenText;
+      const sheet = new CSSStyleSheet();
+      sheet.replaceSync(tokenText);
+      this.shadowRoot.adoptedStyleSheets = [
+        ...this.shadowRoot.adoptedStyleSheets.filter((item) => item !== this._tokenSheet),
+        sheet,
+      ];
+      this._tokenSheet = sheet;
+    }
   }
 
   updated(changed: PropertyValues<this>) {
@@ -357,6 +345,7 @@ export class GdInput extends GdThemedElement {
     const control = event.target as HTMLInputElement;
     const newValue = control.value;
     this.checked = control.checked;
+    this._syncRadioGroup(control);
     this._lastInternalValue = newValue;
     this.value = newValue;
     this._getDebouncedDispatch()(newValue);
@@ -386,93 +375,92 @@ export class GdInput extends GdThemedElement {
     }
   }
 
+  private _hasSlotted(name: string) {
+    // Light-DOM children do not exist during server rendering, where no adornment can be detected.
+    return typeof this.querySelector === 'function' && Boolean(this.querySelector(`:scope > [slot="${name}"]`));
+  }
+
+  /** Native radio groups do not span shadow roots, so uncheck sibling radios sharing this `name`. */
+  private _syncRadioGroup(control: HTMLInputElement) {
+    if (control.type !== 'radio' || !control.checked || !this.name) return;
+    const root = this.getRootNode() as Document | ShadowRoot;
+    for (const other of Array.from(root.querySelectorAll<GdInput>('gd-input'))) {
+      if (other !== this && other.name === this.name && (other.variant ?? other.type) === 'radio')
+        other.checked = false;
+    }
+  }
+
   render() {
     const inputType = this.variant ?? this.type;
-    const resolved = resolveInputTokens(this.theme, this.color);
-    const focusColor = (this.theme.colors as { border?: { focus?: string } } | undefined)?.border?.focus ?? '#0069B4';
-    const textColor = this.disabled ? resolved.disabledColor : resolved.color;
-
-    const outerStyle = { gap: `${resolved.wrapperGap}`, ...this.styles };
-    const rowStyle = {
-      fontFamily: `${resolved.fontFamily}`,
-      fontSize: `${resolved.fontSize}`,
-      color: textColor,
-      zIndex: `${resolved.zIndex}`,
-      padding: `0 ${resolved.horizontalPadding}`,
-      '--gd-input-placeholder-color': resolved.disabledColor,
-    };
-    const borderStyle = {
-      border: resolved.border,
-      borderRadius: `${resolved.borderRadius}`,
-    };
-    const outlineStyle = { outlineColor: focusColor, borderRadius: `${resolved.borderRadius}` };
-    // Reuses the SAME resolved.fontFamily as the `<input>` itself (rowStyle above) — the real
-    // InputHelper (label/helperText) has no explicit fontFamily of its own either, relying on
-    // ambient inheritance from the host app's global reset, which would leave these two spans
-    // free to silently diverge from the input's own (explicitly-resolved) font in a standalone
-    // render with no such reset present.
-    const labelStyle = {
-      color: resolved.labelColor,
-      fontFamily: `${resolved.fontFamily}`,
-      fontSize: `${resolved.labelFontSize}`,
-      lineHeight: `${resolved.labelLineHeight}`,
-    };
-    const helperStyle = {
-      color: resolved.helperTextColor,
-      fontFamily: `${resolved.fontFamily}`,
-      fontSize: `${resolved.helperFontSize}`,
-      lineHeight: `${resolved.helperLineHeight}`,
+    const showFocus = !FOCUS_EXCLUDED_VARIANTS.includes(inputType);
+    const hasHelpers = Boolean(this.label || this.helperText);
+    const asLabel = this.wrapperAs !== 'span';
+    const controlId = this.id ? `${this.id}-control` : 'control';
+    const wrapperStyle = {
+      fontFamily: `${get(this.theme, 'font.family', '"Fira Sans", sans-serif')}`,
+      ...(this.width ? { width: this.width } : {}),
+      ...Object.fromEntries(
+        Object.entries(this.styles).map(([name, value]) => [name, cssPropertyValueToText(name, value)])
+      ),
     };
 
-    // `part` attributes (CTORNDSD-646b) expose these internals to consumer CSS via
-    // `gd-input::part(input)` etc. This is the only sanctioned way to style inside a shadow root
-    // from outside it; without it, a consumer's only escape hatch is the `theme` property.
-    return html`
-      <div class="outer" part="outer" style=${styleMap(outerStyle)}>
-        ${this.label
-          ? html`<label
-              class="label"
-              part="label"
-              for=${this.id ? `${this.id}-control` : 'control'}
-              style=${styleMap(labelStyle)}
-              >${this.label}</label
-            >`
+    const hasStart = this._hasSlotted('adornment-start');
+    const hasEnd = this._hasSlotted('adornment-end');
+    const labelTemplate = this.label ? html`<span class="label" part="label" id="label">${this.label}</span>` : nothing;
+
+    // `part` attributes expose these internals to consumer CSS via `gd-input::part(input)` etc.
+    // This is the only sanctioned way to style inside a shadow root from outside it; without it,
+    // a consumer's only escape hatch is the `theme` property.
+    const content = html`
+      ${labelTemplate}
+      <span class="wrapper" part="row" style="width: 100%">
+        ${hasStart
+          ? html`<span class="adornment" part="adornment-start"><slot name="adornment-start"></slot></span>`
           : nothing}
-        <div class="row" part="row" style=${styleMap(rowStyle)}>
-          <slot name="adornment-start"></slot>
-          <input
-            part="input"
-            id=${this.id ? `${this.id}-control` : 'control'}
-            type=${inputType}
-            style=${styleMap(this.inputStyles)}
-            aria-label=${this.ariaLabel ?? (this.label ? nothing : this.placeholder || nothing)}
-            aria-valuemin=${this.ariaValueMin ?? nothing}
-            aria-valuemax=${this.ariaValueMax ?? nothing}
-            aria-required=${this.ariaRequiredValue || nothing}
-            aria-describedby=${this.ariaDescribedBy ?? nothing}
-            inputmode=${this.inputmode ?? nothing}
-            role=${this.role ?? nothing}
-            tabindex=${this.tabIndex}
-            name=${this.name || nothing}
-            ?required=${this.required}
-            ?readonly=${this.readOnly}
-            .checked=${this.checked}
-            placeholder=${this.placeholder}
-            ?disabled=${this.disabled}
-            @input=${this._onInput}
-            @mousedown=${this._onMouseDown}
-            @keydown=${this._onKeyDown}
-            @blur=${this._onBlur}
-          />
-          <span class="border" part="border" style=${styleMap(borderStyle)}></span>
-          <span class="outline" part="outline" style=${styleMap(outlineStyle)}></span>
-          <slot name="adornment-end"></slot>
-        </div>
-        ${this.helperText
-          ? html`<span class="helper" part="helper" style=${styleMap(helperStyle)}>${this.helperText}</span>`
+        <input
+          part="input"
+          id=${controlId}
+          type=${inputType}
+          style=${styleMap(this.inputStyles)}
+          aria-label=${this.ariaLabel ?? (this.label ? nothing : this.placeholder || nothing)}
+          aria-valuemin=${this.ariaValueMin ?? nothing}
+          aria-valuemax=${this.ariaValueMax ?? nothing}
+          aria-required=${String(this.ariaRequiredValue)}
+          aria-describedby=${this.ariaDescribedBy ?? (this.helperText ? 'helper' : nothing)}
+          inputmode=${this.inputmode ?? nothing}
+          role=${this.role ?? nothing}
+          tabindex=${this.tabIndex}
+          name=${this.name || nothing}
+          ?required=${this.required}
+          ?readonly=${this.readOnly}
+          .checked=${this.checked}
+          placeholder=${this.placeholder || nothing}
+          ?disabled=${this.disabled}
+          @input=${this._onInput}
+          @mousedown=${this._onMouseDown}
+          @keydown=${this._onKeyDown}
+          @blur=${this._onBlur}
+        />
+        ${showFocus
+          ? html`<span class="Input__border" part="border"></span><span class="Input__outline" part="outline"></span>`
           : nothing}
-      </div>
+        ${hasEnd
+          ? html`<span class="adornment" part="adornment-end"><slot name="adornment-end"></slot></span>`
+          : nothing}
+      </span>
+      ${this.helperText
+        ? html`<span class="helper" part="helper" id=${this.ariaDescribedBy ?? 'helper'}>${this.helperText}</span>`
+        : nothing}
     `;
+
+    const tag = unsafeStatic(asLabel ? 'label' : 'span');
+    return staticHtml`<${tag}
+      class="outer wrapper ${hasHelpers ? 'with-gap' : ''} ${this.wrapperClass}"
+      part="outer"
+      for=${asLabel ? controlId : nothing}
+      aria-labelledby=${!asLabel && this.label ? 'label' : nothing}
+      style=${styleMap(wrapperStyle)}
+    >${content}</${tag}>`;
   }
 }
 

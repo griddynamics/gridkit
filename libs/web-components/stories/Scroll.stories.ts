@@ -12,8 +12,11 @@ import {
 
 type Args = Pick<GdScroll, 'vertical' | 'horizontal' | 'autoHide' | 'styles'> & { children?: string };
 
-function typography(text: string, styles: Record<string, string | number> = {}) {
-  return element('gd-typography', { variant: 'p', styles }, text);
+// The text and its line number are separate text nodes, exactly as the source story renders `{label} {index}`.
+function typography(text: string, styles: Record<string, string | number> = {}, suffix?: number) {
+  const node = element('gd-typography', { variant: 'p', styles }, text);
+  if (suffix !== undefined) node.append(String(suffix));
+  return node;
 }
 
 function longContent(background = 'linear-gradient(to bottom, #f0f4f8, #d9e2ec)', prefix = 'Scrollable content line') {
@@ -22,7 +25,7 @@ function longContent(background = 'linear-gradient(to bottom, #f0f4f8, #d9e2ec)'
     styles: { padding: '10px', background },
   });
   for (let index = 1; index <= 20; index += 1) {
-    column.append(typography(`${prefix} ${index}`, { margin: 0, padding: '5px 0' }));
+    column.append(typography(`${prefix} `, { margin: 0, padding: '5px 0' }, index));
   }
   return column;
 }
@@ -31,7 +34,7 @@ function verticalContent(prefix = 'Vertical content line') {
   const column = element('gd-column', {
     styles: { padding: '10px', background: '#f0f4f8' },
   });
-  for (let index = 1; index <= 20; index += 1) column.append(typography(`${prefix} ${index}`));
+  for (let index = 1; index <= 20; index += 1) column.append(typography(`${prefix} `, {}, index));
   return column;
 }
 
@@ -40,7 +43,9 @@ function autoHideVerticalContent() {
     styles: { padding: '10px', background: '#f0f4f8' },
   });
   for (let index = 1; index <= 20; index += 1) {
-    column.append(typography(`Line ${index} - Try scrolling to see the auto-hide scrollbar in action!`));
+    const line = typography('Line ', {}, index);
+    line.append(' - Try scrolling to see the auto-hide scrollbar in action!');
+    column.append(line);
   }
   return column;
 }
@@ -53,7 +58,13 @@ function wideContent() {
     styles: { padding: '10px', background: 'linear-gradient(to right, #f0f4f8, #d9e2ec)' },
   });
   for (let index = 1; index <= 10; index += 1) {
-    row.append(element('gd-typography', { align: 'center', styles: { flex: '0 0 100px' } }, `Item ${index}`));
+    row.append(
+      (() => {
+        const item = element('gd-typography', { align: 'center', styles: { flex: '0 0 100px' } }, 'Item ');
+        item.append(String(index));
+        return item;
+      })()
+    );
   }
   return row;
 }
@@ -77,7 +88,8 @@ const meta = {
   parameters: {
     docs: {
       description: {
-        component: `The <code>Scroll</code> component is a customizable container that provides styled scrollbars for content that overflows its boundaries. It supports independent vertical and horizontal visibility modes, auto-hide timing, custom styles, slotted content, pointer dragging, and the native imperative scrolling surface.`,
+        component:
+          '\n  The `Scroll` component is a customizable container that provides styled scrollbars for content that overflows its boundaries.\n  <br/>\n  <br/>\n  <h3>Key Features:</h3>\n  <ul>\n  <li>\n  <b>Scrollbar Control</b>\n  <ul>\n  <li>Independent vertical/horizontal scrollbars</li>\n  <li>Multiple visibility modes</li>\n  <li>Auto-hiding capabilities with smooth fade transitions</li>\n  </ul>\n  </li>\n  <li>\n  <b>Visibility Modes</b>\n  <ul>\n  <li>Auto - Shows scrollbars when needed</li>\n  <li>Hidden - Never shows scrollbars</li>\n  <li>Visible - Always shows scrollbars</li>\n  </ul>\n  </li>\n  <li>\n  <b>Auto-Hide Feature</b>\n  <ul>\n  <li>Scrollbars appear only during scrolling</li>\n  <li>Fade out after 1 second of inactivity</li>\n  <li>Smooth transitions with customizable timing</li>\n  <li>Works with both vertical and horizontal scrollbars</li>\n  </ul>\n  </li>\n  <li><b>Custom Styling</b> - Full control over container appearance</li>\n  <li><b>Content Overflow</b> - Handles both vertical and horizontal overflow</li>\n  </ul>\n  <br/>\n  <h3>Layout Props:</h3>\n  <ul>\n  <li><b>Dimensions</b>\n  <ul>\n  <li><code>width/height</code>: Container size</li>\n  <li><code>maxWidth/maxHeight</code>: Size constraints</li>\n  </ul>\n  </li>\n  <li><b>Spacing</b>\n  <ul>\n  <li><code>margin/padding</code>: Container spacing</li>\n  <li><code>border</code>: Container border styles</li>\n  </ul>\n  </li>\n  <li><code>position</code>: Container positioning</li>\n  <li><code>overflow</code>: Scrollbar behavior control</li>\n  </ul>\n        ',
       },
     },
   },
@@ -103,7 +115,7 @@ const meta = {
       },
     },
     autoHide: {
-      control: 'boolean',
+      control: { type: 'boolean' },
       description: 'When true, scrollbars are only visible during scrolling and fade out after 1 second of inactivity.',
       table: {
         category: 'Scrollbar Control',
@@ -113,7 +125,7 @@ const meta = {
     },
     styles: {
       control: 'object',
-      description: 'Custom CSS styles applied to the scroll container.',
+      description: 'Custom CSS styles to apply to the scroll container.',
       table: { category: 'Styling', type: { summary: 'CSSProperties' } },
     },
     children: {
@@ -286,9 +298,12 @@ AutoHideVerticalOnly.play = autoHideVerticalOnlyActions;
 
 export const DefaultTokens: Story = {
   render: () => defaultTokenViewer('scroll'),
-  parameters: formattedSource(`
+  parameters: {
+    layout: 'padded',
+    ...formattedSource(`
 import { defaultTheme } from 'gd-design-library/tokens';
 
 console.log(defaultTheme.scroll);
-  `),
+    `),
+  },
 };

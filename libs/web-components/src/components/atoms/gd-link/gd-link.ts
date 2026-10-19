@@ -17,9 +17,16 @@ export class GdLink extends GdThemedElement {
   @property({ type: String, reflect: true }) color?: string;
   @property({ type: String, reflect: true }) cursor = 'pointer';
   @property({ type: Boolean, reflect: true }) disabled = false;
-  @property({ type: String, reflect: true }) target?: string;
+  // Like the source component, links open in a new browsing context unless another target is set.
+  @property({ type: String, reflect: true }) target: string | undefined = '_blank';
   @property({ type: String, reflect: true }) href?: string;
   @property({ type: String, reflect: true }) rel?: string;
+  /** Explicit ARIA role of the rendered anchor. */
+  @property({ attribute: false }) role: string | null = 'link';
+  /** Tab order of the rendered anchor; a disabled link is always removed from the tab order. */
+  @property({ type: Number, attribute: false }) tabindex = 0;
+  /** Accessible label of the rendered anchor. */
+  @property({ type: String, attribute: 'aria-label' }) ariaLabel: string | null = null;
   @property({ attribute: false }) styles: CssBlock = {};
 
   render() {
@@ -31,6 +38,8 @@ export class GdLink extends GdThemedElement {
     const cssText =
       // React gets `a { text-decoration: inherit }` from the global reset in styles.css, which does not
       // reach a shadow root; without it the UA underline of an `a[href]` doubles the token underline.
+      // The host adds no box of its own: the anchor is the root element, as in the source component.
+      ':host { display: contents; }\n' +
       buttonCssBlockToText('a', { textDecoration: 'inherit' }) +
       [
         tokens.default,
@@ -54,8 +63,12 @@ export class GdLink extends GdThemedElement {
       class=${this.disabled ? 'Link--disabled' : ''}
       href=${this.disabled ? nothing : (this.href ?? nothing)}
       target=${this.target ?? nothing}
-      rel=${this.rel ?? ''}
-      aria-disabled=${String(this.disabled)}
+      rel=${this.rel || nothing}
+      role=${this.role ?? nothing}
+      tabindex=${this.disabled ? -1 : this.tabindex}
+      aria-disabled=${this.disabled ? 'true' : nothing}
+      aria-label=${this.ariaLabel ?? nothing}
+      data-testid="Link"
       @click=${(event: Event) => {
         if (this.disabled) event.preventDefault();
       }}

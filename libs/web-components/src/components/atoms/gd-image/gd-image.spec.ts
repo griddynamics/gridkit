@@ -51,4 +51,43 @@ describe('gd-image', () => {
     );
     withoutPlaceholder.remove();
   });
+
+  it('renders a div wrapper and figcaption by default and honours as and captionAs', async () => {
+    const element = document.createElement('gd-image');
+    element.theme = defaultTheme;
+    element.src = '/wrapper-image.png';
+    element.caption = 'Caption';
+    document.body.append(element);
+    await element.updateComplete;
+    const root = () => element.shadowRoot!.querySelector<HTMLElement>('[part="root"]')!;
+    expect(root().localName).toBe('div');
+    expect(element.shadowRoot!.querySelector('[part="caption"]')!.localName).toBe('figcaption');
+    element.as = 'figure';
+    element.captionAs = 'p';
+    await element.updateComplete;
+    expect(root().localName).toBe('figure');
+    expect(element.shadowRoot!.querySelector('[part="caption"]')!.localName).toBe('p');
+    // the global reset does not reach the shadow root, so the figure margin is reset locally
+    expect(getComputedStyle(root()).marginLeft).toBe('0px');
+    expect(getComputedStyle(element).display).toBe('contents');
+    expect(getComputedStyle(element.shadowRoot!.querySelector('img')!).display).toBe('block');
+    element.remove();
+  });
+
+  it('shows the placeholder text only while the image loads', async () => {
+    const element = document.createElement('gd-image');
+    element.theme = defaultTheme;
+    element.src = '/pending-placeholder.png';
+    element.placeholder = 'Loading image...';
+    document.body.append(element);
+    await element.updateComplete;
+    const placeholder = element.shadowRoot!.querySelector<HTMLElement>('[part="placeholder"]')!;
+    expect(getComputedStyle(placeholder).display).not.toBe('none');
+    expect(placeholder.textContent).toContain('Loading image...');
+    element.shadowRoot!.querySelector('img')!.dispatchEvent(new Event('load'));
+    await element.updateComplete;
+    expect(getComputedStyle(placeholder).display).toBe('none');
+    expect(placeholder.textContent).not.toContain('Loading image...');
+    element.remove();
+  });
 });

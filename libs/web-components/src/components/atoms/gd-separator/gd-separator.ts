@@ -48,7 +48,7 @@ export class GdSeparator extends GdThemedElement {
       part="label"
       variant=${typography.variant}
       as=${typography.as}
-      color=${this.labelColor ?? 'text.caption'}
+      color=${resolveThemeColor(this.theme.colors as never, this.labelColor ?? 'text.caption')}
       .theme=${this.theme}
       >${this.label}</gd-typography
     >`;
@@ -67,6 +67,9 @@ export class GdSeparator extends GdThemedElement {
     const borderSide = this.orientation === 'horizontal' ? 'borderTop' : 'borderLeft';
     const lengthStyle = this.length ? { [this.orientation === 'horizontal' ? 'width' : 'height']: this.length } : {};
     const cssText = [
+      // The host is transparent so the wrapper takes part in the surrounding layout like the root of a
+      // regular element (a percentage width must not resolve against an auto-width host).
+      ':host { display: contents; }',
       buttonCssBlockToText('.separator', tokens.default),
       buttonCssBlockToText('.separator', tokens[this.orientation]),
       buttonCssBlockToText('.separator', lengthStyle),

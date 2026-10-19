@@ -89,13 +89,19 @@ export class GdMenu extends GdThemedElement {
     this.removeEventListener('gd-menu-select', this._onSelect);
     this.removeEventListener('pointerdown', this._onSlottedItemClick, true);
     this.removeEventListener('click', this._onSlottedItemClick);
+    cancelAnimationFrame(this._frame);
     super.disconnectedCallback();
   }
 
   updated(changed: PropertyValues<this>) {
     const tokens = resolveMenuTokens(this.theme);
     Object.assign(this.style, { display: tokens.webComponent.host.display, ...this.styles });
-    if (!changed.has('open')) return;
+    if (!changed.has('open')) {
+      // Every render re-applies the content tokens (`inset: auto` among them), which wipes the computed
+      // geometry of an already open menu, so an open menu is placed again after each update.
+      if (this.open && this._content?.matches(':popover-open')) this._position();
+      return;
+    }
     if (this.open) this._show();
     else this._hide();
   }
@@ -128,10 +134,21 @@ export class GdMenu extends GdThemedElement {
     if (this._content?.matches(':popover-open')) this._content.hidePopover();
   }
 
+  private _frame = 0;
+
+  /** Keeps an open menu beside its trigger on every animation frame, so late layout changes (web fonts,
+   *  scrolling, resizing) never leave it behind. The frame loop ends as soon as the popover closes. */
   private _queuePosition() {
-    requestAnimationFrame(() => {
-      if (this.open && this._content.matches(':popover-open')) this._position();
-    });
+    cancelAnimationFrame(this._frame);
+    const track = () => {
+      if (!this.open || !this._content?.matches(':popover-open')) {
+        this._frame = 0;
+        return;
+      }
+      this._position();
+      this._frame = requestAnimationFrame(track);
+    };
+    this._frame = requestAnimationFrame(track);
   }
 
   private _position() {
@@ -223,7 +240,8 @@ export class GdMenu extends GdThemedElement {
         aria-expanded=${this.open}
         @click=${this.toggleMenu}
         @focusin=${() => {
-          this._triggerFocused = true;
+          // The focus ring belongs to keyboard focus only; pressing the trigger with a pointer must not draw it.
+          this._triggerFocused = this._trigger.matches(':focus-visible');
           this.requestUpdate();
         }}
         @focusout=${() => {

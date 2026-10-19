@@ -106,6 +106,8 @@ export class GdChatContainer extends GdLayoutElement {
     };
     this.adoptStyles(
       [
+        // The global reset reaches the container's inner elements in a light-DOM implementation but not through a shadow root.
+        '*, *::before, *::after { box-sizing: border-box; border-width: 0; border-style: solid; }',
         buttonCssBlockToText(':host', tokens.webComponent.host),
         buttonCssBlockToText(':host', tokens.wrapper.default),
         buttonCssBlockToText(':host', this.boxStyles),

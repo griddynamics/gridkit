@@ -29,6 +29,10 @@ export class GdSlider extends GdThemedElement {
     const tokens = resolveThemeTree(slider, this.theme) as unknown as { default: ButtonCssBlock };
     const fillRatio = this.max > this.min ? (this.currentValue - this.min) / (this.max - this.min) : this.min;
     const cssText = [
+      // The host renders its input directly into the surrounding layout, like a bare range input, and the
+      // document-level form-control reset does not reach the shadow root.
+      ':host { display: contents; }',
+      'input { margin: 0; font: inherit; box-sizing: border-box; }',
       buttonCssBlockToText('input', tokens.default),
       buttonCssBlockToText('input', { '--gd-slider-fill-ratio': fillRatio }),
       buttonCssBlockToText('input', this.styles),

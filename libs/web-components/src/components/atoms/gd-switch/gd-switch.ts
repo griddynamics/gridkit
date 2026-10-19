@@ -1,5 +1,6 @@
 import { html, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+import { live } from 'lit/directives/live.js';
 import { switchToken } from 'gd-design-library/tokens';
 import { buttonCssBlockToText, resolveThemeTree, type ButtonCssBlock } from '../../../core';
 import { GdThemedElement } from '../../../core/themed-element';
@@ -30,6 +31,8 @@ export class GdSwitch extends GdThemedElement {
     };
     const off = this.disabled || this.isLoading;
     const cssText = [
+      // The wrapper is the component root, so the host must not add a box or a line-box strut around it.
+      ':host { display: contents; }',
       buttonCssBlockToText('.wrapper', t.wrapper.default),
       off ? buttonCssBlockToText('.wrapper', t.wrapper.disabled) : '',
       buttonCssBlockToText('.wrapper', this.styles),
@@ -58,7 +61,7 @@ export class GdSwitch extends GdThemedElement {
           part="input"
           type="checkbox"
           name=${this.name}
-          .checked=${this.checked}
+          .checked=${live(this.checked)}
           ?disabled=${off}
           @change=${this.change}
         />

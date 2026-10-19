@@ -1,3 +1,4 @@
+import { action } from 'storybook/actions';
 import { defaultTheme } from 'gd-design-library/tokens';
 import type { ThemeLike } from '../src/core';
 import type {} from '../src/index';
@@ -201,12 +202,11 @@ const tokenViewerStyles = `
 `;
 
 function tokenNode(value: unknown, indent = 0): HTMLElement {
-  if (typeof value === 'function') return tokenNode(value(), indent);
-
   if (typeof value !== 'object' || value === null) {
     const text = document.createElement('span');
     text.style.color = '#545454';
-    text.textContent = JSON.stringify(value);
+    // Function tokens are shown as the JSON of their (theme-less) result, on one line.
+    text.textContent = JSON.stringify(typeof value === 'function' ? value() : value);
     return text;
   }
 
@@ -217,7 +217,7 @@ function tokenNode(value: unknown, indent = 0): HTMLElement {
     line.style.cssText = `display:block;margin:2px 0;padding-left:${(indent + 1) * 12}px`;
     const keyElement = document.createElement('span');
     keyElement.style.cssText = 'color:#0d52a5;margin-right:6px';
-    keyElement.textContent = `"${key}" :`;
+    keyElement.append('"', key, '" :');
     line.append(keyElement);
 
     if (typeof childValue === 'object' && childValue !== null) {
@@ -269,18 +269,11 @@ export function defaultTokenViewer(
   return viewer;
 }
 
-/** Each render owns its output and listeners; no state leaks between stories. */
-export function observed(node: HTMLElement, eventName: string, initial: unknown) {
-  const section = document.createElement('section');
-  section.style.cssText = 'display:grid;gap:16px;max-width:480px;font-family:"Fira Sans",sans-serif';
-  const output = document.createElement('output');
-  output.setAttribute('aria-label', 'Last event');
-  output.textContent = JSON.stringify(initial);
-  node.addEventListener(eventName, (event) => {
-    output.textContent = JSON.stringify((event as CustomEvent<unknown>).detail);
-  });
-  section.append(node, output);
-  return section;
+/** Log a native event to Storybook's Actions panel. The canvas stays identical to the story it mirrors:
+ * the source stories render no event output, so none is added to the DOM. */
+export function observed(node: HTMLElement, eventName: string, _initial?: unknown) {
+  node.addEventListener(eventName, (event) => action(eventName)((event as CustomEvent<unknown>).detail));
+  return node;
 }
 
 export const items = [
