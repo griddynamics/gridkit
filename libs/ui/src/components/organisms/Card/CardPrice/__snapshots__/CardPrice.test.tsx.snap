@@ -17,7 +17,7 @@ exports[`CardPrice > SHOULD match snapshot 1`] = `
         3
       </span>
       <del
-        class="css-1d1z3u4"
+        class="css-13qe0la"
         data-testid="Price-old"
       >
         12

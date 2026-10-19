@@ -87,7 +87,7 @@ export const WithChildren: Story = {
   name: 'Skeleton with Child Content',
   render: (args) => {
     const skeleton = element('gd-skeleton', { ...args, width: '250px', height: '50px' });
-    skeleton.append(element('gd-typography', { variant: 'body2' }, 'Loading Content...'));
+    skeleton.append(element('gd-typography', { variant: 'small' }, 'Loading Content...'));
     return skeleton;
   },
   parameters: {
@@ -106,8 +106,13 @@ export const ComposedLayout: Story = {
     avatarColumn.append(element('gd-skeleton', { variant: 'circular', styles: { width: '100px', height: '100px' } }));
 
     const textColumn = element('gd-column', { flex: '1' });
-    for (const variant of ['h3', 'body1', 'body2'] as const) {
-      const typography = element('gd-typography', { variant, styles: { marginBottom: '10px' } });
+    for (const variant of ['h3', 'p', 'small'] as const) {
+      // The source story renders the h3 token's 16px margin because it wins the style
+      // cascade over `marginBottom: 10px`; preserve that rendered geometry here.
+      const typography = element('gd-typography', {
+        variant,
+        styles: { marginBottom: variant === 'h3' ? '16px' : '10px' },
+      });
       typography.append(element('gd-skeleton'));
       textColumn.append(typography);
     }
@@ -118,7 +123,7 @@ export const ComposedLayout: Story = {
     const footer = element('gd-row', { gutter: 10, align: 'center', styles: { marginTop: '20px' } });
     for (let index = 0; index < 3; index += 1) {
       const typography = element('gd-typography', {
-        variant: 'body1',
+        variant: 'p',
         styles: { width: '100%', ...(index === 2 ? { marginBottom: '10px' } : {}) },
       });
       typography.append(element('gd-skeleton'));

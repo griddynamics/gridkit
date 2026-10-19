@@ -17,6 +17,7 @@ export class GdInputFile extends LitElement {
   @property({ type: Boolean, reflect: true }) disabled = false;
   @property({ type: Boolean, attribute: 'is-icon', reflect: true }) isIcon = false;
   @property({ type: String, attribute: 'button-variant' }) buttonVariant = 'outlined';
+  @property({ type: String, attribute: 'input-aria-label' }) inputAriaLabel = 'Upload a file';
   @property({ attribute: false }) styles: Record<string, string | number> = {};
   @property({ attribute: false }) theme: DesignCoreTheme = {};
   @query('input') input!: HTMLInputElement;
@@ -49,6 +50,7 @@ export class GdInputFile extends LitElement {
         capture=${this.capture ?? undefined}
         ?multiple=${this.multiple}
         ?disabled=${this.disabled}
+        aria-label=${this.inputAriaLabel}
         @change=${this._change}
       />
     </div>`;

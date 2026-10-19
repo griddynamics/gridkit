@@ -16,6 +16,7 @@ exports[`Carousel > SHOULD match snapshot 1`] = `
         data-testid="Carousel-controls"
       >
         <button
+          aria-label="Previous slide"
           class="css-1j0sjdr"
           data-testid="Carousel-control-previous"
           disabled=""
@@ -45,6 +46,7 @@ exports[`Carousel > SHOULD match snapshot 1`] = `
           </span>
         </button>
         <button
+          aria-label="Next slide"
           class="css-yb9gmh"
           data-testid="Carousel-control-next"
           role="button"
@@ -119,6 +121,7 @@ exports[`Carousel > SHOULD match snapshot 1`] = `
       data-testid="Carousel-thumbnails"
     >
       <button
+        aria-label="Previous thumbnails"
         class="css-dzqn57"
         data-testid="Carousel-thumbnail-control-previous"
         disabled=""
@@ -156,6 +159,7 @@ exports[`Carousel > SHOULD match snapshot 1`] = `
           data-testid="Carousel-thumbs-wrapper"
         >
           <button
+            aria-label="Go to slide 1"
             class="css-r1x9h8"
             data-active="true"
             data-testid="Carousel-thumbnail-0"
@@ -172,6 +176,7 @@ exports[`Carousel > SHOULD match snapshot 1`] = `
             </div>
           </button>
           <button
+            aria-label="Go to slide 2"
             class="css-1n2nwtw"
             data-active="false"
             data-testid="Carousel-thumbnail-1"
@@ -190,6 +195,7 @@ exports[`Carousel > SHOULD match snapshot 1`] = `
         </div>
       </div>
       <button
+        aria-label="Next thumbnails"
         class="css-dzqn57"
         data-testid="Carousel-thumbnail-control-next"
         role="button"

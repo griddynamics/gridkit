@@ -39,11 +39,12 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, forwardedRe
       $underline={underline}
       $color={color}
       $cursor={cursor}
-      className={`${className}${disabled ? `${COMPONENT_NAME}--disabled` : ''}`}
+      className={`${className}${disabled ? `${className ? ' ' : ''}${COMPONENT_NAME}--disabled` : ''}`}
       theme={theme}
       target={target}
       role={role}
-      tabIndex={tabindex}
+      tabIndex={disabled ? TabIndex.Disabled : tabindex}
+      aria-disabled={disabled || undefined}
       data-testid={COMPONENT_NAME}
       {...(rel ? { rel } : {})}
       {...(disabled ? {} : { href, onClick })}

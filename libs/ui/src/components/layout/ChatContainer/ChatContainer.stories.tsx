@@ -247,13 +247,13 @@ const SidebarContent = (
 
 const SidebarMinifiedContent = () => (
   <Column gap="16px" padding="16px 8px">
-    <Button isIcon variant="text" onClick={action('New Chat clicked')}>
+    <Button isIcon ariaLabel="New chat" variant="text" onClick={action('New Chat clicked')}>
       <Icon name="plus" />
     </Button>
-    <Button isIcon variant="text" onClick={action('History clicked')}>
+    <Button isIcon ariaLabel="Chat history" variant="text" onClick={action('History clicked')}>
       <Icon name="chat" />
     </Button>
-    <Button isIcon variant="text" onClick={action('Edit clicked')}>
+    <Button isIcon ariaLabel="Edit chat" variant="text" onClick={action('Edit clicked')}>
       <Icon name="edit" />
     </Button>
   </Column>
@@ -272,16 +272,16 @@ const MainContent = () => (
     <ChatBubble
       variant="answer"
       actions={[
-        <Button key="volumeUp" isIcon variant="text" onClick={action('Voice clicked!')}>
+        <Button key="volumeUp" isIcon ariaLabel="Read response aloud" variant="text" onClick={action('Voice clicked!')}>
           <Icon name="volumeUp" />
         </Button>,
-        <Button key="contentCopy" isIcon variant="text" onClick={action('Copy clicked!')}>
+        <Button key="contentCopy" isIcon ariaLabel="Copy response" variant="text" onClick={action('Copy clicked!')}>
           <Icon name="contentCopy" />
         </Button>,
-        <Button key="thumbUp" isIcon variant="text" onClick={action('Like clicked!')}>
+        <Button key="thumbUp" isIcon ariaLabel="Like response" variant="text" onClick={action('Like clicked!')}>
           <Icon name="thumbUp" />
         </Button>,
-        <Button key="thumbDown" isIcon variant="text" onClick={action('Dislike clicked!')}>
+        <Button key="thumbDown" isIcon ariaLabel="Dislike response" variant="text" onClick={action('Dislike clicked!')}>
           <Icon name="thumbDown" />
         </Button>,
       ]}

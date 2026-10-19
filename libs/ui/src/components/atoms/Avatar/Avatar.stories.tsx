@@ -13,6 +13,7 @@ const meta: Meta<typeof Avatar> = {
   component: Avatar,
   args: {
     backgroundColor: 'bg.default',
+    alt: 'User avatar',
   },
   argTypes: {
     src: {

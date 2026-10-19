@@ -188,6 +188,7 @@ export const ContentCarousel = forwardRef<ContentCarouselRef, ContentCarouselPro
                 $active={index === activeIndex}
                 onClick={() => handleScrollTo(index, 'dot')}
                 data-active={index === activeIndex}
+                aria-label={`Go to item ${index + 1}`}
               />
             ))}
           </CarouselDotsStyled>
@@ -196,6 +197,7 @@ export const ContentCarousel = forwardRef<ContentCarouselRef, ContentCarouselPro
           <CarouselFooterControlsStyled theme={theme} data-testid={`${COMPONENT_NAME}-controls`}>
             <CarouselControlsButtonStyled
               theme={theme}
+              ariaLabel="Previous items"
               onClick={() => handleScrollPrev('control')}
               disabled={!canScrollPrev}
               data-testid={`${COMPONENT_NAME}-control-previous`}
@@ -205,6 +207,7 @@ export const ContentCarousel = forwardRef<ContentCarouselRef, ContentCarouselPro
 
             <CarouselControlsButtonStyled
               theme={theme}
+              ariaLabel="Next items"
               onClick={() => handleScrollNext('control')}
               disabled={!canScrollNext}
               data-testid={`${COMPONENT_NAME}-control-next`}

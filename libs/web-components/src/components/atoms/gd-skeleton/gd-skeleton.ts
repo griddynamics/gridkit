@@ -26,7 +26,12 @@ export class GdSkeleton extends LitElement {
   render() {
     const skeletonTokens = (this.theme.skeleton as typeof skeleton | undefined) ?? skeleton;
     const animationTokens = (this.theme.animations as typeof animations | undefined) ?? animations;
-    const tokens = resolveThemeTree(skeletonTokens, this.theme) as unknown as Record<string, CssBlock>;
+    // SkeletonStyled removes these keys before passing the remaining theme through
+    // tokensHandler. Keep that exact (slightly surprising) React resolution behavior:
+    // the stock skeleton background getter falls back and hexToRgba resolves it to black.
+    const tokenTheme = { ...this.theme };
+
+    const tokens = resolveThemeTree(skeletonTokens, tokenTheme) as unknown as Record<string, CssBlock>;
     const resolvedAnimations = resolveThemeTree(animationTokens, this.theme) as unknown as Record<string, CssBlock>;
     const themeFrames = this.animationName ? resolvedAnimations[this.animationName] : undefined;
     const animationCssName = themeFrames ? 'gd-skeleton-animation' : this.animationName;
@@ -57,7 +62,7 @@ export class GdSkeleton extends LitElement {
       sheet.replaceSync(cssText);
       this.shadowRoot.adoptedStyleSheets = [sheet];
     }
-    return html`<span class="skeleton" part="skeleton"><slot></slot></span>`;
+    return html`<span class="skeleton" part="skeleton"><slot>&nbsp;</slot></span>`;
   }
 }
 

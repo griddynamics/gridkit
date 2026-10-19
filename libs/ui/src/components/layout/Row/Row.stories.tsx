@@ -449,9 +449,9 @@ Decision rule and full rationale: <code>docs/webcomponents-migration/05-native-h
 const Template: StoryFn<typeof Row> = (args) => (
   <FlexContainer width="300px" height="100px" padding="10px" overflow="auto" styles={{ backgroundColor: '#f0f0f0' }}>
     <Row {...args} width="300px" height="300px" paddingTop="20px" paddingBottom="20px" display="inline-flex">
-      <div style={{ background: 'red', padding: '20px' }}>Item 1</div>
-      <div style={{ background: 'blue', padding: '20px' }}>Item 2</div>
-      <div style={{ background: 'green', padding: '20px' }}>Item 3</div>
+      <div style={{ background: '#991b1b', color: '#fff', padding: '20px' }}>Item 1</div>
+      <div style={{ background: '#1e40af', color: '#fff', padding: '20px' }}>Item 2</div>
+      <div style={{ background: '#166534', color: '#fff', padding: '20px' }}>Item 3</div>
     </Row>
   </FlexContainer>
 );

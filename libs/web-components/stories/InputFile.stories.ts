@@ -2,7 +2,10 @@ import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import type { GdInputFile } from '../src';
 import { defaultTokenViewer, element, observed } from './helpers';
 
-type Args = Pick<GdInputFile, 'accept' | 'capture' | 'multiple' | 'disabled' | 'isIcon' | 'buttonVariant'>;
+type Args = Pick<
+  GdInputFile,
+  'accept' | 'capture' | 'multiple' | 'disabled' | 'isIcon' | 'buttonVariant' | 'inputAriaLabel'
+>;
 const meta = {
   title: 'Atoms/InputFile',
   tags: ['autodocs'],
@@ -14,7 +17,15 @@ const meta = {
       },
     },
   },
-  args: { accept: '', capture: undefined, multiple: false, disabled: false, isIcon: false, buttonVariant: 'outlined' },
+  args: {
+    accept: '',
+    capture: undefined,
+    multiple: false,
+    disabled: false,
+    isIcon: false,
+    buttonVariant: 'outlined',
+    inputAriaLabel: 'Upload a file',
+  },
   argTypes: {
     accept: { description: 'Accepted file MIME types or extensions', control: 'text' },
     capture: {
@@ -30,6 +41,7 @@ const meta = {
       control: 'select',
       options: ['primary', 'secondary', 'outlined'],
     },
+    inputAriaLabel: { description: 'Accessible name for the native file input', control: 'text' },
   },
   render: (args: Args) => observed(element('gd-input-file', args), 'gd-change', { files: [] }),
 } satisfies Meta<Args>;

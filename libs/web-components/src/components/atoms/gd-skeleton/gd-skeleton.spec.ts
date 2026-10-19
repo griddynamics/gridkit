@@ -17,6 +17,7 @@ describe('gd-skeleton', () => {
     expect(getComputedStyle(skeleton).animationName).toBe('gd-skeleton-animation');
     expect(getComputedStyle(skeleton).animationDuration).toBe('2s');
     expect(getComputedStyle(skeleton).animationDelay).toBe('0.5s');
+    expect(getComputedStyle(skeleton).backgroundColor).toBe('rgba(0, 0, 0, 0.7)');
     expect(el.textContent).toBe('Loading Content...');
     el.remove();
   });
@@ -32,6 +33,7 @@ describe('gd-skeleton', () => {
 
     const skeleton = el.shadowRoot!.querySelector<HTMLElement>('[part="skeleton"]')!;
     expect(getComputedStyle(skeleton).width).toBe('320px');
+    expect(skeleton.getBoundingClientRect().height).toBeGreaterThan(0);
     container.remove();
   });
 

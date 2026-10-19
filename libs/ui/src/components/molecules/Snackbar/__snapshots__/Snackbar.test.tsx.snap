@@ -10,9 +10,10 @@ exports[`Snackbar > SHOULD render the snackbar with correct message and title 1`
     id="test"
     role="alert"
   >
-    <div
+    <button
       aria-label="Close notification"
       class="css-1w2w6ve"
+      type="button"
     >
       <svg
         class="css-1u8qly9"
@@ -29,7 +30,7 @@ exports[`Snackbar > SHOULD render the snackbar with correct message and title 1`
           fill="var(--gd-icon-fill)"
         />
       </svg>
-    </div>
+    </button>
     <div
       class="css-1846zv8"
     >

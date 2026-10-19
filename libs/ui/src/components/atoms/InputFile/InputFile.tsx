@@ -35,6 +35,7 @@ export const InputFile = forwardRef<HTMLDivElement, InputFileProps>(
     const { theme } = useTheme();
     const logger = useLogger();
     const inputRef = useRef<HTMLInputElement>(null);
+    const inputAriaLabel = rest['aria-label'] ?? (typeof children === 'string' ? children : undefined);
 
     useImperativeHandle(forwardedRef, () => inputRef.current as HTMLInputElement);
 
@@ -73,6 +74,7 @@ export const InputFile = forwardRef<HTMLDivElement, InputFileProps>(
           multiple={multiple}
           disabled={disabled}
           onChange={handleChange}
+          aria-label={inputAriaLabel}
           {...rest}
         />
       </InputFileWrapperStyled>

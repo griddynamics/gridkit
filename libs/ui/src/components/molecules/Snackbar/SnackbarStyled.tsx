@@ -52,7 +52,7 @@ export const CloseButtonWrapperStyled = (props: SnackbarCommonStyledProps) => {
   const { boxStyles, restProps: restNotStyledProps } = getBoxStyles(restProps as BoxStyles);
   const themeSnackbar = new Proxy(snackbar || {}, tokensHandler(rest));
   const computedStyles = [get(themeSnackbar, 'closeButton', {}), boxStyles, styles];
-  return <div css={computedStyles} {...restNotStyledProps} />;
+  return <button type="button" css={computedStyles} {...restNotStyledProps} />;
 };
 
 export const CloseButtonIconStyled = (props: SnackbarIconProps) => {

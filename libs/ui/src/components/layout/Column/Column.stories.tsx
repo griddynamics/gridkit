@@ -455,9 +455,9 @@ const Template: StoryFn<typeof Column> = (args) => (
       isReversed={false}
       isWrap={false}
     >
-      <div style={{ background: 'red', padding: '20px' }}>Item 1</div>
-      <div style={{ background: 'blue', padding: '20px' }}>Item 2</div>
-      <div style={{ background: 'green', padding: '20px' }}>Item 3</div>
+      <div style={{ background: '#991b1b', color: '#fff', padding: '20px' }}>Item 1</div>
+      <div style={{ background: '#1e40af', color: '#fff', padding: '20px' }}>Item 2</div>
+      <div style={{ background: '#166534', color: '#fff', padding: '20px' }}>Item 3</div>
     </Column>
   </FlexContainer>
 );

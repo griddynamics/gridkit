@@ -14,7 +14,7 @@ type Args = BoxStoryArgs & {
 
 function item(label: string, background: string) {
   const child = document.createElement('div');
-  child.style.cssText = `background:${background};padding:20px`;
+  child.style.cssText = `background:${background};color:#fff;padding:20px`;
   child.textContent = label;
   return child;
 }
@@ -60,7 +60,7 @@ const meta = {
       isReversed: false,
       isWrap: false,
     } as Partial<GdColumn>);
-    column.append(item('Item 1', 'red'), item('Item 2', 'blue'), item('Item 3', 'green'));
+    column.append(item('Item 1', '#991b1b'), item('Item 2', '#1e40af'), item('Item 3', '#166534'));
     container.append(column);
     return container;
   },

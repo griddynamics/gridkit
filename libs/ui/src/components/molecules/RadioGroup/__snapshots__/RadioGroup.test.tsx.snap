@@ -24,6 +24,7 @@ exports[`RadioGroup > SHOULD match snapshot 1`] = `
           >
             <input
               aria-checked="false"
+              aria-label="Option 1"
               class="css-1s90lkc"
               data-testid="RadioGroupItem-input-opt1"
               name="radio-group-snapshot"
@@ -31,7 +32,7 @@ exports[`RadioGroup > SHOULD match snapshot 1`] = `
               value="opt1"
             />
             <label
-              class="css-i89cgy"
+              class="css-lc4p9h"
             >
               Option 1
             </label>
@@ -44,6 +45,7 @@ exports[`RadioGroup > SHOULD match snapshot 1`] = `
           <input
             aria-checked="false"
             aria-disabled="true"
+            aria-label="Option 2"
             class="css-1s90lkc"
             data-testid="RadioGroupItem-input-opt2"
             disabled=""
@@ -52,7 +54,7 @@ exports[`RadioGroup > SHOULD match snapshot 1`] = `
             value="opt2"
           />
           <label
-            class="css-1gi1fij"
+            class="css-s92p5e"
           >
             Option 2
           </label>
@@ -63,6 +65,7 @@ exports[`RadioGroup > SHOULD match snapshot 1`] = `
         >
           <input
             aria-checked="false"
+            aria-label="Option 3"
             class="css-1s90lkc"
             data-testid="RadioGroupItem-input-opt3"
             name="radio-group-snapshot"
@@ -70,7 +73,7 @@ exports[`RadioGroup > SHOULD match snapshot 1`] = `
             value="opt3"
           />
           <label
-            class="css-i89cgy"
+            class="css-lc4p9h"
           >
             Option 3
           </label>
@@ -81,6 +84,7 @@ exports[`RadioGroup > SHOULD match snapshot 1`] = `
         >
           <input
             aria-checked="false"
+            aria-label="Option 4"
             class="css-1s90lkc"
             data-testid="RadioGroupItem-input-opt4"
             name="radio-group-snapshot"
@@ -88,7 +92,7 @@ exports[`RadioGroup > SHOULD match snapshot 1`] = `
             value="opt4"
           />
           <label
-            class="css-i89cgy"
+            class="css-lc4p9h"
           >
             Option 4
           </label>

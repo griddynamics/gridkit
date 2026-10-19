@@ -7,34 +7,38 @@ import { SkeletonVariant, type BoxStyles } from '@types';
 
 import type { SkeletonPropsStyled } from './';
 
-export const SkeletonStyled = forwardRef<HTMLSpanElement, SkeletonPropsStyled>((props, forwardedRef) => {
-  const {
-    theme: { skeleton, animations, colors, ...rest } = {},
-    $variant = SkeletonVariant.Rounded,
-    styles = {},
-    $animationName = 'blinkKeyframes',
-    $animationProps = '1s ease-in-out infinite',
-    $backgroundColor,
-    ...restProps
-  } = props;
+export const SkeletonStyled = forwardRef<HTMLSpanElement, SkeletonPropsStyled>(
+  (
+    {
+      theme: { skeleton, animations, colors, ...rest } = {},
+      $variant = SkeletonVariant.Rounded,
+      styles = {},
+      $animationName = 'blinkKeyframes',
+      $animationProps = '1s ease-in-out infinite',
+      $backgroundColor,
+      ...restProps
+    },
+    forwardedRef
+  ) => {
+    const { boxStyles, restProps: restNotStyledProps } = getBoxStyles(restProps as BoxStyles);
+    const themeSkeleton = new Proxy(skeleton || {}, tokensHandler({ ...rest, colors }));
+    const animationKeyframeName = get(animations, $animationName ?? '', null);
+    const animationName = animationKeyframeName ? convertJsonToCssKeyframeCss(animationKeyframeName) : $animationName;
 
-  const { boxStyles, restProps: restNotStyledProps } = getBoxStyles(restProps as BoxStyles);
-  const themeSkeleton = new Proxy(skeleton || {}, tokensHandler(rest));
-  const animationKeyframeName = get(animations, $animationName ?? '', null);
-  const animationName = animationKeyframeName ? convertJsonToCssKeyframeCss(animationKeyframeName) : $animationName;
+    const animation = {
+      animation: `${animationName} ${$animationProps}`,
+    };
+    const backgroundColor = $backgroundColor ? { backgroundColor: resolveThemeColor(colors, $backgroundColor) } : {};
 
-  const animation = {
-    animation: `${animationName} ${$animationProps}`,
-  };
-  const backgroundColor = $backgroundColor ? { backgroundColor: resolveThemeColor(colors, $backgroundColor) } : {};
+    const computedStyles = [
+      get(themeSkeleton, 'default', {}),
+      get(themeSkeleton, $variant, {}),
+      backgroundColor,
+      boxStyles,
+      animationName ? animation : {},
+      styles,
+    ];
 
-  const computedStyles = [
-    get(themeSkeleton, 'default', {}),
-    get(themeSkeleton, $variant, {}),
-    backgroundColor,
-    boxStyles,
-    animationName ? animation : {},
-    styles,
-  ];
-  return <span css={computedStyles} {...restNotStyledProps} ref={forwardedRef} />;
-});
+    return <span css={computedStyles} {...restNotStyledProps} ref={forwardedRef} />;
+  }
+);

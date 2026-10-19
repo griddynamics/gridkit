@@ -15,8 +15,6 @@ const COMMON_ARGS = {
   width: 150,
   height: 150,
   className: 'custom-class',
-  placeholder: 'Loading...',
-  caption: 'Test Caption',
 };
 
 const createStory = ({ name, args = {} }: { name: string; args?: ImageProps }): StoryObj<typeof Image> => ({
@@ -345,11 +343,6 @@ export const WithAccessibility: Story = createStory({
 WithAccessibility.parameters = {
   a11y: {
     test: 'error',
-    options: {
-      rules: {
-        'color-contrast': { enabled: false },
-      },
-    },
   },
   docs: {
     disable: true,

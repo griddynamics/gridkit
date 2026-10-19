@@ -294,7 +294,7 @@ export const ChartBase = forwardRef<HTMLDivElement, ChartBaseProps>((props, forw
       ref={forwardedRef}
       styles={styles}
       data-testid={COMPONENT_NAME}
-      role="img"
+      role={legend.interactive ? 'group' : 'img'}
       aria-label={title || `${variant} chart`}
       {...rest}
     >
