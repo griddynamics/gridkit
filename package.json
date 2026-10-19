@@ -18,6 +18,8 @@
     "test:form-configurator": "nx run-many --target=test --projects=form-configurator-core,form-configurator-adapter-react --coverage --watch=false",
     "type-check": "nx run-many --target=typecheck --projects=ui",
     "type-check:web-components": "tsc -p libs/web-components/tsconfig.lib.json --noEmit && tsc -p libs/web-components/tsconfig.harness.json",
+    "check:story-parity": "node bin/storybook/check-story-parity.mjs",
+    "check:story-parity:browser": "node bin/storybook/check-story-parity.mjs --browser",
     "build:web-components": "npm run type-check:web-components && nx lint web-components && nx build web-components",
     "measure:web-components-size": "npm run build:web-components && node libs/web-components/scripts/measure-bundle-size.mjs --json",
     "check:web-components-ssr": "node libs/web-components/scripts/run-ssr-dsd-check.mjs",
