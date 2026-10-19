@@ -245,19 +245,15 @@ const SidebarContent = (
   </Column>
 );
 
-const SidebarMinifiedContent = (handlers?: {
-  onNewChatClick?: () => void;
-  onHistoryClick?: () => void;
-  onEditClick?: () => void;
-}) => (
+const SidebarMinifiedContent = () => (
   <Column gap="16px" padding="16px 8px">
-    <Button isIcon variant="text" onClick={handlers?.onNewChatClick || action('New Chat clicked')}>
+    <Button isIcon variant="text" onClick={action('New Chat clicked')}>
       <Icon name="plus" />
     </Button>
-    <Button isIcon variant="text" onClick={handlers?.onHistoryClick || action('History clicked')}>
+    <Button isIcon variant="text" onClick={action('History clicked')}>
       <Icon name="chat" />
     </Button>
-    <Button isIcon variant="text" onClick={handlers?.onEditClick || action('Edit clicked')}>
+    <Button isIcon variant="text" onClick={action('Edit clicked')}>
       <Icon name="edit" />
     </Button>
   </Column>
@@ -270,33 +266,22 @@ const HeaderContent = (
   </Row>
 );
 
-const MainContent = (handlers?: {
-  onVolumeClick?: () => void;
-  onCopyClick?: () => void;
-  onThumbUpClick?: () => void;
-  onThumbDownClick?: () => void;
-  onRetryClick?: () => void;
-}) => (
+const MainContent = () => (
   <>
     <ChatBubble>Hi! Can you help me generate an SVG icon from some code?</ChatBubble>
     <ChatBubble
       variant="answer"
       actions={[
-        <Button key="volumeUp" isIcon variant="text" onClick={handlers?.onVolumeClick || action('Voice clicked!')}>
+        <Button key="volumeUp" isIcon variant="text" onClick={action('Voice clicked!')}>
           <Icon name="volumeUp" />
         </Button>,
-        <Button key="contentCopy" isIcon variant="text" onClick={handlers?.onCopyClick || action('Copy clicked!')}>
+        <Button key="contentCopy" isIcon variant="text" onClick={action('Copy clicked!')}>
           <Icon name="contentCopy" />
         </Button>,
-        <Button key="thumbUp" isIcon variant="text" onClick={handlers?.onThumbUpClick || action('Like clicked!')}>
+        <Button key="thumbUp" isIcon variant="text" onClick={action('Like clicked!')}>
           <Icon name="thumbUp" />
         </Button>,
-        <Button
-          key="thumbDown"
-          isIcon
-          variant="text"
-          onClick={handlers?.onThumbDownClick || action('Dislike clicked!')}
-        >
+        <Button key="thumbDown" isIcon variant="text" onClick={action('Dislike clicked!')}>
           <Icon name="thumbDown" />
         </Button>,
       ]}
@@ -314,7 +299,7 @@ const MainContent = (handlers?: {
       onClose={null}
       width="100%"
       action={
-        <Button variant="tertiary" onClick={handlers?.onRetryClick || action('Action clicked')}>
+        <Button variant="tertiary" onClick={action('Action clicked')}>
           Retry
         </Button>
       }
@@ -330,32 +315,14 @@ export const Default: StoryFn = (args: any) => {
       onToggleSidebar={args.onToggleSidebar}
       sidebarHeaderContent={SidebarHeaderContent}
       sidebarContent={SidebarContent}
-      sidebarMinifiedContent={SidebarMinifiedContent({
-        onNewChatClick: args.onNewChatClick,
-        onHistoryClick: args.onHistoryClick,
-        onEditClick: args.onEditClick,
-      })}
+      sidebarMinifiedContent={SidebarMinifiedContent()}
       headerContent={HeaderContent}
     >
-      {MainContent({
-        onVolumeClick: args.onVolumeClick,
-        onCopyClick: args.onCopyClick,
-        onThumbUpClick: args.onThumbUpClick,
-        onThumbDownClick: args.onThumbDownClick,
-        onRetryClick: args.onRetryClick,
-      })}
+      {MainContent()}
     </ChatContainer>
   );
 };
 Default.args = {
-  onVolumeClick: fn(action('Voice clicked!')),
-  onCopyClick: fn(action('Copy clicked!')),
-  onThumbUpClick: fn(action('Like clicked!')),
-  onThumbDownClick: fn(action('Dislike clicked!')),
-  onRetryClick: fn(action('Retry clicked!')),
-  onNewChatClick: fn(action('New Chat clicked!')),
-  onHistoryClick: fn(action('History clicked!')),
-  onEditClick: fn(action('Edit clicked!')),
   onToggleSidebar: fn((isOpen: boolean) => action('Sidebar toggled')(isOpen)),
 };
 Default.parameters = {
@@ -428,13 +395,7 @@ export const MinimalLayoutWithRefControl: StoryFn = (args: any) => {
 
   return (
     <ChatContainer {...args} ref={ref} sidebarContent={SidebarContent}>
-      {MainContent({
-        onVolumeClick: args.onVolumeClick,
-        onCopyClick: args.onCopyClick,
-        onThumbUpClick: args.onThumbUpClick,
-        onThumbDownClick: args.onThumbDownClick,
-        onRetryClick: args.onRetryClick,
-      })}
+      {MainContent()}
       <Button variant="outlined" onClick={toggleSidebar}>
         Toggle Sidebar Programmatically
       </Button>
@@ -498,11 +459,7 @@ export const InteractiveDemo: StoryFn = (args: any) => {
       onToggleSidebar={handleToggle}
       sidebarHeaderContent={SidebarHeaderContent}
       sidebarContent={SidebarContent}
-      sidebarMinifiedContent={SidebarMinifiedContent({
-        onNewChatClick: args.onNewChatClick,
-        onHistoryClick: args.onHistoryClick,
-        onEditClick: args.onEditClick,
-      })}
+      sidebarMinifiedContent={SidebarMinifiedContent()}
       showSidebarHeaderControl={false}
       headerContent={
         <Row gap="16px">
@@ -542,26 +499,12 @@ export const InteractiveDemo: StoryFn = (args: any) => {
         </Row>
       }
     >
-      {MainContent({
-        onVolumeClick: args.onVolumeClick,
-        onCopyClick: args.onCopyClick,
-        onThumbUpClick: args.onThumbUpClick,
-        onThumbDownClick: args.onThumbDownClick,
-        onRetryClick: args.onRetryClick,
-      })}
+      {MainContent()}
     </ChatContainer>
   );
 };
 InteractiveDemo.args = {
   onToggleSidebar: fn((isOpen: boolean) => action('Sidebar toggled')(isOpen)),
-  onNewChatClick: fn(action('New Chat clicked!')),
-  onHistoryClick: fn(action('History clicked!')),
-  onEditClick: fn(action('Edit clicked!')),
-  onVolumeClick: fn(action('Voice clicked!')),
-  onCopyClick: fn(action('Copy clicked!')),
-  onThumbUpClick: fn(action('Like clicked!')),
-  onThumbDownClick: fn(action('Dislike clicked!')),
-  onRetryClick: fn(action('Retry clicked!')),
 };
 InteractiveDemo.storyName = 'Interactive Demo';
 InteractiveDemo.parameters = {
@@ -571,8 +514,8 @@ InteractiveDemo.parameters = {
   Interactive example demonstrating controlled usage with onToggleSidebar. It shows:
   <br/>
   <ul>
-  <li>Programmatic control via ref methods (<code>open()</code>, <code>close()</code>, <code>toggle()</code>)</li>
-  <li>Controlled state via <code>isOpen</code> with <code>onToggleSidebar</code> sync</li>
+  <li>Programmatic control via ref methods (\`open()\`, \`close()\`, \`toggle()\`)</li>
+  <li>Controlled state via \`isOpen\` with \`onToggleSidebar\` sync</li>
   <li>Header actions to toggle/open/close the sidebar</li>
   <li>Minified rail visible when the sidebar is closed</li>
   </ul>

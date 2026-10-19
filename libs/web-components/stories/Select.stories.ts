@@ -26,7 +26,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Select matching React single/multiple selection, adornments, custom initiator, refs, custom identifiers, validation colors, search, disabled/empty states, and accessibility.',
+          'Select with single and multiple selection, adornments, a custom initiator, imperative methods, custom identifiers, validation colors, search, disabled and empty states, and accessibility.',
       },
     },
   },
@@ -57,21 +57,11 @@ const meta = {
 export default meta;
 type Story = StoryObj<Args>;
 export const Default: Story = {};
-export const Selected: Story = { args: { value: items[1] } };
 export const Disabled: Story = { args: { disabled: true, value: items[0] } };
-export const Empty: Story = { args: { items: [] } };
-export const Multiple: Story = { args: { multiple: true, value: [items[0], items[2]] } };
+const Empty: Story = { args: { items: [] } };
+const Multiple: Story = { args: { multiple: true, value: [items[0], items[2]] } };
 export const Searchable: Story = { args: { searchable: true } };
-export const AutoOpen: Story = { args: { autoOpen: false }, name: 'Manual open (autoOpen=false)' };
-export const ValidationColors: Story = {
-  render: (args) => {
-    const section = document.createElement('section');
-    section.style.cssText = 'display:grid;gap:16px;width:280px';
-    for (const color of colors) section.append(element('gd-select', { ...args, color, value: items[0] }));
-    return section;
-  },
-};
-export const WithAdornments: Story = {
+const WithAdornments: Story = {
   render: (args) => {
     const select = element('gd-select', args);
     const start = document.createElement('span');
@@ -84,7 +74,7 @@ export const WithAdornments: Story = {
     return select;
   },
 };
-export const CustomInitiator: Story = {
+const CustomInitiator: Story = {
   render: (args) => {
     const select = element('gd-select', args);
     const initiator = document.createElement('span');

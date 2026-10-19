@@ -14,6 +14,8 @@ import {
 const MONOSPACE_VARIANTS: ReadonlySet<TypographyVariantName> = new Set(['code', 'kbd']);
 
 interface ResolvedTypographyStyle {
+  boxSizing?: string;
+  margin?: string | number;
   fontFamily: string | number;
   fontSize?: string | number;
   fontWeight?: string | number;
@@ -21,8 +23,8 @@ interface ResolvedTypographyStyle {
   fontStyle?: string;
   textTransform?: string;
   textDecoration?: string;
-  marginTop?: string;
-  marginBottom?: string;
+  marginTop?: string | number;
+  marginBottom?: string | number;
 }
 
 type TypographySize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
@@ -58,7 +60,12 @@ function resolveTypographyTokens(
   const resolved = resolveThemeTree(typography, theme) as unknown as Record<string, Record<string, unknown>>;
   const variantStyles = resolved[variant] ?? resolved.span;
   const sizeStyles = variant === 'div' ? ((variantStyles[size] as Record<string, unknown> | undefined) ?? {}) : {};
-  const style: Record<string, unknown> = { fontFamily: resolved.base.fontFamily, ...variantStyles, ...sizeStyles };
+  const style: Record<string, unknown> = {
+    fontFamily: resolved.base.fontFamily,
+    ...(resolved.webComponent?.default ?? {}),
+    ...variantStyles,
+    ...sizeStyles,
+  };
   // `div` is a map of size blocks. Do not leak those nested objects into CSS.
   for (const key of ['xs', 'sm', 'md', 'lg', 'xl', 'xxl']) delete style[key];
 
@@ -134,10 +141,14 @@ export class GdTypography extends LitElement {
 
   render() {
     const resolved = resolveTypographyTokens(this.theme, this.variant, this.size, this.styleVariant);
-    const semanticTag = this.as ?? (this.variant as keyof HTMLElementTagNameMap);
+    // Preserve the React `$as || $variant || 'span'` behavior without mutating a
+    // reactive property during Lit's update cycle.
+    const semanticTag = this.as ?? this.variant;
     const tag = GdTypography.TAG_MAP[semanticTag] ?? literal`span`;
 
     const style = {
+      ...(resolved.boxSizing ? { boxSizing: resolved.boxSizing } : {}),
+      ...(resolved.margin !== undefined ? { margin: resolved.margin } : {}),
       fontFamily: `${resolved.fontFamily}`,
       ...(resolved.fontSize !== undefined ? { fontSize: `${resolved.fontSize}` } : {}),
       ...(resolved.fontWeight !== undefined ? { fontWeight: `${resolved.fontWeight}` } : {}),

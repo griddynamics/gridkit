@@ -36,6 +36,16 @@ describe('Storybook custom-element source', () => {
     icon.textContent = '→';
     button.prepend(icon);
 
-    expect(source(button)).toContain('<span slot="icon-start">→</span>Continue');
+    expect(source(button)).toContain('  <span slot="icon-start">→</span>\n  Continue');
+  });
+
+  it('formats nested custom elements once instead of duplicating them as roots', () => {
+    const column = element('gd-column', { gutter: 8 });
+    column.append(element('gd-typography', { variant: 'p' }, 'Readable source'));
+    const generated = source(column);
+
+    expect(generated).toContain('<gd-column');
+    expect(generated).toContain('  <gd-typography>Readable source</gd-typography>');
+    expect(generated.match(/<gd-typography/g)).toHaveLength(1);
   });
 });

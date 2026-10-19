@@ -42,7 +42,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Typography matching React semantic overrides, combined style variants, disclaimer, display, heading, body, color, alignment, and accessibility states.',
+          'Typography with semantic element overrides, combined style variants, disclaimer, display, heading, body, color, alignment, and accessibility options.',
       },
     },
   },
@@ -68,9 +68,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<Args>;
 export const Default: Story = {};
-export const Heading1: Story = { args: { variant: 'h1', as: 'h1', text: 'Heading 1' } };
-export const Heading2: Story = { args: { variant: 'h2', as: 'h2', text: 'Heading 2' } };
-export const AllVariants: Story = {
+const AllVariants: Story = {
   render: (args) => {
     const section = document.createElement('section');
     section.style.cssText = 'display:grid;gap:8px';
@@ -79,7 +77,7 @@ export const AllVariants: Story = {
     return section;
   },
 };
-export const DisplaySizes: Story = {
+const DisplaySizes: Story = {
   render: (args) => {
     const section = document.createElement('section');
     for (const size of ['xl', 'lg', 'md', 'sm', 'xs'] as const)
@@ -87,7 +85,7 @@ export const DisplaySizes: Story = {
     return section;
   },
 };
-export const StyleVariants: Story = {
+const StyleVariants: Story = {
   render: (args) => {
     const section = document.createElement('section');
     section.style.cssText = 'display:grid;gap:8px';
@@ -105,19 +103,10 @@ export const StyleVariants: Story = {
     return section;
   },
 };
-export const SemanticOverride: Story = {
+const SemanticOverride: Story = {
   args: { variant: 'h2', as: 'h3', text: 'H2 appearance rendered as an H3' },
 };
-export const CodeAndKeyboard: Story = {
-  render: (args) => {
-    const section = document.createElement('section');
-    section.style.cssText = 'display:grid;gap:12px';
-    section.append(element('gd-typography', { ...args, variant: 'code', as: 'code' }, 'const gridkit = true;'));
-    section.append(element('gd-typography', { ...args, variant: 'kbd', as: 'kbd' }, '⌘ + K'));
-    return section;
-  },
-};
-export const CaptionAndHeader: Story = {
+const CaptionAndHeader: Story = {
   render: (args) => {
     const section = document.createElement('section');
     section.append(element('gd-typography', { ...args, variant: 'caption', as: 'span' }, 'Caption text'));

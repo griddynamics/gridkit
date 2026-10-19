@@ -1,7 +1,14 @@
 import { LitElement, html, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { loader, animations } from 'gd-design-library/tokens';
-import { buttonCssBlockToText, get, resolveThemeTree, type ButtonCssBlock, type DesignCoreTheme } from 'gd-design-core';
+import {
+  buttonCssBlockToText,
+  cssKeyframesToText,
+  get,
+  resolveThemeTree,
+  type ButtonCssBlock,
+  type DesignCoreTheme,
+} from 'gd-design-core';
 
 type LoaderName = 'circle' | 'dots';
 type LoaderVariant = 'inline' | 'section' | 'fullPage';
@@ -14,7 +21,7 @@ export class GdLoader extends LitElement {
   @property({ type: String, reflect: true }) variant: LoaderVariant = 'inline';
   @property({ type: String, reflect: true }) size: LoaderSize = 'md';
   @property({ type: String, reflect: true }) rounded = 'none';
-  @property({ type: String, attribute: 'animation-props' }) animationProps = '1000ms ease-in-out infinite';
+  @property({ type: String, attribute: 'animation-props' }) animationProps = '2000ms ease-in-out infinite';
   @property({ type: Boolean, attribute: 'with-wrapper' }) withWrapper = true;
   @property({ attribute: false }) styles: CssBlock = {};
   @property({ attribute: false }) theme: DesignCoreTheme = {};
@@ -26,11 +33,13 @@ export class GdLoader extends LitElement {
   }
 
   render() {
-    const tokens = resolveThemeTree(loader, this.theme) as unknown as Record<string, CssBlock> & {
+    const loaderTokens = (this.theme.loader as typeof loader | undefined) ?? loader;
+    const animationTokens = (this.theme.animations as typeof animations | undefined) ?? animations;
+    const tokens = resolveThemeTree(loaderTokens, this.theme) as unknown as Record<string, CssBlock> & {
       circle: Record<string, CssBlock>;
       dots: Record<string, CssBlock>;
     };
-    const resolvedAnimations = resolveThemeTree(animations, this.theme) as unknown as Record<string, CssBlock>;
+    const resolvedAnimations = resolveThemeTree(animationTokens, this.theme) as unknown as Record<string, CssBlock>;
     const animationName = this.name === 'circle' ? 'spinKeyframes' : 'bounceKeyframes';
     const frames = resolvedAnimations[animationName];
     const radius = get(this.theme, `radius.${this.rounded}`, '0px');
@@ -46,7 +55,10 @@ export class GdLoader extends LitElement {
         ? buttonCssBlockToText('.dot', { borderRadius: radius, animation: `gd-loader-bounce ${this.animationProps}` })
         : '',
       buttonCssBlockToText('.loader', this.styles),
-      buttonCssBlockToText(`@keyframes gd-loader-${this.name === 'circle' ? 'spin' : 'bounce'}`, frames),
+      cssKeyframesToText(
+        `gd-loader-${this.name === 'circle' ? 'spin' : 'bounce'}`,
+        frames as unknown as Record<string, CssBlock>
+      ),
     ].join('\n');
     const root = this.shadowRoot;
     if (root && typeof CSSStyleSheet !== 'undefined') {

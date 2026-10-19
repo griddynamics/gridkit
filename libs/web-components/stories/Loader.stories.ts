@@ -10,7 +10,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Loading indicator matching React Loader circle/dots animations, five sizes, rounding, inline/section/full-page wrappers, custom animation timing, custom content, styles, and status accessibility.',
+          'Loading indicator with circle and dots animations, five sizes, rounding, inline, section, and full-page wrappers, custom animation timing, custom content, styles, and status accessibility.',
       },
     },
   },

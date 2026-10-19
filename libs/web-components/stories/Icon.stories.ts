@@ -12,13 +12,13 @@ const meta = {
     docs: {
       description: {
         component:
-          'The same built-in SVG icon catalog used by React Icon. Supports theme sizes, exact dimensions, path and SVG fills, native click events, and accessible names.',
+          'Built-in SVG icon catalog with theme sizes, exact dimensions, path and SVG fills, native click events, and accessible names.',
       },
     },
   },
   args: { name: 'star', size: 'md', fill: 'currentColor' },
   argTypes: {
-    name: { description: 'Icon name from the shared React/Web Components catalog', control: 'select', options: names },
+    name: { description: 'Icon name from the built-in catalog', control: 'select', options: names },
     size: {
       description: 'Theme size applied to width and height',
       control: 'select',
@@ -51,7 +51,7 @@ export const RegisteringCustomIcons: Story = {
     docs: {
       description: {
         story:
-          'Built-in icons use the shared catalog. Application-specific SVGs should be registered in that catalog generator so React and Web Components retain one source.',
+          'Built-in icons use the shared catalog. Register application-specific SVGs in the catalog generator to keep a single source of truth.',
       },
     },
   },

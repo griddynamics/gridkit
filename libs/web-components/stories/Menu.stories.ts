@@ -11,7 +11,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Menu matching React close-on-select, placement, imperative controls, offsets, height constraints, positioning, modal actions, and native popover behavior.',
+          'Menu with close-on-select behavior, placement options, imperative controls, offsets, height constraints, positioning, modal actions, and native popover behavior.',
       },
     },
   },
@@ -51,8 +51,8 @@ const meta = {
 export default meta;
 type Story = StoryObj<Args>;
 export const Default: Story = {};
-export const Open: Story = { args: { open: true } };
-export const KeepOpenOnSelect: Story = { args: { closeOnSelect: false } };
+const Open: Story = { args: { open: true } };
+const KeepOpenOnSelect: Story = { args: { closeOnSelect: false } };
 export const Placement: Story = {
   render: (args) => {
     const grid = document.createElement('div');

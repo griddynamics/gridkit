@@ -13,7 +13,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Native anchor matching React Link variants, sizes, underline modes, colors, cursor, disabled behavior, targets, relationships, custom styles, accessibility, and child composition.',
+          'Native anchor with variants, sizes, underline modes, colors, cursor options, disabled behavior, targets, relationships, custom styles, accessibility, and child composition.',
       },
     },
   },
@@ -76,7 +76,7 @@ export const InheritWithTypographyAsChild: Story = {
 export const InheritWithTailwind: Story = {
   args: { variant: 'inherit', styles: { fontWeight: 700, textTransform: 'uppercase' } },
   parameters: {
-    docs: { description: { story: 'Framework-neutral style properties reproduce the React utility-class example.' } },
+    docs: { description: { story: 'Style properties customize the inherited link presentation.' } },
   },
 };
 export const CustomStyles: Story = { args: { styles: { color: '#7b2cbf', letterSpacing: '0.08em' } } };

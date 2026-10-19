@@ -236,6 +236,70 @@ const App = {
           h('gd-wrapper', { variant: 'inline', theme: defaultTheme }, 'Inline content'),
           h('gd-wrapper', { variant: 'section', as: 'section', theme: defaultTheme }, 'Section content'),
         ]),
+        section('Layout — Column / Row / FlexContainer', [
+          h('gd-column', { width: '180px', gutter: 8, align: 'center', isWrap: false, theme: defaultTheme }, [
+            h('span', 'Column one'),
+            h('span', 'Column two'),
+          ]),
+          h('gd-row', { width: '240px', gutter: 8, justify: 'between', isReversed: true, theme: defaultTheme }, [
+            h('span', 'Row one'),
+            h('span', 'Row two'),
+          ]),
+          h(
+            'gd-flex-container',
+            {
+              gap: '8px',
+              flexDirection: 'row',
+              styles: { padding: '8px', backgroundColor: '#f0f4f8' },
+              theme: defaultTheme,
+            },
+            [h('span', 'Flex one'), h('span', 'Flex two')]
+          ),
+        ]),
+        section('ChatContainer — slots / event / imperative state', [
+          h(
+            'gd-chat-container',
+            {
+              style: 'width:520px;height:220px',
+              theme: defaultTheme,
+              onGdToggleSidebar: (event: CustomEvent<{ open: boolean }>) =>
+                console.log('Chat sidebar open:', event.detail.open),
+            },
+            [
+              h('strong', { slot: 'sidebar-header' }, 'History'),
+              h('span', { slot: 'sidebar' }, 'Vue sidebar'),
+              h('span', { slot: 'sidebar-minified' }, 'Compact'),
+              h('strong', { slot: 'header' }, 'Assistant'),
+              h('span', 'Vue chat content'),
+            ]
+          ),
+        ]),
+        section('Portal — direct body target / wrapper options', [
+          h(
+            'gd-portal',
+            {
+              container: document.body,
+              withWrapper: false,
+              blocksScroll: false,
+              WrapperView: 'main',
+              theme: defaultTheme,
+            },
+            [h('span', 'Vue portal content')]
+          ),
+        ]),
+        section('Scroll — vertical / horizontal / auto-hide', [
+          h(
+            'gd-scroll',
+            {
+              vertical: 'visible',
+              horizontal: 'auto',
+              autoHide: true,
+              styles: { width: '180px', height: '120px', border: '1px solid #a0aec0' },
+              theme: defaultTheme,
+            },
+            [h('div', { style: 'width:360px;height:240px' }, 'Vue scroll content')]
+          ),
+        ]),
       ]);
   },
 };

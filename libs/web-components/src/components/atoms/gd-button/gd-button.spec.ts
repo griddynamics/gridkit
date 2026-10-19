@@ -57,6 +57,29 @@ describe('gd-button', () => {
     expect(parts).toEqual(expect.arrayContaining(['button', 'content']));
   });
 
+  it('composes the shared loader for loading state instead of owning spinner markup or animation', async () => {
+    const el = add('primary');
+    (el as unknown as { isLoading: boolean }).isLoading = true;
+    await settle(el);
+
+    const inner = el.shadowRoot!.querySelector('button')!;
+    const loader = el.shadowRoot!.querySelector('gd-loader') as HTMLElement & {
+      size: string;
+      withWrapper: boolean;
+      updateComplete: Promise<unknown>;
+    };
+    expect(inner.disabled).toBe(true);
+    expect(inner.getAttribute('aria-busy')).toBe('true');
+    expect(loader).not.toBeNull();
+    expect(loader.getAttribute('part')).toContain('spinner');
+    expect(loader.size).toBe('sm');
+    expect(loader.withWrapper).toBe(false);
+    await loader.updateComplete;
+    const loaderSurface = loader.shadowRoot!.querySelector<HTMLElement>('[part="loader"]')!;
+    expect(getComputedStyle(loaderSurface).animationName).toBe('gd-loader-spin');
+    expect(el.shadowRoot!.querySelector('.spinner')).toBeNull();
+  });
+
   it('mutes text and background when disabled, via real CSS :disabled matching', async () => {
     const el = add('primary');
     (el as unknown as { disabled: boolean }).disabled = true;

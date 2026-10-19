@@ -10,7 +10,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Layout container matching React Box orientation, border, hover highlight, shadow, accessibility, and custom style behavior.',
+          'Layout container with configurable orientation, border, hover highlight, shadow, accessibility, and custom styles.',
       },
     },
   },
@@ -18,8 +18,8 @@ const meta = {
   argTypes: {
     variant: { description: 'Box orientation variant', control: 'select', options: ['vertical', 'horizontal'] },
     isBordered: { description: 'Adds a border to the box', control: 'boolean' },
-    isHighlighted: { description: 'Adds the React hover outline treatment', control: 'boolean' },
-    withShadowHover: { description: 'Adds the React elevation shadow on hover', control: 'boolean' },
+    isHighlighted: { description: 'Adds a hover outline treatment', control: 'boolean' },
+    withShadowHover: { description: 'Adds an elevation shadow on hover', control: 'boolean' },
   },
   render: (args: Args) => element('gd-box', args, 'Box content'),
 } satisfies Meta<Args>;

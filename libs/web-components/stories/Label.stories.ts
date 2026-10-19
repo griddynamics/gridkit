@@ -10,7 +10,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Native label matching React Label content, child icons, custom styles, control association, and accessibility semantics.',
+          'Native label with text or slotted content, child icons, custom styles, control association, and accessibility semantics.',
       },
     },
   },
@@ -35,7 +35,7 @@ export const CustomStyles: Story = { args: { styles: { color: '#0069b4', fontWei
 export const DefaultWithTailwind: Story = {
   args: { styles: { fontSize: '18px', color: '#1f843a' } },
   parameters: {
-    docs: { description: { story: 'Framework-neutral style properties reproduce the React utility-class example.' } },
+    docs: { description: { story: 'Style properties customize the label presentation.' } },
   },
 };
 export const WithAccessibility: Story = {

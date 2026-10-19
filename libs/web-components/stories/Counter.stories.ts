@@ -10,7 +10,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Counter matching React minimum, maximum, initial value, external change handling, disabled state, and accessible native controls.',
+          'Counter with minimum, maximum, and initial values, external change handling, a disabled state, and accessible native controls.',
       },
     },
   },
@@ -20,11 +20,8 @@ const meta = {
 export default meta;
 type Story = StoryObj<Args>;
 export const Default: Story = {};
-export const AtMaximum: Story = { args: { initial: 5 } };
 export const Disabled: Story = { args: { isDisabled: true } };
-export const AdjustedMaximum: Story = { args: { max: 10, initial: 8 } };
-export const AdjustedMinimum: Story = { args: { min: 3, initial: 3 } };
-export const CustomRange: Story = { args: { min: 2, max: 10, initial: 5 } };
+const CustomRange: Story = { args: { min: 2, max: 10, initial: 5 } };
 export const AdjustedMaxValue5: Story = { args: { max: 5, initial: 5 } };
 export const AdjustedMinValue3: Story = { args: { min: 3, initial: 3 } };
 export const AdjustedMin2MaxValue10: Story = CustomRange;

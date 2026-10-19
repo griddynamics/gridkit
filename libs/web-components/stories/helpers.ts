@@ -30,6 +30,11 @@ const sourceKeyProperties: Partial<Record<Tag, readonly string[]>> = {
   'gd-typography': ['variant', 'as', 'size', 'align'],
   'gd-counter': ['min', 'max', 'initial'],
   'gd-menu': ['placement', 'closeOnSelect'],
+  'gd-column': ['as', 'align', 'justify', 'gutter', 'isWrap', 'isReversed'],
+  'gd-flex-container': ['flexDirection', 'justifyContent', 'gap'],
+  'gd-portal': ['wrapperVariant', 'withWrapper', 'blocksScroll', 'WrapperView'],
+  'gd-row': ['as', 'align', 'justify', 'gutter', 'isWrap', 'isReversed'],
+  'gd-scroll': ['vertical', 'horizontal', 'autoHide'],
 };
 
 const sourceEvents: Partial<Record<Tag, readonly string[]>> = {
@@ -64,14 +69,51 @@ function equivalent(left: unknown, right: unknown) {
   return false;
 }
 
-function lightDom(node: Element) {
-  return Array.from(node.childNodes)
+function formattedAttributes(attributes: Map<string, string>, indent: number) {
+  const values = [...attributes].map(([name, value]) => (value === '' ? name : `${name}="${escapeHtml(value)}"`));
+  if (!values.length) return '';
+  if (values.length <= 2 && values.join(' ').length <= 72) return ` ${values.join(' ')}`;
+  const spacing = '  '.repeat(indent + 1);
+  return `\n${values.map((value) => `${spacing}${value}`).join('\n')}\n${'  '.repeat(indent)}`;
+}
+
+function formattedElement(node: Element, rootAttributes?: Map<string, string>, indent = 0): string {
+  const spacing = '  '.repeat(indent);
+  const attributes =
+    rootAttributes ?? new Map(Array.from(node.attributes).map(({ name, value }) => [name, value] as const));
+  const opening = `${spacing}<${node.localName}${formattedAttributes(attributes, indent)}>`;
+  const children = Array.from(node.childNodes).filter(
+    (child) => child.nodeType !== Node.TEXT_NODE || Boolean(child.textContent?.trim())
+  );
+  if (!children.length) return `${opening}</${node.localName}>`;
+  if (children.every((child) => child.nodeType === Node.TEXT_NODE)) {
+    return `${opening}${escapeHtml(
+      children
+        .map((child) => child.textContent ?? '')
+        .join('')
+        .trim()
+    )}</${node.localName}>`;
+  }
+  const content = children
     .map((child) => {
-      if (child.nodeType === Node.TEXT_NODE) return escapeHtml(child.textContent ?? '');
-      return child instanceof Element ? child.outerHTML : '';
+      if (child.nodeType === Node.TEXT_NODE)
+        return `${'  '.repeat(indent + 1)}${escapeHtml(child.textContent?.trim() ?? '')}`;
+      if (child.nodeType === Node.COMMENT_NODE)
+        return `${'  '.repeat(indent + 1)}<!--${child.textContent?.trim() ?? ''}-->`;
+      return child instanceof Element ? formattedElement(child, undefined, indent + 1) : '';
     })
-    .join('')
-    .trim();
+    .filter(Boolean)
+    .join('\n');
+  return `${opening}\n${content}\n${spacing}</${node.localName}>`;
+}
+
+function isNestedCustomElement(node: Element, canvas: HTMLElement) {
+  let parent = node.parentElement;
+  while (parent && parent !== canvas) {
+    if (parent.localName.startsWith('gd-')) return true;
+    parent = parent.parentElement;
+  }
+  return false;
 }
 
 /** Produce consumer-ready source from the custom elements rendered by a story.
@@ -114,11 +156,7 @@ export function storySource(canvas: HTMLElement | undefined, fallback: string) {
         } else attributes.set(attribute, String(value));
       } else if (typeof value !== 'function' && value !== undefined) assignments.push([property, value]);
     }
-    const attributeText = [...attributes]
-      .map(([name, value]) => (value === '' ? name : `${name}="${escapeHtml(value)}"`))
-      .join(' ');
-    const content = lightDom(node);
-    markup.push(`<${tag}${attributeText ? ` ${attributeText}` : ''}>${content}</${tag}>`);
+    if (!isNestedCustomElement(node, canvas)) markup.push(formattedElement(node, attributes));
 
     const variable = nodes.length === 1 ? 'component' : `component${index + 1}`;
     const sameTagIndex = nodes.slice(0, index).filter((candidate) => candidate.localName === tag).length;
@@ -136,9 +174,10 @@ export function storySource(canvas: HTMLElement | undefined, fallback: string) {
     setup.push('');
   });
 
-  return `${markup.join('\n\n')}\n\n<script type="module">\n${setup
-    .map((line) => (line ? `  ${line}` : ''))
-    .join('\n')}\n</script>`;
+  const formattedSetup = setup.flatMap((line) =>
+    line ? line.split('\n').map((nestedLine) => `  ${nestedLine}`) : ['']
+  );
+  return `${markup.join('\n\n')}\n\n<script type="module">\n${formattedSetup.join('\n')}\n</script>`;
 }
 
 /** Use the same property-based theme contract as application consumers. */

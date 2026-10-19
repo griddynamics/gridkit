@@ -44,7 +44,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Input matching React labels, helper text, validation colors, disabled/read-only states, adornments, styles, checkbox/radio modes, accessibility, and native events.',
+          'Input with labels, helper text, validation colors, disabled and read-only states, adornments, custom styles, checkbox and radio modes, accessibility, and native events.',
       },
     },
   },
@@ -75,19 +75,9 @@ const meta = {
 } satisfies Meta<Args>;
 export default meta;
 type Story = StoryObj<Args>;
-export const Default: Story = {};
-export const Empty: Story = { args: { value: '' } };
+const Default: Story = {};
 export const Disabled: Story = { args: { disabled: true } };
 export const ReadOnly: Story = { args: { readOnly: true } };
-export const ValidationColors: Story = {
-  render: (args) => {
-    const section = document.createElement('section');
-    section.style.cssText = 'display:grid;gap:20px;max-width:360px';
-    for (const color of colors)
-      section.append(element('gd-input', { ...args, color, label: color, helperText: `${color} helper text` }));
-    return section;
-  },
-};
 export const WithAdornments: Story = {
   render: (args) => {
     const input = element('gd-input', args);
@@ -101,7 +91,7 @@ export const WithAdornments: Story = {
     return input;
   },
 };
-export const InputTypes: Story = {
+const InputTypes: Story = {
   render: (args) => {
     const section = document.createElement('section');
     section.style.cssText = 'display:grid;gap:16px;max-width:360px';
@@ -118,7 +108,7 @@ export const WrapperAsSpan: Story = {
   ...Default,
   parameters: {
     docs: {
-      description: { story: 'The Custom Element host is stable; internal layout provides the React wrapper behavior.' },
+      description: { story: 'The stable custom-element host uses an internal span for inline layout.' },
     },
   },
 };

@@ -72,7 +72,8 @@ for (const [group, names] of [
   ['molecules', ['counter', 'menu']],
 ]) {
   for (const name of names) {
-    for (const variant of ['docs', 'default']) {
+    const primaryStory = name === 'input' ? 'primary-default-with-label-and-helper-text' : 'default';
+    for (const variant of ['docs', primaryStory]) {
       const id = `${group}-${name}--${variant}`;
       if (!indexes.webComponents.entries[id]) errors.push(`Missing native Web Components entry: ${id}`);
     }

@@ -3,6 +3,7 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { image } from 'gd-design-library/tokens';
 import { resolveThemeTree, type DesignCoreTheme } from 'gd-design-core';
+import '../gd-skeleton/gd-skeleton';
 
 export type ImageObjectFit = 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
 type CssValues = Record<string, string | number>;
@@ -20,6 +21,7 @@ export class GdImage extends LitElement {
 
   @state() private _loading = true;
   @state() private _failed = false;
+  @state() private _hasPlaceholder = false;
 
   protected willUpdate(changed: Map<PropertyKey, unknown>) {
     if (changed.has('src')) {
@@ -40,6 +42,10 @@ export class GdImage extends LitElement {
     this.dispatchEvent(new CustomEvent('gd-error', { bubbles: true, composed: true }));
   }
 
+  private _placeholderChanged(event: Event) {
+    this._hasPlaceholder = (event.target as HTMLSlotElement).assignedNodes({ flatten: true }).length > 0;
+  }
+
   render() {
     const tokens = resolveThemeTree(image, this.theme) as unknown as Record<string, CssValues>;
     const wrapper = {
@@ -54,10 +60,15 @@ export class GdImage extends LitElement {
       ...this.styles,
     };
     const showFallback = !this.src || this._failed;
+    const showPlaceholder = this._loading && Boolean(this.src) && this._hasPlaceholder;
     return html`<figure part="root" style=${styleMap(wrapper)}>
-      ${this._loading && this.src
-        ? html`<span part="placeholder" style=${styleMap(tokens.placeholder)}><slot name="placeholder"></slot></span>`
-        : nothing}
+      <span
+        part="placeholder"
+        aria-hidden=${showPlaceholder ? nothing : 'true'}
+        style=${styleMap({ ...tokens.placeholder, display: showPlaceholder ? tokens.placeholder.display : 'none' })}
+        ><gd-skeleton height="100%" .theme=${this.theme}
+          ><slot name="placeholder" @slotchange=${this._placeholderChanged}></slot></gd-skeleton
+      ></span>
       ${showFallback
         ? html`<slot name="fallback"></slot>`
         : html`<img

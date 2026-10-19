@@ -1,6 +1,7 @@
 import { LitElement, html, css, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { button } from 'gd-design-library/tokens';
+import '../gd-loader/gd-loader';
 import {
   resolveButtonRadius,
   buttonCssBlockToText,
@@ -23,6 +24,19 @@ export type ButtonType = 'button' | 'submit' | 'reset';
 /** Mirrors `libs/ui/src/types/button.ts`'s `ButtonRole` string values. */
 export type ButtonRoleName = 'button' | 'link' | 'checkbox' | 'switch' | 'tab';
 
+type ButtonLoaderAttrs = {
+  name?: 'circle' | 'dots';
+  variant?: 'inline' | 'section' | 'fullPage';
+  rounded?: string;
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  animationProps?: string;
+  withWrapper?: boolean;
+};
+
+type ResolvedButtonTokenTree = ButtonTokenTree & {
+  loader?: { attrs?: ButtonLoaderAttrs };
+};
+
 /**
  * Button port — DOM structure, class names, and CSS-composition layering mirror
  * `ButtonStyled.tsx` directly:
@@ -32,7 +46,7 @@ export type ButtonRoleName = 'button' | 'link' | 'checkbox' | 'switch' | 'tab';
  *   <StartIconStyled>{iconStart}</StartIconStyled>    -->     <span class="gd-button__icon-start">
  *   <ContentStyled>{children}</ContentStyled>         -->     <span class="gd-button__content">
  *   <EndIconStyled>{iconEnd}</EndIconStyled>          -->     <span class="gd-button__icon-end">
- *   {isLoading && <Loader/>}                          -->     <span class="spinner">
+ *   {isLoading && <Loader/>}                          -->     <gd-loader>
  * ```
  *
  * Each of the three child spans is only rendered when its slot actually has assigned content
@@ -71,7 +85,7 @@ export type ButtonRoleName = 'button' | 'link' | 'checkbox' | 'switch' | 'tab';
  * since a CSS `transition` only animates an element's OWN computed-style changes — a child span
  * whose `color` merely inherits the button's animated color still needs its own `transition`
  * declaration to animate in step. Truly static, non-token structural CSS (`display`, `cursor`
- * mechanics, the loading-spinner keyframes) stays in Lit's normal shared `static styles`, since
+ * mechanics) stays in Lit's normal shared `static styles`, since
  * it never varies per instance or theme.
  *
  * The focus ring matches the real component's actual mechanism — `getFocusStyles` in
@@ -166,20 +180,6 @@ export class GdButton extends LitElement {
        :focus-visible outline so it isn't ALSO visible as a second, redundant ring. */
     button:focus-visible {
       outline: none;
-    }
-    .spinner {
-      display: inline-block;
-      width: 14px;
-      height: 14px;
-      border: 2px solid currentColor;
-      border-right-color: transparent;
-      border-radius: 9999px;
-      animation: gd-button-spin 0.6s linear infinite;
-    }
-    @keyframes gd-button-spin {
-      to {
-        transform: rotate(360deg);
-      }
     }
   `;
 
@@ -296,7 +296,7 @@ export class GdButton extends LitElement {
    * the child spans too (see the class doc above for why a shared `transition` value needs
    * restating per element, not just on `button`).
    */
-  private _buildCssText(tokens: ButtonTokenTree, radius: string): string {
+  private _buildCssText(tokens: ResolvedButtonTokenTree, radius: string): string {
     const variantTokens = tokens[this.variant] ?? tokens.primary;
 
     return [
@@ -320,8 +320,9 @@ export class GdButton extends LitElement {
   }
 
   render() {
-    const resolvedTree = resolveThemeTree(button, this.theme) as unknown as ButtonTokenTree;
-    const tokens: ButtonTokenTree = {
+    const buttonTokens = (this.theme.button as typeof button | undefined) ?? button;
+    const resolvedTree = resolveThemeTree(buttonTokens, this.theme) as unknown as ResolvedButtonTokenTree;
+    const tokens: ResolvedButtonTokenTree = {
       ...resolvedTree,
       default: {
         ...resolvedTree.default,
@@ -331,6 +332,7 @@ export class GdButton extends LitElement {
     };
     const radius = resolveButtonRadius(this.theme, this.rounded);
     const isDisabled = this.disabled || this.isLoading;
+    const loaderAttrs = tokens.loader?.attrs ?? { withWrapper: false, size: 'sm' };
 
     const cssText = this._buildCssText(tokens, radius);
     // `shadowRoot` is null during server-side rendering (@lit-labs/ssr calls render() without ever
@@ -382,7 +384,19 @@ export class GdButton extends LitElement {
               ><slot name="icon-end" @slotchange=${this._onSlotChange}></slot
             ></span>`
           : html`<slot name="icon-end" @slotchange=${this._onSlotChange}></slot>`}
-        ${this.isLoading ? html`<span class="spinner" part="spinner" aria-hidden="true"></span>` : nothing}
+        ${this.isLoading
+          ? html`<gd-loader
+              part="spinner loader"
+              aria-hidden="true"
+              .name=${loaderAttrs.name ?? 'circle'}
+              .variant=${loaderAttrs.variant ?? 'inline'}
+              .rounded=${loaderAttrs.rounded ?? 'none'}
+              .size=${loaderAttrs.size ?? 'sm'}
+              .animationProps=${loaderAttrs.animationProps ?? '2000ms ease-in-out infinite'}
+              .withWrapper=${loaderAttrs.withWrapper ?? false}
+              .theme=${this.theme}
+            ></gd-loader>`
+          : nothing}
       </button>
     `;
   }

@@ -10,7 +10,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Status badge matching React Badge variants, appearances, sizes, disabled state, icon positions, and Box style overrides.',
+          'Status badge with configurable variants, appearances, sizes, disabled state, icon positions, and Box style overrides.',
       },
     },
   },

@@ -9,8 +9,7 @@ const meta = {
   parameters: {
     docs: {
       description: {
-        component:
-          'Avatar matching the React image, fallback initials or icon, badge, color, size, and accessibility states.',
+        component: 'Avatar with image, fallback initials or icon, badge, color, size, and accessibility states.',
       },
     },
   },
@@ -33,11 +32,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<Args>;
 export const Default: Story = {};
-export const Image: Story = { args: { src: portrait } };
-export const Badge: Story = { args: { withBadge: true, size: 'xl' } };
-export const Small: Story = { args: { size: 'sm' } };
-export const Large: Story = { args: { size: 'lg' } };
-export const AllSizes: Story = {
+const AllSizes: Story = {
   render: (args) => {
     const row = document.createElement('div');
     row.style.cssText = 'display:flex;gap:16px;align-items:center';
@@ -46,8 +41,7 @@ export const AllSizes: Story = {
     return row;
   },
 };
-export const CustomColors: Story = { args: { withBadge: true, backgroundColor: '#6b46c1', badgeColor: '#22c55e' } };
-export const SlottedFallback: Story = {
+const SlottedFallback: Story = {
   render: () => {
     const avatar = element('gd-avatar', { alt: 'Custom fallback', size: 'sm' });
     const fallback = document.createElement('span');

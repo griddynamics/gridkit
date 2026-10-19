@@ -5,15 +5,23 @@ export async function checkNativeStories(page, base) {
   const index = await (await page.request.get(`${base}/web-components/index.json`)).json();
   const stories = Object.values(index.entries).filter(
     (entry) =>
-      entry.type === 'story' && /^(Atoms|Molecules)\//.test(entry.title) && !entry.id.endsWith('--default-tokens')
+      entry.type === 'story' &&
+      (/^(Atoms|Molecules)\//.test(entry.title) || entry.title.startsWith('Layout & Structure/')) &&
+      !entry.id.endsWith('--default-tokens')
   );
   const names = new Set();
-  const tags = { inputfile: 'input-file', sliderdots: 'slider-dots' };
+  const tags = {
+    chatcontainer: 'chat-container',
+    flexcontainer: 'flex-container',
+    inputfile: 'input-file',
+    sliderdots: 'slider-dots',
+  };
   for (const story of stories) {
     const name = story.title.split('/')[1].toLowerCase();
     names.add(name);
     await page.goto(`${base}/web-components/iframe.html?id=${story.id}&viewMode=story`);
     const tag = `gd-${tags[name] ?? name}`;
+    if (name === 'portal') await page.getByText('Show Portal', { exact: true }).click();
     await page.locator(tag).first().waitFor({ state: 'attached' });
     await page.waitForFunction((tag) => {
       const el = document.querySelector(tag);
@@ -25,8 +33,11 @@ export async function checkNativeStories(page, base) {
     'badge',
     'box',
     'button',
+    'chatcontainer',
     'checkbox',
+    'column',
     'counter',
+    'flexcontainer',
     'icon',
     'image',
     'input',
@@ -35,6 +46,9 @@ export async function checkNativeStories(page, base) {
     'link',
     'loader',
     'menu',
+    'portal',
+    'row',
+    'scroll',
     'select',
     'separator',
     'skeleton',
@@ -61,7 +75,7 @@ export async function checkNativeStories(page, base) {
     await branch.click();
     assert.equal(await branch.getAttribute('aria-expanded'), 'false');
   }
-  assert.equal(tokenStories.length, 24, 'Every React token story port should render Web Component tokens');
+  assert.equal(tokenStories.length, 29, 'Every React token story port should render Web Component tokens');
   const open = async (id) => {
     await page.goto(`${base}/web-components/iframe.html?id=${id}&viewMode=story`);
     await page.locator('#storybook-root').waitFor();
@@ -71,10 +85,183 @@ export async function checkNativeStories(page, base) {
       .locator('output')
       .filter({ hasText: JSON.stringify(detail) })
       .waitFor();
-  await open('atoms-button--disabled');
+  await open('layout-structure-chatcontainer--interactive-demo');
+  const chatContainer = page.locator('gd-chat-container');
+  await page.waitForFunction(() => document.querySelector('gd-chat-container')?.isOpen === true);
+  await chatContainer.evaluate((element) => element.close());
+  assert.equal(await chatContainer.evaluate((element) => element.isOpen), false);
+  await chatContainer.evaluate((element) => element.open());
+  assert.equal(await chatContainer.evaluate((element) => element.isOpen), true);
+  const toggleEvent = chatContainer.evaluate(
+    (element) =>
+      new Promise((resolve) => {
+        element.addEventListener('gd-toggle-sidebar', (event) => resolve(event.detail), { once: true });
+        element.toggle();
+      })
+  );
+  assert.deepEqual(await toggleEvent, { open: false });
+  await open('layout-structure-column--default');
+  assert.equal(
+    await page
+      .locator('gd-column')
+      .first()
+      .evaluate((element) => getComputedStyle(element.shadowRoot.querySelector('[part="root"]')).flexDirection),
+    'column'
+  );
+  await open('layout-structure-row--default');
+  assert.equal(await page.locator('gd-row').evaluate((element) => element.getAttribute('display')), 'inline-flex');
+  await open('layout-structure-flexcontainer--default');
+  assert.equal(
+    await page
+      .locator('gd-flex-container')
+      .evaluate((element) => getComputedStyle(element.shadowRoot.querySelector('[part="root"]')).display),
+    'flex'
+  );
+  await open('layout-structure-portal--rendering-in-target');
+  await page.getByText('Show Portal', { exact: true }).click();
+  assert.equal(
+    await page
+      .locator('#custom-portal-container')
+      .getByText('This content is inside a portal, rendered within the green container.')
+      .count(),
+    1
+  );
+  assert.equal(await page.locator('gd-portal').evaluate((element) => element.portalRoot), null);
+  await open('layout-structure-portal--with-wrapper-as-tag-main');
+  await page.getByText('Show Portal', { exact: true }).click();
+  assert.equal(await page.locator('gd-portal').evaluate((element) => element.portalRoot?.tagName), 'MAIN');
+  assert.deepEqual(
+    await page
+      .locator('gd-portal')
+      .evaluate((element) => [...element.portalRoot.children].map((child) => child.tagName)),
+    ['GD-TYPOGRAPHY', 'GD-LINK'],
+    'Wrapped Portal stories should preserve the React child structure without an extra demo section'
+  );
+  await page.getByText('Hide', { exact: true }).click();
+  assert.equal(await page.locator('gd-portal').count(), 0);
+  await open('layout-structure-scroll--interactive-example');
+  const scroll = page.locator('gd-scroll');
+  await page.waitForFunction(() => {
+    const element = document.querySelector('gd-scroll');
+    return element?.shadowRoot?.querySelectorAll('[part~="scrollbar"]').length === 2;
+  });
+  assert.deepEqual(
+    await scroll.evaluate((element) => ({
+      host: [element.getBoundingClientRect().width, element.getBoundingClientRect().height],
+      client: [element.clientWidth, element.clientHeight],
+      extent: [element.scrollWidth, element.scrollHeight],
+      border: getComputedStyle(element).borderWidth,
+      bars: [
+        element.shadowRoot.querySelector('[part="scrollbars"]').getBoundingClientRect().width,
+        element.shadowRoot.querySelector('[part="scrollbars"]').getBoundingClientRect().height,
+      ],
+      verticalTrack: [
+        element.shadowRoot.querySelector('[part~="vertical-scrollbar"]').getBoundingClientRect().width,
+        element.shadowRoot.querySelector('[part~="vertical-scrollbar"]').getBoundingClientRect().height,
+      ],
+      horizontalTrack: [
+        element.shadowRoot.querySelector('[part~="horizontal-scrollbar"]').getBoundingClientRect().width,
+        element.shadowRoot.querySelector('[part~="horizontal-scrollbar"]').getBoundingClientRect().height,
+      ],
+    })),
+    {
+      host: [300, 200],
+      client: [298, 198],
+      extent: [600, 700],
+      border: '1px',
+      bars: [297, 197],
+      verticalTrack: [8, 189],
+      horizontalTrack: [289, 8],
+    }
+  );
+  await scroll.hover();
+  await page.mouse.wheel(0, 80);
+  await page.waitForFunction(() => document.querySelector('gd-scroll').scrollTop > 0);
+  const wheelTop = await scroll.evaluate((element) => element.scrollTop);
+  await scroll.evaluate((element) => (element.tabIndex = 0));
+  await scroll.focus();
+  await page.keyboard.press('ArrowDown');
+  await page.waitForFunction((previousTop) => document.querySelector('gd-scroll').scrollTop > previousTop, wheelTop);
+  // Chromium animates the native keyboard scroll. Let it settle before checking an
+  // independent imperative scroll so the in-flight key action cannot overwrite it.
+  await page.waitForTimeout(350);
+  await scroll.evaluate((element) => element.scrollTo({ top: 100, left: 100 }));
+  await page.waitForFunction(() => {
+    const element = document.querySelector('gd-scroll');
+    return (
+      element.scrollTop === 100 &&
+      element.scrollLeft === 100 &&
+      Number.parseFloat(element.shadowRoot.querySelector('[part~="vertical-thumb"]').style.top) > 0 &&
+      Number.parseFloat(element.shadowRoot.querySelector('[part~="horizontal-thumb"]').style.left) > 0
+    );
+  });
+  await scroll.evaluate((element) => element.scrollTo({ top: 0, left: 0 }));
+  await page.waitForFunction(() => document.querySelector('gd-scroll').scrollTop === 0);
+  const verticalThumb = scroll.locator('[part~="vertical-thumb"]');
+  const verticalTrack = scroll.locator('[part~="vertical-scrollbar"]');
+  const [thumbBox, trackBox] = await Promise.all([verticalThumb.boundingBox(), verticalTrack.boundingBox()]);
+  assert.ok(thumbBox && trackBox, 'Scroll thumb and track should have browser geometry');
+  await page.mouse.move(thumbBox.x + thumbBox.width / 2, thumbBox.y + thumbBox.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(trackBox.x + trackBox.width / 2, trackBox.y + trackBox.height - 2);
+  await page.mouse.up();
+  await page.waitForFunction(() => document.querySelector('gd-scroll').scrollTop > 100);
+  await open('layout-structure-scroll--vertical-scroll-only');
+  await page.waitForFunction(() => document.querySelector('gd-scroll')?.scrollHeight > 198);
+  assert.deepEqual(
+    await page.locator('gd-scroll').evaluate((element) => ({
+      extent: [element.scrollWidth, element.scrollHeight],
+      vertical: Boolean(element.shadowRoot.querySelector('[part~="vertical-scrollbar"]')),
+      horizontal: Boolean(element.shadowRoot.querySelector('[part~="horizontal-scrollbar"]')),
+    })),
+    { extent: [298, 500], vertical: true, horizontal: false }
+  );
+  await open('layout-structure-scroll--horizontal-scroll-only');
+  await page.waitForFunction(() => document.querySelector('gd-scroll')?.scrollWidth > 298);
+  assert.deepEqual(
+    await page.locator('gd-scroll').evaluate((element) => ({
+      extent: [element.scrollWidth, element.scrollHeight],
+      vertical: Boolean(element.shadowRoot.querySelector('[part~="vertical-scrollbar"]')),
+      horizontal: Boolean(element.shadowRoot.querySelector('[part~="horizontal-scrollbar"]')),
+    })),
+    { extent: [1020, 198], vertical: false, horizontal: true }
+  );
+  await open('layout-structure-scroll--auto-hide-scrollbars');
+  await page.waitForFunction(() =>
+    document.querySelector('gd-scroll')?.shadowRoot?.querySelector('[part~="vertical-scrollbar"]')
+  );
+  await page.mouse.move(0, 0);
+  const autoHideScrollbar = page.locator('gd-scroll').locator('[part~="vertical-scrollbar"]');
+  // The story's parity play function performs a keyboard scroll before finishing.
+  // Wait for that activity's auto-hide timer rather than assuming an untouched story.
+  await page.waitForFunction(
+    () =>
+      getComputedStyle(document.querySelector('gd-scroll').shadowRoot.querySelector('[part~="vertical-scrollbar"]'))
+        .opacity === '0'
+  );
+  assert.equal(await autoHideScrollbar.evaluate((element) => getComputedStyle(element).opacity), '0');
+  await page.locator('gd-scroll').evaluate((element) => element.scrollTo({ top: 40 }));
+  await page.waitForFunction(
+    () =>
+      getComputedStyle(document.querySelector('gd-scroll').shadowRoot.querySelector('[part~="vertical-scrollbar"]'))
+        .opacity === '0.2'
+  );
+  await page.waitForTimeout(1250);
+  assert.equal(await autoHideScrollbar.evaluate((element) => getComputedStyle(element).opacity), '0');
+  await open('layout-structure-scroll--auto-hide-vertical-only');
+  await page.waitForFunction(() => document.querySelector('gd-scroll')?.scrollHeight === 980);
+  assert.deepEqual(
+    await page.locator('gd-scroll').evaluate((element) => ({
+      extent: [element.scrollWidth, element.scrollHeight],
+      vertical: Boolean(element.shadowRoot.querySelector('[part~="vertical-scrollbar"]')),
+      horizontal: Boolean(element.shadowRoot.querySelector('[part~="horizontal-scrollbar"]')),
+    })),
+    { extent: [298, 980], vertical: true, horizontal: false }
+  );
+  await open('atoms-button--disabled-button');
   await page.getByRole('button', { name: 'Button', exact: true }).waitFor();
   assert.ok(await page.getByRole('button', { name: 'Button', exact: true }).isDisabled());
-  await open('atoms-input--default');
+  await open('atoms-input--primary-default-with-label-and-helper-text');
   await page.getByRole('textbox', { name: 'Label', exact: true }).fill('Updated value');
   await event({ value: 'Updated value' });
   await open('atoms-input--read-only');
@@ -95,7 +282,7 @@ export async function checkNativeStories(page, base) {
   await page.getByRole('option', { name: 'Beta' }).click();
   await event({ value: { name: 'Beta', value: 'b' } });
   await page.getByRole('listbox').waitFor({ state: 'hidden' });
-  await open('atoms-select--multiple');
+  await open('atoms-select--multiple-select');
   await page.getByRole('button', { name: 'Alpha, Gamma' }).click();
   await page.getByRole('option', { name: 'Beta' }).click();
   await event({
@@ -111,7 +298,7 @@ export async function checkNativeStories(page, base) {
   await page.getByRole('searchbox', { name: 'Search options' }).fill('bet');
   await page.getByRole('option', { name: 'Beta' }).waitFor();
   assert.equal(await page.getByRole('option', { name: 'Alpha' }).count(), 0);
-  await open('atoms-typography--all-variants');
+  await open('atoms-typography--heading');
   assert.equal(await page.locator('gd-typography').count(), 18);
   assert.deepEqual(
     await page
@@ -140,7 +327,7 @@ export async function checkNativeStories(page, base) {
       'sub',
     ]
   );
-  await open('atoms-typography--display-sizes');
+  await open('atoms-typography--display');
   const displayFontSizes = await page
     .locator('gd-typography')
     .evaluateAll((elements) =>
@@ -210,7 +397,7 @@ export async function checkNativeStories(page, base) {
   await page.getByRole('button', { name: 'Edit', exact: true }).waitFor();
   await page.getByRole('button', { name: 'Outside menu' }).click();
   await menuClosed();
-  await open('molecules-menu--keep-open-on-select');
+  await open('molecules-menu--close-on-select-false');
   await page.getByRole('button', { name: 'Actions', exact: true }).click();
   await page.getByRole('button', { name: 'Archive', exact: true }).click();
   await event({ data: { name: 'Archive', value: 'archive' }, value: 'archive' });

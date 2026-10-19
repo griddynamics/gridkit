@@ -10,7 +10,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'File picker matching React InputFile accept, capture, multiple, disabled, icon-label, button variant, custom styles, and accessibility behavior. Emits gd-change with serializable file metadata.',
+          'File picker with accept, capture, multiple, disabled, icon-label, button variant, custom styles, and accessibility options. Emits gd-change with serializable file metadata.',
       },
     },
   },

@@ -13,7 +13,7 @@ export const SkeletonStyled = forwardRef<HTMLSpanElement, SkeletonPropsStyled>((
     $variant = SkeletonVariant.Rounded,
     styles = {},
     $animationName = 'blinkKeyframes',
-    $animationProps,
+    $animationProps = '1s ease-in-out infinite',
     $backgroundColor,
     ...restProps
   } = props;

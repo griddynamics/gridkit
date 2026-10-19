@@ -17,7 +17,6 @@ const meta = {
       },
     },
   },
-  args: { width: '250px', height: '15px', variant: 'rounded', animationName: 'blinkKeyframes' },
   argTypes: {
     variant: {
       description: 'Controls the shape of the skeleton.',
@@ -40,6 +39,7 @@ export default meta;
 type Story = StoryObj<Args>;
 
 export const Default: Story = {
+  args: { width: '250px', height: '15px', variant: 'rounded' },
   parameters: { docs: { description: { story: 'The standard rounded skeleton for text-line placeholders.' } } },
 };
 export const Circular: Story = {
@@ -57,13 +57,39 @@ export const WithThemeColor: Story = {
 export const WithCustomAnimation: Story = {
   name: 'Animation with Tailwind Class',
   args: { width: '250px', height: '15px', animationName: null },
+  render: (args) => {
+    const wrapper = document.createElement('div');
+    const styles = document.createElement('style');
+    styles.textContent = `
+      @keyframes gd-story-skeleton-pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+      }
+      gd-skeleton.animate-pulse::part(skeleton) {
+        animation: gd-story-skeleton-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+    `;
+    const skeleton = element('gd-skeleton', args);
+    skeleton.className = 'animate-pulse';
+    wrapper.append(styles, skeleton);
+    return wrapper;
+  },
   parameters: {
-    docs: { description: { story: 'Disables the built-in animation so a consumer class can supply one.' } },
+    docs: {
+      description: {
+        story:
+          'Disables the built-in animation and applies the same animate-pulse behavior through the exposed skeleton CSS part.',
+      },
+    },
   },
 };
 export const WithChildren: Story = {
   name: 'Skeleton with Child Content',
-  render: (args) => element('gd-skeleton', { ...args, width: '250px', height: '50px' }, 'Loading Content...'),
+  render: (args) => {
+    const skeleton = element('gd-skeleton', { ...args, width: '250px', height: '50px' });
+    skeleton.append(element('gd-typography', { variant: 'body2' }, 'Loading Content...'));
+    return skeleton;
+  },
   parameters: {
     docs: { description: { story: 'The default slot preserves child content inside the animated wrapper.' } },
   },
@@ -72,18 +98,40 @@ export const ComposedLayout: Story = {
   name: 'Example: Article Placeholder',
   render: () => {
     const wrapper = document.createElement('div');
-    wrapper.style.cssText = 'display:grid;grid-template-columns:100px 1fr;gap:10px;max-width:480px';
-    wrapper.append(element('gd-skeleton', { variant: 'circular', width: '100px', height: '100px' }));
-    const lines = document.createElement('div');
-    lines.style.cssText = 'display:grid;gap:10px';
-    lines.append(element('gd-skeleton'), element('gd-skeleton'), element('gd-skeleton'));
-    wrapper.append(lines);
+    wrapper.style.cssText = 'max-width:480px;width:100%';
+
+    const column = element('gd-column', { gutter: 10 });
+    const header = element('gd-row', { gutter: 10, justify: 'between', align: 'center' });
+    const avatarColumn = element('gd-column');
+    avatarColumn.append(element('gd-skeleton', { variant: 'circular', styles: { width: '100px', height: '100px' } }));
+
+    const textColumn = element('gd-column', { flex: '1' });
+    for (const variant of ['h3', 'body1', 'body2'] as const) {
+      const typography = element('gd-typography', { variant, styles: { marginBottom: '10px' } });
+      typography.append(element('gd-skeleton'));
+      textColumn.append(typography);
+    }
+    header.append(avatarColumn, textColumn);
+    column.append(header);
+    wrapper.append(column);
+
+    const footer = element('gd-row', { gutter: 10, align: 'center', styles: { marginTop: '20px' } });
+    for (let index = 0; index < 3; index += 1) {
+      const typography = element('gd-typography', {
+        variant: 'body1',
+        styles: { width: '100%', ...(index === 2 ? { marginBottom: '10px' } : {}) },
+      });
+      typography.append(element('gd-skeleton'));
+      footer.append(typography);
+    }
+    wrapper.append(footer);
     return wrapper;
   },
   parameters: { docs: { description: { story: 'Composes multiple skeletons as an article or profile placeholder.' } } },
 };
 export const WithAccessibility: Story = {
-  args: { 'aria-label': 'Loading content' } as never,
+  ...Default,
+  args: { ...Default.args, 'aria-label': 'Loading content' } as never,
   parameters: { a11y: { test: 'error' }, docs: { disable: true } },
   tags: ['a11y'],
 };

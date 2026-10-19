@@ -7,6 +7,7 @@ export const scroll = {
     default: {
       position: 'relative',
       display: 'flex',
+      boxSizing: 'border-box',
       overflow: 'auto',
       isolation: 'isolate',
       maxBlockSize: '100%',
@@ -24,6 +25,9 @@ export const scroll = {
       flex: 1,
       flexBasis: 'auto',
       height: 'max-content',
+    },
+    horizontalHidden: {
+      maxWidth: '100%',
     },
   },
   scrollbars: {

@@ -25,7 +25,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Button matching React variants, icons, loading, width, rounding, disabled, custom styling, states, and accessibility.',
+          'Button with variants, icons, loading, width, rounding, disabled states, custom styling, and accessibility options.',
       },
     },
   },
@@ -52,10 +52,8 @@ const meta = {
 export default meta;
 type Story = StoryObj<Args>;
 export const Default: Story = {};
-export const Secondary: Story = { args: { variant: 'secondary' } };
-export const Outlined: Story = { args: { variant: 'outlined' } };
-export const Disabled: Story = { args: { disabled: true } };
-export const Loading: Story = { args: { isLoading: true } };
+const Disabled: Story = { args: { disabled: true } };
+const Loading: Story = { args: { isLoading: true } };
 export const AllVariants: Story = {
   render: (args) => {
     const row = document.createElement('div');
@@ -64,7 +62,7 @@ export const AllVariants: Story = {
     return row;
   },
 };
-export const Rounded: Story = {
+const Rounded: Story = {
   render: (args) => {
     const row = document.createElement('div');
     row.style.cssText = 'display:flex;gap:12px;flex-wrap:wrap';
@@ -72,9 +70,9 @@ export const Rounded: Story = {
     return row;
   },
 };
-export const FullWidth: Story = { args: { fullWidth: true, label: 'Full-width action' } };
+const FullWidth: Story = { args: { fullWidth: true, label: 'Full-width action' } };
 export const IconOnly: Story = { args: { isIcon: true, ariaLabel: 'Add item', label: '+' } };
-export const IconSlots: Story = {
+const IconSlots: Story = {
   render: (args) => {
     const button = element('gd-button', args, 'Continue');
     const icon = document.createElement('span');

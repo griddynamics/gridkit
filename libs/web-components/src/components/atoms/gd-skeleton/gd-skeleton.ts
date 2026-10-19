@@ -1,7 +1,13 @@
 import { LitElement, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { animations, resolveThemeColor, skeleton } from 'gd-design-library/tokens';
-import { buttonCssBlockToText, resolveThemeTree, type ButtonCssBlock, type DesignCoreTheme } from 'gd-design-core';
+import {
+  buttonCssBlockToText,
+  cssKeyframesToText,
+  resolveThemeTree,
+  type ButtonCssBlock,
+  type DesignCoreTheme,
+} from 'gd-design-core';
 
 type SkeletonVariant = 'rounded' | 'rectangular' | 'circular';
 type CssBlock = ButtonCssBlock;
@@ -18,8 +24,10 @@ export class GdSkeleton extends LitElement {
   @property({ attribute: false }) theme: DesignCoreTheme = {};
 
   render() {
-    const tokens = resolveThemeTree(skeleton, this.theme) as unknown as Record<string, CssBlock>;
-    const resolvedAnimations = resolveThemeTree(animations, this.theme) as unknown as Record<string, CssBlock>;
+    const skeletonTokens = (this.theme.skeleton as typeof skeleton | undefined) ?? skeleton;
+    const animationTokens = (this.theme.animations as typeof animations | undefined) ?? animations;
+    const tokens = resolveThemeTree(skeletonTokens, this.theme) as unknown as Record<string, CssBlock>;
+    const resolvedAnimations = resolveThemeTree(animationTokens, this.theme) as unknown as Record<string, CssBlock>;
     const themeFrames = this.animationName ? resolvedAnimations[this.animationName] : undefined;
     const animationCssName = themeFrames ? 'gd-skeleton-animation' : this.animationName;
     const dimensions: CssBlock = {
@@ -31,6 +39,7 @@ export class GdSkeleton extends LitElement {
       : undefined;
     const background: CssBlock = resolvedBackground ? { backgroundColor: resolvedBackground } : {};
     const cssText = [
+      buttonCssBlockToText(':host', { display: 'contents' }),
       buttonCssBlockToText('.skeleton', tokens.default),
       buttonCssBlockToText('.skeleton', tokens[this.variant]),
       buttonCssBlockToText('.skeleton', dimensions),
@@ -39,7 +48,9 @@ export class GdSkeleton extends LitElement {
         ? buttonCssBlockToText('.skeleton', { animation: `${animationCssName} ${this.animationProps}` })
         : '',
       buttonCssBlockToText('.skeleton', this.styles),
-      themeFrames ? buttonCssBlockToText('@keyframes gd-skeleton-animation', themeFrames) : '',
+      themeFrames
+        ? cssKeyframesToText('gd-skeleton-animation', themeFrames as unknown as Record<string, CssBlock>)
+        : '',
     ].join('\n');
     if (this.shadowRoot && typeof CSSStyleSheet !== 'undefined') {
       const sheet = new CSSStyleSheet();

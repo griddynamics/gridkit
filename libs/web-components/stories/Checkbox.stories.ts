@@ -10,7 +10,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Checkbox matching React controlled, indeterminate, disabled, size, native form, and change-event behavior.',
+          'Checkbox with controlled, indeterminate, disabled, and size states, plus native form and change-event behavior.',
       },
     },
   },
@@ -27,7 +27,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<Args>;
 export const Default: Story = {};
-export const Checked: Story = { args: { checked: true } };
+const Checked: Story = { args: { checked: true } };
 export const Indeterminate: Story = { args: { indeterminate: true } };
 export const Disabled: Story = { args: { checked: true, disabled: true } };
 export const Sizes: Story = {

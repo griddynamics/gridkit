@@ -10,7 +10,7 @@ const meta = {
     docs: {
       description: {
         component:
-          'Responsive image matching React Image loading, placeholder, fallback, caption, object-fit, click, load/error events, and accessibility behavior. Slots replace React node props; native figure/figcaption semantics replace polymorphic wrapper props.',
+          'Responsive image with loading, placeholder, fallback, caption, object-fit, click, load and error events, accessibility behavior, named slots, and native figure semantics.',
       },
     },
   },
@@ -77,7 +77,7 @@ export const WithCaptionAsProp: Story = {
   parameters: {
     docs: {
       description: {
-        story: 'The native port always uses figcaption, the semantic default of the React captionAs prop.',
+        story: 'The caption uses the semantic figcaption element.',
       },
     },
   },

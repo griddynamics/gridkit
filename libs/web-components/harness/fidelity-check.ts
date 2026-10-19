@@ -163,6 +163,37 @@ const componentMetadata = {
       <gd-wrapper variant="inline" [theme]="theme">Inline content</gd-wrapper>
       <gd-wrapper variant="section" as="section" [theme]="theme">Section content</gd-wrapper>
     </div></section>
+    <section><h3>Layout — Column / Row / FlexContainer</h3><div class="row">
+      <gd-column width="180px" gutter="8" align="center" [isWrap]="false" [theme]="theme">
+        <span>Column one</span><span>Column two</span>
+      </gd-column>
+      <gd-row width="240px" gutter="8" justify="between" [isReversed]="true" [theme]="theme">
+        <span>Row one</span><span>Row two</span>
+      </gd-row>
+      <gd-flex-container gap="8px" flex-direction="row" [styles]="layoutStyles" [theme]="theme">
+        <span>Flex one</span><span>Flex two</span>
+      </gd-flex-container>
+    </div></section>
+    <section><h3>ChatContainer — slots / event / imperative state</h3><div class="row">
+      <gd-chat-container style="width: 520px; height: 220px" [theme]="theme" (gd-toggle-sidebar)="onChatToggle($event)">
+        <strong slot="sidebar-header">History</strong>
+        <span slot="sidebar">Angular sidebar</span>
+        <span slot="sidebar-minified">Compact</span>
+        <strong slot="header">Assistant</strong>
+        <span>Angular chat content ({{ chatOpen ? 'open' : 'closed' }})</span>
+      </gd-chat-container>
+    </div></section>
+    <section><h3>Portal — custom target / wrapper options</h3><div class="row">
+      <div #portalTarget style="min-width:240px;padding:8px;border:1px dashed #728197">Angular portal target</div>
+      <gd-portal [container]="portalTarget" [withWrapper]="false" [blocksScroll]="false" [WrapperView]="'main'" [theme]="theme">
+        <span>Angular portal content</span>
+      </gd-portal>
+    </div></section>
+    <section><h3>Scroll — vertical / horizontal / auto-hide</h3><div class="row">
+      <gd-scroll vertical="visible" horizontal="auto" auto-hide [theme]="theme" [styles]="scrollStyles">
+        <div style="width: 360px; height: 240px">Angular scroll content</div>
+      </gd-scroll>
+    </div></section>
   `,
 };
 
@@ -174,6 +205,8 @@ class FidelityHarnessComponent {
     { name: 'Gamma', value: 'c' },
   ];
   readonly toggleItems = ['Option 1', 'Option 2', 'Option 3'];
+  readonly layoutStyles = { padding: '8px', backgroundColor: '#f0f4f8' };
+  readonly scrollStyles = { width: '180px', height: '120px', border: '1px solid #a0aec0' };
   readonly portrait =
     'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"%3E%3Crect width="64" height="64" fill="%2391b8d8"/%3E%3Ccircle cx="32" cy="24" r="13" fill="%23f1c7a5"/%3E%3Cpath d="M8 64c3-18 14-27 24-27s21 9 24 27" fill="%233e6184"/%3E%3C/svg%3E';
   inputValue = 'Default Input';
@@ -181,6 +214,11 @@ class FidelityHarnessComponent {
   selectedItem: Item | null = null;
   menuValue = 'None';
   counterValue = 1;
+  chatOpen = false;
+
+  onChatToggle(event: Event) {
+    this.chatOpen = (event as CustomEvent<{ open: boolean }>).detail.open;
+  }
 
   onInput(event: Event) {
     this.inputValue = (event as CustomEvent<{ value: string }>).detail.value;

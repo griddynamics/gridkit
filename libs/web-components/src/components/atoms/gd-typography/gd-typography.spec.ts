@@ -61,4 +61,10 @@ describe('gd-typography React parity', () => {
     const el = await mount({ variant: 'h2', as: 'h3' });
     expect(el.shadowRoot!.querySelector('h3')).toBeTruthy();
   });
+  it('applies the React reset inside the shadow root', async () => {
+    const el = await mount({ variant: 'p' });
+    const inner = el.shadowRoot!.querySelector<HTMLElement>('p')!;
+    expect(inner.style.boxSizing).toBe('border-box');
+    expect(inner.style.margin).toBe('0px');
+  });
 });
