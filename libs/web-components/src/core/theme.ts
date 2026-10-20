@@ -1,4 +1,4 @@
-import type { checkbox, typography } from 'gd-design-library/tokens';
+import type { CheckboxSizeKey, TypographyStyleVariantKey } from './token-names';
 
 /**
  * Structural subset of gd-design-library's theme shape, covering only the token groups the
@@ -16,7 +16,7 @@ export interface ThemeLike {
 }
 
 /** `checkbox.size` keys in `libs/ui/src/tokens/checkbox.ts` (mirrors React's `CheckboxSize`). */
-export type CheckboxSizeName = keyof typeof checkbox.size;
+export type CheckboxSizeName = CheckboxSizeKey;
 
 /** Colour scale shared by Input and Select (`primary` is the default border; see `input.ts` tokens). */
 export type InputColorVariantName = 'primary' | 'success' | 'warning' | 'error';
@@ -38,4 +38,4 @@ export type TypographyVariantName =
   | 'kbd';
 
 /** `typography.styleVariant` keys in `libs/ui/src/tokens/typography.ts`. */
-export type TypographyStyleVariantName = keyof typeof typography.styleVariant;
+export type TypographyStyleVariantName = TypographyStyleVariantKey;

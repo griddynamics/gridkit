@@ -111,7 +111,7 @@ export async function checkRenderedStoryParity(browser, reactBase, webBase, filt
     for (const target of Object.values(webIndex.entries).filter(
       (entry) =>
         entry.type === 'story' &&
-        /^(Atoms|Molecules)\//.test(entry.title) &&
+        /^Components\/(Atoms|Molecules)\//.test(entry.title) &&
         !entry.id.endsWith('--default-tokens') &&
         (!filter || entryMatches(entry, filter))
     )) {
@@ -156,12 +156,12 @@ export async function checkRenderedStoryParity(browser, reactBase, webBase, filt
         // Text equality cannot catch a checkbox rendered with text-field chrome.
         // Measure the painted controls, not the deliberately hidden Checkbox input.
         if (
-          /^atoms-input--(checkbox-with-label|radio.*with-label|primary-default-with-label-and-helper-text)$/.test(
+          /^components-atoms-input--(checkbox-with-label|radio.*with-label|primary-default-with-label-and-helper-text)$/.test(
             target.id
           ) ||
-          /^atoms-checkbox--(default|disabled|sizes|indeterminate)$/.test(target.id)
+          /^components-atoms-checkbox--(default|disabled|sizes|indeterminate)$/.test(target.id)
         ) {
-          const isCheckbox = target.id.startsWith('atoms-checkbox--');
+          const isCheckbox = target.id.startsWith('components-atoms-checkbox--');
           const geometry = await Promise.all(
             pages.map((page, index) =>
               page

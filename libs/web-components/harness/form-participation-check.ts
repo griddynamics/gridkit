@@ -14,10 +14,9 @@
  * never `evaluate_script` synthetic events: FINDINGS.md Section 6 documents a concrete false
  * negative from exactly that mistake.
  */
-import '../src/index';
-import { defaultTheme } from 'gd-design-library/tokens';
-import type { GdCheckbox } from '../src/components/atoms/gd-checkbox/gd-checkbox';
-import type { GdInput } from '../src/components/atoms/gd-input/gd-input';
+// Harness consumes the BUILT package (`nx build web-components`), exactly like an app would.
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { defaultTheme, type GdCheckbox, type GdInput } from '../../../dist/libs/web-components/index.js';
 
 const root = document.getElementById('root')!;
 

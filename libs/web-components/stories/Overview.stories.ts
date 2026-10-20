@@ -36,14 +36,13 @@ const meta = {
         </p>
 
         <h2>Install and register</h2>
-        <p>Install the component package and the GridKit design tokens in your application:</p>
-        <pre><code>npm install web-components gd-design-library</code></pre>
+        <p>Install the component package in your application. It is standalone: the GridKit design tokens and icons are bundled in, so you do not need to install <code>gd-design-library</code>.</p>
+        <pre><code>npm install web-components</code></pre>
         <p>
           Import the package once in your application entry point. The import registers every
-          <code>gd-*</code> custom element with the browser.
+          <code>gd-*</code> custom element with the browser and exposes the bundled <code>defaultTheme</code>.
         </p>
-        <pre><code>import 'web-components';
-import { defaultTheme } from 'gd-design-library/tokens';</code></pre>
+        <pre><code>import { defaultTheme } from 'web-components';</code></pre>
 
         <h2>How values and events work</h2>
         <ul>
@@ -78,7 +77,7 @@ import 'web-components';
 
 // app.component.ts
 import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { defaultTheme } from 'gd-design-library/tokens';
+import { defaultTheme } from 'web-components';
 
 @Component({
   selector: 'app-root',
@@ -127,7 +126,7 @@ import App from './App.vue';
 createApp(App).mount('#app');</code></pre>
         <pre><code>&lt;script setup lang="ts"&gt;
 import { ref } from 'vue';
-import { defaultTheme } from 'gd-design-library/tokens';
+import { defaultTheme } from 'web-components';
 
 const email = ref('');
 const accepted = ref(false);

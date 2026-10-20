@@ -1,11 +1,6 @@
-import '../src/components/atoms/gd-button/gd-button';
-import '../src/components/atoms/gd-avatar/gd-avatar';
-import '../src/components/atoms/gd-checkbox/gd-checkbox';
-import '../src/components/atoms/gd-input/gd-input';
-import '../src/components/atoms/gd-select/gd-select';
-import '../src/components/atoms/gd-typography/gd-typography';
-import '../src/components/molecules/gd-menu/gd-menu';
-import { defaultTheme } from 'gd-design-library/tokens';
+// Harness consumes the BUILT package (`nx build web-components`), exactly like an app would.
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { defaultTheme } from '../../../dist/libs/web-components/index.js';
 
 /**
  * Companion script for ssr-dsd-hydrated.html — checks what actually happens once Lit's

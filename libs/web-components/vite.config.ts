@@ -3,39 +3,32 @@ import dts from 'vite-plugin-dts';
 import * as path from 'path';
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 
-export default defineConfig(({ command }) => ({
+export default defineConfig({
   root: __dirname,
   cacheDir: '../../node_modules/.vite/libs/web-components',
   plugins: [nxViteTsPaths(), dts({ entryRoot: 'src', tsconfigPath: path.join(__dirname, 'tsconfig.lib.json') })],
   resolve: {
-    // Dev-server-only live-source aliasing for true single-source-of-truth: resolves straight
-    // to libs/ui/src/tokens (source, hot-reloaded) instead of gd-design-library's real package
-    // export map, which only resolves once libs/ui is built (dist/libs/ui/tokens). This is what
-    // makes editing libs/ui/src/tokens/button.ts instantly reflect in gd-button.ts without a
-    // `build:ui` step in between. Gated to `command === 'serve'` so the production build (below,
-    // `external: [/^gd-design-library(\/.*)?$/]`) still externalizes the real package instead of
-    // inlining the whole libs/ui source tree — the point of the dev alias is hot-reload
-    // ergonomics, not a production bundling strategy.
-    alias:
-      command === 'serve'
-        ? {
-            'gd-design-library/tokens': path.resolve(__dirname, '../ui/src/tokens/index.ts'),
-            'gd-design-library/icons': path.resolve(__dirname, '../ui/src/icons/index.ts'),
-            // The tokens barrel (above) re-exports every file in libs/ui/src/tokens, and those
-            // files resolve their OWN internal imports through libs/ui's own path aliases
-            // (@utils, @assets, etc. — see libs/ui/tsconfig.json). nxViteTsPaths() only
-            // reliably resolves this project's own tsconfig paths, not a foreign project's
-            // source pulled in transitively, so these are restated here (matching the
-            // tsconfig.json `paths` override, added for the same reason).
-            '@utils': path.resolve(__dirname, '../ui/src/utils'),
-            '@types': path.resolve(__dirname, '../ui/src/types'),
-            '@constants': path.resolve(__dirname, '../ui/src/constants'),
-            '@hooks': path.resolve(__dirname, '../ui/src/hooks'),
-            '@tokens': path.resolve(__dirname, '../ui/src/tokens'),
-            '@components': path.resolve(__dirname, '../ui/src/components'),
-            '@assets': path.resolve(__dirname, '../ui/src/assets'),
-          }
-        : {},
+    // Standalone package: `gd-design-library/tokens` and `/icons` are resolved to libs/ui source in
+    // BOTH dev and production, so the published bundle inlines the tokens, the icon catalog and the
+    // `@emotion/react` `keyframes` helper the tokens use. Consumers install only `web-components`
+    // and never need `gd-design-library`. Dev additionally gets hot reload of libs/ui/src/tokens.
+    //
+    // The tokens barrel re-exports every file in libs/ui/src/tokens, and those files resolve their
+    // OWN internal imports through libs/ui's path aliases (@utils, @assets, etc. — see
+    // libs/ui/tsconfig.json). nxViteTsPaths() only reliably resolves this project's own tsconfig
+    // paths, not a foreign project's source pulled in transitively, so they are restated here
+    // (matching the tsconfig.json `paths` override, added for the same reason).
+    alias: {
+      'gd-design-library/tokens': path.resolve(__dirname, '../ui/src/tokens/index.ts'),
+      'gd-design-library/icons': path.resolve(__dirname, '../ui/src/icons/index.ts'),
+      '@utils': path.resolve(__dirname, '../ui/src/utils'),
+      '@types': path.resolve(__dirname, '../ui/src/types'),
+      '@constants': path.resolve(__dirname, '../ui/src/constants'),
+      '@hooks': path.resolve(__dirname, '../ui/src/hooks'),
+      '@tokens': path.resolve(__dirname, '../ui/src/tokens'),
+      '@components': path.resolve(__dirname, '../ui/src/components'),
+      '@assets': path.resolve(__dirname, '../ui/src/assets'),
+    },
   },
   build: {
     outDir: '../../dist/libs/web-components',
@@ -47,11 +40,18 @@ export default defineConfig(({ command }) => ({
       formats: ['es'],
     },
     rollupOptions: {
-      external: [/^lit(\/.*)?$/, /^gd-design-library(\/.*)?$/],
+      external: [/^lit(\/.*)?$/, /^zustand(\/.*)?$/],
       output: {
+        // Flat, readable file names. The package entry must be `index.js` so it matches `main` in
+        // package.json; every other preserved module is flattened to `<path_with_underscores>.js`
+        // (libs/ui token modules inlined from the tokens barrel land here too).
+        entryFileNames: (chunk) =>
+          chunk.name === 'web-components/src/index'
+            ? 'index.js'
+            : `${chunk.name.replace(/^web-components\/src\//, '').replace(/[^\w.-]/g, '_')}.js`,
         preserveModules: true,
         preserveModulesRoot: 'src',
       },
     },
   },
-}));
+});

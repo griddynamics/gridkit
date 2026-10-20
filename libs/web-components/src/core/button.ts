@@ -2,12 +2,13 @@ import { radius } from 'gd-design-library/tokens';
 import { get } from './get';
 import type { ButtonCssBlock } from './css';
 import type { ThemeLike } from './theme';
+import type { RadiusName } from './token-names';
 
 /** Mirrors gd-design-library's `ButtonVariant` enum values (libs/ui/src/components/atoms/types). */
 export type ButtonVariantName = 'primary' | 'secondary' | 'tertiary' | 'outlined' | 'text' | 'inherit';
 
 /** Mirrors gd-design-library's `ButtonStyledProps['$rounded']` (libs/ui/src/components/atoms/Button/Button.types.ts). */
-export type ButtonRoundedName = keyof typeof radius;
+export type ButtonRoundedName = RadiusName;
 
 export interface ButtonTokenTree {
   default: ButtonCssBlock;

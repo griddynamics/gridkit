@@ -1,6 +1,14 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { legacyReactIds, sharedDocIds, legacyRedirect, legacyRedirectHead } from './routes.mjs';
+import {
+  legacyReactIds,
+  sharedDocIds,
+  legacyRedirect,
+  legacyRedirectHead,
+  migratedReactId,
+  webComponentsRedirect,
+  webComponentsRedirectHead,
+} from './routes.mjs';
 
 const origin = 'https://storybook.example';
 
@@ -9,7 +17,7 @@ test('every legacy story and docs route resolves to its canonical root', () => {
     const kind = id.endsWith('--docs') ? 'docs' : 'story';
     const href = `${origin}/?path=/${kind}/${id}&args=size:sm&globals=theme:dark#example`;
     const result = new URL(legacyRedirect(href, legacyReactIds, sharedDocIds) || href);
-    assert.equal(result.searchParams.get('path'), `/${kind}/${sharedDocIds.includes(id) ? id : `react-${id}`}`);
+    assert.equal(result.searchParams.get('path'), `/${kind}/${sharedDocIds.includes(id) ? id : migratedReactId(id)}`);
     assert.equal(result.searchParams.get('args'), 'size:sm');
     assert.equal(result.searchParams.get('globals'), 'theme:dark');
     assert.equal(result.hash, '#example');
@@ -21,7 +29,7 @@ test('iframe links retain their view mode and args', () => {
     legacyRedirect(`${origin}/iframe.html?id=atoms-button--docs&viewMode=docs&args=size:sm`, legacyReactIds)
   );
   assert.equal(result.pathname, '/iframe.html');
-  assert.equal(result.searchParams.get('id'), 'react-atoms-button--docs');
+  assert.equal(result.searchParams.get('id'), 'react-components-atoms-button--docs');
   assert.equal(result.searchParams.get('viewMode'), 'docs');
   assert.equal(result.searchParams.get('args'), 'size:sm');
 });
@@ -40,6 +48,8 @@ test('canonical, composed, unrelated and unknown routes are not redirected', () 
     '/?path=/docs/introduction-welcome--docs',
     '/?path=/docs/react-introduction-getting-started--docs',
     '/?path=/story/web-components_introduction-overview--overview',
+    '/?path=/docs/react-components-atoms-button--docs',
+    '/?path=/docs/web-components_components-atoms-button--docs',
     '/web-components/?path=/story/introduction-overview--overview',
     '/?path=/docs/unknown--docs',
     '/docs/api',
@@ -83,5 +93,66 @@ test('early head script is self-contained', () => {
     href: `${origin}/?path=/docs/atoms-button--docs`,
     replace: (url) => calls.push(url),
   });
-  assert.equal(new URL(calls[0]).searchParams.get('path'), '/docs/react-atoms-button--docs');
+  assert.equal(new URL(calls[0]).searchParams.get('path'), '/docs/react-components-atoms-button--docs');
+});
+
+test('interim React and Web Components tier links move under Components', () => {
+  for (const [from, to] of [
+    ['react-atoms-button--docs', 'react-components-atoms-button--docs'],
+    ['react-layout-structure-row--default', 'react-components-layout-structure-row--default'],
+    ['web-components_atoms-button--docs', 'web-components_components-atoms-button--docs'],
+    ['web-components_molecules-counter--default', 'web-components_components-molecules-counter--default'],
+  ]) {
+    const kind = from.endsWith('--docs') ? 'docs' : 'story';
+    const result = new URL(legacyRedirect(`${origin}/?path=/${kind}/${from}`, legacyReactIds, sharedDocIds));
+    assert.equal(result.searchParams.get('path'), `/${kind}/${to}`);
+  }
+});
+
+test('direct Web Components child links move under Components', () => {
+  const base = `${origin}/web-components`;
+  for (const [href, key, expected] of [
+    [
+      `${base}/?path=/story/atoms-button--default&args=variant:secondary`,
+      'path',
+      '/story/components-atoms-button--default',
+    ],
+    [`${base}/?path=/docs/molecules-counter--docs`, 'path', '/docs/components-molecules-counter--docs'],
+    [
+      `${base}/iframe.html?id=layout-structure-row--default&viewMode=story`,
+      'id',
+      'components-layout-structure-row--default',
+    ],
+  ])
+    assert.equal(new URL(webComponentsRedirect(href)).searchParams.get(key), expected);
+  assert.equal(
+    new URL(
+      webComponentsRedirect(`${base}/?path=/story/atoms-button--default&args=variant:secondary`)
+    ).searchParams.get('args'),
+    'variant:secondary'
+  );
+  for (const path of [
+    '/?path=/story/components-atoms-button--default',
+    '/?path=/story/introduction-overview--overview',
+    '/iframe.html?id=introduction-overview--overview',
+    '/',
+  ])
+    assert.equal(webComponentsRedirect(base + path), null);
+});
+
+test('Web Components early head script is self-contained', () => {
+  const calls = [];
+  const script = webComponentsRedirectHead().replace(/^<script>|<\/script>$/g, '');
+  new Function('location', script)({
+    href: `${origin}/web-components/iframe.html?id=atoms-button--default`,
+    replace: (url) => calls.push(url),
+  });
+  assert.equal(new URL(calls[0]).searchParams.get('id'), 'components-atoms-button--default');
+});
+
+test('iframe links with legacy and interim tier IDs resolve to the Components IDs', () => {
+  for (const id of ['atoms-button--default', 'react-atoms-button--default']) {
+    const result = new URL(legacyRedirect(`${origin}/iframe.html?id=${id}&viewMode=story`, ['atoms-button--default']));
+    assert.equal(result.searchParams.get('id'), 'react-components-atoms-button--default');
+  }
 });

@@ -6,7 +6,8 @@ export async function checkNativeStories(page, base) {
   const stories = Object.values(index.entries).filter(
     (entry) =>
       entry.type === 'story' &&
-      (/^(Atoms|Molecules)\//.test(entry.title) || entry.title.startsWith('Layout & Structure/')) &&
+      (/^Components\/(Atoms|Molecules)\//.test(entry.title) ||
+        entry.title.startsWith('Components/Layout & Structure/')) &&
       !entry.id.endsWith('--default-tokens')
   );
   const names = new Set();
@@ -17,7 +18,7 @@ export async function checkNativeStories(page, base) {
     sliderdots: 'slider-dots',
   };
   for (const story of stories) {
-    const name = story.title.split('/')[1].toLowerCase();
+    const name = story.title.split('/')[2].toLowerCase();
     names.add(name);
     await page.goto(`${base}/web-components/iframe.html?id=${story.id}&viewMode=story`);
     const tag = `gd-${tags[name] ?? name}`;
@@ -105,7 +106,7 @@ export async function checkNativeStories(page, base) {
         }),
       detail
     );
-  await open('layout-structure-chatcontainer--interactive-demo');
+  await open('components-layout-structure-chatcontainer--interactive-demo');
   const chatContainer = page.locator('gd-chat-container');
   await page.waitForFunction(() => document.querySelector('gd-chat-container')?.isOpen === true);
   await chatContainer.evaluate((element) => element.close());
@@ -120,7 +121,7 @@ export async function checkNativeStories(page, base) {
       })
   );
   assert.deepEqual(await toggleEvent, { open: false });
-  await open('layout-structure-column--default');
+  await open('components-layout-structure-column--default');
   assert.equal(
     await page
       .locator('gd-column')
@@ -128,16 +129,16 @@ export async function checkNativeStories(page, base) {
       .evaluate((element) => getComputedStyle(element.shadowRoot.querySelector('[part="root"]')).flexDirection),
     'column'
   );
-  await open('layout-structure-row--default');
+  await open('components-layout-structure-row--default');
   assert.equal(await page.locator('gd-row').evaluate((element) => element.getAttribute('display')), 'inline-flex');
-  await open('layout-structure-flexcontainer--default');
+  await open('components-layout-structure-flexcontainer--default');
   assert.equal(
     await page
       .locator('gd-flex-container')
       .evaluate((element) => getComputedStyle(element.shadowRoot.querySelector('[part="root"]')).display),
     'flex'
   );
-  await open('layout-structure-portal--rendering-in-target');
+  await open('components-layout-structure-portal--rendering-in-target');
   await page.getByText('Show Portal', { exact: true }).click();
   assert.equal(
     await page
@@ -147,7 +148,7 @@ export async function checkNativeStories(page, base) {
     1
   );
   assert.equal(await page.locator('gd-portal').evaluate((element) => element.portalRoot), null);
-  await open('layout-structure-portal--with-wrapper-as-tag-main');
+  await open('components-layout-structure-portal--with-wrapper-as-tag-main');
   await page.getByText('Show Portal', { exact: true }).click();
   assert.equal(await page.locator('gd-portal').evaluate((element) => element.portalRoot?.tagName), 'MAIN');
   assert.deepEqual(
@@ -159,7 +160,7 @@ export async function checkNativeStories(page, base) {
   );
   await page.getByText('Hide', { exact: true }).click();
   assert.equal(await page.locator('gd-portal').count(), 0);
-  await open('layout-structure-scroll--interactive-example');
+  await open('components-layout-structure-scroll--interactive-example');
   const scroll = page.locator('gd-scroll');
   await page.waitForFunction(() => {
     const element = document.querySelector('gd-scroll');
@@ -226,7 +227,7 @@ export async function checkNativeStories(page, base) {
   await page.mouse.move(trackBox.x + trackBox.width / 2, trackBox.y + trackBox.height - 2);
   await page.mouse.up();
   await page.waitForFunction(() => document.querySelector('gd-scroll').scrollTop > 100);
-  await open('layout-structure-scroll--vertical-scroll-only');
+  await open('components-layout-structure-scroll--vertical-scroll-only');
   await page.waitForFunction(() => document.querySelector('gd-scroll')?.scrollHeight > 198);
   assert.deepEqual(
     await page.locator('gd-scroll').evaluate((element) => ({
@@ -236,7 +237,7 @@ export async function checkNativeStories(page, base) {
     })),
     { extent: [298, 500], vertical: true, horizontal: false }
   );
-  await open('layout-structure-scroll--horizontal-scroll-only');
+  await open('components-layout-structure-scroll--horizontal-scroll-only');
   await page.waitForFunction(() => document.querySelector('gd-scroll')?.scrollWidth > 298);
   assert.deepEqual(
     await page.locator('gd-scroll').evaluate((element) => ({
@@ -246,7 +247,7 @@ export async function checkNativeStories(page, base) {
     })),
     { extent: [1020, 198], vertical: false, horizontal: true }
   );
-  await open('layout-structure-scroll--auto-hide-scrollbars');
+  await open('components-layout-structure-scroll--auto-hide-scrollbars');
   await page.waitForFunction(() =>
     document.querySelector('gd-scroll')?.shadowRoot?.querySelector('[part~="vertical-scrollbar"]')
   );
@@ -268,7 +269,7 @@ export async function checkNativeStories(page, base) {
   );
   await page.waitForTimeout(1250);
   assert.equal(await autoHideScrollbar.evaluate((element) => getComputedStyle(element).opacity), '0');
-  await open('layout-structure-scroll--auto-hide-vertical-only');
+  await open('components-layout-structure-scroll--auto-hide-vertical-only');
   await page.waitForFunction(() => document.querySelector('gd-scroll')?.scrollHeight === 980);
   assert.deepEqual(
     await page.locator('gd-scroll').evaluate((element) => ({
@@ -278,10 +279,10 @@ export async function checkNativeStories(page, base) {
     })),
     { extent: [298, 980], vertical: true, horizontal: false }
   );
-  await open('atoms-button--disabled-button');
+  await open('components-atoms-button--disabled-button');
   await page.getByRole('button', { name: 'Disabled Button', exact: true }).waitFor();
   assert.ok(await page.getByRole('button', { name: 'Disabled Button', exact: true }).isDisabled());
-  await open('atoms-input--primary-default-with-label-and-helper-text');
+  await open('components-atoms-input--primary-default-with-label-and-helper-text');
   // The story's play function types "hello" after render; wait for it so it cannot overwrite the fill below.
   await page.waitForFunction(
     () => document.querySelector('gd-input')?.shadowRoot?.querySelector('input')?.value === 'hello'
@@ -289,14 +290,14 @@ export async function checkNativeStories(page, base) {
   // The wrapping <label> also contains the helper text, so the accessible name is "Label Helper text".
   await page.getByRole('textbox', { name: /^Label/ }).fill('Updated value');
   await event({ value: 'Updated value' });
-  await open('atoms-input--read-only');
+  await open('components-atoms-input--read-only');
   assert.ok(
     await page
       .getByRole('textbox')
       .isEditable()
       .then((value) => !value)
   );
-  await open('atoms-checkbox--default');
+  await open('components-atoms-checkbox--default');
   // The native input is visually hidden; users activate its visible label.
   // The story's play function leaves the checkbox checked, so the first click unchecks it.
   await page.locator('gd-checkbox label').click();
@@ -308,12 +309,12 @@ export async function checkNativeStories(page, base) {
     await page.waitForFunction(() => document.querySelector('gd-select')?.shadowRoot?.querySelector('.trigger'));
     await openSelect();
   };
-  await open('atoms-select--default');
+  await open('components-atoms-select--default');
   await openSelect();
   await page.getByRole('option', { name: 'Option 3' }).click();
   await event({ value: { name: 'Option 3', value: 'option3' } });
   await page.getByRole('listbox').waitFor({ state: 'hidden' });
-  await open('atoms-select--multiple-select');
+  await open('components-atoms-select--multiple-select');
   await openSelect();
   await page.getByRole('option', { name: /Option 3/ }).click();
   await event({
@@ -323,12 +324,12 @@ export async function checkNativeStories(page, base) {
     ],
   });
   await page.getByRole('listbox').waitFor();
-  await open('atoms-select--searchable');
+  await open('components-atoms-select--searchable');
   await openSelect();
   await page.getByRole('textbox', { name: 'Search fruits...' }).fill('ban');
   await page.getByRole('option', { name: 'Banana' }).waitFor();
   assert.equal(await page.getByRole('option', { name: 'Apple' }).count(), 0);
-  await open('atoms-typography--heading');
+  await open('components-atoms-typography--heading');
   assert.equal(await page.locator('gd-typography').count(), 18);
   assert.deepEqual(
     await page
@@ -357,42 +358,42 @@ export async function checkNativeStories(page, base) {
       'sub',
     ]
   );
-  await open('atoms-typography--display');
+  await open('components-atoms-typography--display');
   const displayFontSizes = await page
     .locator('gd-typography')
     .evaluateAll((elements) =>
       elements.map((element) => getComputedStyle(element.shadowRoot.firstElementChild).fontSize)
     );
   assert.equal(new Set(displayFontSizes).size, 5);
-  await open('atoms-slider--default');
+  await open('components-atoms-slider--default');
   const slider = page.getByRole('slider', { name: 'Slider' });
   await slider.fill('55');
   await event({ value: 55 });
-  await open('atoms-sliderdots--default');
+  await open('components-atoms-sliderdots--default');
   await page.getByRole('tab', { name: 'Go to slide 3' }).click();
   await event({ index: 2 });
-  await open('atoms-switch--default');
+  await open('components-atoms-switch--default');
   await page.locator('gd-switch label').click();
   await event({ checked: true });
-  await open('atoms-textarea--default');
+  await open('components-atoms-textarea--default');
   await page.getByRole('textbox').fill('Updated comment');
   await event({ value: 'Updated comment' });
-  await open('atoms-toggle--default');
+  await open('components-atoms-toggle--default');
   await page.getByRole('button', { name: 'Option 2', exact: true }).click();
   await event({ value: 'Option 2' });
-  await open('atoms-truncate--line-truncation');
+  await open('components-atoms-truncate--line-truncation');
   assert.equal(
     await page
       .locator('gd-truncate')
       .evaluate((element) => getComputedStyle(element.shadowRoot.querySelector('[part="content"]')).webkitLineClamp),
     '2'
   );
-  await open('atoms-wrapper--custom-tag-wrapper');
+  await open('components-atoms-wrapper--custom-tag-wrapper');
   assert.equal(
     await page.locator('gd-wrapper').evaluate((element) => element.shadowRoot.firstElementChild.tagName),
     'SECTION'
   );
-  await open('molecules-counter--default');
+  await open('components-molecules-counter--default');
   await page.getByRole('button', { name: 'Increment counter', exact: true }).click();
   await event({ value: 2 });
   await page.getByRole('button', { name: 'Decrement counter', exact: true }).click();
@@ -414,7 +415,7 @@ export async function checkNativeStories(page, base) {
         getComputedStyle(content).display === 'none'
       );
     });
-  await open('molecules-menu--default');
+  await open('components-molecules-menu--default');
   await page.getByRole('button', { name: 'Actions', exact: true }).click();
   await page.getByRole('button', { name: 'Edit', exact: true }).click();
   await event({ data: { name: 'Edit', value: 'edit' }, value: 'edit' });
@@ -427,7 +428,7 @@ export async function checkNativeStories(page, base) {
   await page.getByRole('button', { name: 'Edit', exact: true }).waitFor();
   await page.getByRole('button', { name: 'Outside menu' }).click();
   await menuClosed();
-  await open('molecules-menu--close-on-select-false');
+  await open('components-molecules-menu--close-on-select-false');
   await page.getByRole('button', { name: 'Actions', exact: true }).click();
   await page.getByRole('button', { name: 'Archive', exact: true }).click();
   await event({ data: { name: 'Archive', value: 'archive' }, value: 'archive' });

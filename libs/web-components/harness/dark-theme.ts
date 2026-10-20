@@ -1,4 +1,6 @@
-import { defaultTheme } from 'gd-design-library/tokens';
+// Harness consumes the BUILT package (`nx build web-components`), exactly like an app would.
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { defaultTheme } from '../../../dist/libs/web-components/index.js';
 
 // Dark palette layered on the shared default theme, the same way an app would pass a second theme
 // to `ThemeProvider` in React. Text on the primary (yellow) fill stays dark via `text.black`.
