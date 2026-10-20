@@ -2,8 +2,11 @@
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import '../../../dist/libs/ui/styles.css';
 import { createApp, h, onMounted, ref } from 'vue';
-import type { defaultTheme } from 'gd-design-library/tokens';
-import '../src/index';
+// Harness consumes the BUILT package (`nx build web-components`), exactly like an app would.
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import '../../../dist/libs/web-components/index.js';
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import type { defaultTheme } from '../../../dist/libs/web-components/index.js';
 import { darkTheme } from './dark-theme';
 
 type Item = { name: string; value: string };

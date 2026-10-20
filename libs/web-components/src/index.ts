@@ -38,4 +38,4 @@ export { GdThemeProvider, type ThemeChangeDetail } from './components/providers/
 export { GdThemedElement, ThemeConsumerController, type ThemeLike } from './core';
 
 // Bundled GridKit default theme, so consumers do not need to install `gd-design-library`.
-export { defaultTheme } from 'gd-design-library/tokens';
+export { defaultTheme, type DefaultTheme } from './default-theme';

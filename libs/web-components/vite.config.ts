@@ -42,6 +42,13 @@ export default defineConfig({
     rollupOptions: {
       external: [/^lit(\/.*)?$/, /^zustand(\/.*)?$/],
       output: {
+        // Flat, readable file names. The package entry must be `index.js` so it matches `main` in
+        // package.json; every other preserved module is flattened to `<path_with_underscores>.js`
+        // (libs/ui token modules inlined from the tokens barrel land here too).
+        entryFileNames: (chunk) =>
+          chunk.name === 'web-components/src/index'
+            ? 'index.js'
+            : `${chunk.name.replace(/^web-components\/src\//, '').replace(/[^\w.-]/g, '_')}.js`,
         preserveModules: true,
         preserveModulesRoot: 'src',
       },

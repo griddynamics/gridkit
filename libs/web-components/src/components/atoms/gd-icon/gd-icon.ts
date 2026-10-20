@@ -3,8 +3,9 @@ import { customElement, property } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { unsafeSVG } from 'lit/directives/unsafe-svg.js';
 import { icon } from 'gd-design-library/tokens';
-import { iconCatalog, type GridKitIconName } from 'gd-design-library/icons';
+import { iconCatalog } from 'gd-design-library/icons';
 import { buttonCssBlockToText, get, resolveThemeTree, type ButtonCssBlock } from '../../../core';
+import type { GridKitIconName } from '../../../core/token-names';
 import { GdLayoutElement } from '../../layout/layout-element';
 
 type IconSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
