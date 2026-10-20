@@ -259,8 +259,8 @@ export async function checkNativeStories(page, base) {
     { extent: [298, 980], vertical: true, horizontal: false }
   );
   await open('atoms-button--disabled-button');
-  await page.getByRole('button', { name: 'Button', exact: true }).waitFor();
-  assert.ok(await page.getByRole('button', { name: 'Button', exact: true }).isDisabled());
+  await page.getByRole('button', { name: 'Disabled Button', exact: true }).waitFor();
+  assert.ok(await page.getByRole('button', { name: 'Disabled Button', exact: true }).isDisabled());
   await open('atoms-input--primary-default-with-label-and-helper-text');
   await page.getByRole('textbox', { name: 'Label', exact: true }).fill('Updated value');
   await event({ value: 'Updated value' });
