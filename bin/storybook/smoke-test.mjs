@@ -100,7 +100,7 @@ try {
   const nativeFrame = page.frameLocator('#storybook-ref-web-components');
   await nativeFrame.getByRole('heading', { name: 'Using Web Components', exact: true }).waitFor();
 
-  await page.goto(`${base}/?path=/story/web-components_atoms-button--default&panel=addon-controls`);
+  await page.goto(`${base}/?path=/story/web-components_components-atoms-button--default&panel=addon-controls`);
   await nativeFrame.getByRole('button', { name: 'Button', exact: true }).waitFor();
   await page.getByText('variant', { exact: true }).first().waitFor();
   await page.getByRole('combobox', { name: 'variant', exact: true }).selectOption('secondary');
@@ -110,11 +110,11 @@ try {
       'secondary'
   );
   assert.equal(await nativeFrame.locator('gd-button').evaluate((element) => element.variant), 'secondary');
-  await page.goto(`${base}/?path=/docs/web-components_atoms-button--docs`);
+  await page.goto(`${base}/?path=/docs/web-components_components-atoms-button--docs`);
   await nativeFrame.getByRole('heading', { name: 'Button', exact: true }).first().waitFor();
 
   await page.goto(`${base}/iframe.html?id=atoms-button--default&viewMode=story&args=size:sm`);
-  await page.waitForURL((url) => url.searchParams.get('id') === 'react-atoms-button--default');
+  await page.waitForURL((url) => url.searchParams.get('id') === 'react-components-atoms-button--default');
   await page.getByRole('button').first().waitFor();
   assert.equal(new URL(page.url()).searchParams.get('args'), 'size:sm');
   if (!process.argv.includes('--url')) await checkNativeStories(page, base);

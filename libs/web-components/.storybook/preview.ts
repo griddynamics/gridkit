@@ -9,7 +9,7 @@ import { storySource } from '../stories/helpers';
 const preview: Preview = {
   parameters: {
     layout: 'padded',
-    options: { storySort: { order: ['Introduction', 'Atoms', 'Molecules'] } },
+    options: { storySort: { order: ['Introduction', 'Components', ['Atoms', 'Molecules', 'Layout & Structure']] } },
     a11y: { test: 'todo' },
     docs: {
       source: {

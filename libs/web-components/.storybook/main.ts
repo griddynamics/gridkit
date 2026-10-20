@@ -1,7 +1,16 @@
 import type { StorybookConfig } from '@storybook/web-components-vite';
+// Build-time workspace tooling, not a dependency of the shipped UI library.
+// eslint-disable-next-line @nx/enforce-module-boundaries
+import { webComponentsRedirectHead } from '../../../bin/storybook/routes.mjs';
 
 const config: StorybookConfig = {
-  stories: ['../stories/**/*.stories.ts'],
+  stories: [
+    '../stories/Overview.stories.ts',
+    // Atomic tiers (Atoms, Molecules, Layout & Structure) nest under Components.
+    { directory: '../stories', files: '!(Overview).stories.ts', titlePrefix: 'Components' },
+  ],
+  managerHead: (head) => `${webComponentsRedirectHead()}${head}`,
+  previewHead: (head) => `${webComponentsRedirectHead()}${head}`,
   staticDirs: [{ from: '../../ui/src/assets', to: '/' }],
   addons: ['@storybook/addon-docs', '@storybook/addon-a11y'],
   framework: {

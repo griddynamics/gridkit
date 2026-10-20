@@ -3,7 +3,7 @@ import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync } from 'node
 import { tmpdir } from 'node:os';
 import { extname, join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { legacyReactIds, sharedDocIds } from './routes.mjs';
+import { legacyReactIds, sharedDocIds, migratedReactId } from './routes.mjs';
 import { validateLinks } from './link-validation.mjs';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
@@ -49,7 +49,7 @@ if (built) {
 
 const errors = [];
 for (const id of legacyReactIds) {
-  const canonical = sharedDocIds.includes(id) ? id : `react-${id}`;
+  const canonical = sharedDocIds.includes(id) ? id : migratedReactId(id);
   if (!indexes.react.entries[canonical]) errors.push(`Missing migrated entry: ${canonical}`);
 }
 for (const id of sharedDocIds) {
@@ -74,7 +74,7 @@ for (const [group, names] of [
   for (const name of names) {
     const primaryStory = name === 'input' ? 'primary-default-with-label-and-helper-text' : 'default';
     for (const variant of ['docs', primaryStory]) {
-      const id = `${group}-${name}--${variant}`;
+      const id = `components-${group}-${name}--${variant}`;
       if (!indexes.webComponents.entries[id]) errors.push(`Missing native Web Components entry: ${id}`);
     }
   }
