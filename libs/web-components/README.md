@@ -7,14 +7,13 @@ Available elements: `gd-avatar`, `gd-badge`, `gd-box`, `gd-button`, `gd-checkbox
 ## Install
 
 ```bash
-npm install web-components gd-design-library
+npm install web-components
 ```
 
-Import the library once to register its custom elements. Each element needs a GridKit theme; assign it as a JavaScript property, not as an HTML attribute.
+`web-components` is standalone: the GridKit design tokens and icons are bundled in, so you do not install `gd-design-library`. Import the package once to register its custom elements. Each element needs a GridKit theme; assign it as a JavaScript property, not as an HTML attribute.
 
 ```ts
-import 'web-components';
-import { defaultTheme } from 'gd-design-library/tokens';
+import { defaultTheme } from 'web-components'; // also registers every gd-* custom element
 
 document.querySelectorAll<HTMLElement & { theme: unknown }>('gd-button, gd-checkbox, gd-input').forEach((element) => {
   element.theme = defaultTheme;
@@ -36,7 +35,7 @@ Use attributes for strings and booleans, such as `variant`, `label`, and `disabl
 
 `<gd-theme-provider>` is the counterpart of React's `ThemeProvider` + `useTheme()`. Every `gd-*` element
 below it — including inside other elements' shadow roots — uses its theme and re-renders when it changes.
-Tokens come from the same `gd-design-library/tokens` as React, so one theme object drives both.
+The bundled tokens are the same ones `gd-design-library` ships for React, so one theme object shape drives both.
 
 ```html
 <gd-theme-provider is-default>
@@ -67,7 +66,7 @@ import 'web-components';
 
 // app.component.ts
 import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { defaultTheme } from 'gd-design-library/tokens';
+import { defaultTheme } from 'web-components';
 
 @Component({
   selector: 'app-root',
@@ -106,7 +105,7 @@ createApp(App).mount('#app');
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue';
-import { defaultTheme } from 'gd-design-library/tokens';
+import { defaultTheme } from 'web-components';
 
 const email = ref('');
 const accepted = ref(false);

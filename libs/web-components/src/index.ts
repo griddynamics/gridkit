@@ -36,3 +36,6 @@ export { GdScroll, type ScrollbarVisibility } from './components/layout/gd-scrol
 export type { BoxStyleValue, LayoutStyles } from './components/layout/layout-element';
 export { GdThemeProvider, type ThemeChangeDetail } from './components/providers/gd-theme-provider/gd-theme-provider';
 export { GdThemedElement, ThemeConsumerController, type ThemeLike } from './core';
+
+// Bundled GridKit default theme, so consumers do not need to install `gd-design-library`.
+export { defaultTheme } from 'gd-design-library/tokens';
