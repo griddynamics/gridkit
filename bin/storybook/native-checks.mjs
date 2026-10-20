@@ -79,12 +79,32 @@ export async function checkNativeStories(page, base) {
   const open = async (id) => {
     await page.goto(`${base}/web-components/iframe.html?id=${id}&viewMode=story`);
     await page.locator('#storybook-root').waitFor();
+    // Wait for the story's play function to finish; it drives the same controls the checks drive next.
+    await page.waitForFunction(() => window.__STORYBOOK_PREVIEW__?.currentRender?.phase === 'finished');
+    // Source stories render no <output> for events, so record the `gd-*` custom events the components dispatch.
+    await page.evaluate(() => {
+      window.__gdEvents = [];
+      const dispatch = EventTarget.prototype.dispatchEvent;
+      EventTarget.prototype.dispatchEvent = function (event) {
+        if (event instanceof CustomEvent && event.type.startsWith('gd-')) {
+          window.__gdEvents.push(JSON.stringify(event.detail));
+        }
+        return dispatch.call(this, event);
+      };
+    });
   };
-  const event = async (detail) =>
-    page
-      .locator('output')
-      .filter({ hasText: JSON.stringify(detail) })
-      .waitFor();
+  // Match when every key in `detail` equals the recorded event detail's value (other keys are ignored).
+  const event = (detail) =>
+    page.waitForFunction(
+      (expected) =>
+        window.__gdEvents.some((recorded) => {
+          const actual = JSON.parse(recorded);
+          return Object.entries(expected).every(
+            ([key, value]) => JSON.stringify(actual?.[key]) === JSON.stringify(value)
+          );
+        }),
+      detail
+    );
   await open('layout-structure-chatcontainer--interactive-demo');
   const chatContainer = page.locator('gd-chat-container');
   await page.waitForFunction(() => document.querySelector('gd-chat-container')?.isOpen === true);
@@ -262,6 +282,10 @@ export async function checkNativeStories(page, base) {
   await page.getByRole('button', { name: 'Disabled Button', exact: true }).waitFor();
   assert.ok(await page.getByRole('button', { name: 'Disabled Button', exact: true }).isDisabled());
   await open('atoms-input--primary-default-with-label-and-helper-text');
+  // The story's play function types "hello" after render; wait for it so it cannot overwrite the fill below.
+  await page.waitForFunction(
+    () => document.querySelector('gd-input')?.shadowRoot?.querySelector('input')?.value === 'hello'
+  );
   // The wrapping <label> also contains the helper text, so the accessible name is "Label Helper text".
   await page.getByRole('textbox', { name: /^Label/ }).fill('Updated value');
   await event({ value: 'Updated value' });
@@ -274,31 +298,36 @@ export async function checkNativeStories(page, base) {
   );
   await open('atoms-checkbox--default');
   // The native input is visually hidden; users activate its visible label.
-  await page.locator('gd-checkbox label').click();
-  await event({ checked: true });
+  // The story's play function leaves the checkbox checked, so the first click unchecks it.
   await page.locator('gd-checkbox label').click();
   await event({ checked: false });
+  await page.locator('gd-checkbox label').click();
+  await event({ checked: true });
+  // Select triggers are named by their current value, so address them through the gd-select host.
+  const openSelect = async () => {
+    await page.waitForFunction(() => document.querySelector('gd-select')?.shadowRoot?.querySelector('.trigger'));
+    await openSelect();
+  };
   await open('atoms-select--default');
-  await page.getByRole('button', { name: 'Choose an option' }).click();
-  await page.getByRole('option', { name: 'Beta' }).click();
-  await event({ value: { name: 'Beta', value: 'b' } });
+  await openSelect();
+  await page.getByRole('option', { name: 'Option 3' }).click();
+  await event({ value: { name: 'Option 3', value: 'option3' } });
   await page.getByRole('listbox').waitFor({ state: 'hidden' });
   await open('atoms-select--multiple-select');
-  await page.getByRole('button', { name: 'Alpha, Gamma' }).click();
-  await page.getByRole('option', { name: 'Beta' }).click();
+  await openSelect();
+  await page.getByRole('option', { name: /Option 3/ }).click();
   await event({
     value: [
-      { name: 'Alpha', value: 'a' },
-      { name: 'Gamma', value: 'c' },
-      { name: 'Beta', value: 'b' },
+      { name: 'Option 2', value: { test: 'option2' } },
+      { name: 'Option 3', value: 'option3' },
     ],
   });
   await page.getByRole('listbox').waitFor();
   await open('atoms-select--searchable');
-  await page.getByRole('button', { name: 'Choose an option' }).click();
-  await page.getByRole('searchbox', { name: 'Search options' }).fill('bet');
-  await page.getByRole('option', { name: 'Beta' }).waitFor();
-  assert.equal(await page.getByRole('option', { name: 'Alpha' }).count(), 0);
+  await openSelect();
+  await page.getByRole('textbox', { name: 'Search fruits...' }).fill('ban');
+  await page.getByRole('option', { name: 'Banana' }).waitFor();
+  assert.equal(await page.getByRole('option', { name: 'Apple' }).count(), 0);
   await open('atoms-typography--heading');
   assert.equal(await page.locator('gd-typography').count(), 18);
   assert.deepEqual(
