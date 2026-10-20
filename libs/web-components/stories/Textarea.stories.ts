@@ -38,14 +38,16 @@ type Args = Partial<
   >
 > & { id?: string; onChange?: Handler; onCustomResize?: Handler };
 
+type ArgType = NonNullable<NonNullable<Meta['argTypes']>[string]>;
+
 const argType = (
-  control: string,
+  control: ArgType['control'],
   description: string,
   category: string,
   summary: string,
   defaultValue: string,
-  extra: Record<string, unknown> = {}
-) => ({
+  extra: Partial<ArgType> = {}
+): ArgType => ({
   control,
   ...extra,
   description,

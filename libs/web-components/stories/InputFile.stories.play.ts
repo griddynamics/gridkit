@@ -15,7 +15,8 @@ const getLocators = (canvasElement: HTMLElement) => {
 };
 
 const clearMock = (args: StoryContext['args'], name: string) => {
-  if (args[name]?.mock) args[name].mockClear();
+  const mock = args[name] as { mock?: unknown; mockClear?: () => void } | undefined;
+  if (mock?.mock) mock.mockClear?.();
 };
 
 const clickWithoutDialog = async (element: HTMLElement) => {
