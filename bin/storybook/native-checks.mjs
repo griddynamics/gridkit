@@ -262,12 +262,13 @@ export async function checkNativeStories(page, base) {
   await page.getByRole('button', { name: 'Disabled Button', exact: true }).waitFor();
   assert.ok(await page.getByRole('button', { name: 'Disabled Button', exact: true }).isDisabled());
   await open('atoms-input--primary-default-with-label-and-helper-text');
-  await page.getByRole('textbox', { name: 'Label', exact: true }).fill('Updated value');
+  // The wrapping <label> also contains the helper text, so the accessible name is "Label Helper text".
+  await page.getByRole('textbox', { name: /^Label/ }).fill('Updated value');
   await event({ value: 'Updated value' });
   await open('atoms-input--read-only');
   assert.ok(
     await page
-      .getByRole('textbox', { name: 'Label', exact: true })
+      .getByRole('textbox')
       .isEditable()
       .then((value) => !value)
   );
