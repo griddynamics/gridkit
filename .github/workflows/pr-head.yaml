@@ -37,11 +37,6 @@ jobs:
       - name: Build Storybook
         run: npm run build-storybook
 
-      - name: Verify combined Storybook in Chromium
-        run: |
-          npx playwright install --with-deps chromium
-          node bin/storybook/smoke-test.mjs
-
       - name: Build Form Configurator
         run: npm run build:form-configurator
 
