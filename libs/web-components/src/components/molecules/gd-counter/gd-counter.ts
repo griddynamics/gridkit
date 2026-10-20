@@ -1,28 +1,27 @@
-import { LitElement, html, nothing, type PropertyValues } from 'lit';
+import { html, nothing, type PropertyValues } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+import { live } from 'lit/directives/live.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { counter } from 'gd-design-library/tokens';
-import { resolveThemeTree, type DesignCoreTheme, type ButtonCssBlock } from 'gd-design-core';
+import { resolveThemeTree, type ThemeLike, type ButtonCssBlock } from '../../../core';
+import { GdThemedElement } from '../../../core/themed-element';
 import '../../atoms/gd-button/gd-button';
 import '../../atoms/gd-input/gd-input';
-import '../../atoms/gd-icon/gd-icon';
 
 type Styles = Record<string, string | number>;
 type Tokens = {
   default: Styles;
   navButton: { default: ButtonCssBlock };
-  icons: Record<'plus' | 'minus', { name: 'plus' | 'minus'; width: number; height: number }>;
   webComponent: { host: Styles; root: Styles; inputHost: Styles; inputOuter: Styles; inputControl: ButtonCssBlock };
 };
-const tokens = (theme: DesignCoreTheme) => resolveThemeTree(counter, theme) as unknown as Tokens;
+const tokens = (theme: ThemeLike) => resolveThemeTree(counter, theme) as unknown as Tokens;
 
 @customElement('gd-counter')
-export class GdCounter extends LitElement {
+export class GdCounter extends GdThemedElement {
   @property({ type: Number }) min = 1;
-  @property({ type: Number }) max = 999;
+  @property({ type: Number }) max = Infinity;
   @property({ type: Number }) initial = 1;
   @property({ type: Boolean, attribute: 'is-disabled', reflect: true }) isDisabled = false;
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
   @property({ attribute: false }) styles: Styles = {};
   private value = 1;
   private draft = '1';
@@ -78,18 +77,13 @@ export class GdCounter extends LitElement {
         ?disabled=${this.isDisabled || this.value <= this.min}
         aria-label="Decrement counter"
         @click=${() => this.value > this.min && this.commit(this.value - 1)}
-        ><gd-icon
-          part="decrement-icon"
-          .name=${t.icons.minus.name}
-          .width=${t.icons.minus.width}
-          .height=${t.icons.minus.height}
-          .theme=${this.theme}
-        ></gd-icon
+        ><svg part="decrement-icon" aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+          <path d="M19 13H5V11H19V13Z"></path></svg
       ></gd-button>
       <gd-input
         part="input"
         type="number"
-        .value=${this.draft}
+        .value=${live(this.draft)}
         .disabled=${this.isDisabled}
         .styles=${{ ...t.webComponent.inputHost, ...t.webComponent.inputOuter }}
         .inputStyles=${inputStyles}
@@ -110,13 +104,8 @@ export class GdCounter extends LitElement {
         ?disabled=${this.isDisabled || this.value >= this.max}
         aria-label="Increment counter"
         @click=${() => this.value < this.max && this.commit(this.value + 1)}
-        ><gd-icon
-          part="increment-icon"
-          .name=${t.icons.plus.name}
-          .width=${t.icons.plus.width}
-          .height=${t.icons.plus.height}
-          .theme=${this.theme}
-        ></gd-icon
+        ><svg part="increment-icon" aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+          <path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z"></path></svg
       ></gd-button>
     </div>`;
   }

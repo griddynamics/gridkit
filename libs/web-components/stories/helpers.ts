@@ -1,46 +1,21 @@
-import { defaultTheme } from 'gd-design-library/tokens';
-import type { DesignCoreTheme } from 'gd-design-core';
-import type { ArgTypes as StorybookArgTypes } from '@storybook/web-components-vite';
 import { action } from 'storybook/actions';
+import { defaultTheme } from 'gd-design-library/tokens';
+import type { ThemeLike } from '../src/core';
 import type {} from '../src/index';
-import { reactStorybookArgTypes } from './react-storybook-arg-types.generated';
 
 type Tag = Extract<keyof HTMLElementTagNameMap, `gd-${string}`>;
-
-type ArgType = {
-  table?: Record<string, unknown>;
-  [key: string]: unknown;
-};
-
-/** Preserve the complete control table defined by the corresponding React story. */
-export function sectionedArgTypes<
-  Component extends keyof typeof reactStorybookArgTypes,
-  ArgTypes extends Record<string, ArgType>,
->(component: Component, _argTypes: ArgTypes): StorybookArgTypes {
-  void _argTypes;
-  const source = reactStorybookArgTypes[component] as Record<string, ArgType>;
-  return Object.fromEntries(
-    Object.keys(source).map((name) => {
-      const sourceArgType = source[name];
-      return [
-        name,
-        sourceArgType.control === undefined ? { ...sourceArgType, control: { disable: true } } : sourceArgType,
-      ];
-    })
-  ) as StorybookArgTypes;
-}
 
 const sourceKeyProperties: Partial<Record<Tag, readonly string[]>> = {
   'gd-avatar': ['sizeVariant'],
   'gd-badge': ['variant', 'appearance', 'size'],
   'gd-box': ['variant', 'isBordered'],
-  'gd-button': ['variant', 'rounded', 'isLoading'],
+  'gd-button': ['variant', 'rounded'],
   'gd-checkbox': ['size'],
   'gd-input': ['variant', 'color'],
   'gd-image': ['src', 'alt', 'objectFit'],
   'gd-icon': ['name', 'size'],
   'gd-input-file': ['accept', 'multiple'],
-  'gd-label': ['htmlFor', 'color', 'ariaLabel'],
+  'gd-label': ['htmlFor'],
   'gd-link': ['variant', 'href'],
   'gd-loader': ['name', 'variant', 'size'],
   'gd-separator': ['orientation', 'variant', 'size', 'labelPosition'],
@@ -56,6 +31,11 @@ const sourceKeyProperties: Partial<Record<Tag, readonly string[]>> = {
   'gd-typography': ['variant', 'as', 'size', 'align'],
   'gd-counter': ['min', 'max', 'initial'],
   'gd-menu': ['placement', 'closeOnSelect'],
+  'gd-column': ['as', 'align', 'justify', 'gutter', 'isWrap', 'isReversed'],
+  'gd-flex-container': ['flexDirection', 'justifyContent', 'gap'],
+  'gd-portal': ['wrapperVariant', 'withWrapper', 'blocksScroll', 'WrapperView'],
+  'gd-row': ['as', 'align', 'justify', 'gutter', 'isWrap', 'isReversed'],
+  'gd-scroll': ['vertical', 'horizontal', 'autoHide'],
 };
 
 const sourceEvents: Partial<Record<Tag, readonly string[]>> = {
@@ -90,54 +70,51 @@ function equivalent(left: unknown, right: unknown) {
   return false;
 }
 
-function sourceElement(node: Element) {
-  const clone = node.cloneNode(true) as Element;
-  const applyEffectiveAttributes = (source: Element, target: Element) => {
-    if (source.localName.startsWith('gd-')) {
-      const tag = source.localName as Tag;
-      const current = source as unknown as HTMLElement & Record<string, unknown>;
-      const baseline = document.createElement(tag) as unknown as HTMLElement & Record<string, unknown>;
-      const constructor = customElements.get(tag) as
-        | (CustomElementConstructor & {
-            elementProperties?: Map<PropertyKey, { attribute?: boolean | string; state?: boolean }>;
-          })
-        | undefined;
-      for (const [property, options] of constructor?.elementProperties ?? []) {
-        if (typeof property !== 'string' || property === 'theme' || options.state || property.startsWith('_')) continue;
-        const value = current[property];
-        const requiredForUnderstanding = sourceKeyProperties[tag]?.includes(property) ?? false;
-        if (!requiredForUnderstanding && equivalent(value, baseline[property])) continue;
-        const attribute =
-          options.attribute === false
-            ? false
-            : typeof options.attribute === 'string'
-              ? options.attribute
-              : kebab(property);
-        if (!attribute || !['string', 'number', 'boolean'].includes(typeof value)) continue;
-        if (typeof value === 'boolean') {
-          if (value) target.setAttribute(attribute, '');
-        } else target.setAttribute(attribute, String(value));
-      }
-    }
-    const sourceChildren = Array.from(source.children);
-    const targetChildren = Array.from(target.children);
-    sourceChildren.forEach((child, index) => {
-      const targetChild = targetChildren[index];
-      if (targetChild) applyEffectiveAttributes(child, targetChild);
-    });
-  };
-  applyEffectiveAttributes(node, clone);
-  return clone.outerHTML;
+function formattedAttributes(attributes: Map<string, string>, indent: number) {
+  const values = [...attributes].map(([name, value]) => (value === '' ? name : `${name}="${escapeHtml(value)}"`));
+  if (!values.length) return '';
+  if (values.length <= 2 && values.join(' ').length <= 72) return ` ${values.join(' ')}`;
+  const spacing = '  '.repeat(indent + 1);
+  return `\n${values.map((value) => `${spacing}${value}`).join('\n')}\n${'  '.repeat(indent)}`;
 }
 
-function lightDom(node: Element) {
-  return Array.from(node.childNodes)
+function formattedElement(node: Element, rootAttributes?: Map<string, string>, indent = 0): string {
+  const spacing = '  '.repeat(indent);
+  const attributes =
+    rootAttributes ?? new Map(Array.from(node.attributes).map(({ name, value }) => [name, value] as const));
+  const opening = `${spacing}<${node.localName}${formattedAttributes(attributes, indent)}>`;
+  const children = Array.from(node.childNodes).filter(
+    (child) => child.nodeType !== Node.TEXT_NODE || Boolean(child.textContent?.trim())
+  );
+  if (!children.length) return `${opening}</${node.localName}>`;
+  if (children.every((child) => child.nodeType === Node.TEXT_NODE)) {
+    return `${opening}${escapeHtml(
+      children
+        .map((child) => child.textContent ?? '')
+        .join('')
+        .trim()
+    )}</${node.localName}>`;
+  }
+  const content = children
     .map((child) => {
-      if (child.nodeType === Node.TEXT_NODE) return escapeHtml(child.textContent ?? '');
-      return child instanceof Element ? sourceElement(child) : '';
+      if (child.nodeType === Node.TEXT_NODE)
+        return `${'  '.repeat(indent + 1)}${escapeHtml(child.textContent?.trim() ?? '')}`;
+      if (child.nodeType === Node.COMMENT_NODE)
+        return `${'  '.repeat(indent + 1)}<!--${child.textContent?.trim() ?? ''}-->`;
+      return child instanceof Element ? formattedElement(child, undefined, indent + 1) : '';
     })
-    .join('')
-    .trim();
+    .filter(Boolean)
+    .join('\n');
+  return `${opening}\n${content}\n${spacing}</${node.localName}>`;
+}
+
+function isNestedCustomElement(node: Element, canvas: HTMLElement) {
+  let parent = node.parentElement;
+  while (parent && parent !== canvas) {
+    if (parent.localName.startsWith('gd-')) return true;
+    parent = parent.parentElement;
+  }
+  return false;
 }
 
 /** Produce consumer-ready source from the custom elements rendered by a story.
@@ -149,7 +126,7 @@ export function storySource(canvas: HTMLElement | undefined, fallback: string) {
   );
   if (!nodes.length) return fallback;
 
-  const markup = lightDom(canvas);
+  const markup: string[] = [];
   const setup: string[] = ["import 'web-components';", "import { defaultTheme } from 'gd-design-library/tokens';", ''];
   nodes.forEach((node, index) => {
     const tag = node.localName as Tag;
@@ -180,6 +157,8 @@ export function storySource(canvas: HTMLElement | undefined, fallback: string) {
         } else attributes.set(attribute, String(value));
       } else if (typeof value !== 'function' && value !== undefined) assignments.push([property, value]);
     }
+    if (!isNestedCustomElement(node, canvas)) markup.push(formattedElement(node, attributes));
+
     const variable = nodes.length === 1 ? 'component' : `component${index + 1}`;
     const sameTagIndex = nodes.slice(0, index).filter((candidate) => candidate.localName === tag).length;
     setup.push(
@@ -196,17 +175,17 @@ export function storySource(canvas: HTMLElement | undefined, fallback: string) {
     setup.push('');
   });
 
-  return `${markup}\n\n<script type="module">\n${setup.map((line) => (line ? `  ${line}` : '')).join('\n')}\n</script>`;
+  const formattedSetup = setup.flatMap((line) =>
+    line ? line.split('\n').map((nestedLine) => `  ${nestedLine}`) : ['']
+  );
+  return `${markup.join('\n\n')}\n\n<script type="module">\n${formattedSetup.join('\n')}\n</script>`;
 }
 
 /** Use the same property-based theme contract as application consumers. */
 export function element<T extends Tag>(tag: T, props: Partial<HTMLElementTagNameMap[T]> = {}, text = '') {
   const node = document.createElement(tag);
-  Object.assign(node, { theme: defaultTheme as DesignCoreTheme }, props);
+  Object.assign(node, { theme: defaultTheme as ThemeLike }, props);
   node.textContent = text;
-  for (const eventName of sourceEvents[tag] ?? []) {
-    node.addEventListener(eventName, (event) => action(eventName)((event as CustomEvent<unknown>).detail));
-  }
   return node;
 }
 
@@ -223,12 +202,11 @@ const tokenViewerStyles = `
 `;
 
 function tokenNode(value: unknown, indent = 0): HTMLElement {
-  if (typeof value === 'function') return tokenNode(value(), indent);
-
   if (typeof value !== 'object' || value === null) {
     const text = document.createElement('span');
     text.style.color = '#545454';
-    text.textContent = JSON.stringify(value);
+    // Function tokens are shown as the JSON of their (theme-less) result, on one line.
+    text.textContent = JSON.stringify(typeof value === 'function' ? value() : value);
     return text;
   }
 
@@ -239,7 +217,7 @@ function tokenNode(value: unknown, indent = 0): HTMLElement {
     line.style.cssText = `display:block;margin:2px 0;padding-left:${(indent + 1) * 12}px`;
     const keyElement = document.createElement('span');
     keyElement.style.cssText = 'color:#0d52a5;margin-right:6px';
-    keyElement.textContent = `"${key}" :`;
+    keyElement.append('"', key, '" :');
     line.append(keyElement);
 
     if (typeof childValue === 'object' && childValue !== null) {
@@ -291,18 +269,11 @@ export function defaultTokenViewer(
   return viewer;
 }
 
-/** Each render owns its output and listeners; no state leaks between stories. */
-export function observed(node: HTMLElement, eventName: string, initial: unknown) {
-  const section = document.createElement('section');
-  section.style.cssText = 'display:grid;gap:16px;max-width:480px;font-family:"Fira Sans",sans-serif';
-  const output = document.createElement('output');
-  output.setAttribute('aria-label', 'Last event');
-  output.textContent = JSON.stringify(initial);
-  node.addEventListener(eventName, (event) => {
-    output.textContent = JSON.stringify((event as CustomEvent<unknown>).detail);
-  });
-  section.append(node, output);
-  return section;
+/** Log a native event to Storybook's Actions panel. The canvas stays identical to the story it mirrors:
+ * the source stories render no event output, so none is added to the DOM. */
+export function observed(node: HTMLElement, eventName: string, _initial?: unknown) {
+  node.addEventListener(eventName, (event) => action(eventName)((event as CustomEvent<unknown>).detail));
+  return node;
 }
 
 export const items = [
@@ -313,14 +284,3 @@ export const items = [
 
 export const portrait =
   'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"%3E%3Crect width="64" height="64" fill="%2391b8d8"/%3E%3Ccircle cx="32" cy="24" r="13" fill="%23f1c7a5"/%3E%3Cpath d="M8 64c3-18 14-27 24-27s21 9 24 27" fill="%233e6184"/%3E%3C/svg%3E';
-
-/** Framework-neutral equivalent of the React stories' Row / Column layout. */
-export function stack(direction: 'row' | 'column', gap: string, ...children: Node[]) {
-  const node = document.createElement('div');
-  node.style.display = 'flex';
-  node.style.flexDirection = direction;
-  node.style.gap = gap;
-  if (direction === 'row') node.style.alignItems = 'center';
-  node.append(...children);
-  return node;
-}

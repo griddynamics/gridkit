@@ -61,4 +61,28 @@ describe('gd-typography React parity', () => {
     const el = await mount({ variant: 'h2', as: 'h3' });
     expect(el.shadowRoot!.querySelector('h3')).toBeTruthy();
   });
+  it('applies the React reset inside the shadow root', async () => {
+    const el = await mount({ variant: 'p' });
+    const inner = el.shadowRoot!.querySelector<HTMLElement>('p')!;
+    expect(inner.style.boxSizing).toBe('border-box');
+    expect(inner.style.margin).toBe('0px');
+  });
+  it('applies the sup/sub reset of the source package because those variants have no token block', async () => {
+    host.style.fontSize = '16px';
+    const sup = await mount({ variant: 'sup' });
+    const inner = sup.shadowRoot!.querySelector<HTMLElement>('sup')!;
+    expect(getComputedStyle(inner).fontSize).toBe('12px');
+    expect(getComputedStyle(inner).lineHeight).toBe('0px');
+    expect(getComputedStyle(inner).position).toBe('relative');
+    const sub = await mount({ variant: 'sub' });
+    expect(getComputedStyle(sub.shadowRoot!.querySelector('sub')!).bottom).toBe('-3px');
+  });
+  it('lets token styles win over the reset, like the :where() token styles of the source', async () => {
+    const h1 = await mount({ variant: 'h1' });
+    expect(getComputedStyle(h1.shadowRoot!.querySelector('h1')!).fontSize).toBe('48px');
+    const small = await mount({ variant: 'small' });
+    expect(getComputedStyle(small.shadowRoot!.querySelector('small')!).fontSize).toBe('14px');
+    const strong = await mount({ variant: 'strong' });
+    expect(getComputedStyle(strong.shadowRoot!.querySelector('strong')!).fontWeight).toBe('700');
+  });
 });

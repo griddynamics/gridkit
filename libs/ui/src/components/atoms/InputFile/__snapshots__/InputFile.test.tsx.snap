@@ -21,6 +21,7 @@ exports[`InputFile > SHOULD match snapshot 1`] = `
       </span>
     </button>
     <input
+      aria-label="Browse Files"
       class="css-1ukmigv"
       type="file"
     />

@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { defaultTheme } from 'gd-design-library/tokens';
 import './gd-badge';
-import '../gd-icon/gd-icon';
 
 describe('gd-badge', () => {
   it('resolves variant, appearance, size, disabled state, and icon slots from Badge tokens', async () => {
@@ -11,7 +10,7 @@ describe('gd-badge', () => {
     element.appearance = 'outline';
     element.size = 'lg';
     element.disabled = true;
-    element.innerHTML = '<gd-icon slot="icon-start" name="warning" size="md"></gd-icon>Warning';
+    element.innerHTML = '<span slot="icon-start">!</span>Warning';
     document.body.append(element);
     await element.updateComplete;
     const root = element.shadowRoot!.querySelector<HTMLElement>('[part="root"]')!;
@@ -19,18 +18,10 @@ describe('gd-badge', () => {
     expect(root.style.border).not.toBe('');
     expect(root.style.opacity).toBe('0.7');
     expect(root.getAttribute('aria-disabled')).toBe('true');
-    await element.updateComplete;
-    const icon = element.querySelector('gd-icon')!;
-    await icon.updateComplete;
-    expect(icon.name).toBe('warning');
-    expect(element.shadowRoot!.querySelector('[part="icon-start"]')).not.toBeNull();
-    const iconRect = icon.getBoundingClientRect();
-    const contentRect = element.shadowRoot!.querySelector<HTMLElement>('[part="content"]')!.getBoundingClientRect();
-    expect(Math.abs(iconRect.top + iconRect.height / 2 - (contentRect.top + contentRect.height / 2))).toBeLessThan(1);
+    expect(element.querySelector('[slot="icon-start"]')?.textContent).toBe('!');
     element.remove();
   });
-
-  it('does not render empty icon wrappers that add flex gaps', async () => {
+  it('only renders icon wrappers for slotted icons so empty slots add no flex gap', async () => {
     const element = document.createElement('gd-badge');
     element.theme = defaultTheme;
     element.textContent = 'Plain';
@@ -38,6 +29,21 @@ describe('gd-badge', () => {
     await element.updateComplete;
     expect(element.shadowRoot!.querySelector('[part="icon-start"]')).toBeNull();
     expect(element.shadowRoot!.querySelector('[part="icon-end"]')).toBeNull();
+    const root = element.shadowRoot!.querySelector<HTMLElement>('[part="root"]')!;
+    // padding 0 + 8px each side + the text only: no gap tracks around the content.
+    expect(root.getBoundingClientRect().width).toBe(
+      element.shadowRoot!.querySelector('[part="content"]')!.getBoundingClientRect().width + 16
+    );
+
+    const end = document.createElement('span');
+    end.slot = 'icon-end';
+    end.textContent = '!';
+    element.append(end);
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    await element.updateComplete;
+    expect(element.shadowRoot!.querySelector('[part="icon-end"]')).not.toBeNull();
+    expect(element.shadowRoot!.querySelector('[part="icon-start"]')).toBeNull();
+    expect(getComputedStyle(element).display).toBe('contents');
     element.remove();
   });
 });

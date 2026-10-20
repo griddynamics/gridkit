@@ -1,8 +1,11 @@
-import { LitElement, html, css, nothing } from 'lit';
+import { html, css, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { avatar } from 'gd-design-library/tokens';
-import { get, resolveThemeTree, type DesignCoreTheme } from 'gd-design-core';
+import '../gd-typography/gd-typography';
+import type { GdTypography } from '../gd-typography/gd-typography';
+import { get, resolveThemeTree, type ThemeLike } from '../../../core';
+import { GdThemedElement } from '../../../core/themed-element';
 
 export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 
@@ -24,7 +27,7 @@ interface ResolvedAvatarTokens {
   };
 }
 
-function resolveAvatarTokens(theme: DesignCoreTheme, size: AvatarSize): ResolvedAvatarTokens {
+function resolveAvatarTokens(theme: ThemeLike, size: AvatarSize): ResolvedAvatarTokens {
   const resolved = resolveThemeTree(avatar, theme) as unknown as ResolvedAvatarTokens & {
     size: Partial<Record<AvatarSize, { width: number; height: number }>>;
   };
@@ -33,9 +36,11 @@ function resolveAvatarTokens(theme: DesignCoreTheme, size: AvatarSize): Resolved
 }
 
 /** Resolves GridKit token paths while leaving ordinary CSS colours untouched. */
-function resolveColor(theme: DesignCoreTheme, color: string | undefined, fallback: string): string {
+function resolveColor(theme: ThemeLike, color: string | undefined, fallback: string): string {
   return color ? (get(theme, `colors.${color}`, color) as string) : fallback;
 }
+
+const FALLBACK_TEXT_STYLES = { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' };
 
 function cssLengths(values: Record<string, string | number>): Record<string, string> {
   return Object.fromEntries(
@@ -50,10 +55,12 @@ function cssLengths(values: Record<string, string | number>): Record<string, str
  * browser-owned and causes fallback content to replace it, matching the React component.
  */
 @customElement('gd-avatar')
-export class GdAvatar extends LitElement {
+export class GdAvatar extends GdThemedElement {
   static styles = css`
+    /* React renders the avatar root (a block div) directly. An inline-block host adds a line-box strut
+       around it, so the host does not generate a box of its own. */
     :host {
-      display: inline-block;
+      display: contents;
     }
     .avatar {
       box-sizing: border-box;
@@ -79,11 +86,6 @@ export class GdAvatar extends LitElement {
       justify-content: center;
       overflow: hidden;
     }
-    .fallback-text {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
     .badge {
       box-sizing: border-box;
     }
@@ -99,7 +101,6 @@ export class GdAvatar extends LitElement {
   @property({ type: String, attribute: 'background-color', reflect: true }) backgroundColor?: string;
   @property({ type: String, reflect: true }) fallback?: string;
   @property({ attribute: false }) styles: Record<string, string | number> = {};
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
 
   @state() private _failed = false;
   @state() private _hasFallbackSlot = false;
@@ -117,23 +118,10 @@ export class GdAvatar extends LitElement {
   render() {
     const size = this.sizeVariant ?? this.size;
     const tokens = resolveAvatarTokens(this.theme, size);
-    const fallbackFontSize = get(
-      this.theme,
-      `font.size.${
-        size === 'xs'
-          ? 'caption'
-          : size === 'sm'
-            ? 'small'
-            : size === 'md'
-              ? 'h6'
-              : size === 'lg'
-                ? 'h5'
-                : size === 'xl'
-                  ? 'h4'
-                  : 'h3'
-      }`,
-      '16px'
-    );
+    // `fallbackText.attrs.size` in the real avatar tokens: each size owns a Typography variant.
+    // `xxl` has no entry there, so it keeps the default `h6` variant, exactly like the React Avatar.
+    const fallbackVariant = (get(this.theme, `avatar.fallbackText.attrs.size.${size}.variant`, undefined) ??
+      get(this.theme, 'avatar.fallbackText.attrs.default.variant', 'h6')) as GdTypography['variant'];
     const hostStyle = { ...cssLengths(tokens.default), ...this.styles };
     const imageStyle = {
       ...tokens.imageWrapper.default,
@@ -163,11 +151,14 @@ export class GdAvatar extends LitElement {
                   ${this._hasFallbackSlot
                     ? html`<slot name="fallback" @slotchange=${this._onFallbackSlotChange}></slot>`
                     : this.fallback !== undefined
-                      ? html`<span
+                      ? html`<gd-typography
                           class="fallback-text"
                           part="fallback-text"
-                          style=${styleMap({ fontSize: `${fallbackFontSize}` })}
-                          >${this.fallback}</span
+                          .variant=${fallbackVariant}
+                          align="center"
+                          .styles=${FALLBACK_TEXT_STYLES}
+                          .theme=${this.theme}
+                          >${this.fallback}</gd-typography
                         >`
                       : html`<slot name="fallback" @slotchange=${this._onFallbackSlotChange}></slot>`}
                 </div>`

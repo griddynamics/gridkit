@@ -36,34 +36,16 @@ describe('Storybook custom-element source', () => {
     icon.textContent = '→';
     button.prepend(icon);
 
-    expect(source(button)).toContain('<span slot="icon-start">→</span>Continue');
+    expect(source(button)).toContain('  <span slot="icon-start">→</span>\n  Continue');
   });
 
-  it('serializes nested components once as part of their consumer-facing parent markup', () => {
-    const badge = element('gd-badge', {}, 'Status');
-    const icon = element('gd-icon', { name: 'success', size: 'md' });
-    icon.slot = 'icon-start';
-    badge.append(icon);
+  it('formats nested custom elements once instead of duplicating them as roots', () => {
+    const column = element('gd-column', { gutter: 8 });
+    column.append(element('gd-typography', { variant: 'p' }, 'Readable source'));
+    const generated = source(column);
 
-    const generated = source(badge);
-
-    expect(generated.match(/<gd-icon/g)).toHaveLength(1);
-    expect(generated).toMatch(/<gd-icon[^>]*slot="icon-start"[^>]*><\/gd-icon>/);
-    expect(generated).toContain('name="success"');
-    expect(generated).toContain('size="md"');
-    expect(generated).not.toContain("document.querySelector('gd-icon')");
-    expect(generated.match(/const component2 =/g)).toHaveLength(1);
-    expect(generated).toContain('component2.theme = defaultTheme;');
-  });
-
-  it('preserves layout wrappers and initializes nested property-only inputs', () => {
-    const wrapper = document.createElement('div');
-    wrapper.style.cssText = 'display: flex; gap: 24px;';
-    wrapper.append(element('gd-select', { items, multiple: true }));
-    const generated = source(wrapper);
-    expect(generated).toContain('<div style="display: flex; gap: 24px;">');
-    expect(generated).toContain('component.items = [');
-    expect(generated).toContain('component.theme = defaultTheme;');
-    expect(generated.match(/<gd-select/g)).toHaveLength(1);
+    expect(generated).toContain('<gd-column');
+    expect(generated).toContain('  <gd-typography>Readable source</gd-typography>');
+    expect(generated.match(/<gd-typography/g)).toHaveLength(1);
   });
 });

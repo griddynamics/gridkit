@@ -7,15 +7,15 @@ exports[`SearchLoader > SHOULD match snapshot 1`] = `
     data-testid="SearchLoader"
   >
     <span
-      class="css-11q7xwo"
+      class="css-1isopp4"
       data-testid="Skeleton"
     />
     <span
-      class="css-11q7xwo"
+      class="css-1isopp4"
       data-testid="Skeleton"
     />
     <span
-      class="css-11q7xwo"
+      class="css-1isopp4"
       data-testid="Skeleton"
     />
   </div>

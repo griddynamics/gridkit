@@ -3,7 +3,7 @@
 exports[`Skeleton > SHOULD match snapshot & render correctly with children 1`] = `
 <div>
   <span
-    class="css-sxqtuu"
+    class="css-6epsn2"
     data-testid="Skeleton"
   >
     Custom text
@@ -14,7 +14,7 @@ exports[`Skeleton > SHOULD match snapshot & render correctly with children 1`] =
 exports[`Skeleton > SHOULD match snapshot 1`] = `
 <div>
   <span
-    class="skeleton-custom-class css-sxqtuu"
+    class="skeleton-custom-class css-6epsn2"
     data-testid="Skeleton"
   />
 </div>

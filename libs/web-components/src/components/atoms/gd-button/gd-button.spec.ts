@@ -43,25 +43,6 @@ afterEach(() => {
 });
 
 describe('gd-button', () => {
-  it('composes gd-loader for the React loading state', async () => {
-    const el = add('primary');
-    el.setAttribute('is-loading', '');
-    await settle(el);
-    const inner = el.shadowRoot!.querySelector('button')!;
-    const loader = el.shadowRoot!.querySelector<
-      HTMLElement & { size: string; withWrapper: boolean; updateComplete: Promise<unknown> }
-    >('gd-loader');
-
-    await loader?.updateComplete;
-
-    expect((el as unknown as { isLoading: boolean }).isLoading).toBe(true);
-    expect(inner.disabled).toBe(true);
-    expect(inner.getAttribute('aria-busy')).toBe('true');
-    expect(loader?.size).toBe('sm');
-    expect(loader?.withWrapper).toBe(false);
-    expect(getComputedStyle(loader!.shadowRoot!.querySelector('.loader')!).width).toBe('24px');
-  });
-
   it('resolves the real primary token colour, not a placeholder string', async () => {
     const el = add('primary');
     await settle(el);
@@ -74,6 +55,29 @@ describe('gd-button', () => {
     await settle(el);
     const parts = Array.from(el.shadowRoot!.querySelectorAll('[part]')).map((n) => n.getAttribute('part'));
     expect(parts).toEqual(expect.arrayContaining(['button', 'content']));
+  });
+
+  it('composes the shared loader for loading state instead of owning spinner markup or animation', async () => {
+    const el = add('primary');
+    (el as unknown as { isLoading: boolean }).isLoading = true;
+    await settle(el);
+
+    const inner = el.shadowRoot!.querySelector('button')!;
+    const loader = el.shadowRoot!.querySelector('gd-loader') as HTMLElement & {
+      size: string;
+      withWrapper: boolean;
+      updateComplete: Promise<unknown>;
+    };
+    expect(inner.disabled).toBe(true);
+    expect(inner.getAttribute('aria-busy')).toBe('true');
+    expect(loader).not.toBeNull();
+    expect(loader.getAttribute('part')).toContain('spinner');
+    expect(loader.size).toBe('sm');
+    expect(loader.withWrapper).toBe(false);
+    await loader.updateComplete;
+    const loaderSurface = loader.shadowRoot!.querySelector<HTMLElement>('[part="loader"]')!;
+    expect(getComputedStyle(loaderSurface).animationName).toBe('gd-loader-spin');
+    expect(el.shadowRoot!.querySelector('.spinner')).toBeNull();
   });
 
   it('mutes text and background when disabled, via real CSS :disabled matching', async () => {
@@ -351,5 +355,26 @@ describe('gd-button', () => {
     await new Promise((r) => setTimeout(r, 100));
 
     expect(innerBg(el)).toBe('rgb(255, 184, 0)');
+  });
+  it('applies the hover/active/disabled state classes set on the host, like className on the source button', async () => {
+    const el = add('primary');
+    await settle(el);
+    const rules = el.shadowRoot!.adoptedStyleSheets.flatMap((sheet) =>
+      Array.from(sheet.cssRules, (rule) => rule.cssText)
+    );
+    for (const state of ['hover', 'active', 'disabled']) {
+      expect(rules.some((rule) => rule.includes(`:host(.${state}) button`))).toBe(true);
+      // The source selector for the same state is kept for a class set on the button itself.
+      expect(rules.some((rule) => rule.includes(`button.${state}`))).toBe(true);
+    }
+  });
+
+  it('resets the native button chrome that the shared stylesheet removes for the source button', async () => {
+    const el = add('inherit');
+    await settle(el);
+    const inner = getComputedStyle(el.shadowRoot!.querySelector('button')!);
+    expect(inner.backgroundColor).toBe('rgba(0, 0, 0, 0)');
+    expect(inner.textTransform).toBe('none');
+    expect(inner.boxSizing).toBe('border-box');
   });
 });

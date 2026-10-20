@@ -3,6 +3,11 @@ import { get } from '@utils';
 import { getSpacing, hexToRgba } from './utils';
 
 export const chat = {
+  webComponent: {
+    host: {
+      boxSizing: 'border-box',
+    },
+  },
   wrapper: {
     default: {
       display: 'flex',

@@ -1,8 +1,9 @@
-import { LitElement, html } from 'lit';
+import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { html as staticHtml, unsafeStatic } from 'lit/static-html.js';
 import { separator, resolveThemeColor } from 'gd-design-library/tokens';
-import { buttonCssBlockToText, get, resolveThemeTree, type ButtonCssBlock, type DesignCoreTheme } from 'gd-design-core';
+import { buttonCssBlockToText, get, resolveThemeTree, type ButtonCssBlock } from '../../../core';
+import { GdThemedElement } from '../../../core/themed-element';
 import '../gd-typography/gd-typography';
 
 type SeparatorOrientation = 'horizontal' | 'vertical';
@@ -22,7 +23,7 @@ const labelTypography: Record<SeparatorSize, { variant: string; as: string }> = 
 };
 
 @customElement('gd-separator')
-export class GdSeparator extends LitElement {
+export class GdSeparator extends GdThemedElement {
   @property({ type: String, reflect: true }) orientation: SeparatorOrientation = 'horizontal';
   @property({ type: String, reflect: true }) length?: string;
   @property({ type: String, reflect: true }) color?: string;
@@ -34,7 +35,6 @@ export class GdSeparator extends LitElement {
     'center';
   @property({ type: String, attribute: 'label-color', reflect: true }) labelColor?: string;
   @property({ attribute: false }) styles: CssBlock = {};
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
 
   private line() {
     const tag = unsafeStatic(this.as === 'hr' ? 'hr' : this.as);
@@ -48,7 +48,7 @@ export class GdSeparator extends LitElement {
       part="label"
       variant=${typography.variant}
       as=${typography.as}
-      color=${this.labelColor ?? 'text.caption'}
+      color=${resolveThemeColor(this.theme.colors as never, this.labelColor ?? 'text.caption')}
       .theme=${this.theme}
       >${this.label}</gd-typography
     >`;
@@ -67,6 +67,9 @@ export class GdSeparator extends LitElement {
     const borderSide = this.orientation === 'horizontal' ? 'borderTop' : 'borderLeft';
     const lengthStyle = this.length ? { [this.orientation === 'horizontal' ? 'width' : 'height']: this.length } : {};
     const cssText = [
+      // The host is transparent so the wrapper takes part in the surrounding layout like the root of a
+      // regular element (a percentage width must not resolve against an auto-width host).
+      ':host { display: contents; }',
       buttonCssBlockToText('.separator', tokens.default),
       buttonCssBlockToText('.separator', tokens[this.orientation]),
       buttonCssBlockToText('.separator', lengthStyle),

@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Pressable, Text, View, type ViewStyle } from 'react-native';
 import { Path, Svg } from 'react-native-svg';
 import { useStore } from 'zustand';
-import { createCheckboxStore, resolveCheckboxStyle, type CheckboxSizeName, type DesignCoreTheme } from 'gd-design-core';
+import { createCheckboxStore, resolveCheckboxStyle, type CheckboxSizeName, type DesignCoreTheme } from '../../core';
 import { pxToNumber } from '../../utils/pxToNumber';
 
 export interface GdCheckboxProps {
@@ -18,7 +18,7 @@ export interface GdCheckboxProps {
 /**
  * CTORNDSD-590 Checkbox port (mirrors `libs/web-components/src/components/gd-checkbox/gd-checkbox.ts`'s
  * store-wiring pattern, adapted to RN). Delegates all controlled/uncontrolled + indeterminate
- * state to `gd-design-core`'s `createCheckboxStore` via `useStore`, the same store both the Lit
+ * state to `src/core`'s `createCheckboxStore` via `useStore`, the same store both the Lit
  * and RN adapters share — `handleChange`/`toggle` fire from `Pressable`'s `onPress` instead of a
  * native `<input>` `change` event.
  *

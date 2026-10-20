@@ -21,6 +21,7 @@ const COMMON_ARGS = {
   styles: {},
   value: 1,
   onChange: action('changed'),
+  'aria-label': 'Select value',
 };
 
 const createStory = (args: Partial<typeof COMMON_ARGS>): StoryObj<typeof Slider> => ({

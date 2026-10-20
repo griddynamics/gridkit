@@ -31,19 +31,19 @@ export const price = {
       fontSize: (theme: Record<symbol, unknown>) => get(theme, 'font.size.h4', 'theme.font.size.h4'),
       fontWeight: (theme: Record<symbol, unknown>) => get(theme, 'font.weight.medium', 'theme.font.weight.medium'),
       lineHeight: (theme: Record<symbol, unknown>) => get(theme, 'font.line.height.h4', 'theme.font.line.height.h4'),
-      color: (theme: Record<symbol, unknown>) => get(theme, 'colors.text.disabled', 'theme.colors.text.disabled'),
+      color: (theme: Record<symbol, unknown>) => get(theme, 'colors.text.caption', 'theme.colors.text.caption'),
     },
     sm: {
       fontSize: (theme: Record<symbol, unknown>) => get(theme, 'font.size.p', 'theme.font.size.p'),
       fontWeight: (theme: Record<symbol, unknown>) => get(theme, 'font.weight.medium', 'theme.font.weight.medium'),
       lineHeight: (theme: Record<symbol, unknown>) => get(theme, 'font.line.height.p', 'theme.font.line.height.p'),
-      color: (theme: Record<symbol, unknown>) => get(theme, 'colors.text.disabled', 'theme.colors.text.disabled'),
+      color: (theme: Record<symbol, unknown>) => get(theme, 'colors.text.caption', 'theme.colors.text.caption'),
     },
     lg: {
       fontSize: (theme: Record<symbol, unknown>) => get(theme, 'font.size.h3', 'theme.font.size.h3'),
       fontWeight: (theme: Record<symbol, unknown>) => get(theme, 'font.weight.medium', 'theme.font.weight.medium'),
       lineHeight: (theme: Record<symbol, unknown>) => get(theme, 'font.line.height.h3', 'theme.font.line.height.h3'),
-      color: (theme: Record<symbol, unknown>) => get(theme, 'colors.text.disabled', 'theme.colors.text.disabled'),
+      color: (theme: Record<symbol, unknown>) => get(theme, 'colors.text.caption', 'theme.colors.text.caption'),
     },
   },
 };

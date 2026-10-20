@@ -1,15 +1,15 @@
-import { LitElement, html } from 'lit';
+import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { sliderDots } from 'gd-design-library/tokens';
-import { buttonCssBlockToText, resolveThemeTree, type ButtonCssBlock, type DesignCoreTheme } from 'gd-design-core';
+import { buttonCssBlockToText, resolveThemeTree, type ButtonCssBlock } from '../../../core';
+import { GdThemedElement } from '../../../core/themed-element';
 
 @customElement('gd-slider-dots')
-export class GdSliderDots extends LitElement {
+export class GdSliderDots extends GdThemedElement {
   @property({ type: Number, reflect: true }) count = 0;
   @property({ type: Number, attribute: 'active-index', reflect: true }) activeIndex = 0;
   @property({ attribute: false }) styles: ButtonCssBlock = {};
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
 
   private select(index: number) {
     this.activeIndex = index;

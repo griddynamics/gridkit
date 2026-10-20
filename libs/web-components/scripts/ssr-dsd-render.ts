@@ -3,7 +3,7 @@
  * Lit's own SSR tooling (`@lit-labs/ssr`), added only to this package's own package.json.
  *
  * Loaded via Vite's `ssrLoadModule` (see run-ssr-dsd-check.mjs) rather than run directly
- * under a generic Node/TS runner, so the `gd-design-core` bare-specifier import resolves
+ * under a generic Node/TS runner, so the `gd-design-library/tokens` bare-specifier import resolves
  * exactly the way it does in this package's real dev/build (via `nxViteTsPaths()` in
  * vite.config.ts) instead of falling back to a plain Node module-resolution algorithm that
  * doesn't understand the Nx workspace's TS path mappings.
@@ -41,6 +41,12 @@ import '../src/components/atoms/gd-select/gd-select';
 import '../src/components/atoms/gd-typography/gd-typography';
 import '../src/components/molecules/gd-menu/gd-menu';
 import '../src/components/molecules/gd-counter/gd-counter';
+import '../src/components/layout/gd-column/gd-column';
+import '../src/components/layout/gd-chat-container/gd-chat-container';
+import '../src/components/layout/gd-flex-container/gd-flex-container';
+import '../src/components/layout/gd-portal/gd-portal';
+import '../src/components/layout/gd-row/gd-row';
+import '../src/components/layout/gd-scroll/gd-scroll';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -81,6 +87,14 @@ export async function runSsrDsdCheck() {
       ><span slot="trigger">Actions</span><span slot="content">Menu content</span></gd-menu
     >
     <gd-counter .theme=${defaultTheme}></gd-counter>
+    <gd-column width="300px" .theme=${defaultTheme}>Column content</gd-column>
+    <gd-chat-container .theme=${defaultTheme}
+      ><span slot="sidebar">Sidebar</span><span>Main content</span></gd-chat-container
+    >
+    <gd-flex-container gap="8px" .theme=${defaultTheme}>Flex container content</gd-flex-container>
+    <gd-portal .theme=${defaultTheme}>Portal content</gd-portal>
+    <gd-row gutter="8" .theme=${defaultTheme}>Row content</gd-row>
+    <gd-scroll vertical="visible" horizontal="hidden" .theme=${defaultTheme}>Scrollable content</gd-scroll>
   `;
 
   const result = render(template);
@@ -94,7 +108,11 @@ export async function runSsrDsdCheck() {
       'gd-box',
       'gd-button',
       'gd-checkbox',
+      'gd-column',
+      'gd-chat-container',
       'gd-counter',
+      'gd-flex-container',
+      'gd-portal',
       'gd-image',
       'gd-icon',
       'gd-input',
@@ -112,8 +130,10 @@ export async function runSsrDsdCheck() {
       'gd-truncate',
       'gd-wrapper',
       'gd-menu',
+      'gd-row',
       'gd-select',
       'gd-typography',
+      'gd-scroll',
     ].map((tag) => [tag, new RegExp(`<${tag}[^>]*>\\s*<template shadowroot="open" shadowrootmode="open">`).test(out)])
   );
 

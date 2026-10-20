@@ -46,7 +46,6 @@ describe('gd-checkbox', () => {
     const indicator = el.shadowRoot!.querySelector('.indicator')!;
     // #FFB800 — the real brand gold from libs/ui/src/tokens/checkbox.ts
     expect(getComputedStyle(indicator).backgroundColor).toBe('rgb(255, 184, 0)');
-    expect(el.shadowRoot!.querySelector('gd-icon')?.getAttribute('name')).toBe('check');
   });
 
   it('exposes label/input/indicator as CSS parts (CTORNDSD-646b)', async () => {
@@ -146,7 +145,7 @@ describe('gd-checkbox', () => {
      * deliberately PRESERVES the current value (faithful to React's controlled → uncontrolled
      * behavior) and is exactly wrong for form reset. The symptom was subtle: `.checked` returned to
      * `undefined`, so it looked reset, while the box stayed visually checked and kept submitting
-     * `'on'`. Fixed by adding a distinct `resetTo` action to gd-design-core.
+     * `'on'`. Fixed by adding a distinct `resetTo` action to the checkbox store.
      *
      * This asserts the FormData outcome, not just the property, because the property was the
      * misleading signal.
@@ -193,6 +192,15 @@ describe('gd-checkbox', () => {
 
     expect(el.shadowRoot!.querySelector<HTMLInputElement>('input')!.indeterminate).toBe(true);
     expect(el.shadowRoot!.querySelector('input')!.getAttribute('aria-checked')).toBe('mixed');
-    expect(el.shadowRoot!.querySelector('gd-icon')?.getAttribute('name')).toBe('minus');
+  });
+
+  it('generates no host box and lays out the visually hidden input like the source component', async () => {
+    mount('<gd-checkbox>Accept</gd-checkbox>');
+    const el = host.querySelector('gd-checkbox')!;
+    await settle(el);
+    expect(getComputedStyle(el).display).toBe('contents');
+    const input = el.shadowRoot!.querySelector('input')!;
+    const style = getComputedStyle(input);
+    expect([style.position, style.width, style.height, style.margin]).toEqual(['absolute', '1px', '1px', '-1px']);
   });
 });

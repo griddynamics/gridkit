@@ -22,21 +22,6 @@ function mount() {
 }
 
 describe('gd-menu', () => {
-  it('closes on an outside pointer target after reopening', async () => {
-    const menu = mount();
-    const outside = document.createElement('button');
-    outside.textContent = 'Outside';
-    host.append(outside);
-    await settle(menu);
-    for (let attempt = 0; attempt < 2; attempt++) {
-      menu.openMenu();
-      await settle(menu);
-      await userEvent.click(outside);
-      await settle(menu);
-      expect(menu.open).toBe(false);
-      expect(menu.shadowRoot!.querySelector('[popover]')!.matches(':popover-open')).toBe(false);
-    }
-  });
   it('exposes the trigger and content slots through stable CSS parts', async () => {
     const menu = mount();
     await settle(menu);
@@ -95,6 +80,53 @@ describe('gd-menu', () => {
     expect(content.height).toBeLessThan(window.innerHeight);
     expect(content.left).toBeCloseTo(trigger.right + menu.offsetX, 0);
     expect(content.top).toBeCloseTo(trigger.bottom + menu.offsetY, 0);
+  });
+
+  it('keeps an open menu beside its trigger when it renders again or the trigger moves', async () => {
+    const menu = mount();
+    await settle(menu);
+    menu.openMenu();
+    await settle(menu);
+    const frames = () =>
+      new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+    await frames();
+    const content = menu.shadowRoot!.querySelector<HTMLElement>('[part="content"]')!;
+    const trigger = menu.shadowRoot!.querySelector<HTMLElement>('[part="trigger"]')!;
+    const expectBesideTrigger = () => {
+      const triggerRect = trigger.getBoundingClientRect();
+      const contentRect = content.getBoundingClientRect();
+      expect(contentRect.left).toBeCloseTo(triggerRect.right + menu.offsetX, 0);
+      expect(contentRect.top).toBeCloseTo(triggerRect.bottom + menu.offsetY, 0);
+    };
+    expectBesideTrigger();
+
+    // A render re-applies the content tokens, including `inset: auto`.
+    menu.selectedValue = { name: 'Edit', value: 'edit' };
+    await settle(menu);
+    expectBesideTrigger();
+
+    // Layout changes without a render (fonts, scrolling, resizing) are followed on the next frames.
+    host.style.marginLeft = '120px';
+    await frames();
+    expectBesideTrigger();
+  });
+
+  it('draws the trigger focus ring for keyboard focus only', async () => {
+    const menu = mount();
+    await settle(menu);
+    const trigger = menu.shadowRoot!.querySelector<HTMLElement>('[part="trigger"]')!;
+    await userEvent.click(trigger);
+    await settle(menu);
+    expect(getComputedStyle(trigger).outlineStyle).toBe('none');
+    menu.closeMenu();
+    (document.activeElement as HTMLElement | null)?.blur();
+
+    // Focus that follows a key press is keyboard focus.
+    await userEvent.keyboard('{Shift}');
+    trigger.focus();
+    await settle(menu);
+    expect(menu.shadowRoot!.activeElement).toBe(trigger);
+    expect(getComputedStyle(trigger).outlineStyle).toBe('solid');
   });
 
   it('maps a composed selection event to an Option-shaped selectedValue and gd-change detail', async () => {

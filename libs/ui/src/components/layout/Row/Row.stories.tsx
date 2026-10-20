@@ -433,13 +433,6 @@ export default {
   </ul>
         
 
-  <br/>
-  <br/>
-
-<h3>🧩 Web Components track (CTORNDSD-646)</h3>
-<b>Verdict — No abstraction — shared utility CSS.</b> Zero behavior. Shadow DOM actively fights flex layout: a percentage width on a shadow child resolves against an auto-width host, and the symptom is a child rendering at 0px rather than an error.
-<br/>
-Decision rule and full rationale: <code>docs/webcomponents-migration/05-native-html-guidelines.md</code>.
 `,
       },
     },
@@ -449,9 +442,9 @@ Decision rule and full rationale: <code>docs/webcomponents-migration/05-native-h
 const Template: StoryFn<typeof Row> = (args) => (
   <FlexContainer width="300px" height="100px" padding="10px" overflow="auto" styles={{ backgroundColor: '#f0f0f0' }}>
     <Row {...args} width="300px" height="300px" paddingTop="20px" paddingBottom="20px" display="inline-flex">
-      <div style={{ background: 'red', padding: '20px' }}>Item 1</div>
-      <div style={{ background: 'blue', padding: '20px' }}>Item 2</div>
-      <div style={{ background: 'green', padding: '20px' }}>Item 3</div>
+      <div style={{ background: '#991b1b', color: '#fff', padding: '20px' }}>Item 1</div>
+      <div style={{ background: '#1e40af', color: '#fff', padding: '20px' }}>Item 2</div>
+      <div style={{ background: '#166534', color: '#fff', padding: '20px' }}>Item 3</div>
     </Row>
   </FlexContainer>
 );

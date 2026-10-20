@@ -61,6 +61,9 @@ import { attachmentFile } from './attachmentFile';
 
 export * from './checkbox';
 export * from './separator';
+export * from './column';
+export * from './flexContainer';
+export * from './row';
 
 export * from './draganddrop';
 export * from './avatar';

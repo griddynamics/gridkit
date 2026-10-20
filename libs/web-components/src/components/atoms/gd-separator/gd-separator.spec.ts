@@ -38,4 +38,17 @@ describe('gd-separator', () => {
     expect(getComputedStyle(lines[0]).borderLeftStyle).toBe('dashed');
     el.remove();
   });
+
+  it('keeps the host transparent and resolves theme label colors', async () => {
+    const el = document.createElement('gd-separator');
+    Object.assign(el, { theme: defaultTheme, label: 'Label', labelColor: 'brand.500' });
+    document.body.append(el);
+    await el.updateComplete;
+    const label = el.shadowRoot!.querySelector('gd-typography')!;
+    await label.updateComplete;
+    expect(getComputedStyle(el).display).toBe('contents');
+    expect(label.getAttribute('color')).not.toBe('brand.500');
+    expect(getComputedStyle(label.shadowRoot!.querySelector('span,small,p,h6')!).color).not.toBe('rgb(0, 0, 0)');
+    el.remove();
+  });
 });

@@ -1,13 +1,13 @@
-import { LitElement, html } from 'lit';
+import { html } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import { truncate } from 'gd-design-library/tokens';
-import { buttonCssBlockToText, resolveThemeTree, type ButtonCssBlock, type DesignCoreTheme } from 'gd-design-core';
+import { buttonCssBlockToText, resolveThemeTree, type ButtonCssBlock } from '../../../core';
+import { GdThemedElement } from '../../../core/themed-element';
 
 @customElement('gd-truncate')
-export class GdTruncate extends LitElement {
+export class GdTruncate extends GdThemedElement {
   @property({ type: Number, reflect: true }) lines = 1;
   @property({ attribute: false }) styles: ButtonCssBlock = {};
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
   @state() isTruncated = false;
   @query('[part="content"]') private content!: HTMLElement;
   private observer?: ResizeObserver;
@@ -29,6 +29,9 @@ export class GdTruncate extends LitElement {
   render() {
     const t = resolveThemeTree(truncate, this.theme) as unknown as { default: ButtonCssBlock };
     const css = [
+      // The content span is the root of the source Truncate: the host must not add a box of its own.
+      ':host { display: contents; }',
+      buttonCssBlockToText('.content', { boxSizing: 'border-box', borderWidth: 0, borderStyle: 'solid' }),
       buttonCssBlockToText('.content', t.default),
       buttonCssBlockToText('.content', { lineClamp: this.lines, WebkitLineClamp: this.lines }),
       buttonCssBlockToText('.content', this.styles),
@@ -38,7 +41,9 @@ export class GdTruncate extends LitElement {
       s.replaceSync(css);
       this.shadowRoot.adoptedStyleSheets = [s];
     }
-    return html`<span class="content" part="content"><slot @slotchange=${this.measure}></slot></span>`;
+    return html`<span class="content" part="content" data-testid="Truncate"
+      ><slot @slotchange=${this.measure}></slot
+    ></span>`;
   }
 }
 declare global {

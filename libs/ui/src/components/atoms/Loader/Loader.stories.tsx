@@ -370,24 +370,6 @@ LoaderVariantsWithWrapperViewAsHeaderTag.parameters = {
   },
 };
 
-export const CustomLoaderTailwindClassBounceAnimation = Template.bind({});
-CustomLoaderTailwindClassBounceAnimation.args = {
-  size: SizeVariant.Lg,
-  variant: WrapperVariant.Section,
-  children: <div className="animate-ping">Loading...</div>,
-};
-CustomLoaderTailwindClassBounceAnimation.parameters = {
-  docs: {
-    source: {
-      code: `<Loader size="lg" variant="section" children={<div className="animate-ping">Loading...</div>} />`,
-    },
-    description: {
-      story:
-        'Replace default animation with custom React content via children prop. This example uses a custom ping animation while maintaining Loader wrapper and positioning functionality.',
-    },
-  },
-};
-
 export const WithAccessibility: StoryFn<PropsWithChildren<LoaderProps>> = () => {
   return (
     <div style={{ display: 'flex', gap: '40px' }} role="status" aria-label="Loading content">

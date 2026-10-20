@@ -420,7 +420,7 @@ export const WithBuildInComponents: StoryFn = () => {
     <Column gutter={64}>
       <Row gutter={64} align="start">
         <Card width="330px" gap="16px" isBordered>
-          <Card.Image src="https://picsum.photos/150/150" />
+          <Card.Image src="https://picsum.photos/150/150" alt="Product preview" />
           <Card.Column padding="0 16px 16px" gutter="16px">
             <Card.Row>
               <Card.Title>Card Title</Card.Title>
@@ -440,7 +440,7 @@ export const WithBuildInComponents: StoryFn = () => {
         </Card>
 
         <Card width="94px" isHighlighted>
-          <Card.Image src="https://picsum.photos/150/150" />
+          <Card.Image src="https://picsum.photos/150/150" alt="Product preview" />
           <Card.Row padding="8px">
             <Card.Title sizeVariant="sm">Card Title</Card.Title>
             <Card.Description sizeVariant="sm">
@@ -453,7 +453,7 @@ export const WithBuildInComponents: StoryFn = () => {
       </Row>
       <Row gutter={64} align="start">
         <Card width="684px" variant="horizontal" isBordered>
-          <Card.Image src="https://picsum.photos/150/150" width={212} />
+          <Card.Image src="https://picsum.photos/150/150" alt="Product preview" width={212} />
           <Card.Column padding="16px" gutter="16px" justify="between">
             <Card.Row>
               <Card.Title cardVariant="horizontal">Card Title</Card.Title>
@@ -473,7 +473,7 @@ export const WithBuildInComponents: StoryFn = () => {
         </Card>
 
         <Card width="360px" variant="horizontal" isHighlighted withShadowHover>
-          <Card.Image src="https://picsum.photos/150/150" width={94} />
+          <Card.Image src="https://picsum.photos/150/150" alt="Product preview" width={94} />
           <Card.Column padding="8px 16px" gutter="8px">
             <Card.Row>
               <Card.Title sizeVariant="sm">Card Title</Card.Title>
@@ -495,7 +495,7 @@ export const WithBuildInComponents: StoryFn = () => {
       </Row>
       <Row gutter={64} align="start">
         <Card width="684px" variant="horizontal" isBordered>
-          <Card.Image src="https://picsum.photos/150/150" width={212} />
+          <Card.Image src="https://picsum.photos/150/150" alt="Product preview" width={212} />
           <Card.Row padding="16px" justify="between" gutter="16px" isWrap={false}>
             <Card.Column gutter="16px">
               <Card.Row>
@@ -532,7 +532,7 @@ export const WithVerticalCard: StoryFn = (args) => {
     <Column gutter={64}>
       <Row gutter={64} align="start">
         <Card width="330px" gap="16px" isBordered>
-          <Card.Image src="https://picsum.photos/150/150" />
+          <Card.Image src="https://picsum.photos/150/150" alt="Product preview" />
           <Card.Column padding="0 16px 16px" gutter="16px">
             <Card.Row>
               <Card.Title>Card Title</Card.Title>
@@ -565,7 +565,7 @@ export const WithHorizontalCard: StoryFn = (args) => {
     <Column gutter={64}>
       <Row gutter={64} align="start">
         <Card width="684px" variant="horizontal" isBordered>
-          <Card.Image src="https://picsum.photos/150/150" width={212} />
+          <Card.Image src="https://picsum.photos/150/150" alt="Product preview" width={212} />
           <Card.Row padding="16px" justify="between" gutter="16px" isWrap={false}>
             <Card.Column gutter="16px">
               <Card.Row>
@@ -607,6 +607,7 @@ export const MyCardWithFallbackImage: StoryFn = (args) => {
     <Card {...args}>
       <Card.Image
         src="https://picsum.photosss/150/150"
+        alt="Product preview"
         fallbackComponent={<InlineNotification variant="error">Something wrong with image</InlineNotification>}
       ></Card.Image>
       <Card.Column padding="0 16px 16px" gutter="16px">
@@ -630,7 +631,7 @@ export const WithWishlistAndBadge: StoryFn = () => {
       <Row gutter={64} align="start">
         <Card width="330px" gap="16px" isBordered>
           <div style={{ position: 'relative' }}>
-            <Card.Image src="https://picsum.photos/330/200?random=20" />
+            <Card.Image src="https://picsum.photos/330/200?random=20" alt="Featured product" />
             <Card.Wishlist isActive={false} onToggle={action('Wishlist toggled')} ariaLabel="Add to wishlist" />
             <Card.Badge variant="primary" appearance="filled">
               New
@@ -645,7 +646,7 @@ export const WithWishlistAndBadge: StoryFn = () => {
 
         <Card width="330px" gap="16px" isBordered>
           <div style={{ position: 'relative' }}>
-            <Card.Image src="https://picsum.photos/330/200?random=21" />
+            <Card.Image src="https://picsum.photos/330/200?random=21" alt="Featured product" />
             <Card.Wishlist isActive={true} onToggle={action('Wishlist toggled')} ariaLabel="Remove from wishlist" />
             <Card.Badge variant="quaternary" appearance="filled">
               Sale
@@ -672,7 +673,7 @@ WithWishlistAndBadge.parameters = {
     source: {
       code: `<Card width="330px" isBordered>
   <div style={{ position: 'relative' }}>
-    <Card.Image src="/product.jpg" />
+    <Card.Image src="/product.jpg" alt="Product preview" />
     <Card.Wishlist isActive={false} onToggle={() => {}} ariaLabel="Add to wishlist" />
     <Card.Badge variant="primary" appearance="filled">New</Card.Badge>
   </div>

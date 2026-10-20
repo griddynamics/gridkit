@@ -1,17 +1,17 @@
-import { LitElement, html } from 'lit';
+import { html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { slider } from 'gd-design-library/tokens';
-import { buttonCssBlockToText, resolveThemeTree, type ButtonCssBlock, type DesignCoreTheme } from 'gd-design-core';
+import { buttonCssBlockToText, resolveThemeTree, type ButtonCssBlock } from '../../../core';
+import { GdThemedElement } from '../../../core/themed-element';
 
 @customElement('gd-slider')
-export class GdSlider extends LitElement {
+export class GdSlider extends GdThemedElement {
   @property({ type: Number, reflect: true }) min = 0;
   @property({ type: Number, reflect: true }) max = 100;
   @property({ type: Number }) value?: number;
   @property({ type: Number, reflect: true }) step = 1;
   @property({ type: Boolean, reflect: true }) disabled = false;
   @property({ attribute: false }) styles: ButtonCssBlock = {};
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
   @state() private currentValue = 0;
 
   protected willUpdate(changed: Map<PropertyKey, unknown>) {
@@ -29,6 +29,10 @@ export class GdSlider extends LitElement {
     const tokens = resolveThemeTree(slider, this.theme) as unknown as { default: ButtonCssBlock };
     const fillRatio = this.max > this.min ? (this.currentValue - this.min) / (this.max - this.min) : this.min;
     const cssText = [
+      // The host renders its input directly into the surrounding layout, like a bare range input, and the
+      // document-level form-control reset does not reach the shadow root.
+      ':host { display: contents; }',
+      'input { margin: 0; font: inherit; box-sizing: border-box; }',
       buttonCssBlockToText('input', tokens.default),
       buttonCssBlockToText('input', { '--gd-slider-fill-ratio': fillRatio }),
       buttonCssBlockToText('input', this.styles),

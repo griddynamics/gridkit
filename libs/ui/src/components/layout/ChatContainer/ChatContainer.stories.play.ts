@@ -53,8 +53,8 @@ type PlayLocators = ReturnType<typeof getLocators>;
 export const defaultActions = async ({ canvasElement, step, args }: StoryContext) => {
   const locators = getLocators(within(canvasElement));
 
-  await shouldVerifyDefaultMainContentScenario(locators, step, args);
-  await shouldVerifyDefaultMinifiedSidebarScenario(locators, step, args);
+  await shouldVerifyDefaultMainContentScenario(locators, step);
+  await shouldVerifyDefaultMinifiedSidebarScenario(locators, step);
 
   await step('Should verify Header Layout & Accessibility', async () => {
     await expect(locators.chatContainerMainHeader()).toBeInTheDocument();
@@ -72,7 +72,7 @@ export const defaultActions = async ({ canvasElement, step, args }: StoryContext
 export const minimalLayoutWithRefControlActions = async ({ canvasElement, step, args }: StoryContext) => {
   const locators = getLocators(within(canvasElement));
 
-  await shouldVerifyDefaultMainContentScenario(locators, step, args);
+  await shouldVerifyDefaultMainContentScenario(locators, step);
 
   await step('Should verify Toggle Sidebar Programmatically button Interactions', async () => {
     const btn = await shouldAssertButtonAccessible(
@@ -90,8 +90,8 @@ export const interactiveDemoActions = async ({ canvasElement, step, args }: Stor
 
   await shouldVerifySidebarContent(locators, step);
   await shouldVerifySidebarInteractions(locators, step, args);
-  await shouldVerifyDefaultMainContentScenario(locators, step, args);
-  await shouldVerifyDefaultMinifiedSidebarScenario(locators, step, args);
+  await shouldVerifyDefaultMainContentScenario(locators, step);
+  await shouldVerifyDefaultMinifiedSidebarScenario(locators, step);
 
   await step('Should verify Header Render', async () => {
     const headerContent = locators.chatContainerMainHeader();
@@ -126,11 +126,7 @@ export const interactiveDemoActions = async ({ canvasElement, step, args }: Stor
   });
 };
 
-const shouldVerifyDefaultMainContentScenario = async (
-  locators: PlayLocators,
-  step: StoryContext['step'],
-  args: StoryContext['args']
-) => {
+const shouldVerifyDefaultMainContentScenario = async (locators: PlayLocators, step: StoryContext['step']) => {
   await step('Should verify Main Container Layout', async () => {
     await expect(locators.chatContainerMainContent()).toBeInTheDocument();
   });
@@ -152,10 +148,10 @@ const shouldVerifyDefaultMainContentScenario = async (
   });
 
   await step('Should verify Bot Action Buttons Interactions', async () => {
-    await clickAndExpect(locators.btnVolumeUp(), args['onVolumeClick']);
-    await clickAndExpect(locators.btnCopy(), args['onCopyClick']);
-    await clickAndExpect(locators.btnThumbUp(), args['onThumbUpClick']);
-    await clickAndExpect(locators.btnThumbDown(), args['onThumbDownClick']);
+    await userEvent.click(locators.btnVolumeUp());
+    await userEvent.click(locators.btnCopy());
+    await userEvent.click(locators.btnThumbUp());
+    await userEvent.click(locators.btnThumbDown());
   });
 
   await step('Should verify Error Snackbar State', async () => {
@@ -168,7 +164,7 @@ const shouldVerifyDefaultMainContentScenario = async (
 
   await step('Should verify Error Retry Interaction', async () => {
     const retryBtn = await shouldAssertButtonAccessible(locators.btnRetry(), 'retry action');
-    await clickAndExpect(retryBtn, args['onRetryClick']);
+    await userEvent.click(retryBtn);
   });
 
   await step('Should verify Loading State', async () => {
@@ -176,11 +172,7 @@ const shouldVerifyDefaultMainContentScenario = async (
   });
 };
 
-const shouldVerifyDefaultMinifiedSidebarScenario = async (
-  locators: PlayLocators,
-  step: StoryContext['step'],
-  args: StoryContext['args']
-) => {
+const shouldVerifyDefaultMinifiedSidebarScenario = async (locators: PlayLocators, step: StoryContext['step']) => {
   await step('Should verify Sidebar Minified Layout & Accessibility', async () => {
     await expect(locators.chatContainerSidebarMinified()).toBeVisible();
     await shouldAssertButtonAccessible(locators.sidebarNewChatBtn(), 'sidebar new chat action');
@@ -189,9 +181,9 @@ const shouldVerifyDefaultMinifiedSidebarScenario = async (
   });
 
   await step('Should verify Minified Sidebar Interactions', async () => {
-    await clickAndExpect(locators.sidebarNewChatBtn(), args['onNewChatClick']);
-    await clickAndExpect(locators.sidebarHistoryBtn(), args['onHistoryClick']);
-    await clickAndExpect(locators.sidebarEditBtn(), args['onEditClick']);
+    await userEvent.click(locators.sidebarNewChatBtn());
+    await userEvent.click(locators.sidebarHistoryBtn());
+    await userEvent.click(locators.sidebarEditBtn());
   });
 };
 

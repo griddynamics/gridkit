@@ -570,6 +570,8 @@ The Button component offers six distinct visual styles to accommodate different 
 
 <h3>🔧 Technical Implementation</h3>
 Built with React's \`forwardRef\` for proper ref handling, the component integrates seamlessly with the theme system via \`useTheme\` hook. It extends Box component props for flexible layout control and uses styled-components for dynamic theming.
+        
+
 `,
       },
     },

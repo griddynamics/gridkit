@@ -1,8 +1,9 @@
-import { LitElement, html } from 'lit';
+import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { switchToggle } from 'gd-design-library/tokens';
-import { buttonCssBlockToText, resolveThemeTree, type ButtonCssBlock, type DesignCoreTheme } from 'gd-design-core';
+import { buttonCssBlockToText, resolveThemeTree, type ButtonCssBlock } from '../../../core';
+import { GdThemedElement } from '../../../core/themed-element';
 import '../gd-button/gd-button';
 
 export interface GdToggleItem {
@@ -10,13 +11,12 @@ export interface GdToggleItem {
   value: unknown;
 }
 @customElement('gd-toggle')
-export class GdToggle extends LitElement {
+export class GdToggle extends GdThemedElement {
   @property({ attribute: false }) items: Array<string | GdToggleItem> = [];
   @property({ attribute: false }) value?: unknown;
   @property({ type: Boolean, reflect: true }) disabled = false;
   @property({ attribute: false }) renderItemContent?: (item: string | GdToggleItem, index: number) => unknown;
   @property({ attribute: false }) styles: ButtonCssBlock = {};
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
   private normalized(item: string | GdToggleItem): GdToggleItem {
     return typeof item === 'object' ? item : { label: item, value: item };
   }

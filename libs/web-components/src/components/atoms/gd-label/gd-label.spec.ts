@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { defaultTheme } from 'gd-design-library/tokens';
 import './gd-label';
 
 describe('gd-label', () => {
@@ -16,16 +17,23 @@ describe('gd-label', () => {
     input.remove();
   });
 
-  it('maps color and ariaLabel to the rendered label', async () => {
+  it('matches the React label root: flex box with the xs gap, border-box sizing and no host box', async () => {
     const el = document.createElement('gd-label');
-    el.color = '#123456';
-    el.ariaLabel = 'Account name';
+    el.theme = defaultTheme;
+    el.textContent = 'Name';
     document.body.append(el);
     await el.updateComplete;
-
     const label = el.shadowRoot!.querySelector('label')!;
-    expect(label.style.color).toBe('rgb(18, 52, 86)');
-    expect(label.getAttribute('aria-label')).toBe('Account name');
+    expect(getComputedStyle(el).display).toBe('contents');
+    expect(getComputedStyle(label).display).toBe('flex');
+    expect(getComputedStyle(label).boxSizing).toBe('border-box');
+    expect(getComputedStyle(label).columnGap).toBe(defaultTheme.spacing.xs);
+    expect(label.hasAttribute('for')).toBe(false);
+    el.gap = '10px';
+    el.ariaLabel = 'Accessible name';
+    await el.updateComplete;
+    expect(getComputedStyle(label).columnGap).toBe('10px');
+    expect(label.getAttribute('aria-label')).toBe('Accessible name');
     el.remove();
   });
 });

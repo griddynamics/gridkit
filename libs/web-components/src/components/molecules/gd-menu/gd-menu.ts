@@ -1,8 +1,9 @@
-import { LitElement, css, html, type PropertyValues } from 'lit';
+import { css, html, type PropertyValues } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { menu } from 'gd-design-library/tokens';
-import { resolveThemeTree, type DesignCoreTheme } from 'gd-design-core';
+import { resolveThemeTree, type ThemeLike } from '../../../core';
+import { GdThemedElement } from '../../../core/themed-element';
 
 export type MenuPlacement = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 
@@ -23,7 +24,7 @@ export interface MenuOption {
   value: unknown;
 }
 
-function resolveMenuTokens(theme: DesignCoreTheme): {
+function resolveMenuTokens(theme: ThemeLike): {
   content: ResolvedMenuTokens;
   webComponent: ResolvedWebComponentTokens;
 } {
@@ -42,7 +43,7 @@ function resolveMenuTokens(theme: DesignCoreTheme): {
  * the React Menu-compatible `{ data: { name?, value }, value }` `gd-change` detail.
  */
 @customElement('gd-menu')
-export class GdMenu extends LitElement {
+export class GdMenu extends GdThemedElement {
   static styles = css`
     /* The menu token intentionally gives the open surface an inline-block display.
        Because it is applied as an inline style, it otherwise overrides Chromium's
@@ -66,7 +67,6 @@ export class GdMenu extends LitElement {
   @property({ type: Number, attribute: 'offset-y' }) offsetY = 4;
   @property({ type: String }) placement: MenuPlacement = 'bottom-right';
   @property({ attribute: false }) selectedValue: unknown = undefined;
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
   @property({ attribute: false }) styles: Record<string, string | number> = {};
 
   @query('.trigger') private _trigger!: HTMLButtonElement;
@@ -83,21 +83,25 @@ export class GdMenu extends LitElement {
     // that native behavior; retain `click` below for keyboard activation.
     this.addEventListener('pointerdown', this._onSlottedItemClick, true);
     this.addEventListener('click', this._onSlottedItemClick);
-    this.ownerDocument.addEventListener('pointerdown', this._onOutsidePointerDown, true);
   }
 
   disconnectedCallback() {
     this.removeEventListener('gd-menu-select', this._onSelect);
     this.removeEventListener('pointerdown', this._onSlottedItemClick, true);
     this.removeEventListener('click', this._onSlottedItemClick);
-    this.ownerDocument.removeEventListener('pointerdown', this._onOutsidePointerDown, true);
+    cancelAnimationFrame(this._frame);
     super.disconnectedCallback();
   }
 
   updated(changed: PropertyValues<this>) {
     const tokens = resolveMenuTokens(this.theme);
     Object.assign(this.style, { display: tokens.webComponent.host.display, ...this.styles });
-    if (!changed.has('open')) return;
+    if (!changed.has('open')) {
+      // Every render re-applies the content tokens (`inset: auto` among them), which wipes the computed
+      // geometry of an already open menu, so an open menu is placed again after each update.
+      if (this.open && this._content?.matches(':popover-open')) this._position();
+      return;
+    }
     if (this.open) this._show();
     else this._hide();
   }
@@ -130,10 +134,21 @@ export class GdMenu extends LitElement {
     if (this._content?.matches(':popover-open')) this._content.hidePopover();
   }
 
+  private _frame = 0;
+
+  /** Keeps an open menu beside its trigger on every animation frame, so late layout changes (web fonts,
+   *  scrolling, resizing) never leave it behind. The frame loop ends as soon as the popover closes. */
   private _queuePosition() {
-    requestAnimationFrame(() => {
-      if (this.open && this._content.matches(':popover-open')) this._position();
-    });
+    cancelAnimationFrame(this._frame);
+    const track = () => {
+      if (!this.open || !this._content?.matches(':popover-open')) {
+        this._frame = 0;
+        return;
+      }
+      this._position();
+      this._frame = requestAnimationFrame(track);
+    };
+    this._frame = requestAnimationFrame(track);
   }
 
   private _position() {
@@ -170,12 +185,6 @@ export class GdMenu extends LitElement {
   private _onSelect = (event: Event) => {
     const detail = (event as CustomEvent<{ data?: MenuOption; value?: unknown }>).detail;
     this._select(detail?.data ?? detail);
-  };
-
-  // Some Chromium hosts do not light-dismiss a shadow-root popover on blank page
-  // space. Keep the public state consistent for all outside pointer targets.
-  private _onOutsidePointerDown = (event: PointerEvent) => {
-    if (this.open && !event.composedPath().includes(this)) this.closeMenu();
   };
 
   private _onSlottedItemClick = (event: Event) => {
@@ -231,7 +240,8 @@ export class GdMenu extends LitElement {
         aria-expanded=${this.open}
         @click=${this.toggleMenu}
         @focusin=${() => {
-          this._triggerFocused = true;
+          // The focus ring belongs to keyboard focus only; pressing the trigger with a pointer must not draw it.
+          this._triggerFocused = this._trigger.matches(':focus-visible');
           this.requestUpdate();
         }}
         @focusout=${() => {

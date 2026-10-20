@@ -3,7 +3,7 @@
 exports[`Scroll > SHOULD match snapshot 1`] = `
 <div>
   <div
-    class="gd-scroll css-1d72473"
+    class="gd-scroll css-i1rb9d"
     data-testid="Scroll"
   >
     <div
@@ -25,7 +25,7 @@ exports[`Scroll > SHOULD match snapshot 1`] = `
 exports[`Scroll > autoHide feature > SHOULD render container with autoHide prop 1`] = `
 <div>
   <div
-    class="gd-scroll css-1d72473"
+    class="gd-scroll css-i1rb9d"
     data-testid="Scroll"
     style="height: 50px;"
   >

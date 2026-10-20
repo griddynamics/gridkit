@@ -74,10 +74,11 @@ exports[`Breadcrumbs > SHOULD match snapshot 1`] = `
         data-testid="typography"
       >
         <a
+          aria-disabled="true"
           class="Link--disabled css-txk7ga"
           data-testid="Link"
           role="link"
-          tabindex="0"
+          tabindex="-1"
           target="_blank"
         >
           Product

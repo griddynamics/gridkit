@@ -5,12 +5,12 @@ import {
   resolveButtonVariantStyle,
   type ButtonVariantName,
   type DesignCoreTheme,
-} from 'gd-design-core';
+} from '../../core';
 import { pxToNumber } from '../../utils/pxToNumber';
 import { toFontFamily } from '../../utils/toFontFamily';
 import { toFontWeight } from '../../utils/toFontWeight';
 
-/** Picks only the ViewStyle-compatible fields — gd-design-core's `color` field is for text, not
+/** Picks only the ViewStyle-compatible fields — `src/core`'s `color` field is for text, not
  *  the container view. `borderWidth` arrives as a CSS px-string (e.g. `'1px'`) from the resolver;
  *  `pxToNumber` bridges it to the plain number RN's `ViewStyle` requires. */
 function toViewStyle(style: {
@@ -41,7 +41,7 @@ export interface GdButtonProps {
 
 /**
  * CTORNDSD-590 Button port (per the spike plan's Migration Example) — the platform's smoke test.
- * Consumes gd-design-core's `resolveButtonVariantStyle`, the same token-resolved values the React
+ * Consumes `src/core`'s `resolveButtonVariantStyle`, the same token-resolved values the React
  * web and Lit adapters use, mapping its state-keyed style objects onto `Pressable`'s `pressed` state
  * function instead of a CSS pseudo-class — exactly the state mechanism the resolver was designed to
  * be state-shape-neutral about. Falls back to the resolver's own hardcoded defaults when no theme is

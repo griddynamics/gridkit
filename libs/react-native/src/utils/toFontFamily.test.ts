@@ -26,7 +26,7 @@ describe('parseFirstFontFamily', () => {
 
 describe('toFontFamily', () => {
   it('never returns a CSS stack — the defect this exists to fix', () => {
-    // The literal value gd-design-core returns. Handing this to RN's `fontFamily` matches no
+    // The literal value `src/core` returns. Handing this to RN's `fontFamily` matches no
     // native family, so iOS/Android silently fall back to the system face.
     const resolved = toFontFamily('"Fira Sans", sans-serif');
     expect(resolved).not.toContain(',');
@@ -38,7 +38,7 @@ describe('toFontFamily', () => {
     expect(toFontFamily('"Fira Sans", sans-serif', 400)).toBe(FIRA_SANS_FACES[400]);
   });
 
-  it('selects a distinct face per gd-design-core weight, since RN does not synthesize weights', () => {
+  it('selects a distinct face per `src/core` weight, since RN does not synthesize weights', () => {
     expect(toFontFamily('"Fira Sans", sans-serif', 300)).toBe(FIRA_SANS_FACES[300]);
     expect(toFontFamily('"Fira Sans", sans-serif', 500)).toBe(FIRA_SANS_FACES[500]);
     expect(toFontFamily('"Fira Sans", sans-serif', 700)).toBe(FIRA_SANS_FACES[700]);

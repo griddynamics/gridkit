@@ -22,7 +22,7 @@ export const radiogroup = {
       fontSize: (theme: Record<symbol, unknown>) => get(theme, 'font.size.p', 'theme.font.size.p'),
       fontWeight: (theme: Record<symbol, unknown>) => get(theme, 'font.weight.medium', 'theme.font.weight.medium'),
       cursor: 'inherit',
-      color: (theme: Record<symbol, unknown>) => get(theme, 'colors.text.caption', 'theme.colors.text.caption'),
+      color: (theme: Record<symbol, unknown>) => get(theme, 'colors.text.title', 'theme.colors.text.title'),
       width: '100%',
       height: '100%',
       alignContent: TextAlign.Center,

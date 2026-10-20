@@ -52,6 +52,7 @@ export const RadioGroupItem = ({
             data-testid={`${ITEM_COMPONENT_NAME}-input-${item.value}`}
             aria-checked={selected}
             aria-disabled={disabled}
+            aria-label={item.label || item.tooltip || item.value}
             value={item.value}
             checked={selected}
             disabled={disabled}
@@ -91,6 +92,7 @@ export const RadioGroupItem = ({
         onChange={handleOnChange}
         aria-checked={selected}
         aria-disabled={disabled}
+        aria-label={item.label || item.tooltip || item.value}
       />
       {children && children}
       {!children && (

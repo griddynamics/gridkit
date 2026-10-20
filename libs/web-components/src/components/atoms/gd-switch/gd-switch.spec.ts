@@ -26,4 +26,33 @@ describe('gd-switch', () => {
     expect(el.shadowRoot!.querySelector('gd-loader')).not.toBeNull();
     el.remove();
   });
+  it('generates no host box: the labelled wrapper is the component root', async () => {
+    const el = document.createElement('gd-switch');
+    Object.assign(el, { theme: defaultTheme });
+    el.textContent = 'Label';
+    document.body.append(el);
+    await el.updateComplete;
+    expect(getComputedStyle(el).display).toBe('contents');
+    expect(getComputedStyle(el.shadowRoot!.querySelector('.wrapper')!).display).toBe('inline-flex');
+    el.remove();
+  });
+  it('follows a value written back by the change listener (externally controlled state)', async () => {
+    const el = document.createElement('gd-switch');
+    Object.assign(el, { theme: defaultTheme, checked: false });
+    // The element toggles itself first; the listener restores the controlled value.
+    el.addEventListener('gd-change', () => {
+      el.checked = false;
+    });
+    document.body.append(el);
+    await el.updateComplete;
+    const input = el.shadowRoot!.querySelector<HTMLInputElement>('input')!;
+    input.click();
+    await el.updateComplete;
+    expect(el.checked).toBe(false);
+    expect(input.checked).toBe(false);
+    el.checked = true;
+    await el.updateComplete;
+    expect(input.checked).toBe(true);
+    el.remove();
+  });
 });

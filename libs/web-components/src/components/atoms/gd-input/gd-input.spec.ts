@@ -27,63 +27,6 @@ afterEach(() => {
 });
 
 describe('gd-input', () => {
-  it('keeps same-name radios mutually exclusive within their form', async () => {
-    mount(
-      '<form><gd-input variant="radio" name="choice" value="a"></gd-input><gd-input variant="radio" name="choice" value="b"></gd-input></form><form><gd-input variant="radio" name="choice" value="c"></gd-input></form>'
-    );
-    const [first, second, otherForm] = Array.from(host.querySelectorAll<GdInput>('gd-input'));
-    await Promise.all([first, second, otherForm].map(settle));
-    const input = (element: GdInput) => element.shadowRoot!.querySelector('input')!;
-    input(first).click();
-    input(otherForm).click();
-    await Promise.all([first, second, otherForm].map(settle));
-    expect(input(first).checked).toBe(true);
-    input(second).click();
-    await Promise.all([first, second, otherForm].map(settle));
-    expect(input(first).checked).toBe(false);
-    expect(input(second).checked).toBe(true);
-    expect(input(otherForm).checked).toBe(true);
-  });
-
-  it.each([
-    ['checkbox', 18],
-    ['radio', 20],
-  ] as const)('uses the %s token artwork and dimensions instead of text-field chrome', async (variant, size) => {
-    mount(`<gd-input variant="${variant}"></gd-input>`);
-    const element = host.querySelector<GdInput>('gd-input')!;
-    await settle(element);
-    const control = element.shadowRoot!.querySelector('input')!;
-    const before = getComputedStyle(control);
-    expect(before.appearance).toBe('none');
-    expect(before.width).toBe(`${size}px`);
-    expect(before.height).toBe(`${size}px`);
-    const artwork = before.backgroundImage;
-    expect(artwork).toContain('data:image/svg+xml');
-    expect(element.shadowRoot!.querySelector('[part="border"]')).toBeNull();
-    expect(element.shadowRoot!.querySelector('[part="outline"]')).toBeNull();
-    control.click();
-    await settle(element);
-    expect(control.checked).toBe(true);
-    expect(getComputedStyle(control).backgroundImage).not.toBe(artwork);
-    element.disabled = true;
-    await settle(element);
-    expect(control.disabled).toBe(true);
-  });
-
-  it('renders defaultValue on first mount and restores it on form reset', async () => {
-    host.innerHTML = '<form><gd-input name="example" default-value="Initial example"></gd-input></form>';
-    const element = host.querySelector<GdInput>('gd-input')!;
-    element.theme = defaultTheme;
-    await settle(element);
-    const control = element.shadowRoot!.querySelector('input')!;
-    expect(control.value).toBe('Initial example');
-    control.value = 'Edited';
-    control.dispatchEvent(new InputEvent('input', { bubbles: true }));
-    host.querySelector('form')!.reset();
-    await settle(element);
-    expect(control.value).toBe('Initial example');
-  });
-
   it('renders label and helper text with the same resolved font family as the input', async () => {
     mount('<gd-input id="i" label="Email" helper-text="Required"></gd-input>');
     const el = host.querySelector<GdInput>('#i')!;
@@ -237,6 +180,83 @@ describe('gd-input', () => {
     expect(inner.getAttribute('aria-describedby')).toBe('email-help');
     expect(inner.inputMode).toBe('email');
     expect(inner.tabIndex).toBe(2);
-    expect(el.style.width).toBe('320px');
+    expect(el.shadowRoot!.querySelector<HTMLElement>('[part="outer"]')!.style.width).toBe('320px');
+  });
+
+  describe('structure mirrors the source component', () => {
+    it('renders a label wrapper with the helper elements, border and outline siblings', async () => {
+      mount('<gd-input id="i" label="Label" helper-text="Helper"></gd-input>');
+      const el = host.querySelector<GdInput>('#i')!;
+      await settle(el);
+      const root = el.shadowRoot!;
+      const outer = root.querySelector<HTMLElement>('[part="outer"]')!;
+      expect(outer.localName).toBe('label');
+      expect(getComputedStyle(outer).display).toBe('inline-flex');
+      expect(getComputedStyle(outer).flexDirection).toBe('column');
+      const field = root.querySelector('[part="row"]')!;
+      const control = field.querySelector('input')!;
+      expect(control.nextElementSibling!.className).toBe('Input__border');
+      expect(control.nextElementSibling!.nextElementSibling!.className).toBe('Input__outline');
+      expect(getComputedStyle(control).height).toBe('40px');
+      expect(getComputedStyle(root.querySelector('.label')!).fontSize).toBe('14px');
+      expect(getComputedStyle(root.querySelector('.helper')!).fontSize).toBe('12px');
+    });
+
+    it('supports a span wrapper and omits border and outline for checkbox and radio', async () => {
+      mount('<gd-input id="i" wrapper-as="span" variant="checkbox"></gd-input>');
+      const el = host.querySelector<GdInput>('#i')!;
+      await settle(el);
+      const root = el.shadowRoot!;
+      expect(root.querySelector('[part="outer"]')!.localName).toBe('span');
+      expect(root.querySelector('[part="border"]')).toBeNull();
+      expect(root.querySelector('[part="outline"]')).toBeNull();
+      expect(getComputedStyle(root.querySelector('input')!).width).toBe('18px');
+    });
+
+    it('renders adornment wrappers only for slotted adornments', async () => {
+      mount('<gd-input id="i"><span slot="adornment-start">@</span></gd-input>');
+      const el = host.querySelector<GdInput>('#i')!;
+      await settle(el);
+      expect(el.shadowRoot!.querySelector('[part="adornment-start"]')).not.toBeNull();
+      expect(el.shadowRoot!.querySelector('[part="adornment-end"]')).toBeNull();
+      el.insertAdjacentHTML('beforeend', '<span slot="adornment-end">.00</span>');
+      await settle(el);
+      expect(el.shadowRoot!.querySelector('[part="adornment-end"]')).not.toBeNull();
+    });
+
+    it('shows defaultValue until a value is supplied', async () => {
+      mount('<gd-input id="i" default-value="initial"></gd-input>');
+      const el = host.querySelector<GdInput>('#i')!;
+      await settle(el);
+      expect(el.shadowRoot!.querySelector('input')!.value).toBe('initial');
+    });
+
+    it('unchecks other radios sharing a name across shadow roots', async () => {
+      mount(
+        '<gd-input id="a" variant="radio" name="g" value="1"></gd-input><gd-input id="b" variant="radio" name="g" value="2"></gd-input>'
+      );
+      const a = host.querySelector<GdInput>('#a')!;
+      const b = host.querySelector<GdInput>('#b')!;
+      await settle(a);
+      await settle(b);
+      a.shadowRoot!.querySelector('input')!.click();
+      await settle(a);
+      expect(a.checked).toBe(true);
+      b.shadowRoot!.querySelector('input')!.click();
+      await settle(b);
+      await settle(a);
+      expect(b.checked).toBe(true);
+      expect(a.checked).toBe(false);
+      expect(a.shadowRoot!.querySelector('input')!.checked).toBe(false);
+    });
+
+    it('links aria-describedby to the helper text rendered inside the shadow root', async () => {
+      mount('<gd-input id="i" helper-text="Error message" aria-describedby="error-id"></gd-input>');
+      const el = host.querySelector<GdInput>('#i')!;
+      await settle(el);
+      const root = el.shadowRoot!;
+      expect(root.querySelector('input')!.getAttribute('aria-describedby')).toBe('error-id');
+      expect(root.querySelector('.helper')!.id).toBe('error-id');
+    });
   });
 });

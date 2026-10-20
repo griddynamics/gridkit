@@ -1,6 +1,12 @@
 import { get } from '@utils';
 
 export const typography = {
+  webComponent: {
+    default: {
+      boxSizing: 'border-box',
+      margin: 0,
+    },
+  },
   base: {
     fontFamily: (theme: Record<symbol, unknown>) => get(theme, 'font.family', 'theme.font.family'),
   },

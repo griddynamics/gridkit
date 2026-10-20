@@ -1,32 +1,45 @@
-import { LitElement, html } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
-import { loader, animations } from 'gd-design-library/tokens';
-import {
-  buttonCssBlockToText,
-  get,
-  keyframesCssBlockToText,
-  resolveThemeTree,
-  type ButtonCssBlock,
-  type DesignCoreTheme,
-} from 'gd-design-core';
-import '../gd-wrapper/gd-wrapper';
+import { nothing, type TemplateResult } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
+import { html, unsafeStatic } from 'lit/static-html.js';
+import { loader, animations, wrapper } from 'gd-design-library/tokens';
+import { buttonCssBlockToText, cssKeyframesToText, get, resolveThemeTree, type ButtonCssBlock } from '../../../core';
+import { GdThemedElement } from '../../../core/themed-element';
 
 type LoaderName = 'circle' | 'dots';
 type LoaderVariant = 'inline' | 'section' | 'fullPage';
 type LoaderSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 type CssBlock = ButtonCssBlock;
 
+const isMeaningfulNode = (node: Node) =>
+  node.nodeType === Node.ELEMENT_NODE || (node.nodeType === Node.TEXT_NODE && Boolean(node.textContent?.trim()));
+
 @customElement('gd-loader')
-export class GdLoader extends LitElement {
+export class GdLoader extends GdThemedElement {
   @property({ type: String, reflect: true }) name: LoaderName = 'circle';
   @property({ type: String, reflect: true }) variant: LoaderVariant = 'inline';
   @property({ type: String, reflect: true }) size: LoaderSize = 'md';
   @property({ type: String, reflect: true }) rounded = 'none';
-  @property({ type: String, attribute: 'animation-props' }) animationProps = '1000ms ease-in-out infinite';
+  @property({ type: String, attribute: 'animation-props' }) animationProps = '2000ms ease-in-out infinite';
   @property({ type: Boolean, attribute: 'with-wrapper' }) withWrapper = true;
-  @property({ type: String, attribute: 'wrapper-as' }) wrapperAs: keyof HTMLElementTagNameMap = 'span';
+  /** Wrapper element tag, like React's `WrapperView` (default `span`). */
+  @property({ type: String, attribute: 'wrapper-view' }) WrapperView: keyof HTMLElementTagNameMap = 'span';
   @property({ attribute: false }) styles: CssBlock = {};
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
+
+  /**
+   * React's `<Loader>` renders its `children` INSTEAD of the built-in animation (still inside the
+   * wrapper). Slotted light-DOM content does the same here, so the spinner is only rendered while
+   * the default slot is empty.
+   */
+  @state() private _hasContent = false;
+
+  connectedCallback() {
+    super.connectedCallback();
+    this._hasContent = Array.from(this.childNodes).some(isMeaningfulNode);
+  }
+
+  private _onSlotChange(event: Event) {
+    this._hasContent = (event.target as HTMLSlotElement).assignedNodes({ flatten: true }).some(isMeaningfulNode);
+  }
 
   protected updated() {
     const surface = this.shadowRoot?.querySelector<HTMLElement>('[part="wrapper"]');
@@ -35,33 +48,56 @@ export class GdLoader extends LitElement {
   }
 
   render() {
-    const loaderTokens = get(this.theme, 'loader', loader) as typeof loader;
-    const animationTokens = get(this.theme, 'animations', animations) as typeof animations;
+    const loaderTokens = (this.theme.loader as typeof loader | undefined) ?? loader;
+    const animationTokens = (this.theme.animations as typeof animations | undefined) ?? animations;
     const tokens = resolveThemeTree(loaderTokens, this.theme) as unknown as Record<string, CssBlock> & {
       circle: Record<string, CssBlock>;
       dots: Record<string, CssBlock>;
     };
     const resolvedAnimations = resolveThemeTree(animationTokens, this.theme) as unknown as Record<string, CssBlock>;
-    const animationTokenName = get(tokens, ['animation', this.name, 'name'], '');
-    const frames = resolvedAnimations[animationTokenName] ?? {};
-    const localAnimationName = `gd-loader-${this.name}`;
+    const animationName = this.name === 'circle' ? 'spinKeyframes' : 'bounceKeyframes';
+    const frames = resolvedAnimations[animationName];
+    const wrapperTokens = resolveThemeTree(
+      (this.theme.wrapper as typeof wrapper | undefined) ?? wrapper,
+      this.theme
+    ) as unknown as Record<string, CssBlock>;
     const radius = get(this.theme, `radius.${this.rounded}`, '0px');
     const cssText = [
+      // React renders the wrapper span as the component's root; an extra inline host box would add a line
+      // box (strut) around it, making the loader ~3px taller inside flex columns and rows.
+      buttonCssBlockToText(':host', { display: 'contents' }),
+      // React gets this from the global reset in styles.css, which does not reach a shadow root; without
+      // it the circle's border adds to its width/height and every size renders larger than in React.
+      buttonCssBlockToText('.wrapper, .loader, .dot', { boxSizing: 'border-box' }),
+      // Same `wrapper` tokens React's <Wrapper> applies: centering, backdrop blur/tint, and the
+      // inline / section (absolute fill) / fullPage (fixed viewport) positioning.
+      buttonCssBlockToText('.wrapper', wrapperTokens.default),
+      buttonCssBlockToText('.wrapper', wrapperTokens[this.variant] ?? {}),
+      // A `popover` surface (fullPage) ships UA margin/border/padding/overflow that React's portal
+      // wrapper does not have.
+      buttonCssBlockToText('.wrapper[popover]', {
+        margin: 0,
+        border: 0,
+        padding: 0,
+        overflow: 'visible',
+        maxWidth: 'none',
+        maxHeight: 'none',
+      }),
       buttonCssBlockToText('.loader', tokens.default),
       buttonCssBlockToText('.loader', tokens[this.variant] ?? {}),
       buttonCssBlockToText('.loader', tokens[this.name].default),
       buttonCssBlockToText('.loader', tokens[this.name][this.size]),
       this.name === 'circle'
-        ? buttonCssBlockToText('.loader', { animation: `${localAnimationName} ${this.animationProps}` })
+        ? buttonCssBlockToText('.loader', { animation: `gd-loader-spin ${this.animationProps}` })
         : '',
       this.name === 'dots'
-        ? buttonCssBlockToText('.dot', {
-            borderRadius: radius,
-            animation: `${localAnimationName} ${this.animationProps}`,
-          })
+        ? buttonCssBlockToText('.dot', { borderRadius: radius, animation: `gd-loader-bounce ${this.animationProps}` })
         : '',
       buttonCssBlockToText('.loader', this.styles),
-      keyframesCssBlockToText(localAnimationName, frames),
+      cssKeyframesToText(
+        `gd-loader-${this.name === 'circle' ? 'spin' : 'bounce'}`,
+        frames as unknown as Record<string, CssBlock>
+      ),
     ].join('\n');
     const root = this.shadowRoot;
     if (root && typeof CSSStyleSheet !== 'undefined') {
@@ -69,7 +105,7 @@ export class GdLoader extends LitElement {
       sheet.replaceSync(cssText);
       root.adoptedStyleSheets = [sheet];
     }
-    const content = html`<span
+    const loaderElement = html`<span
       class="loader"
       part="loader"
       role="status"
@@ -77,12 +113,15 @@ export class GdLoader extends LitElement {
       >${this.name === 'dots'
         ? html`<span class="dot" part="dot"></span><span class="dot" part="dot"></span
             ><span class="dot" part="dot"></span>`
-        : ''}<slot></slot
-    ></span>`;
+        : ''}</span
+    >`;
+    const content: TemplateResult = html`${this._hasContent ? nothing : loaderElement}<slot
+        @slotchange=${this._onSlotChange}
+      ></slot>`;
     if (!this.withWrapper) return content;
-    if (this.variant === 'fullPage') return html`<span part="wrapper" popover="manual">${content}</span>`;
-    return html`<gd-wrapper part="wrapper" .variant=${this.variant} .as=${this.wrapperAs} .theme=${this.theme}
-      >${content}</gd-wrapper
+    const tag = unsafeStatic(/^[a-z][a-z0-9-]*$/.test(this.WrapperView) ? this.WrapperView : 'span');
+    return html`<${tag} class="wrapper" part="wrapper" popover=${this.variant === 'fullPage' ? 'manual' : nothing}
+      >${content}</${tag}
     >`;
   }
 }

@@ -14,7 +14,6 @@ Not published, and under active investigation:
 
 | Package                                  | Description                                                                                                  |
 | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `gd-design-core` (`libs/design-core`)    | Framework-agnostic state stores + token resolution. No React, no Lit, no `gd-design-library` dependency      |
 | `web-components` (`libs/web-components`) | Lit custom-element port GridKit atoms. `private: true` — see [Web Components](libs/web-components/README.md) |
 
 ## Quick start
@@ -73,7 +72,7 @@ Shared **Introduction**, **Theme & Tokens**, and framework-neutral **Patterns & 
 appear at the top level, before the framework catalogs.
 One entry point contains two peer catalogs: **React** (components and React-specific guides)
 and **Web Components** (native custom-element stories). The Web Components catalog currently
-contains native stories and controls for all 23 published atoms and two molecules.
+contains native stories and controls for all 23 published atoms, two molecules, and five layout elements.
 
 `npm run storybook` manages both preview servers automatically; open `http://localhost:6006`.
 Ports 6006 and 6007 must be free. There is no separate Web Components startup command.
@@ -101,7 +100,7 @@ list to refresh when a story disappears. Link checks cover source documentation 
 Native browser smoke checks run with `node bin/storybook/smoke-test.mjs` after the combined build.
 They render every native story and exercise representative custom events, state changes,
 semantic output, truncation, and popover dismissal. Angular and Vue harnesses render every
-supported atom family and both molecules through native custom elements.
+supported atom family, both molecules, and all five layout elements through native custom elements.
 
 ## Verification (gd-design-library)
 

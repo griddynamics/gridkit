@@ -20,6 +20,7 @@ export default defineConfig(({ command }) => ({
       command === 'serve'
         ? {
             'gd-design-library/tokens': path.resolve(__dirname, '../ui/src/tokens/index.ts'),
+            'gd-design-library/icons': path.resolve(__dirname, '../ui/src/icons/index.ts'),
             // The tokens barrel (above) re-exports every file in libs/ui/src/tokens, and those
             // files resolve their OWN internal imports through libs/ui's own path aliases
             // (@utils, @assets, etc. — see libs/ui/tsconfig.json). nxViteTsPaths() only
@@ -46,7 +47,7 @@ export default defineConfig(({ command }) => ({
       formats: ['es'],
     },
     rollupOptions: {
-      external: [/^lit(\/.*)?$/, /^gd-design-core(\/.*)?$/, /^gd-design-library(\/.*)?$/],
+      external: [/^lit(\/.*)?$/, /^gd-design-library(\/.*)?$/],
       output: {
         preserveModules: true,
         preserveModulesRoot: 'src',

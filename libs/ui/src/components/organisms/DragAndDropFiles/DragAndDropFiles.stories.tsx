@@ -213,9 +213,11 @@ const DragAndDropExample: React.FC = () => {
           <InputFile
             accept="image/*"
             multiple
+            aria-label="Select files to upload"
             onChange={(e) => console.log('InputFile', e.target.files)}
             buttonProps={{
               variant: 'text',
+              ariaLabel: 'Select files to upload',
             }}
           >
             <Icon name="attachment" />

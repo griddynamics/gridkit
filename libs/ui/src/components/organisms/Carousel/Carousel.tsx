@@ -224,6 +224,7 @@ const CarouselComponent = forwardRef<CarouselRef, CarouselProps>(
             <CarouselControlsStyled theme={theme} data-testid={`${COMPONENT_NAME}-controls`}>
               <CarouselControlsButtonStyled
                 isIcon
+                ariaLabel="Previous slide"
                 theme={theme}
                 variant={ButtonVariant.Text}
                 onClick={() => handleScrollPrev('control')}
@@ -235,6 +236,7 @@ const CarouselComponent = forwardRef<CarouselRef, CarouselProps>(
 
               <CarouselControlsButtonStyled
                 isIcon
+                ariaLabel="Next slide"
                 theme={theme}
                 variant={ButtonVariant.Text}
                 styles={{ transform: 'rotate(180deg)' }}
@@ -284,6 +286,7 @@ const CarouselComponent = forwardRef<CarouselRef, CarouselProps>(
                   $active={index === activeIndex}
                   onClick={() => handleScrollTo(index, 'dot')}
                   data-active={index === activeIndex}
+                  aria-label={`Go to slide ${index + 1}`}
                 />
               ))}
             </CarouselDotsStyled>
@@ -294,6 +297,7 @@ const CarouselComponent = forwardRef<CarouselRef, CarouselProps>(
           <CarouselThumbsStyled theme={theme} $layout={layout} data-testid={`${COMPONENT_NAME}-thumbnails`}>
             <CarouselControlsButtonStyled
               isIcon
+              ariaLabel="Previous thumbnails"
               theme={theme}
               variant={ButtonVariant.Text}
               styles={{ transform: `rotate(${layout === 'vertical' ? '90' : '0'}deg)` }}
@@ -325,6 +329,7 @@ const CarouselComponent = forwardRef<CarouselRef, CarouselProps>(
                     onClick={() => handleScrollTo(index, 'thumbnail')}
                     data-testid={`${COMPONENT_NAME}-thumbnail-${index}`}
                     data-active={index === activeIndex}
+                    aria-label={`Go to slide ${index + 1}`}
                   >
                     {cloneElement(image, {}, null)}
                   </CarouselThumbStyled>
@@ -333,6 +338,7 @@ const CarouselComponent = forwardRef<CarouselRef, CarouselProps>(
             </CarouselThumbsViewportStyled>
             <CarouselControlsButtonStyled
               isIcon
+              ariaLabel="Next thumbnails"
               theme={theme}
               variant={ButtonVariant.Text}
               onClick={() => handleScrollNext('thumbnail-control')}

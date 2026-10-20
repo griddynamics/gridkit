@@ -1,31 +1,60 @@
-import { LitElement, html, nothing } from 'lit';
+import { css, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import { html, unsafeStatic } from 'lit/static-html.js';
 import { styleMap } from 'lit/directives/style-map.js';
-import { html as staticHtml, unsafeStatic } from 'lit/static-html.js';
 import { image } from 'gd-design-library/tokens';
-import { resolveThemeTree, type DesignCoreTheme } from 'gd-design-core';
+import { resolveThemeTree } from '../../../core';
+import { GdThemedElement } from '../../../core/themed-element';
 import '../gd-skeleton/gd-skeleton';
 
 export type ImageObjectFit = 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
 type CssValues = Record<string, string | number>;
 
+const SAFE_TAG = /^[a-z][a-z0-9-]*$/i;
+const safeTag = (tag: string | undefined, fallback: string) => unsafeStatic(tag && SAFE_TAG.test(tag) ? tag : fallback);
+
 @customElement('gd-image')
-export class GdImage extends LitElement {
-  @property({ type: String, reflect: true }) as: 'div' | 'figure' = 'div';
-  @property({ type: String, attribute: 'caption-as', reflect: true }) captionAs: 'figcaption' | 'p' | 'span' =
-    'figcaption';
+export class GdImage extends GdThemedElement {
+  // The global reset of the page does not reach a shadow root; these rules reproduce it for the
+  // elements rendered here (the host stays transparent so the wrapper takes part in the page layout).
+  static styles = css`
+    :host {
+      display: contents;
+    }
+    [part='root'],
+    [part='placeholder'],
+    [part='caption'] {
+      box-sizing: border-box;
+      margin: 0;
+      border: 0 solid;
+    }
+    img {
+      display: block;
+      vertical-align: middle;
+      max-width: 100%;
+      height: auto;
+      border: 0 solid;
+      box-sizing: border-box;
+    }
+  `;
+
   @property({ type: String, reflect: true }) src?: string;
   @property({ type: String, reflect: true }) alt = '';
   @property({ type: Number, reflect: true }) width?: number;
   @property({ type: Number, reflect: true }) height?: number;
   @property({ type: String, reflect: true }) caption?: string;
+  /** Text shown over the image while it loads. The `placeholder` slot accepts richer content. */
   @property({ type: String, reflect: true }) placeholder?: string;
+  /** Tag of the wrapper element, `div` by default (for example `figure`). */
+  @property({ type: String, reflect: true }) as = 'div';
+  /** Tag of the caption element, `figcaption` by default (for example `p`). */
+  @property({ type: String, attribute: 'caption-as', reflect: true }) captionAs = 'figcaption';
   @property({ type: String, attribute: 'object-fit', reflect: true }) objectFit: ImageObjectFit = 'cover';
   @property({ attribute: false }) styles: CssValues = {};
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
 
   @state() private _loading = true;
   @state() private _failed = false;
+  @state() private _hasPlaceholder = false;
 
   protected willUpdate(changed: Map<PropertyKey, unknown>) {
     if (changed.has('src')) {
@@ -46,6 +75,10 @@ export class GdImage extends LitElement {
     this.dispatchEvent(new CustomEvent('gd-error', { bubbles: true, composed: true }));
   }
 
+  private _placeholderChanged(event: Event) {
+    this._hasPlaceholder = (event.target as HTMLSlotElement).assignedNodes().length > 0;
+  }
+
   render() {
     const tokens = resolveThemeTree(image, this.theme) as unknown as Record<string, CssValues>;
     const wrapper = {
@@ -60,16 +93,19 @@ export class GdImage extends LitElement {
       ...this.styles,
     };
     const showFallback = !this.src || this._failed;
-    const wrapperTag = unsafeStatic(this.as === 'figure' ? 'figure' : 'div');
-    const captionTag = unsafeStatic(['p', 'span'].includes(this.captionAs) ? this.captionAs : 'figcaption');
-    return staticHtml`<${wrapperTag} part="root" style=${styleMap(wrapper)}>
-      ${
-        this._loading && this.src && this.placeholder
-          ? html`<span part="placeholder" style=${styleMap(tokens.placeholder)}>
-              <gd-skeleton height="100%">${this.placeholder}<slot name="placeholder"></slot></gd-skeleton>
-            </span>`
-          : nothing
-      }
+    const showPlaceholder = this._loading && Boolean(this.src) && (this._hasPlaceholder || Boolean(this.placeholder));
+    const wrapperTag = safeTag(this.as, 'div');
+    const captionTag = safeTag(this.captionAs, 'figcaption');
+    return html`<${wrapperTag} part="root" style=${styleMap(wrapper)}>
+      <span
+        part="placeholder"
+        aria-hidden=${showPlaceholder ? nothing : 'true'}
+        style=${styleMap({ ...tokens.placeholder, display: showPlaceholder ? tokens.placeholder.display : 'none' })}
+        ><gd-skeleton height="100%" .theme=${this.theme}
+          ><slot name="placeholder" @slotchange=${this._placeholderChanged}
+            >${this._loading ? (this.placeholder ?? nothing) : nothing}</slot
+          ></gd-skeleton
+      ></span>
       ${
         showFallback
           ? html`<slot name="fallback"></slot>`
@@ -86,7 +122,7 @@ export class GdImage extends LitElement {
       }
       ${
         this.caption
-          ? staticHtml`<${captionTag} part="caption" style=${styleMap(tokens.caption)}>${this.caption}</${captionTag}>`
+          ? html`<${captionTag} part="caption" style=${styleMap(tokens.caption)}>${this.caption}</${captionTag}>`
           : nothing
       }
     </${wrapperTag}>`;

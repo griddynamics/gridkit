@@ -6,7 +6,7 @@
  * Both sides are measured the same way (gzip, per-export/per-chunk, shared runtime
  * externalized) so the numbers are comparable:
  *   - Lit side: gzip size of each component's own chunk in dist/libs/web-components
- *     (`lit` and `gd-design-core` externalized, same as this package's vite.config.ts).
+ *     (`lit` and `gd-design-library` externalized, same as this package's vite.config.ts).
  *   - React side: libs/ui/scripts/size-check.mjs's per-export gzip size (`react`,
  *     `react-dom`, `@emotion/react`, `@emotion/styled` externalized/ignored).
  *
@@ -136,26 +136,36 @@ for (const name of Object.keys(COMPONENT_SNIFFERS)) {
   const ratio = lit && react ? (react / lit).toFixed(1) : 'n/a';
   rows.push({ name, lit, react, ratio });
   console.log(
-    `  ${name.padEnd(11)} Lit: ${lit ? fmt(lit).padStart(9) : 'MISSING'.padStart(9)}   React+Emotion: ${react ? fmt(react).padStart(9) : 'n/a'.padStart(9)}   (${ratio}x)`
+    `  ${name.padEnd(11)} Lit: ${lit ? fmt(lit).padStart(9) : 'MISSING'.padStart(9)}   React+Emotion: ${
+      react ? fmt(react).padStart(9) : 'n/a'.padStart(9)
+    }   (${ratio}x)`
   );
 }
 
 console.log(`\n  Shared Lit chunk helpers (barrel + decorator metadata, paid once): ${fmt(sharedHelperGzip)}`);
 console.log(`  \`lit\` runtime itself (net-new dep for a React-only consumer):        ${fmt(litRuntimeCost)}`);
 console.log(
-  `  React figures above already include libs/ui's shared Emotion/theme baseline (~17-19kB per\n  export) that an existing React+Emotion app has already paid once — the Lit side's equivalent\n  one-time cost is the ${fmt(litRuntimeCost)} \`lit\` runtime line above, which most React apps have NOT\n  already paid. Compare the component total plus shared cost, not just the per-component rows in isolation.`
+  `  React figures above already include libs/ui's shared Emotion/theme baseline (~17-19kB per\n  export) that an existing React+Emotion app has already paid once — the Lit side's equivalent\n  one-time cost is the ${fmt(
+    litRuntimeCost
+  )} \`lit\` runtime line above, which most React apps have NOT\n  already paid. Compare the component total plus shared cost, not just the per-component rows in isolation.`
 );
 
 const litTotal = Object.values(litComponents).reduce((sum, { gzip }) => sum + gzip, 0) + sharedHelperGzip;
 const reactTotal = Object.values(reactComponents).reduce((sum, size) => sum + (size ?? 0), 0);
 console.log(
-  `\n  ${Object.keys(COMPONENT_SNIFFERS).length}-component total, Lit (incl. shared helpers, excl. \`lit\` runtime): ${fmt(litTotal)}`
+  `\n  ${
+    Object.keys(COMPONENT_SNIFFERS).length
+  }-component total, Lit (incl. shared helpers, excl. \`lit\` runtime): ${fmt(litTotal)}`
 );
 console.log(
-  `  ${Object.keys(COMPONENT_SNIFFERS).length}-component total, Lit (incl. \`lit\` runtime, one-time):             ${fmt(litTotal + litRuntimeCost)}`
+  `  ${
+    Object.keys(COMPONENT_SNIFFERS).length
+  }-component total, Lit (incl. \`lit\` runtime, one-time):             ${fmt(litTotal + litRuntimeCost)}`
 );
 console.log(
-  `  ${Object.keys(COMPONENT_SNIFFERS).length}-component total, React+Emotion (per-export, not de-duplicated):    ${fmt(reactTotal)}`
+  `  ${Object.keys(COMPONENT_SNIFFERS).length}-component total, React+Emotion (per-export, not de-duplicated):    ${fmt(
+    reactTotal
+  )}`
 );
 
 if (process.argv.includes('--json')) {

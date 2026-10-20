@@ -27,10 +27,8 @@ export default defineConfig({
   cacheDir: '../../node_modules/.vite/libs/web-components-test',
   resolve: {
     alias: {
-      // The main vite.config.ts gets this from `nxViteTsPaths()`; this config resolves it
-      // explicitly so the test project does not depend on the Nx tsconfig-paths plugin.
-      'gd-design-core': path.resolve(__dirname, '../design-core/src/index.ts'),
       'gd-design-library/tokens': path.join(uiSrc, 'tokens/index.ts'),
+      'gd-design-library/icons': path.join(uiSrc, 'icons/index.ts'),
       '@utils': path.join(uiSrc, 'utils'),
       '@types': path.join(uiSrc, 'types'),
       '@constants': path.join(uiSrc, 'constants'),

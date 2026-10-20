@@ -1073,6 +1073,12 @@
   },
   "reset": {},
   "typography": {
+    "webComponent": {
+      "default": {
+        "boxSizing": "border-box",
+        "margin": 0
+      }
+    },
     "base": {},
     "span": {
       "fontSize": "inherit",
@@ -1519,6 +1525,14 @@
       "width": "100%",
       "margin": "0 auto",
       "flexDirection": "column"
+    },
+    "webComponent": {
+      "host": {
+        "display": "contents"
+      },
+      "default": {
+        "boxSizing": "border-box"
+      }
     }
   },
   "link": {
@@ -1940,6 +1954,56 @@
   "row": {
     "default": {
       "display": "flex"
+    },
+    "webComponent": {
+      "host": {
+        "display": "contents"
+      },
+      "default": {
+        "boxSizing": "border-box",
+        "flexDirection": "row",
+        "flexWrap": "wrap",
+        "alignItems": "stretch",
+        "justifyContent": "flex-start",
+        "gap": "0px"
+      },
+      "reversed": {
+        "flexDirection": "row-reverse"
+      },
+      "noWrap": {
+        "flexWrap": "nowrap"
+      },
+      "align": {
+        "start": {
+          "alignItems": "flex-start"
+        },
+        "center": {
+          "alignItems": "center"
+        },
+        "end": {
+          "alignItems": "flex-end"
+        },
+        "stretch": {
+          "alignItems": "stretch"
+        }
+      },
+      "justify": {
+        "start": {
+          "justifyContent": "flex-start"
+        },
+        "center": {
+          "justifyContent": "center"
+        },
+        "end": {
+          "justifyContent": "flex-end"
+        },
+        "between": {
+          "justifyContent": "space-between"
+        },
+        "around": {
+          "justifyContent": "space-around"
+        }
+      }
     }
   },
   "switchToggle": {
@@ -1956,6 +2020,56 @@
     "default": {
       "maxWidth": "100%",
       "display": "flex"
+    },
+    "webComponent": {
+      "host": {
+        "display": "contents"
+      },
+      "default": {
+        "boxSizing": "border-box",
+        "flexDirection": "column",
+        "flexWrap": "wrap",
+        "alignItems": "stretch",
+        "justifyContent": "flex-start",
+        "gap": "0px"
+      },
+      "reversed": {
+        "flexDirection": "column-reverse"
+      },
+      "noWrap": {
+        "flexWrap": "nowrap"
+      },
+      "align": {
+        "start": {
+          "alignItems": "flex-start"
+        },
+        "center": {
+          "alignItems": "center"
+        },
+        "end": {
+          "alignItems": "flex-end"
+        },
+        "stretch": {
+          "alignItems": "stretch"
+        }
+      },
+      "justify": {
+        "start": {
+          "justifyContent": "flex-start"
+        },
+        "center": {
+          "justifyContent": "center"
+        },
+        "end": {
+          "justifyContent": "flex-end"
+        },
+        "between": {
+          "justifyContent": "space-between"
+        },
+        "around": {
+          "justifyContent": "space-around"
+        }
+      }
     }
   },
   "tooltip": {
@@ -2527,6 +2641,7 @@
       "default": {
         "position": "relative",
         "display": "flex",
+        "boxSizing": "border-box",
         "overflow": "auto",
         "isolation": "isolate",
         "maxBlockSize": "100%",
@@ -2543,6 +2658,9 @@
         "flex": 1,
         "flexBasis": "auto",
         "height": "max-content"
+      },
+      "horizontalHidden": {
+        "maxWidth": "100%"
       }
     },
     "scrollbars": {
@@ -3669,6 +3787,11 @@
     }
   },
   "chat": {
+    "webComponent": {
+      "host": {
+        "boxSizing": "border-box"
+      }
+    },
     "wrapper": {
       "default": {
         "display": "flex",

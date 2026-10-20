@@ -3,7 +3,7 @@
 // (see that file's own comment for the full rationale). Loads the real Fira Sans/Fira Code
 // Google Fonts + base reset so this visual-fidelity harness's web build renders the real
 // typeface instead of falling back to the browser's generic sans-serif — not a source
-// dependency on gd-design-library (this package still only depends on gd-design-core). Expo's
+// dependency on gd-design-library (this package only depends on its own `src/core`). Expo's
 // Metro web support treats CSS imports as a no-op on iOS/Android, so this is safe cross-platform.
 // Run `npm run build:ui` first if this import 404s.
 // eslint-disable-next-line @nx/enforce-module-boundaries

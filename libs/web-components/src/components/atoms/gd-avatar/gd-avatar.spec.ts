@@ -54,4 +54,34 @@ describe('gd-avatar', () => {
     const parts = Array.from(el.shadowRoot!.querySelectorAll('[part]')).map((node) => node.getAttribute('part'));
     expect(parts).toEqual(expect.arrayContaining(['avatar', 'image-wrapper', 'fallback', 'badge']));
   });
+  it('renders scalar fallback text through Typography with the per-size variant, like the source avatar', async () => {
+    const variants: Array<[string, string]> = [
+      ['xs', 'caption'],
+      ['sm', 'small'],
+      ['md', 'h6'],
+      ['lg', 'h5'],
+      ['xl', 'h4'],
+      // `xxl` has no entry in the avatar tokens, so it keeps the default h6 variant.
+      ['xxl', 'h6'],
+    ];
+    for (const [size, variant] of variants) {
+      const el = mount(`<gd-avatar size="${size}" fallback="AB"></gd-avatar>`);
+      await settle(el);
+      const text = el.shadowRoot!.querySelector<HTMLElement & { variant: string; align: string }>(
+        'gd-typography[part="fallback-text"]'
+      )!;
+      expect(text.variant).toBe(variant);
+      expect(text.align).toBe('center');
+      expect(text.textContent).toBe('AB');
+    }
+  });
+
+  it('does not add a box of its own around the avatar root', async () => {
+    const el = mount('<gd-avatar size="xl" fallback="AB"></gd-avatar>');
+    await settle(el);
+    expect(getComputedStyle(el).display).toBe('contents');
+    const avatar = el.shadowRoot!.querySelector<HTMLElement>('[part="avatar"]')!;
+    expect(avatar.getBoundingClientRect().height).toBe(64);
+    expect(el.getBoundingClientRect().height).toBe(0);
+  });
 });

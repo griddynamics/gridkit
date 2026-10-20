@@ -1,6 +1,7 @@
-import { LitElement, html, css, nothing } from 'lit';
+import { html, css, nothing } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { button } from 'gd-design-library/tokens';
+import '../gd-loader/gd-loader';
 import {
   resolveButtonRadius,
   buttonCssBlockToText,
@@ -10,9 +11,8 @@ import {
   type ButtonTokenTree,
   resolveThemeTree,
   get,
-  type DesignCoreTheme,
-} from 'gd-design-core';
-import '../gd-loader/gd-loader';
+} from '../../../core';
+import { GdThemedElement } from '../../../core/themed-element';
 
 /** Mirrors `Button.types.ts`'s `ButtonStyledProps['$rounded']`. Button's own default is
  *  `rounded="none"` (`button.ts`'s `attrs.rounded: 'none'`), i.e. square corners. */
@@ -24,6 +24,19 @@ export type ButtonType = 'button' | 'submit' | 'reset';
 /** Mirrors `libs/ui/src/types/button.ts`'s `ButtonRole` string values. */
 export type ButtonRoleName = 'button' | 'link' | 'checkbox' | 'switch' | 'tab';
 
+type ButtonLoaderAttrs = {
+  name?: 'circle' | 'dots';
+  variant?: 'inline' | 'section' | 'fullPage';
+  rounded?: string;
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  animationProps?: string;
+  withWrapper?: boolean;
+};
+
+type ResolvedButtonTokenTree = ButtonTokenTree & {
+  loader?: { attrs?: ButtonLoaderAttrs };
+};
+
 /**
  * Button port — DOM structure, class names, and CSS-composition layering mirror
  * `ButtonStyled.tsx` directly:
@@ -33,7 +46,7 @@ export type ButtonRoleName = 'button' | 'link' | 'checkbox' | 'switch' | 'tab';
  *   <StartIconStyled>{iconStart}</StartIconStyled>    -->     <span class="gd-button__icon-start">
  *   <ContentStyled>{children}</ContentStyled>         -->     <span class="gd-button__content">
  *   <EndIconStyled>{iconEnd}</EndIconStyled>          -->     <span class="gd-button__icon-end">
- *   {isLoading && <Loader/>}                          -->     <gd-loader name="circle" size="sm">
+ *   {isLoading && <Loader/>}                          -->     <gd-loader>
  * ```
  *
  * Each of the three child spans is only rendered when its slot actually has assigned content
@@ -46,7 +59,7 @@ export type ButtonRoleName = 'button' | 'link' | 'checkbox' | 'switch' | 'tab';
  * *directly*, not hand-flattened, and not from a hand-copied mirror either: `render()` imports
  * the REAL `button` object straight from `gd-design-library/tokens` (the same file
  * `ButtonStyled.tsx` itself reads) and resolves every `(theme) => value` leaf with
- * `gd-design-core`'s generic `resolveThemeTree(button, theme)` — so any edit to
+ * the local generic `resolveThemeTree(button, theme)` — so any edit to
  * `libs/ui/src/tokens/button.ts` is picked up automatically, with no second copy of the data to
  * keep in sync. `buttonCssBlockToText(selector, block)` then compiles a resolved slice of it
  * into real CSS text — the same two-step "resolve a token slice by path, then compile it" the
@@ -71,9 +84,9 @@ export type ButtonRoleName = 'button' | 'link' | 'checkbox' | 'switch' | 'tab';
  * `transition` is additionally applied directly to `.gd-button__content`/`.gd-button__icon-*`,
  * since a CSS `transition` only animates an element's OWN computed-style changes — a child span
  * whose `color` merely inherits the button's animated color still needs its own `transition`
- * declaration to animate in step. Truly static, non-token structural CSS (`display` and cursor
- * mechanics) stays in Lit's normal shared `static styles`, since it never varies per instance or
- * theme. Loading composes the migrated `gd-loader`, matching the React component dependency.
+ * declaration to animate in step. Truly static, non-token structural CSS (`display`, `cursor`
+ * mechanics) stays in Lit's normal shared `static styles`, since
+ * it never varies per instance or theme.
  *
  * The focus ring matches the real component's actual mechanism — `getFocusStyles` in
  * `libs/ui/src/tokens/utils.ts` is a `::after` pseudo-element positioned with `inset: -4px`
@@ -83,8 +96,8 @@ export type ButtonRoleName = 'button' | 'link' | 'checkbox' | 'switch' | 'tab';
  *
  * Every variant/state/theme-driven value in `tokens` IS `libs/ui/src/tokens/button.ts`'s real
  * `button` export, resolved against `this.theme` — not a hand-copied mirror of it. `radius`
- * still comes from `gd-design-core`'s `resolveButtonRadius` (shared with React web/React
- * Native's flattened `resolveButtonVariantStyle`), since `borderRadius` is deliberately absent
+ * still comes from `resolveButtonRadius` (`src/core/button.ts`, which reads the real `radius` token)
+ * since `borderRadius` is deliberately absent
  * from the real `button` object — the real component composes it as its own separate, later
  * array entry because it depends on the `rounded` prop, not on anything in `button.ts` itself;
  * reproduced the same way below. `fontFamily`/`fontSize` are likewise not part of the real
@@ -148,16 +161,38 @@ export function __sharedSheetCacheSize(): number {
 }
 
 @customElement('gd-button')
-export class GdButton extends LitElement {
+export class GdButton extends GdThemedElement {
   static styles = css`
     :host {
       display: inline-block;
     }
+    /* The global reset (box-sizing, border) does not reach a shadow root. */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      border-width: 0;
+      border-style: solid;
+    }
+    /* Form-control reset of the shared stylesheet, which does not reach a shadow root either. Without it
+       the native button keeps its UA background, text transform, font and line-height: normal, which makes
+       it grey (variants that set no background, like inherit) and shorter than the source button. */
     button {
       display: inline-flex;
       align-items: center;
       position: relative;
       cursor: pointer;
+      font-family: inherit;
+      font-size: 100%;
+      font-weight: inherit;
+      line-height: inherit;
+      color: inherit;
+      margin: 0;
+      padding: 0;
+      text-transform: none;
+      -webkit-appearance: button;
+      background-color: transparent;
+      background-image: none;
     }
     button:disabled {
       cursor: default;
@@ -173,7 +208,7 @@ export class GdButton extends LitElement {
   @property({ type: String }) variant: ButtonVariantName = 'primary';
   @property({ type: String }) rounded: ButtonRounded = 'none';
   @property({ type: Boolean, reflect: true }) disabled = false;
-  @property({ type: Boolean, attribute: 'is-loading', reflect: true }) isLoading = false;
+  @property({ type: Boolean }) isLoading = false;
   @property({ type: Boolean }) isIcon = false;
   @property({ type: Boolean }) fullWidth = false;
   @property({ type: String }) type: ButtonType = 'button';
@@ -187,7 +222,6 @@ export class GdButton extends LitElement {
   @property({ type: String, attribute: 'aria-pressed' }) ariaPressed: string | null = null;
   @property({ type: String }) justifyContent?: string;
   @property({ attribute: false }) styles: ButtonCssBlock = {};
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
 
   /** Tracks whether each named/default slot actually has assigned content — mirrors
    *  `Button.tsx`'s `{iconStart ? <StartIconStyled>... : null}` conditionals, which a bare
@@ -283,42 +317,50 @@ export class GdButton extends LitElement {
    * the child spans too (see the class doc above for why a shared `transition` value needs
    * restating per element, not just on `button`).
    */
-  private _buildCssText(tokens: ButtonTokenTree, radius: string): string {
+  private _buildCssText(tokens: ResolvedButtonTokenTree, radius: string): string {
     const variantTokens = tokens[this.variant] ?? tokens.primary;
 
-    return [
-      buttonCssBlockToText('button', tokens.default),
-      buttonCssBlockToText('button', variantTokens),
-      this.isIcon ? buttonCssBlockToText('button', tokens.icon) : '',
-      this.fullWidth ? buttonCssBlockToText('button', tokens.fullWidth) : '',
-      buttonCssBlockToText('button', {
-        borderRadius: radius,
-        '&:focus-visible::after': { borderRadius: radius },
-      }),
-      buttonCssBlockToText('button', this.styles),
-      buttonCssBlockToText('.gd-button__content', tokens.content.default),
-      this.justifyContent ? buttonCssBlockToText('.gd-button__content', { justifyContent: this.justifyContent }) : '',
-      buttonCssBlockToText('.gd-button__icon-start', tokens.startIcon.default),
-      buttonCssBlockToText('.gd-button__icon-end', tokens.endIcon.default),
-      buttonCssBlockToText('.gd-button__content, .gd-button__icon-start, .gd-button__icon-end', {
-        transition: tokens.default.transition,
-      }),
-    ].join('\n');
+    return (
+      [
+        buttonCssBlockToText('button', tokens.default),
+        buttonCssBlockToText('button', variantTokens),
+        this.isIcon ? buttonCssBlockToText('button', tokens.icon) : '',
+        this.fullWidth ? buttonCssBlockToText('button', tokens.fullWidth) : '',
+        buttonCssBlockToText('button', {
+          borderRadius: radius,
+          '&:focus-visible::after': { borderRadius: radius },
+        }),
+        buttonCssBlockToText('button', this.styles),
+        buttonCssBlockToText('.gd-button__content', tokens.content.default),
+        this.justifyContent ? buttonCssBlockToText('.gd-button__content', { justifyContent: this.justifyContent }) : '',
+        buttonCssBlockToText('.gd-button__icon-start', tokens.startIcon.default),
+        buttonCssBlockToText('.gd-button__icon-end', tokens.endIcon.default),
+        buttonCssBlockToText('.gd-button__content, .gd-button__icon-start, .gd-button__icon-end', {
+          transition: tokens.default.transition,
+        }),
+      ]
+        .join('\n')
+        // The source component's `className` lands on the button itself, so `&.hover`, `&.active` and
+        // `&.disabled` token selectors match it. Here a consumer sets the class on the `gd-button` host,
+        // so the same selectors also have to match through `:host(.state)`.
+        .replace(/button\.(hover|active|disabled)\b/g, 'button.$1, :host(.$1) button')
+    );
   }
 
   render() {
-    const resolvedTree = resolveThemeTree(button, this.theme) as unknown as ButtonTokenTree;
-    const tokens: ButtonTokenTree = {
+    const buttonTokens = (this.theme.button as typeof button | undefined) ?? button;
+    const resolvedTree = resolveThemeTree(buttonTokens, this.theme) as unknown as ResolvedButtonTokenTree;
+    const tokens: ResolvedButtonTokenTree = {
       ...resolvedTree,
       default: {
         ...resolvedTree.default,
         fontFamily: get(this.theme, 'font.family', '"Fira Sans", sans-serif'),
         fontSize: get(this.theme, 'font.size.p', '16px'),
-        lineHeight: get(this.theme, 'font.line.height.p', '24px'),
       },
     };
     const radius = resolveButtonRadius(this.theme, this.rounded);
     const isDisabled = this.disabled || this.isLoading;
+    const loaderAttrs = tokens.loader?.attrs ?? { withWrapper: false, size: 'sm' };
 
     const cssText = this._buildCssText(tokens, radius);
     // `shadowRoot` is null during server-side rendering (@lit-labs/ssr calls render() without ever
@@ -372,12 +414,15 @@ export class GdButton extends LitElement {
           : html`<slot name="icon-end" @slotchange=${this._onSlotChange}></slot>`}
         ${this.isLoading
           ? html`<gd-loader
-              part="spinner"
-              name="circle"
-              size="sm"
-              .withWrapper=${false}
+              part="spinner loader"
+              aria-hidden="true"
+              .name=${loaderAttrs.name ?? 'circle'}
+              .variant=${loaderAttrs.variant ?? 'inline'}
+              .rounded=${loaderAttrs.rounded ?? 'none'}
+              .size=${loaderAttrs.size ?? 'sm'}
+              .animationProps=${loaderAttrs.animationProps ?? '2000ms ease-in-out infinite'}
+              .withWrapper=${loaderAttrs.withWrapper ?? false}
               .theme=${this.theme}
-              aria-label="Loading"
             ></gd-loader>`
           : nothing}
       </button>

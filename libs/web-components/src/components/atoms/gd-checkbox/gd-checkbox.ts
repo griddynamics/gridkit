@@ -1,9 +1,9 @@
-import { LitElement, html, css, nothing, type PropertyValues } from 'lit';
+import { html, css, nothing, type PropertyValues } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { styleMap } from 'lit/directives/style-map.js';
 import { checkbox } from 'gd-design-library/tokens';
-import { resolveThemeTree, createCheckboxStore, type CheckboxSizeName, type DesignCoreTheme } from 'gd-design-core';
-import '../gd-icon/gd-icon';
+import { resolveThemeTree, createCheckboxStore, type CheckboxSizeName, type ThemeLike } from '../../../core';
+import { GdThemedElement } from '../../../core/themed-element';
 
 interface ResolvedCheckboxTokens {
   indicatorSize: number;
@@ -17,11 +17,11 @@ interface ResolvedCheckboxTokens {
 /**
  * Resolves the REAL `checkbox` object (`gd-design-library/tokens`) against `theme` — the
  * single-source-of-truth replacement for the old, hand-mirrored `resolveCheckboxStyle` in
- * `gd-design-core` (deleted; see that package's `tokenResolvers/checkbox.ts`). `size` reads the
+ * the removed `gd-design-core` package. `size` reads the
  * real `checkbox.size.<sm|md>` scale directly instead of a hand-copied `SIZE_PX` table. No
  * `label` fields are read — `Checkbox.tsx` renders its label as a bare, unstyled span.
  */
-function resolveCheckboxTokens(theme: DesignCoreTheme, size: CheckboxSizeName): ResolvedCheckboxTokens {
+function resolveCheckboxTokens(theme: ThemeLike, size: CheckboxSizeName): ResolvedCheckboxTokens {
   const resolved = resolveThemeTree(checkbox, theme) as unknown as {
     wrapper: { default: { gap: string | number } };
     indicator: {
@@ -45,7 +45,7 @@ function resolveCheckboxTokens(theme: DesignCoreTheme, size: CheckboxSizeName): 
 
 /**
  * Checkbox port (per the implementation plan's Migration Example). Delegates all
- * controlled/uncontrolled + indeterminate state to gd-design-core's `createCheckboxStore`
+ * controlled/uncontrolled + indeterminate state to `createCheckboxStore` (`src/core/stores`)
  * (subscribed in `connectedCallback`) instead of re-deriving it here — the store already
  * collapses `Checkbox.tsx`'s `isControlled` branch into one always-owned `checked` value;
  * a "controlled" consumer just listens for `gd-change` and writes `.checked` back.
@@ -60,10 +60,11 @@ function resolveCheckboxTokens(theme: DesignCoreTheme, size: CheckboxSizeName): 
  * React 19 native property-assignment heuristic path) can.
  */
 @customElement('gd-checkbox')
-export class GdCheckbox extends LitElement {
+export class GdCheckbox extends GdThemedElement {
   static styles = css`
     :host {
-      display: inline-flex;
+      /* The label is the component root: the host adds no box (and no line-box strut) around it. */
+      display: contents;
     }
     label {
       display: inline-flex;
@@ -74,18 +75,27 @@ export class GdCheckbox extends LitElement {
       cursor: default;
       opacity: 0.5;
     }
+    /* Visually hidden, but laid out exactly like the visually-hidden native input of the source component. */
     input {
+      border: 0;
+      clip: rect(0 0 0 0);
+      height: 1px;
+      margin: -1px;
+      overflow: hidden;
+      padding: 0;
       position: absolute;
+      white-space: nowrap;
+      width: 1px;
       opacity: 0;
-      width: 0;
-      height: 0;
-      margin: 0;
     }
     .indicator {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       box-sizing: border-box;
+    }
+    svg {
+      display: block;
     }
   `;
 
@@ -99,7 +109,6 @@ export class GdCheckbox extends LitElement {
   @property({ type: Boolean, reflect: true }) indeterminate = false;
   @property({ type: Boolean, reflect: true }) disabled = false;
   @property({ type: String }) size: CheckboxSizeName = 'md';
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
   @property({ attribute: false }) styles: Record<string, string | number> = {};
   /** Submitted under this key in `FormData`. No `name` means no form submission, same as native. */
   @property({ type: String }) name = '';
@@ -291,21 +300,19 @@ export class GdCheckbox extends LitElement {
         />
         <span class="indicator" part="indicator" style=${styleMap(indicatorStyle)}>
           ${this.indeterminate
-            ? html`<gd-icon
-                name="minus"
-                .width=${resolved.iconSize}
-                .height=${resolved.iconSize}
-                fill="neutral.white"
-                .theme=${this.theme}
-              ></gd-icon>`
+            ? html`<svg width=${resolved.iconSize} height=${resolved.iconSize} viewBox="0 0 10 10" fill="none">
+                <path d="M1 5H9" stroke="white" stroke-width="1.5" stroke-linecap="round" />
+              </svg>`
             : currentChecked
-              ? html`<gd-icon
-                  name="check"
-                  .width=${resolved.iconSize}
-                  .height=${resolved.iconSize}
-                  fill="neutral.white"
-                  .theme=${this.theme}
-                ></gd-icon>`
+              ? html`<svg width=${resolved.iconSize} height=${resolved.iconSize} viewBox="0 0 10 10" fill="none">
+                  <path
+                    d="M1.5 5L4 7.5L8.5 2.5"
+                    stroke="white"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>`
               : nothing}
         </span>
         <!-- Bare span, no style — matches Checkbox.tsx's real unstyled label span exactly:

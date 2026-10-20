@@ -8,7 +8,7 @@ import {
   type DesignCoreTheme,
   type InputColorVariantName,
   type SelectOption,
-} from 'gd-design-core';
+} from '../../core';
 import { pxToNumber } from '../../utils/pxToNumber';
 import { toFontFamily } from '../../utils/toFontFamily';
 import { toFontWeight } from '../../utils/toFontWeight';

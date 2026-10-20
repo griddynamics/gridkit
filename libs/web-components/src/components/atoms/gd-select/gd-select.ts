@@ -1,173 +1,114 @@
-import { LitElement, html, css, type PropertyValues } from 'lit';
+import { html, css, nothing, type PropertyValues } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
-import { styleMap } from 'lit/directives/style-map.js';
-import '../gd-icon/gd-icon';
 import { select } from 'gd-design-library/tokens';
 import {
+  buttonCssBlockToText,
   resolveThemeTree,
   createSelectStore,
   filterSelectOptions,
+  type ButtonCssBlock,
   type SelectOption,
   type SelectItemIdentifier,
   type InputColorVariantName,
-  type DesignCoreTheme,
-} from 'gd-design-core';
+} from '../../../core';
+import { GdThemedElement } from '../../../core/themed-element';
+import '../gd-button/gd-button';
+import '../gd-icon/gd-icon';
+
+/** An option of the dropdown. `disabled` options are shown but cannot be chosen. */
+export type GdSelectOption = SelectOption & { disabled?: boolean };
 
 interface ResolvedSelectTokens {
-  fontFamily: string | number;
-  fontSize: string | number;
-  fontWeight: string | number;
-  color: string;
-  surfaceColor: string;
-  border: string;
-  hoverBackgroundColor: string;
-  boxShadow: string;
-  triggerPadding: string | number;
-  dropdownPadding: string | number;
+  default: ButtonCssBlock;
+  disabled?: ButtonCssBlock;
+  initiatorWrapper: ButtonCssBlock;
+  dropdown: ButtonCssBlock;
+  button: Record<'default' | InputColorVariantName, ButtonCssBlock>;
+  item: { default: ButtonCssBlock; disabled: ButtonCssBlock };
+  arrowIconWrapper: {
+    default: ButtonCssBlock;
+    transform: { open: ButtonCssBlock; close: ButtonCssBlock };
+  };
+  icons: { arrowIcon: { name: string; fill: string; width: number; height: number } };
+  adornment: { default: ButtonCssBlock };
+  searchInput: { default: ButtonCssBlock };
 }
 
-/**
- * Resolves the REAL `select` object (`gd-design-library/tokens`) against `theme` — the
- * single-source-of-truth replacement for the old, hand-mirrored `resolveSelectStyle` in
- * `gd-design-core` (deleted; see that package's `tokenResolvers/select.ts` history). Reads
- * `select.dropdown.*` for surface/typography, `select.button.<variant>.border` (falling back to
- * `select.button.default`, which is itself the `primary`-equivalent border) for the trigger
- * border, and `select.item.default['&:hover, &.active'].backgroundColor` for the hover/selected
- * background — the exact paths `resolveSelectStyle` used to hand-duplicate.
- */
-function resolveSelectTokens(theme: DesignCoreTheme, color: InputColorVariantName): ResolvedSelectTokens {
-  const resolved = resolveThemeTree(select, theme) as unknown as {
-    dropdown: {
-      color: string;
-      fontFamily: string | number;
-      fontSize: string | number;
-      fontWeight: string | number;
-      background: string;
-      boxShadow: string;
-      margin: string | number;
-      padding: string | number;
-    };
-    button: { default: { border: string; padding: string | number } } & Record<
-      InputColorVariantName,
-      { border: string }
-    >;
-    item: { default: { '&:hover, &.active': { backgroundColor: string } } };
-  };
+/** Gap in px between the trigger and the dropdown. */
+const DROPDOWN_GAP = 1;
 
-  const buttonTokens = resolved.button[color] ?? resolved.button.default;
-
-  return {
-    fontFamily: resolved.dropdown.fontFamily,
-    fontSize: resolved.dropdown.fontSize,
-    fontWeight: resolved.dropdown.fontWeight,
-    color: resolved.dropdown.color,
-    surfaceColor: resolved.dropdown.background,
-    border: buttonTokens.border,
-    hoverBackgroundColor: resolved.item.default['&:hover, &.active'].backgroundColor,
-    boxShadow: resolved.dropdown.boxShadow,
-    triggerPadding: resolved.button.default.padding,
-    dropdownPadding: resolved.dropdown.padding,
-  };
-}
+const FOCUSABLE =
+  'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 /**
- * Select port. Component-specific React props are represented as custom-element properties,
- * named slots, native events, and public methods. ReactNode/function props use slots or
- * property callbacks because they cannot be serialized as HTML attributes.
+ * Select with single and multiple selection, adornments, a custom initiator, imperative methods,
+ * custom identifiers, validation colors, search, and disabled and empty states.
  *
- * Platform-native replacement evaluated here: the HTML `popover` attribute gives native
- * top-layer rendering plus light-dismiss (outside-click/Escape close) for free, replacing
- * the React original's hand-rolled Portal + `document.addEventListener` outside-click
- * logic. Positioning is still computed manually via `getBoundingClientRect()` while open,
- * including source-equivalent ancestor-scroll tracking, viewport resizing, top/bottom
- * placement, and available-height constraints. CSS Anchor Positioning could replace that, but
- * its browser-support bar is higher than `popover`'s; record which one this repo's actual
- * browser-support matrix can rely on rather than assuming evergreen-only support.
+ * Structure of the rendered tree:
  *
- * Visual-fidelity fixes (found while comparing against the real Storybook Select): the
- * trigger arrow is a rotating SVG chevron (transform 0.3s ease), not swapped unicode
- * glyphs — the real `arrowDown` icon asset isn't ported, so this is a hand-drawn
- * approximation, consistent with Checkbox's check/minus icons. Trigger and dropdown have
- * **square corners** (no radius token at all on either in the real tokens) and the
- * dropdown gets the real `boxShadow` instead of none. `emptyItemsResult` is 100%
- * consumer-supplied content in the real component — no default "No options" text here.
+ * ```
+ * <div class="select">                            positioned root; width, min/max width and `styles` land here
+ *   <div class="initiator-wrapper">               click and arrow-key handling
+ *     <slot name="initiator">                     optional custom initiator, replaces the trigger
+ *     <gd-button class="trigger" variant="inherit">
+ *       <span slot="icon-start">  <slot name="adornment-start">
+ *       selected text or placeholder
+ *       <span slot="icon-end">    <slot name="adornment-end"> + rotating <gd-icon> chevron
+ *   <div class="dropdown" popover="manual">       top layer, positioned below (or above) the trigger
+ *     <input type="search"> (searchable)
+ *     <slot>                                      custom content rendered before the options
+ *     options, or <slot name="empty"> when there are none
+ * ```
+ *
+ * The host itself generates no box (`display: contents`) because the positioned `.select` element is the
+ * component root. The dropdown lives in the top layer through the `popover` attribute. Outside-click,
+ * Escape and Tab dismissal are handled explicitly so they behave the same for user input and for scripted
+ * events. Positioning is computed on open and while the page scrolls or resizes: below the trigger, or above
+ * it when there is not enough room.
+ *
+ * Events: `gd-change` carries the new value (an option, or an array in multiple mode); `gd-select` carries
+ * `{ data, index }` for every chosen option; `gd-initiator-click` is cancelable and skips the default
+ * toggle when prevented.
  */
 @customElement('gd-select')
-export class GdSelect extends LitElement {
+export class GdSelect extends GdThemedElement {
   static styles = css`
     :host {
-      display: inline-block;
+      display: contents;
     }
-    .wrapper {
+    /* The global reset (box-sizing, border) does not reach a shadow root. */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      border-width: 0;
+      border-style: solid;
+    }
+    .select {
       position: relative;
       display: inline-block;
     }
     .trigger {
-      position: relative;
-      display: inline-flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
+      display: block;
+    }
+    /* A custom initiator fills the wrapper like the trigger does. */
+    .initiator-wrapper ::slotted(*) {
       width: 100%;
-      box-sizing: border-box;
-      font: inherit;
-      cursor: pointer;
-    }
-    .trigger:disabled {
-      /* Matches the real trigger's own Button internals: button.default's universal
-         disabled-selector rule sets cursor to 'default', not 'not-allowed' — Select's own
-         button tokens never override cursor, so 'default' is what actually renders. */
-      cursor: default;
-    }
-    /* The real trigger IS a <Button> (SelectStyled.tsx's DropdownButtonStyled), so its focus
-       ring is button.default['&:focus-visible'] — getFocusStyles' ::after ring (inset -4px,
-       2px border, colors.border.focus), same mechanism gd-button.ts/gd-input.ts already use.
-       Corners are always square here (Select's real tokens have no radius at all), so
-       border-radius is a static 0px, not a resolved value like gd-button's 'rounded' prop. */
-    .trigger:focus-visible {
-      outline: none;
-    }
-    .trigger:focus-visible::after {
-      content: '';
-      position: absolute;
-      inset: -4px;
-      border: 2px solid var(--gd-select-focus-color, #0069b4);
-      border-radius: 0px;
-      pointer-events: none;
     }
     .dropdown {
-      /* The popover UA stylesheet applies a default solid border (black, via currentColor)
-         to any popover element — the real select.ts dropdown token has no border at all,
-         only boxShadow, so this must be explicitly reset. */
+      /* The popover UA stylesheet adds a border, padding, background and auto margins. */
       border: none;
-      box-sizing: border-box;
       overflow-y: auto;
     }
     .dropdown:not(:popover-open) {
       display: none;
     }
-    .option {
-      cursor: pointer;
-      padding: 8px;
-    }
-    .option:hover,
-    .option[aria-selected='true'] {
-      /* Matches the real item.default's hover-and-active rule — both hover AND the
-         currently-selected option share the same bg.fill.hover background; the real tokens
-         have no font-weight change for the selected state at all. */
-      background-color: var(--gd-select-hover-bg, #fff7e5);
-    }
-    .arrow {
-      display: inline-flex;
-      transition: transform 0.3s ease;
-      transform: rotate(0deg);
-    }
-    .arrow[data-open] {
-      transform: rotate(180deg);
+    .search {
+      font: inherit;
     }
   `;
 
-  @property({ type: Array }) items: SelectOption[] = [];
+  @property({ type: Array }) items: GdSelectOption[] = [];
   @property({ type: Number, attribute: 'items-count' }) itemsCount?: number;
   @property({ attribute: false }) value: SelectOption | SelectOption[] | null = null;
   @property({ type: Boolean, reflect: true }) disabled = false;
@@ -187,36 +128,24 @@ export class GdSelect extends LitElement {
     isActiveItem: boolean;
     className: string;
   }) => unknown;
-  /** Mirrors `Select.tsx`'s `width`/`minWidth`/`maxWidth` props (real defaults:
-   *  `width: '100%'`, `maxWidth: 'initial'`, `minWidth` unset) — applied to the trigger
-   *  wrapper. Without an explicit width, an empty trigger (no selected value, no
-   *  `placeholder` slot content) shrinks to its intrinsic content width (just the chevron),
-   *  and since the dropdown's width tracks the trigger's rendered width 1:1, option text
-   *  gets visually clipped instead of wrapping to a comfortably wide box. */
+  /** Width, minimum width and maximum width of the select (defaults: `100%`, unset, `initial`). */
   @property({ type: String }) width = '100%';
   @property({ type: String, attribute: 'min-width' }) minWidth?: string;
   @property({ type: String, attribute: 'max-width' }) maxWidth = 'initial';
   @property({ attribute: false }) styles: Record<string, string | number> = {};
-  @property({ attribute: false }) theme: DesignCoreTheme = {};
 
-  @query('.trigger') private _trigger!: HTMLButtonElement;
+  @query('.trigger') private _trigger?: HTMLElement;
+  @query('.initiator-wrapper') private _initiatorWrapper!: HTMLElement;
   @query('.dropdown') private _dropdown!: HTMLElement;
+  @query('.search') private _search?: HTMLInputElement;
 
   private _store = createSelectStore({ disabled: this.disabled, value: this.value });
   private _unsubscribe?: () => void;
-  private _ownsBodyScrollLock = false;
-
-  private readonly _onViewportChange = () => this._positionDropdown();
-  private readonly _onDocumentKeyDown = (event: KeyboardEvent) => {
-    if (!this._store.getState().isOpen || this.disabled) return;
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      this.close();
-      this._trigger?.focus();
-    } else if (event.key === 'Tab') {
-      this.close();
-    }
-  };
+  private _slotObserver?: MutationObserver;
+  private _removeOpenListeners?: () => void;
+  private _sheet?: CSSStyleSheet;
+  private _sheetText = '';
+  private _placement: 'top' | 'bottom' = 'bottom';
 
   connectedCallback() {
     super.connectedCallback();
@@ -224,109 +153,36 @@ export class GdSelect extends LitElement {
       this.requestUpdate();
       if (state.isOpen !== prevState.isOpen) this._syncPopover(state.isOpen);
     });
+    // Adornments and a custom initiator are optional slotted children: the wrappers around them (and the
+    // trigger itself) only render when they exist.
+    this._slotObserver = new MutationObserver(() => this.requestUpdate());
+    this._slotObserver.observe(this, { childList: true, attributes: true, attributeFilter: ['slot'], subtree: false });
   }
 
   disconnectedCallback() {
     this._unsubscribe?.();
-    this._stopOpenStateEffects();
+    this._slotObserver?.disconnect();
+    this._removeOpenListeners?.();
     super.disconnectedCallback();
   }
 
   willUpdate(changed: PropertyValues<this>) {
     if (changed.has('multiple')) this._store.getState().setMultiple(this.multiple);
     if (changed.has('value') || changed.has('multiple')) this._store.getState().syncExternalValue(this.value);
-    if (changed.has('disabled')) this._store.getState().setDisabled(this.disabled);
-    // Applied directly on the host (`:host`'s own inline style), not just the shadow-root
-    // `.wrapper` — a percentage width on a shadow-DOM child only resolves against a
-    // *definite* containing-block width, and `:host` itself defaults to `auto` (shrink-to-fit)
-    // with no width set here. Matches the real `Select.tsx`'s `width`/`minWidth`/`maxWidth`
-    // props being applied straight to its single outermost styled element.
-    // Lit's SSR host shim has no CSSStyleDeclaration. Browser layout receives these host
-    // constraints here; SSR still serializes the complete shadow DOM without them.
-    if (this.style) {
-      if (changed.has('width')) this.style.width = this.width;
-      if (changed.has('maxWidth')) this.style.maxWidth = this.maxWidth;
-      if (changed.has('minWidth')) this.style.minWidth = this.minWidth ?? '';
-      if (changed.has('styles')) Object.assign(this.style, this.styles);
+    if (changed.has('disabled')) {
+      this._store.getState().setDisabled(this.disabled);
+      if (this.disabled) this._store.getState().close();
     }
   }
 
-  private _syncPopover(isOpen: boolean) {
-    if (!this._dropdown) return;
-    if (isOpen) {
-      this._positionDropdown();
-      if (!this._dropdown.matches(':popover-open')) this._dropdown.showPopover();
-      this._startOpenStateEffects();
-      if (this.searchable) queueMicrotask(() => this.shadowRoot?.querySelector<HTMLInputElement>('.search')?.focus());
-    } else if (this._dropdown.matches(':popover-open')) {
-      this._dropdown.hidePopover();
-      this._stopOpenStateEffects();
-    } else {
-      this._stopOpenStateEffects();
-    }
+  /** True while the dropdown is open. */
+  get isOpen() {
+    return this._store.getState().isOpen;
   }
 
-  private _startOpenStateEffects() {
-    window.addEventListener('resize', this._onViewportChange);
-    // Capture is required because scroll does not bubble and the trigger may live in any
-    // nested scroll container. This is the same listener contract as the React Select.
-    window.addEventListener('scroll', this._onViewportChange, true);
-    document.addEventListener('keydown', this._onDocumentKeyDown);
-    if (document.body.style.overflow !== 'hidden') {
-      document.body.style.overflow = 'hidden';
-      this._ownsBodyScrollLock = true;
-    }
-  }
-
-  private _stopOpenStateEffects() {
-    window.removeEventListener('resize', this._onViewportChange);
-    window.removeEventListener('scroll', this._onViewportChange, true);
-    document.removeEventListener('keydown', this._onDocumentKeyDown);
-    if (this._ownsBodyScrollLock) {
-      document.body.style.overflow = '';
-      this._ownsBodyScrollLock = false;
-    }
-  }
-
-  private _positionDropdown() {
-    if (!this._trigger || !this._dropdown) return;
-    const rect = this._trigger.getBoundingClientRect();
-    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-    const requestedMax = Number.parseFloat(String(this.dropdownMaxHeight));
-    const gap = 1;
-    const spaceBelow = viewportHeight - rect.bottom;
-    const spaceAbove = rect.top;
-    const canFitBelow = spaceBelow >= requestedMax + gap;
-    const canFitAbove = spaceAbove >= requestedMax + gap;
-    const placement = !canFitBelow && (canFitAbove || spaceAbove > spaceBelow) ? 'top' : 'bottom';
-    const available = (placement === 'bottom' ? spaceBelow : spaceAbove) - gap;
-    const computedMaxHeight = Math.max(0, Math.min(requestedMax, available));
-
-    this._dropdown.style.position = 'fixed';
-    this._dropdown.style.left = `${Math.floor(rect.left)}px`;
-    this._dropdown.style.width = `${rect.width}px`;
-    this._dropdown.style.maxWidth = this.maxWidth;
-    this._dropdown.style.minWidth = this.minWidth ?? '';
-    this._dropdown.style.maxHeight = `${Math.floor(computedMaxHeight)}px`;
-    if (placement === 'bottom') {
-      this._dropdown.style.top = `${Math.floor(rect.bottom + gap)}px`;
-      this._dropdown.style.bottom = 'auto';
-    } else {
-      // Native popovers have a UA `inset: 0`; explicit `auto` is required or the unused
-      // top edge wins and pins an above-trigger dropdown to the viewport origin.
-      this._dropdown.style.top = 'auto';
-      this._dropdown.style.bottom = `${Math.floor(viewportHeight - rect.top + gap)}px`;
-    }
-  }
-
-  /** Native light-dismiss (outside-click/Escape) fires this without going through `_toggle()`. */
-  private _onDropdownToggle(event: Event & { newState?: 'open' | 'closed' }) {
-    if (event.newState === 'closed' && this._store.getState().isOpen) this._store.getState().close();
-  }
-
-  private _toggleOpen() {
-    if (this.disabled || !this.autoOpen) return;
-    this._store.getState().toggle();
+  /** The selected option (single mode) or the array of selected options (multiple mode). */
+  get selectedValue() {
+    return this._store.getState().internalValue;
   }
 
   open() {
@@ -337,149 +193,346 @@ export class GdSelect extends LitElement {
     this._store.getState().close();
   }
 
-  private _select(option: SelectOption) {
+  toggle() {
+    this._store.getState().toggle();
+  }
+
+  /** Choose `option` programmatically, exactly as if it had been clicked in the dropdown. */
+  selectOption(option: SelectOption, index?: number) {
+    if (this.disabled || !option) return;
     const nextValue = this._store.getState().select(option, this.itemIdentifier);
     this.value = nextValue;
+    this.dispatchEvent(
+      new CustomEvent('gd-select', { detail: { data: option, index }, bubbles: true, composed: true })
+    );
     this.dispatchEvent(new CustomEvent('gd-change', { detail: { value: this.value }, bubbles: true, composed: true }));
+    // Single selection closes the dropdown and hands the focus back to the trigger.
+    if (!this.multiple) setTimeout(() => this._focusTrigger());
+  }
+
+  private _syncPopover(isOpen: boolean) {
+    this._removeOpenListeners?.();
+    this._removeOpenListeners = undefined;
+    this.dispatchEvent(new CustomEvent(isOpen ? 'gd-open' : 'gd-close', { bubbles: true, composed: true }));
+    if (!this._dropdown) return;
+    if (isOpen) {
+      this._positionDropdown();
+      if (!this._dropdown.matches(':popover-open')) this._dropdown.showPopover();
+      this._listenWhileOpen();
+      if (this.searchable) setTimeout(() => this._search?.focus());
+    } else if (this._dropdown.matches(':popover-open')) {
+      this._dropdown.hidePopover();
+    }
+  }
+
+  private _listenWhileOpen() {
+    const onMouseDown = (event: MouseEvent) => {
+      if (!event.composedPath().includes(this._initiatorWrapper) && !event.composedPath().includes(this._dropdown))
+        this.close();
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (this.disabled) return;
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        this.close();
+        this._focusTrigger();
+      } else if (event.key === 'Tab') {
+        event.preventDefault();
+        this.close();
+        this._focusNextAfterSelect();
+      }
+    };
+    const onViewportChange = () => this._positionDropdown();
+    document.addEventListener('mousedown', onMouseDown);
+    document.addEventListener('keydown', onKeyDown);
+    window.addEventListener('resize', onViewportChange);
+    window.addEventListener('scroll', onViewportChange, true);
+    this._removeOpenListeners = () => {
+      document.removeEventListener('mousedown', onMouseDown);
+      document.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('resize', onViewportChange);
+      window.removeEventListener('scroll', onViewportChange, true);
+    };
+  }
+
+  private _positionDropdown() {
+    const anchor = this._initiatorWrapper ?? this._trigger;
+    if (!anchor || !this._dropdown) return;
+    const rect = anchor.getBoundingClientRect();
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+    const spaceBelow = viewportHeight - rect.bottom;
+    const spaceAbove = rect.top;
+    const requestedMax = parseFloat(String(this.dropdownMaxHeight));
+    const canFitBelow = spaceBelow >= requestedMax + DROPDOWN_GAP;
+    const canFitAbove = spaceAbove >= requestedMax + DROPDOWN_GAP;
+
+    let placement: 'top' | 'bottom' = 'bottom';
+    if (!canFitBelow && canFitAbove) placement = 'top';
+    else if (!canFitBelow && !canFitAbove) placement = spaceBelow >= spaceAbove ? 'bottom' : 'top';
+    this._placement = placement;
+
+    const available = (placement === 'bottom' ? spaceBelow : spaceAbove) - DROPDOWN_GAP;
+    const style = this._dropdown.style;
+    style.position = 'fixed';
+    style.left = `${Math.floor(rect.left)}px`;
+    style.width = `${rect.width}px`;
+    style.maxWidth = this.maxWidth;
+    style.minWidth = this.minWidth ?? '';
+    style.maxHeight = `${Math.floor(Math.max(0, Math.min(requestedMax, available)))}px`;
+    if (placement === 'bottom') {
+      style.top = `${Math.floor(rect.bottom + DROPDOWN_GAP)}px`;
+      style.bottom = 'auto';
+    } else {
+      style.top = 'auto';
+      style.bottom = `${Math.floor(viewportHeight - rect.top + DROPDOWN_GAP)}px`;
+    }
+  }
+
+  /** Focus the first keyboard-focusable element of the initiator (the trigger button by default). */
+  private _focusTrigger() {
+    if (this.disabled) return;
+    const custom = this.querySelector<HTMLElement>(':scope > [slot="initiator"]');
+    const target = custom
+      ? ((custom.matches(FOCUSABLE) ? custom : custom.querySelector<HTMLElement>(FOCUSABLE)) ??
+        custom.shadowRoot?.querySelector<HTMLElement>(FOCUSABLE))
+      : this._trigger?.shadowRoot?.querySelector<HTMLElement>('button');
+    target?.focus();
+  }
+
+  /** Tab closes the dropdown and moves the focus to the next tab stop after the select. */
+  private _focusNextAfterSelect() {
+    const candidates = Array.from(document.querySelectorAll<HTMLElement>(FOCUSABLE));
+    const next = candidates.find(
+      (candidate) =>
+        !this.contains(candidate) && Boolean(this.compareDocumentPosition(candidate) & Node.DOCUMENT_POSITION_FOLLOWING)
+    );
+    next?.focus();
+  }
+
+  /** Focusable elements of the open dropdown in document order: search field, slotted content, options. */
+  private _dropdownFocusables() {
+    const result: HTMLElement[] = [];
+    for (const child of Array.from(this._dropdown.children)) {
+      if (child instanceof HTMLSlotElement) {
+        for (const assigned of child.assignedElements({ flatten: true }) as HTMLElement[]) {
+          if (assigned.matches(FOCUSABLE)) result.push(assigned);
+          result.push(...Array.from(assigned.querySelectorAll<HTMLElement>(FOCUSABLE)));
+          const inner = assigned.shadowRoot?.querySelectorAll<HTMLElement>(FOCUSABLE);
+          if (inner) result.push(...Array.from(inner));
+        }
+      } else if (child.matches(FOCUSABLE)) result.push(child as HTMLElement);
+    }
+    return result;
+  }
+
+  private _onDropdownKeyDown(event: KeyboardEvent) {
+    if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
+    event.preventDefault();
+    const focusables = this._dropdownFocusables();
+    const active = this._deepActive();
+    const index = focusables.findIndex((item) => item === active || item.contains(active));
+    const step = event.key === 'ArrowUp' ? -1 : 1;
+    focusables[index + step]?.focus();
+  }
+
+  private _deepActive() {
+    let active: Element | null = document.activeElement;
+    while (active?.shadowRoot?.activeElement) active = active.shadowRoot.activeElement;
+    return active;
+  }
+
+  private _onInitiatorKeyDown(event: KeyboardEvent) {
+    if (this.disabled || (event.key !== 'ArrowDown' && event.key !== 'ArrowUp')) return;
+    event.preventDefault();
+    if (!this._store.getState().isOpen) {
+      this.open();
+      return;
+    }
+    const focusables = this._dropdownFocusables();
+    (event.key === 'ArrowUp' ? focusables[focusables.length - 1] : focusables[0])?.focus();
+  }
+
+  private _onInitiatorClick(event: MouseEvent) {
+    if (this.disabled) return;
+    const proceed = this.dispatchEvent(
+      new CustomEvent('gd-initiator-click', { detail: { event }, bubbles: true, composed: true, cancelable: true })
+    );
+    if (proceed && this.autoOpen) this._store.getState().toggle();
+  }
+
+  private _onOptionKeyDown(event: KeyboardEvent, option: GdSelectOption, index: number) {
+    if (option.disabled || event.key !== 'Enter') return;
+    event.preventDefault();
+    this.selectOption(option, index);
   }
 
   private _onSearch(event: Event) {
     this._store.getState().setSearchText((event.target as HTMLInputElement).value);
   }
 
-  private _onTriggerKeyDown(event: KeyboardEvent) {
-    if (event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      const wasOpen = this._store.getState().isOpen;
-      this.open();
-      if (wasOpen && (event.key === 'ArrowDown' || event.key === 'ArrowUp')) {
-        const options = Array.from(this.shadowRoot!.querySelectorAll<HTMLElement>('.option'));
-        options[event.key === 'ArrowDown' ? 0 : options.length - 1]?.focus();
-      }
-    }
+  private _isSelected(option: SelectOption, selectedItems: SelectOption[]) {
+    return selectedItems.some((current) =>
+      this.itemIdentifier ? this.itemIdentifier(current, option) : current.value === option.value
+    );
   }
 
-  private _onDropdownKeyDown(event: KeyboardEvent) {
-    if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
-    event.preventDefault();
-    const options = Array.from(this.shadowRoot!.querySelectorAll<HTMLElement>('.option'));
-    if (!options.length) return;
-    const current = options.indexOf(this.shadowRoot!.activeElement as HTMLElement);
-    const direction = event.key === 'ArrowDown' ? 1 : -1;
-    const next =
-      current < 0 ? (direction > 0 ? 0 : options.length - 1) : (current + direction + options.length) % options.length;
-    options[next].focus();
+  private _hasSlotted(name: string) {
+    // Light-DOM children do not exist during server rendering, where no slotted content can be detected.
+    return typeof this.querySelector === 'function' && Boolean(this.querySelector(`:scope > [slot="${name}"]`));
   }
 
-  private _onOptionKeyDown(event: KeyboardEvent, option: SelectOption) {
-    if (event.key !== 'Enter') return;
-    event.preventDefault();
-    this._select(option);
+  private _adoptTokenSheet(tokens: ResolvedSelectTokens) {
+    const disabledBlock = this.disabled ? (tokens.disabled ?? {}) : {};
+    const layout: ButtonCssBlock = { width: this.width, maxWidth: this.maxWidth };
+    if (this.minWidth) layout.minWidth = this.minWidth;
+    // The dropdown is positioned in the viewport (`fixed`) instead of the token's `absolute`.
+    const dropdownTokens = { ...tokens.dropdown };
+    delete dropdownTokens.position;
+    const text = [
+      buttonCssBlockToText('.select', tokens.default),
+      buttonCssBlockToText('.select', disabledBlock),
+      buttonCssBlockToText('.select', layout),
+      buttonCssBlockToText('.select', this.styles),
+      buttonCssBlockToText('.initiator-wrapper', tokens.initiatorWrapper),
+      buttonCssBlockToText('.dropdown', dropdownTokens),
+      buttonCssBlockToText('.option', tokens.item.default),
+      buttonCssBlockToText('.option.disabled', tokens.item.disabled),
+      buttonCssBlockToText('.adornment', tokens.adornment.default),
+      buttonCssBlockToText('.arrow', tokens.arrowIconWrapper.default),
+      buttonCssBlockToText('.arrow', tokens.arrowIconWrapper.transform.close),
+      buttonCssBlockToText('.arrow[data-open]', tokens.arrowIconWrapper.transform.open),
+      buttonCssBlockToText('.search', tokens.searchInput.default),
+    ].join('\n');
+    if (!this.shadowRoot || typeof CSSStyleSheet === 'undefined' || text === this._sheetText) return;
+    this._sheetText = text;
+    const sheet = new CSSStyleSheet();
+    sheet.replaceSync(text);
+    this.shadowRoot.adoptedStyleSheets = [
+      ...this.shadowRoot.adoptedStyleSheets.filter((item) => item !== this._sheet),
+      sheet,
+    ];
+    this._sheet = sheet;
+  }
+
+  /** The dropdown content only exists while the dropdown is open. */
+  private _renderDropdownContent(searchText: string, visibleItems: GdSelectOption[], selectedItems: SelectOption[]) {
+    return html`
+      ${this.searchable
+        ? html`<input
+            type="text"
+            class="search"
+            part="search"
+            placeholder=${this.searchPlaceholder}
+            .value=${searchText}
+            @input=${this._onSearch}
+            @click=${(event: Event) => event.stopPropagation()}
+            @keydown=${(event: Event) => event.stopPropagation()}
+            aria-label=${this.searchPlaceholder || 'Search options'}
+          />`
+        : nothing}
+      <slot></slot>
+      ${visibleItems.length
+        ? visibleItems.map((item, index) => {
+            const isSelected = this._isSelected(item, selectedItems);
+            const isActive = isSelected || String(this.activeIndex) === String(index);
+            const className = `option${isActive ? ' active' : ''}${item.disabled ? ' disabled' : ''}`;
+            const custom = this.renderOption?.({ item, index, isActiveItem: isSelected, className });
+            return html`
+              <div
+                class=${className}
+                part="option"
+                role="option"
+                tabindex=${item.disabled ? -1 : 0}
+                aria-selected=${isSelected}
+                aria-disabled=${item.disabled ? 'true' : nothing}
+                @click=${() => !item.disabled && this.selectOption(item, index)}
+                @keydown=${(event: KeyboardEvent) => this._onOptionKeyDown(event, item, index)}
+              >
+                ${custom ?? item.name}
+              </div>
+            `;
+          })
+        : html`<slot name="empty"></slot>`}
+    `;
   }
 
   render() {
     const state = this._store.getState();
-    const resolved = resolveSelectTokens(this.theme, this.color);
+    const tokens = resolveThemeTree(select, this.theme) as unknown as ResolvedSelectTokens;
+    this._adoptTokenSheet(tokens);
+
     const selected = Array.isArray(state.internalValue) ? null : state.internalValue;
     const selectedItems = Array.isArray(state.internalValue) ? state.internalValue : selected ? [selected] : [];
-    const visibleItems = filterSelectOptions(this.items, state.searchText, this.itemStringifier) ?? [];
-    const selectedText = selectedItems.map(this.itemStringifier).join(', ');
-    // Same expression gd-input.ts uses for its own focus ring — the real button.default
-    // `'&:focus-visible'` color path (`colors.border.focus`).
-    const focusColor = (this.theme.colors as { border?: { focus?: string } } | undefined)?.border?.focus ?? '#0069B4';
+    const visibleItems = (filterSelectOptions(this.items, state.searchText, this.itemStringifier) ??
+      []) as GdSelectOption[];
+    const triggerText = this.multiple
+      ? selectedItems.length
+        ? selectedItems.map(this.itemStringifier).join(', ')
+        : this.placeholder
+      : selected?.value
+        ? this.itemStringifier(selected)
+        : this.placeholder;
 
-    // Sizing itself (`width`/`maxWidth`/`minWidth`) is applied directly to the host in
-    // `willUpdate` — this just fills the now-definite host content box.
-    const wrapperStyle = { width: '100%' };
-
-    const triggerStyle = {
-      fontFamily: `${resolved.fontFamily}`,
-      fontSize: `${resolved.fontSize}`,
-      fontWeight: `${resolved.fontWeight}`,
-      color: resolved.color,
-      border: resolved.border,
-      borderRadius: '0px',
-      padding: `${resolved.triggerPadding}`,
-      background: resolved.surfaceColor,
-      '--gd-select-focus-color': focusColor,
+    const triggerStyles: ButtonCssBlock = {
+      ...tokens.button.default,
+      ...(tokens.button[this.color] ?? {}),
+      // The ellipsis rules of the initiator wrapper apply to the content of the trigger button.
+      '& .gd-button__content': {
+        ...((tokens.button.default['.gd-button__content'] as ButtonCssBlock | undefined) ?? {}),
+        ...((tokens.initiatorWrapper['.gd-button__content'] as ButtonCssBlock | undefined) ?? {}),
+      },
     };
-
-    const dropdownStyle = {
-      fontFamily: `${resolved.fontFamily}`,
-      fontSize: `${resolved.fontSize}`,
-      color: resolved.color,
-      background: resolved.surfaceColor,
-      boxShadow: resolved.boxShadow,
-      borderRadius: '0px',
-      // `dropdown.margin` and `dropdown.padding` are both real `spacing.none` — same resolved
-      // field reused for both, since they're the same token value in the real component too.
-      margin: `${resolved.dropdownPadding}`,
-      padding: `${resolved.dropdownPadding}`,
-      ...(this.dropdownMaxHeight ? { maxHeight: this.dropdownMaxHeight } : {}),
-      '--gd-select-hover-bg': resolved.hoverBackgroundColor,
-    };
+    delete triggerStyles['.gd-button__content'];
+    const arrow = tokens.icons.arrowIcon;
+    const hasInitiator = this._hasSlotted('initiator');
+    const hasStart = this._hasSlotted('adornment-start');
+    const hasEnd = this._hasSlotted('adornment-end');
 
     return html`
-      <div class="wrapper" style=${styleMap(wrapperStyle)}>
-        <button
-          type="button"
-          class="trigger"
-          style=${styleMap(triggerStyle)}
-          ?disabled=${this.disabled}
-          aria-haspopup="listbox"
-          aria-expanded=${state.isOpen}
-          @click=${this._toggleOpen}
-          @keydown=${this._onTriggerKeyDown}
+      <div class="select" part="select">
+        <div
+          class="initiator-wrapper"
+          part="initiator-wrapper"
+          @click=${this._onInitiatorClick}
+          @keydown=${this._onInitiatorKeyDown}
         >
-          <slot name="adornment-start"></slot>
-          <span>
-            <slot name="initiator">${selectedText || this.placeholder || html`<slot name="placeholder"></slot>`}</slot>
-          </span>
-          <slot name="adornment-end"></slot>
-          <span class="arrow" ?data-open=${state.isOpen} aria-hidden="true">
-            <gd-icon name="keyboardArrowDown" width="18" height="18" fill="icon.default" .theme=${this.theme}></gd-icon>
-          </span>
-        </button>
+          ${hasInitiator
+            ? html`<slot name="initiator"></slot>`
+            : html`<gd-button
+                class="trigger"
+                part="trigger"
+                variant="inherit"
+                .theme=${this.theme}
+                .styles=${triggerStyles}
+                ?disabled=${this.disabled}
+              >
+                ${hasStart
+                  ? html`<span class="adornment" slot="icon-start"><slot name="adornment-start"></slot></span>`
+                  : nothing}
+                ${triggerText}
+                <span class="adornment" slot="icon-end">
+                  ${hasEnd ? html`<span class="adornment"><slot name="adornment-end"></slot></span>` : nothing}
+                  <span class="arrow" ?data-open=${state.isOpen} aria-hidden="true">
+                    <gd-icon
+                      .theme=${this.theme}
+                      .name=${arrow.name}
+                      .fill=${arrow.fill}
+                      .width=${arrow.width}
+                      .height=${arrow.height}
+                    ></gd-icon>
+                  </span>
+                </span>
+              </gd-button>`}
+        </div>
         <div
           class="dropdown"
-          popover="auto"
+          part="dropdown"
+          popover="manual"
           role="listbox"
           aria-multiselectable=${this.multiple}
-          style=${styleMap(dropdownStyle)}
-          @toggle=${this._onDropdownToggle}
           @keydown=${this._onDropdownKeyDown}
         >
-          ${this.searchable
-            ? html`<input
-                type="search"
-                class="search"
-                placeholder=${this.searchPlaceholder}
-                .value=${state.searchText}
-                @input=${this._onSearch}
-                aria-label=${this.searchPlaceholder || 'Search options'}
-              />`
-            : null}
-          ${visibleItems.length
-            ? visibleItems.map((item, index) => {
-                const isSelected = selectedItems.some((current) =>
-                  this.itemIdentifier ? this.itemIdentifier(current, item) : current.value === item.value
-                );
-                const custom = this.renderOption?.({ item, index, isActiveItem: isSelected, className: 'option' });
-                return html`
-                  <div
-                    class="option"
-                    role="option"
-                    aria-selected=${isSelected}
-                    tabindex="0"
-                    data-active=${String(this.activeIndex) === String(index)}
-                    @click=${() => this._select(item)}
-                    @keydown=${(event: KeyboardEvent) => this._onOptionKeyDown(event, item)}
-                  >
-                    ${custom ?? this.itemStringifier(item)}
-                  </div>
-                `;
-              })
-            : html`<slot name="empty"></slot>`}
+          ${state.isOpen ? this._renderDropdownContent(state.searchText, visibleItems, selectedItems) : nothing}
         </div>
       </div>
     `;

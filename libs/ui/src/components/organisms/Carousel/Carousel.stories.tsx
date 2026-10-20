@@ -111,10 +111,10 @@ export const Default = Template.bind({});
 Default.args = {
   children: [
     <Carousel.Slide key="slide-1">
-      <Carousel.Image src="https://picsum.photos/1200/280?random=1" />
+      <Carousel.Image src="https://picsum.photos/1200/280?random=1" alt="Mountain landscape" />
     </Carousel.Slide>,
     <Carousel.Slide key="slide-2">
-      <Carousel.Image src="https://picsum.photos/1200/280?random=2" />
+      <Carousel.Image src="https://picsum.photos/1200/280?random=2" alt="Coastal landscape" />
     </Carousel.Slide>,
   ],
 };

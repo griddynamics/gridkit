@@ -68,17 +68,18 @@ Path aliases defined in `libs/ui/vitest.alias.ts` and `libs/ui/tsconfig.json`: `
 
 **Build output** — Vite produces both ESM (`.js`, `preserveModules`) and CJS (`.cjs`) to `dist/libs/ui`. Post-build step (`scripts/postbuild-types.mjs`) patches `.d.ts` exports. React and `@emotion/*` are externalized. `bin/export-theme.js` serializes `defaultTheme` to JSON from the built dist; it runs automatically as part of `npm run storybook` and `npm run build-storybook`.
 
-**Shared Storybook** — `npm run storybook` manages the React host (6006) and native Web Components preview (6007) together. Open only the host. Framework-neutral pages listed in `bin/storybook/shared-docs.json` appear at the root, before React, without a prefix. Other MDX and component stories receive a central `React/` title prefix; do not duplicate it in their titles. Keep React integration examples under React, even when their topic also has shared design guidance. The combined static artifact is `libs/ui/storybook-static`, with the child under `web-components/`. Use generated story IDs for links and run `storybook:check-links` after the combined build. Package-only validation uses `node bin/storybook/check-links.mjs --package` and indexes source stories without building previews. Do not regenerate the frozen legacy route inventory to conceal missing entries. Redirects support both original links and interim React-prefixed links to shared pages. The native catalog covers all 23 published atoms and two molecules. `node bin/storybook/smoke-test.mjs` verifies native rendering and representative interactions after the combined build. Keep Angular and Vue native-element harness coverage aligned with the supported catalog.
+**Shared Storybook** — `npm run storybook` manages the React host (6006) and native Web Components preview (6007) together. Open only the host. Framework-neutral pages listed in `bin/storybook/shared-docs.json` appear at the root, before React, without a prefix. Other MDX and component stories receive a central `React/` title prefix; do not duplicate it in their titles. Keep React integration examples under React, even when their topic also has shared design guidance. The combined static artifact is `libs/ui/storybook-static`, with the child under `web-components/`. Use generated story IDs for links and run `storybook:check-links` after the combined build. Package-only validation uses `node bin/storybook/check-links.mjs --package` and indexes source stories without building previews. Do not regenerate the frozen legacy route inventory to conceal missing entries. Redirects support both original links and interim React-prefixed links to shared pages. The native catalog covers all 23 published atoms, two molecules, and five layout elements. `node bin/storybook/smoke-test.mjs` verifies native rendering and representative interactions after the combined build. Keep Angular and Vue native-element harness coverage aligned with the supported catalog.
 
-**Package subpaths** — the published package exposes four explicit subpaths (wildcards are intentionally removed to prevent internal path coupling):
+**Package subpaths** — the published package exposes five explicit subpaths (wildcards are intentionally removed to prevent internal path coupling):
 
-| Subpath                        | Contents                                                                           |
-| ------------------------------ | ---------------------------------------------------------------------------------- |
-| `gd-design-library`            | Components, hooks, tokens, assets                                                  |
-| `gd-design-library/renderer`   | `renderA2UISpec`, `A2UI_RENDERER_COMPONENT_TYPES`, `A2UICustomComponentDefinition` |
-| `gd-design-library/ai`         | Prompt builders, schemas, discovery, A2UI spec tools                               |
-| `gd-design-library/tokens`     | Raw token modules and `defaultTheme` without the component tree                    |
-| `gd-design-library/styles.css` | Global CSS reset + Google Fonts (Fira Sans/Code) — **must be imported explicitly** |
+| Subpath                        | Contents                                                                              |
+| ------------------------------ | ------------------------------------------------------------------------------------- |
+| `gd-design-library`            | Components, hooks, tokens, assets                                                     |
+| `gd-design-library/renderer`   | `renderA2UISpec`, `A2UI_RENDERER_COMPONENT_TYPES`, `A2UICustomComponentDefinition`    |
+| `gd-design-library/ai`         | Prompt builders, schemas, discovery, A2UI spec tools                                  |
+| `gd-design-library/tokens`     | Raw token modules and `defaultTheme` without the component tree                       |
+| `gd-design-library/icons`      | `iconCatalog` SVG data shared by React `Icon` and Web Components `gd-icon` (no React) |
+| `gd-design-library/styles.css` | Global CSS reset + Google Fonts (Fira Sans/Code) — **must be imported explicitly**    |
 
 `styles.css` is not auto-imported by the main entry. App entry points must add `import 'gd-design-library/styles.css'` explicitly.
 

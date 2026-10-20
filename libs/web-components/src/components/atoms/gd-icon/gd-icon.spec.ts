@@ -1,18 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { iconCatalog, registerCustomIcons } from 'gd-design-core';
-import './gd-icon';
+import { iconCatalog } from 'gd-design-library/icons';
+import { registerCustomIcons } from './gd-icon';
 
 describe('gd-icon', () => {
-  it('uses a zero-line-height inline flex host so catalog SVGs align with adjacent text', async () => {
-    const el = document.createElement('gd-icon');
-    document.body.append(el);
-    await el.updateComplete;
-    expect(getComputedStyle(el).display).toBe('inline-flex');
-    expect(getComputedStyle(el).lineHeight).toBe('0px');
-    expect(getComputedStyle(el.shadowRoot!.querySelector('svg')!).display).toBe('block');
-    el.remove();
-  });
-
   it('renders every shared catalog icon', async () => {
     for (const name of Object.keys(iconCatalog)) {
       const el = document.createElement('gd-icon');
@@ -24,20 +14,37 @@ describe('gd-icon', () => {
     }
   });
 
-  it('renders a custom icon registered under a previously unknown name', async () => {
-    registerCustomIcons({
-      projectOrbit: {
-        viewBox: '0 0 24 24',
-        body: '<circle cx="12" cy="12" r="3" fill="var(--gd-icon-fill)"></circle>',
-      },
-    });
+  it('applies Box styles to the svg but treats width and height as the icon size', async () => {
     const el = document.createElement('gd-icon');
-    el.name = 'projectOrbit';
+    Object.assign(el, { name: 'check', size: 'lg', padding: '3px', marginLeft: '4px' });
     document.body.append(el);
     await el.updateComplete;
+    const svg = el.shadowRoot!.querySelector('svg')!;
+    const style = getComputedStyle(svg);
+    expect(style.paddingTop).toBe('3px');
+    expect(style.marginLeft).toBe('4px');
+    expect(style.display).toBe('block');
+    expect(style.boxSizing).toBe('border-box');
+    expect(svg.getAttribute('width')).toBe('24');
+    expect(getComputedStyle(el).display).toBe('contents');
+    el.size = undefined;
+    el.width = 40;
+    await el.updateComplete;
+    expect(el.shadowRoot!.querySelector('svg')!.getAttribute('width')).toBe('40');
+    expect(getComputedStyle(el.shadowRoot!.querySelector('svg')!).width).toBe('40px');
+    el.remove();
+  });
 
-    expect(el.shadowRoot!.querySelector('svg')?.getAttribute('viewBox')).toBe('0 0 24 24');
-    expect(el.shadowRoot!.querySelector('circle')).not.toBeNull();
+  it('renders icons added with registerCustomIcons by name', async () => {
+    registerCustomIcons({
+      person: { viewBox: '0 0 24 24', body: '<path d="M12 12h2v2z" fill="var(--gd-icon-fill)"></path>' },
+    });
+    const el = document.createElement('gd-icon');
+    el.name = 'person';
+    document.body.append(el);
+    await el.updateComplete;
+    expect(el.shadowRoot!.querySelectorAll('svg path')).toHaveLength(1);
+    expect(el.shadowRoot!.querySelector('svg')!.getAttribute('viewBox')).toBe('0 0 24 24');
     el.remove();
   });
 });
